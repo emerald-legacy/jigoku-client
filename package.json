@@ -31,7 +31,7 @@
   "homepage": "https://github.com/ringteki/ringteki-client#readme",
   "dependencies": {
     "already": "^2.2.1",
-    "axios": "^0.21.1",
+    "axios": "^0.21.4",
     "babel-polyfill": "^6.26.0",
     "bcrypt": "^5.0.0",
     "bootstrap": "^3.3.7",

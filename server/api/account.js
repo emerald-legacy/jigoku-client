@@ -12,6 +12,7 @@ const UserService = require('../services/UserService.js');
 const Settings = require('../settings.js');
 const _ = require('underscore');
 const { wrapAsync } = require('../util.js');
+const axios = require('axios').default;
 
 let db = monk(config.dbPath);
 let userService = new UserService(db);
@@ -212,10 +213,8 @@ module.exports.init = function(server) {
         let resetToken;
         let captchaDone = false;
 
-        util.httpRequest('https://www.google.com/recaptcha/api/siteverify?secret=' + config.captchaKey + '&response=' + req.body.captcha)
-            .then(response => {
-                let answer = JSON.parse(response);
-
+        axios.post('https://www.google.com/recaptcha/api/siteverify', { secret: '6LcIUw8rAAAAAO9udS8uV76p1zKKfL6F1_126YY7',  response: req.body.captcha })
+            .then(answer =>{
                 if(!answer.success) {
                     return res.send({ success: false, message: 'Please complete the captcha correctly' });
                 }

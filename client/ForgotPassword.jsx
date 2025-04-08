@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import _ from 'underscore';
 import $ from 'jquery';
 import {connect} from 'react-redux';
-import ReCAPTCHA from 'react-google-recaptcha';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 
@@ -17,7 +16,6 @@ class InnerForgotPassword extends React.Component {
             error: '',
             username: '',
             password: '',
-            captcha: '',
             validation: {}
         };
 
@@ -45,45 +43,43 @@ class InnerForgotPassword extends React.Component {
         this.setState({ validation: validation });
     }
 
-    onCaptchaChange(value) {
-        this.setState({ captcha: value });
-    }
-
     onSubmit(event) {
         event.preventDefault();
+        grecaptcha.ready(()=> {
+            grecaptcha.execute('6LcIUw8rAAAAANoZo59wKxiypGadOD5iXaN659la', { action: 'submit' }).then((token) => {
+                this.setState({ error: '' });
 
-        this.setState({ error: '' });
+                this.verifyUsername();
 
-        this.verifyUsername();
+                if(_.any(this.state.validation, (message) => message && message !== '' )) {
+                    this.setState({ error: 'Please complete the fields and try again' });
+                    return;
+                }
 
-        if(_.any(this.state.validation, function(message) {
-            return message && message !== '';
-        })) {
-            this.setState({ error: 'Please complete the fields and try again' });
-            return;
-        }
+                this.setState({ submitting: true });
 
-        this.setState({ submitting: true });
+                $.ajax({
+                    url: '/api/account/password-reset',
+                    type: 'POST',
+                    data: JSON.stringify({ username: this.state.username, captcha: token }),
+                    contentType: 'application/json'
+                }).done((data) => {
+                    this.setState({ submitting: false });
 
-        $.ajax({
-            url: '/api/account/password-reset',
-            type: 'POST',
-            data: JSON.stringify({ username: this.state.username, captcha: this.state.captcha }),
-            contentType: 'application/json'
-        }).done((data) => {
-            this.setState({ submitting: false });
+                    if(!data.success) {
+                        this.setState({ error: data.message });
+                        return;
+                    }
 
-            if(!data.success) {
-                this.setState({ error: data.message });
-                return;
-            }
+                    this.setState({ success: 'Your request was submitted, if you have an account, an email will have been sent to the address you used to register with more instructions. This request could end up in your Spam folder, so make sure to check there if you do not see it.' });
+                }).fail(() => {
+                    this.setState({ submitting: false });
 
-            this.setState({ success: 'Your request was submitted, if you have an account, an email will have been sent to the address you used to register with more instructions. This request could end up in your Spam folder, so make sure to check there if you do not see it.' });
-        }).fail(() => {
-            this.setState({ submitting: false });
-
-            this.setState({ error: 'Could not communicate with the server.  Please try again later.' });
+                    this.setState({ error: 'Could not communicate with the server.  Please try again later.' });
+                });
+            });
         });
+
     }
 
     render() {
@@ -142,11 +138,6 @@ class InnerForgotPassword extends React.Component {
                     <div className='panel'>
                         <form className='form form-horizontal'>
                             { fieldsToRender }
-                            <div className='form-group'>
-                                <div className='col-sm-offset-2 col-sm-3'>
-                                    <ReCAPTCHA ref='recaptcha' sitekey='6LdioDEUAAAAAH1lkMBCcE7mW3vRudleb9weuT8U' theme='dark' onChange={ this.onCaptchaChange.bind(this) } />
-                                </div>
-                            </div>
                             <div className='form-group'>
                                 <div className='col-sm-offset-2 col-sm-3'>
                                     { this.state.submitting ? <button type='submit' className='btn btn-primary' disabled>Submitting...</button> :
