@@ -19,8 +19,8 @@ let userService = new UserService(db);
 
 function hashPassword(password, rounds) {
     return new Promise((resolve, reject) => {
-        bcrypt.hash(password, rounds, function(err, hash) {
-            if(err) {
+        bcrypt.hash(password, rounds, function (err, hash) {
+            if (err) {
                 return reject(err);
             }
 
@@ -31,8 +31,8 @@ function hashPassword(password, rounds) {
 
 function loginUser(request, user) {
     return new Promise((resolve, reject) => {
-        request.login(user, function(err) {
-            if(err) {
+        request.login(user, function (err) {
+            if (err) {
                 return reject(err);
             }
 
@@ -50,8 +50,8 @@ function sendEmail(address, email) {
             to: address,
             subject: 'Your account at Jigoku Online',
             text: email
-        }, function(error) {
-            if(error) {
+        }, function (error) {
+            if (error) {
                 reject(error);
             }
 
@@ -60,21 +60,21 @@ function sendEmail(address, email) {
     });
 }
 
-module.exports.init = function(server) {
-    server.post('/api/account/register', function(req, res) {
-        if(!req.body.password) {
+module.exports.init = function (server) {
+    server.post('/api/account/register', function (req, res) {
+        if (!req.body.password) {
             res.send({ success: false, message: 'No password specified' });
 
             return Promise.reject('No password');
         }
 
-        if(!req.body.email) {
+        if (!req.body.email) {
             res.send({ success: false, message: 'No email specified' });
 
             return Promise.reject('No email');
         }
 
-        if(!req.body.username) {
+        if (!req.body.username) {
             res.send({ success: false, message: 'No username specified' });
 
             return Promise.reject('No username');
@@ -82,7 +82,7 @@ module.exports.init = function(server) {
 
         userService.getUserByEmail(req.body.email)
             .then(user => {
-                if(user) {
+                if (user) {
                     res.send({ success: false, message: 'An account with that email already exists, please use another' });
 
                     return Promise.reject('Account email exists');
@@ -91,7 +91,7 @@ module.exports.init = function(server) {
                 return userService.getUserByUsername(req.body.username);
             })
             .then(user => {
-                if(user) {
+                if (user) {
                     res.send({ success: false, message: 'An account with that name already exists, please choose another' });
 
                     return Promise.reject('Account exists');
@@ -122,10 +122,10 @@ module.exports.init = function(server) {
             });
     });
 
-    server.post('/api/account/check-username', function(req, res) {
+    server.post('/api/account/check-username', function (req, res) {
         userService.getUserByUsername(req.body.username)
             .then(user => {
-                if(user) {
+                if (user) {
                     return res.send({ success: true, message: 'An account with that name already exists, please choose another' });
                 }
 
@@ -136,30 +136,30 @@ module.exports.init = function(server) {
             });
     });
 
-    server.post('/api/account/logout', function(req, res) {
+    server.post('/api/account/logout', function (req, res) {
         req.logout();
 
         res.send({ success: true });
     });
 
-    server.post('/api/account/login', passport.authenticate('local'), function(req, res) {
+    server.post('/api/account/login', passport.authenticate('local'), function (req, res) {
         res.send({ success: true, user: req.user, token: jwt.sign(req.user, config.secret) });
     });
 
-    server.post('/api/account/password-reset-finish', function(req, res) {
+    server.post('/api/account/password-reset-finish', function (req, res) {
         let resetUser;
 
-        if(!req.body.id || !req.body.token || !req.body.newPassword) {
+        if (!req.body.id || !req.body.token || !req.body.newPassword) {
             return res.send({ success: false, message: 'Invalid parameters' });
         }
 
         userService.getUserById(req.body.id)
             .then(user => {
-                if(!user) {
+                if (!user) {
                     return Promise.reject('User not found');
                 }
 
-                if(!user.resetToken) {
+                if (!user.resetToken) {
                     logger.error('Got unexpected reset request for user', user.username);
 
                     res.send({ success: false, message: 'An error occured resetting your password, check the url you have entered and try again' });
@@ -169,7 +169,7 @@ module.exports.init = function(server) {
 
                 let now = moment();
 
-                if(user.tokenExpires < now) {
+                if (user.tokenExpires < now) {
                     res.send({ success: false, message: 'The reset token you have provided has expired' });
 
                     logger.error('Token expired', user.username);
@@ -180,7 +180,7 @@ module.exports.init = function(server) {
                 let hmac = crypto.createHmac('sha512', config.hmacSecret);
                 let resetToken = hmac.update('RESET ' + user.username + ' ' + user.tokenExpires).digest('hex');
 
-                if(resetToken !== req.body.token) {
+                if (resetToken !== req.body.token) {
                     logger.error('Invalid reset token', user.username, req.body.token);
 
                     res.send({ success: false, message: 'An error occured resetting your password, check the url you have entered and try again' });
@@ -208,14 +208,14 @@ module.exports.init = function(server) {
             });
     });
 
-    server.post('/api/account/password-reset', function(req, res) {
+    server.post('/api/account/password-reset', function (req, res) {
         let emailUser;
         let resetToken;
         let captchaDone = false;
 
-        axios.post('https://www.google.com/recaptcha/api/siteverify', { secret: '6LcIUw8rAAAAAO9udS8uV76p1zKKfL6F1_126YY7',  response: req.body.captcha })
-            .then(answer =>{
-                if(!answer.success) {
+        axios.post('https://www.google.com/recaptcha/api/siteverify', { secret: '6LcIUw8rAAAAAO9udS8uV76p1zKKfL6F1_126YY7', response: req.body.captcha })
+            .then(answer => {
+                if (!answer.data.success) {
                     return res.send({ success: false, message: 'Please complete the captcha correctly' });
                 }
 
@@ -226,7 +226,7 @@ module.exports.init = function(server) {
                 return userService.getUserByUsername(req.body.username);
             })
             .then(user => {
-                if(!user) {
+                if (!user) {
                     logger.error('Username not found for password reset', req.body.username);
 
                     return Promise.reject('Username not found');
@@ -254,7 +254,7 @@ module.exports.init = function(server) {
             .catch(err => {
                 logger.error(err);
 
-                if(!captchaDone) {
+                if (!captchaDone) {
                     return res.send({ success: false, message: 'There was a problem verifying the capthca, please try again' });
                 }
             });
@@ -285,17 +285,17 @@ module.exports.init = function(server) {
         let userToSet = JSON.parse(req.body.data);
         let existingUser;
 
-        if(!req.user) {
+        if (!req.user) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        if(req.user.username !== req.params.username) {
+        if (req.user.username !== req.params.username) {
             return res.status(403).send({ message: 'Unauthorized' });
         }
 
         userService.getUserByUsername(req.params.username)
             .then(user => {
-                if(!user) {
+                if (!user) {
                     return res.status(404).send({ message: 'Not found' });
                 }
 
@@ -305,14 +305,14 @@ module.exports.init = function(server) {
 
                 existingUser = user;
 
-                if(userToSet.password && userToSet.password !== '') {
+                if (userToSet.password && userToSet.password !== '') {
                     return hashPassword(userToSet.password, 10);
                 }
 
                 return updateUser(res, user);
             })
             .then(passwordHash => {
-                if(!passwordHash) {
+                if (!passwordHash) {
                     return;
                 }
 
@@ -328,7 +328,7 @@ module.exports.init = function(server) {
     server.get('/api/account/:username/blocklist', wrapAsync(async (req, res) => {
         let user = await checkAuth(req, res);
 
-        if(!user) {
+        if (!user) {
             return;
         }
 
@@ -338,15 +338,15 @@ module.exports.init = function(server) {
     server.post('/api/account/:username/blocklist', wrapAsync(async (req, res) => {
         let user = await checkAuth(req, res);
 
-        if(!user) {
+        if (!user) {
             return;
         }
 
-        if(!user.blockList) {
+        if (!user.blockList) {
             user.blockList = [];
         }
 
-        if(_.find(user.blockList, user => {
+        if (_.find(user.blockList, user => {
             return user === req.body.username.toLowerCase();
         })) {
             return res.send({ success: false, message: 'Entry already on block list' });
@@ -362,19 +362,19 @@ module.exports.init = function(server) {
     server.delete('/api/account/:username/blocklist/:entry', wrapAsync(async (req, res) => {
         let user = await checkAuth(req, res);
 
-        if(!user) {
+        if (!user) {
             return;
         }
 
-        if(!req.params.entry) {
+        if (!req.params.entry) {
             return res.send({ success: false, message: 'Parameter "entry" is required' });
         }
 
-        if(!user.blockList) {
+        if (!user.blockList) {
             user.blockList = [];
         }
 
-        if(!_.find(user.blockList, user => {
+        if (!_.find(user.blockList, user => {
             return user === req.params.entry.toLowerCase();
         })) {
             return res.status(404).send({ message: 'Not found' });
@@ -393,19 +393,19 @@ module.exports.init = function(server) {
 async function checkAuth(req, res) {
     let user = await userService.getUserByUsername(req.params.username);
 
-    if(!req.user) {
+    if (!req.user) {
         res.status(401).send({ message: 'Unauthorized' });
 
         return null;
     }
 
-    if(req.user.username !== req.params.username) {
+    if (req.user.username !== req.params.username) {
         res.status(403).send({ message: 'Unauthorized' });
 
         return null;
     }
 
-    if(!user) {
+    if (!user) {
         res.status(404).send({ message: 'Not found' });
 
         return null;
