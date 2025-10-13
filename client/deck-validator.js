@@ -3,10 +3,45 @@ const _ = require('underscore');
 const axios = require('axios').default;
 const GameModes = require('./GameModes');
 
+class ValidatorCache {
+
+    constructor() {
+    }
+
+    updateCache(key, value) {
+        const expiryTime = Date.now() + (1000 * 60 * 60 * 4); // 4 hours
+
+        value.expiryTime = expiryTime;
+        const json = JSON.stringify(value);
+
+        localStorage.setItem(key, json);
+    }
+
+    getCache(key) {
+        const cachedValue = localStorage.getItem(key);
+        if (!cachedValue) {
+            return null;
+        }
+
+        const parsed = JSON.parse(cachedValue);
+        if (!parsed.expiryTime) {
+            localStorage.removeItem(key);
+            return null;
+        }
+        if (parsed.expiryTime < Date.now()) {
+            localStorage.removeItem(key);
+            return null;
+        }
+
+        return parsed;
+    }
+}
+
 class DeckValidator {
     constructor(packs, gameMode) {
         this.packs = packs;
         this.gameMode = gameMode;
+        this.cache = new ValidatorCache();
     }
 
     async validateDeck(deck) {
@@ -18,7 +53,7 @@ class DeckValidator {
         });
 
         let mode = this.gameMode;
-        if(mode === GameModes.Stronghold) {
+        if (mode === GameModes.Stronghold) {
             mode = 'standard';
         }
 
@@ -27,6 +62,14 @@ class DeckValidator {
             format: mode
         };
 
+        const json = JSON.stringify(body);
+        const key = Buffer.from(json).toString('base64');
+        const cachedValue = this.cache.getCache(key);
+
+        if (cachedValue) {
+            return cachedValue;
+        }
+
         try {
             // const res = await axios.post('https://beta-emeralddb.herokuapp.com/api/decklists/validate', body);
             const res = await axios.post('https://www.emeralddb.org/api/decklists/validate', body);
@@ -34,9 +77,10 @@ class DeckValidator {
                 valid: res.data.valid,
                 extendedStatus: res.data.errors
             };
+            this.cache.updateCache(key, resultObj);
             // validatorCache.set(hash, resultObj, 600);
             return resultObj;
-        } catch(e) {
+        } catch (e) {
             return {
                 valid: undefined,
                 extendedStatus: ['Error Validating']
@@ -51,7 +95,7 @@ module.exports = async function validateDeck(deck, options) {
     let validator = new DeckValidator(options.packs, options.gameMode);
     let result = await validator.validateDeck(deck);
 
-    if(!options.includeExtendedStatus) {
+    if (!options.includeExtendedStatus) {
         return _.omit(result, 'extendedStatus');
     }
 
