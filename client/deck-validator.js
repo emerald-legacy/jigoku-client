@@ -45,7 +45,7 @@ class DeckValidator {
     }
 }
 
-module.exports = async function validateDeck(deck, options) {
+module.exports = _.throttle(async function(deck, options) {
     options = Object.assign({ includeExtendedStatus: true }, options);
 
     let validator = new DeckValidator(options.packs, options.gameMode);
@@ -56,4 +56,4 @@ module.exports = async function validateDeck(deck, options) {
     }
 
     return result;
-};
+}, 5000);
