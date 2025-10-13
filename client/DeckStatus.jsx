@@ -17,7 +17,8 @@ class DeckStatus extends React.Component {
     }
 
     componentWillReceiveProps(props) {
-        if(props.deck) {
+        // Only re-validate if the deck ID has changed or if it's a new deck
+        if(props.deck && (!this.props.deck || this.props.deck._id !== props.deck._id)) {
             this.getDeckStatus(props.deck);
         }
     }
