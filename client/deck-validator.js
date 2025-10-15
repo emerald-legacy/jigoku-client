@@ -9,7 +9,11 @@ class ValidatorCache {
     }
 
     updateCache(key, value) {
-        const expiryTime = Date.now() + (1000 * 60 * 60 * 4); // 4 hours
+        if (typeof window === "undefined") {
+            return;
+        }
+
+        const expiryTime = Date.now() + (1000 * 60 * 60 * 1); // 1 hour
 
         value.expiryTime = expiryTime;
         const json = JSON.stringify(value);
@@ -18,6 +22,10 @@ class ValidatorCache {
     }
 
     getCache(key) {
+        if (typeof window === "undefined") {
+            return null;
+        }
+
         const cachedValue = localStorage.getItem(key);
         if (!cachedValue) {
             return null;
@@ -48,8 +56,10 @@ class DeckValidator {
         let allCards = deck.provinceCards.concat(deck.dynastyCards).concat(deck.conflictCards).concat(deck.role).concat(deck.stronghold);
         let cardCountByName = {};
         _.each(allCards, cardQuantity => {
-            cardCountByName[cardQuantity.card.id] = 0;
-            cardCountByName[cardQuantity.card.id] += cardQuantity.count;
+            if (cardQuantity.card) {
+                cardCountByName[cardQuantity.card.id] = 0;
+                cardCountByName[cardQuantity.card.id] += cardQuantity.count;
+            }
         });
 
         let mode = this.gameMode;
