@@ -1,6 +1,5 @@
 import $ from 'jquery';
 import _ from 'underscore';
-import validateDeck from '../deck-validator.js';
 
 export function loadDecks() {
     return {
@@ -8,28 +7,7 @@ export function loadDecks() {
         shouldCallAPI: (state) => {
             return state.cards.singleDeck || !state.cards.decks;
         },
-        callAPI: async () => {
-            const response = await $.ajax('/api/decks', { cache: false });
-
-            // Validate all decks after loading
-            if(response.decks && response.decks.length > 0) {
-                const validationPromises = response.decks.map(async (deck) => {
-                    const gameMode = deck.format && deck.format.value ? deck.format.value : 'stronghold';
-                    try {
-                        deck.status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
-                    } catch(error) {
-                        deck.status = {
-                            valid: undefined,
-                            extendedStatus: ['Error Validating']
-                        };
-                    }
-                });
-
-                await Promise.all(validationPromises);
-            }
-
-            return response;
-        }
+        callAPI: () => $.ajax('/api/decks', { cache: false })
     };
 }
 
@@ -43,24 +21,7 @@ export function loadDeck(deckId) {
 
             return ret;
         },
-        callAPI: async () => {
-            const response = await $.ajax('/api/decks/' + deckId, { cache: false });
-
-            // Validate the deck after loading
-            if(response.deck) {
-                const gameMode = response.deck.format && response.deck.format.value ? response.deck.format.value : 'stronghold';
-                try {
-                    response.deck.status = await validateDeck(response.deck, { includeExtendedStatus: true, gameMode });
-                } catch(error) {
-                    response.deck.status = {
-                        valid: undefined,
-                        extendedStatus: ['Error Validating']
-                    };
-                }
-            }
-
-            return response;
-        }
+        callAPI: () => $.ajax('/api/decks/' + deckId, { cache: false })
     };
 }
 
