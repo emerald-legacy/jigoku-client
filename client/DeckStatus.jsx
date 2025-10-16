@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 import StatusPopOver from './StatusPopOver.jsx';
 import validateDeck from './deck-validator.js';
+import * as actions from './actions';
 
-class DeckStatus extends React.Component {
+class InnerDeckStatus extends React.Component {
     constructor() {
         super();
         this.state = {
@@ -52,7 +54,7 @@ class DeckStatus extends React.Component {
 
         // Schedule validation for 1 second after the last change
         this.validationTimeout = setTimeout(() => {
-            this.getDeckStatus(deck);
+            this.getDeckStatus(deck, true);
         }, 1000);
     }
 
@@ -96,11 +98,12 @@ class DeckStatus extends React.Component {
         return parts.sort().join('|');
     }
 
-    async getDeckStatus(deck = undefined) {
+    async getDeckStatus(deck = undefined, forceValidate = false) {
         if(!deck) {
             deck = this.props.deck;
         }
-        if(deck.status) {
+        // Only use cached status if not forcing validation
+        if(deck.status && !forceValidate) {
             this.setState({
                 deckStatus: deck.status
             });
@@ -117,6 +120,11 @@ class DeckStatus extends React.Component {
         this.setState({
             deckStatus: status
         });
+
+        // Update Redux store with validation result
+        if(this.props.updateDeckStatus && deck._id) {
+            this.props.updateDeckStatus(deck._id, status);
+        }
     }
 
     render() {
@@ -154,9 +162,17 @@ class DeckStatus extends React.Component {
     }
 }
 
-DeckStatus.propTypes = {
+InnerDeckStatus.displayName = 'DeckStatus';
+InnerDeckStatus.propTypes = {
     className: PropTypes.string,
-    deck: PropTypes.object.isRequired
+    deck: PropTypes.object.isRequired,
+    updateDeckStatus: PropTypes.func
 };
+
+function mapStateToProps() {
+    return {};
+}
+
+const DeckStatus = connect(mapStateToProps, actions)(InnerDeckStatus);
 
 export default DeckStatus;

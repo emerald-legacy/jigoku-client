@@ -16,12 +16,15 @@ export function loadDecks() {
                 const validationPromises = response.decks.map(async (deck) => {
                     const gameMode = deck.format && deck.format.value ? deck.format.value : 'stronghold';
                     try {
-                        deck.status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
+                        const status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
+                        deck.status = status;
+                        return deck;
                     } catch(error) {
                         deck.status = {
                             valid: undefined,
                             extendedStatus: ['Error Validating']
                         };
+                        return deck;
                     }
                 });
 
@@ -50,7 +53,8 @@ export function loadDeck(deckId) {
             if(response.deck) {
                 const gameMode = response.deck.format && response.deck.format.value ? response.deck.format.value : 'stronghold';
                 try {
-                    response.deck.status = await validateDeck(response.deck, { includeExtendedStatus: true, gameMode });
+                    const status = await validateDeck(response.deck, { includeExtendedStatus: true, gameMode });
+                    response.deck.status = status;
                 } catch(error) {
                     response.deck.status = {
                         valid: undefined,
@@ -81,6 +85,14 @@ export function updateDeck(deck) {
     return {
         type: 'UPDATE_DECK',
         deck: deck
+    };
+}
+
+export function updateDeckStatus(deckId, status) {
+    return {
+        type: 'UPDATE_DECK_STATUS',
+        deckId: deckId,
+        status: status
     };
 }
 
