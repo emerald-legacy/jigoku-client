@@ -32,7 +32,8 @@ class InnerPendingGame extends React.Component {
             playSound: true,
             message: '',
             decksLoading: true,
-            waiting: false
+            waiting: false,
+            filteredDecks: []
         };
     }
 
@@ -69,12 +70,15 @@ class InnerPendingGame extends React.Component {
     }
 
     onSelectDeckClick() {
+        // Filter decks only when modal is opened
+        const filteredDecks = this.getDecks();
+        this.setState({ filteredDecks: filteredDecks });
         $(findDOMNode(this.refs.modal)).modal('show');
     }
 
     selectDeck(index) {
         $(findDOMNode(this.refs.modal)).modal('hide');
-        this.props.socket.emit('selectdeck', this.props.currentGame.id, this.getDecks()[index]);
+        this.props.socket.emit('selectdeck', this.props.currentGame.id, this.state.filteredDecks[index]);
     }
 
     getPlayerStatus(player, username) {
@@ -200,8 +204,7 @@ class InnerPendingGame extends React.Component {
         } else if(this.props.apiError) {
             decks = <AlertPanel type='error' message={ this.props.apiError } />;
         } else {
-            let filteredDecks = this.getDecks();
-            decks = _.size(filteredDecks) > 0 ? _.map(filteredDecks, deck => {
+            decks = _.size(this.state.filteredDecks) > 0 ? _.map(this.state.filteredDecks, deck => {
                 let row = <DeckRow key={ deck.name + index.toString() } deck={ deck } onClick={ this.selectDeck.bind(this, index) } active={ index === this.state.selectedDeck } />;
 
                 index++;
