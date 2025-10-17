@@ -188,7 +188,18 @@ class InnerPendingGame extends React.Component {
     }
 
     getDecks() {
-        return _.filter(this.props.decks, deck => deck.format && deck.format.value === this.props.currentGame.gameMode);
+        if(!this.props.decks) {
+            console.log('PendingGame: this.props.decks is undefined or null');
+            return [];
+        }
+        console.log('PendingGame: All decks:', this.props.decks.length);
+        console.log('PendingGame: Game mode:', this.props.currentGame.gameMode);
+        this.props.decks.forEach((deck, idx) => {
+            console.log(`Deck ${idx}: ${deck.name}, format:`, deck.format);
+        });
+        const filtered = _.filter(this.props.decks, deck => deck.format && deck.format.value === this.props.currentGame.gameMode);
+        console.log('PendingGame: Filtered decks:', filtered.length);
+        return filtered;
     }
 
     render() {
