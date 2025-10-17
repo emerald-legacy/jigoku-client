@@ -316,18 +316,28 @@ class InnerDeckEditor extends React.Component {
             if(deckAlliance) {
                 deck.alliance = this.props.factions[deckAlliance];
             } else {
-                deck.alliance = this.props.factions['crab'];
+                deck.alliance = { name: '', value: '' };
             }
 
             if(deckFormat) {
                 if(deckFormat === 'standard') {
                     deckFormat = 'stronghold';
                 }
-                deck.format = this.props.formats[deckFormat] || 'emerald';
+                deck.format = this.props.formats[deckFormat] || this.props.formats['emerald'];
             }
 
+            // Initialize card arrays
+            deck.stronghold = [];
+            deck.role = [];
+            deck.provinceCards = [];
+            deck.conflictCards = [];
+            deck.dynastyCards = [];
+
             _.each(deckList, (count, id) => {
-                cardList += this.getCardListEntry(count, this.props.cards[id]);
+                const card = this.props.cards[id];
+                if(card) {
+                    cardList += this.getCardListEntry(count, card);
+                }
             });
 
             //Duplicate onCardListChange to get this working correctly
@@ -462,18 +472,28 @@ class InnerDeckEditor extends React.Component {
             if(deckAlliance) {
                 deck.alliance = this.props.factions[deckAlliance];
             } else {
-                deck.alliance = this.props.factions['crab'];
+                deck.alliance = { name: '', value: '' };
             }
 
             if(deckFormat) {
                 if(deckFormat === 'standard') {
                     deckFormat = 'stronghold';
                 }
-                deck.format = this.props.formats[deckFormat] || 'stronghold';
+                deck.format = this.props.formats[deckFormat] || this.props.formats['stronghold'];
             }
 
+            // Initialize card arrays
+            deck.stronghold = [];
+            deck.role = [];
+            deck.provinceCards = [];
+            deck.conflictCards = [];
+            deck.dynastyCards = [];
+
             _.each(deckList, (count, id) => {
-                cardList += this.getCardListEntry(count, this.props.cards[id]);
+                const card = this.props.cards[id];
+                if(card) {
+                    cardList += this.getCardListEntry(count, card);
+                }
             });
 
             //Duplicate onCardListChange to get this working correctly
