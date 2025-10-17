@@ -257,8 +257,11 @@ class InnerDeckEditor extends React.Component {
     }
 
     getCardListEntry(count, card) {
+        if(!card) {
+            return '';
+        }
         let packName = '';
-        if(card.versions.length) {
+        if(card.versions && card.versions.length) {
             let packData = card.versions[0];
             this.setState({ test: packData.id });
             let pack = _.find(this.props.packs, p => p.id === packData.pack_id);
