@@ -11,6 +11,22 @@
     width: 480px !important;
     position: relative;
     font-weight: bold;
+
+    &.small {
+        width: @card-sm-width * 7.5 !important;
+    }
+
+    &.large {
+        width: @card-lg-width * 7.5 !important;
+    }
+
+    &.x-large {
+        width: @card-xl-width * 7.5 !important;
+    }
+
+    &.xxl {
+        width: @card-xxl-width * 7.5 !important;
+    }
 }
 
 .hand {
@@ -20,18 +36,22 @@
 
     &.small {
         height: @card-sm-height;
+        width: @card-sm-width * 7.5;
     }
 
     &.large {
         height: @card-lg-height;
+        width: @card-lg-width * 7.5;
     }
 
     &.x-large {
         height: @card-xl-height;
+        width: @card-xl-width * 7.5;
     }
 
     &.xxl {
         height: @card-xxl-height;
+        width: @card-xxl-width * 7.5;
     }
 
     height: @card-height;
