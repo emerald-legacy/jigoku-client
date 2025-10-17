@@ -429,6 +429,13 @@ class InnerProfile extends React.Component {
                                             </div>
                                             <span className='bg-label'>Extra-Large</span>
                                         </div>
+                                        <div className='card-settings' onClick={ () => this.onCardClick('xxl') }>
+                                            <div className={ 'card vertical xxl' + (this.state.selectedCardSize === 'xxl' ? ' selected' : '') }>
+                                                <img className='card-image xxl vertical'
+                                                    src='img/cards/dynastycardback.png' />
+                                            </div>
+                                            <span className='bg-label'>XXL</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

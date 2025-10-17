@@ -30,6 +30,10 @@
         height: @card-xl-height;
     }
 
+    &.xxl {
+        height: @card-xxl-height;
+    }
+
     height: @card-height;
     width:480px;
     padding: 0px;
@@ -52,10 +56,15 @@
             min-width:@attachment-offset-sm;
             flex-basis:@card-sm-width;
         }
-        
+
         &.x-large {
             min-width:@attachment-offset-xl;
             flex-basis:@card-xl-width;
+        }
+
+        &.xxl {
+            min-width:@attachment-offset-xxl;
+            flex-basis:@card-xxl-width;
         }
         &.tail {
             overflow:hidden;
