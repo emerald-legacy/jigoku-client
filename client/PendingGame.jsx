@@ -32,7 +32,8 @@ class InnerPendingGame extends React.Component {
             playSound: true,
             message: '',
             decksLoading: true,
-            waiting: false
+            waiting: false,
+            filteredDecks: []
         };
     }
 
@@ -69,12 +70,15 @@ class InnerPendingGame extends React.Component {
     }
 
     onSelectDeckClick() {
+        // Filter decks only when modal is opened
+        const filteredDecks = this.getDecks();
+        this.setState({ filteredDecks: filteredDecks });
         $(findDOMNode(this.refs.modal)).modal('show');
     }
 
     selectDeck(index) {
         $(findDOMNode(this.refs.modal)).modal('hide');
-        this.props.socket.emit('selectdeck', this.props.currentGame.id, this.getDecks()[index]);
+        this.props.socket.emit('selectdeck', this.props.currentGame.id, this.state.filteredDecks[index]);
     }
 
     getPlayerStatus(player, username) {
@@ -86,14 +90,14 @@ class InnerPendingGame extends React.Component {
 
         if(player && player.deck && player.deck.selected) {
             if(playerIsMe) {
-                deck = <span className='deck-selection clickable' data-toggle='modal' data-target='#decks-modal'>{ player.deck.name }</span>;
+                deck = <span className='deck-selection clickable' onClick={ this.onSelectDeckClick }>{ player.deck.name }</span>;
             } else {
                 deck = <span className='deck-selection'>Deck Selected</span>;
             }
 
             status = <DeckStatus deck={ player.deck } />;
         } else if(player && playerIsMe) {
-            selectLink = <span className='card-link' data-toggle='modal' data-target='#decks-modal'>Select deck...</span>;
+            selectLink = <span className='card-link' onClick={ this.onSelectDeckClick }>Select deck...</span>;
         }
 
         return (
@@ -184,7 +188,18 @@ class InnerPendingGame extends React.Component {
     }
 
     getDecks() {
-        return _.filter(this.props.decks, deck => deck.format && deck.format.value === this.props.currentGame.gameMode);
+        if(!this.props.decks) {
+            console.log('PendingGame: this.props.decks is undefined or null');
+            return [];
+        }
+        console.log('PendingGame: All decks:', this.props.decks.length);
+        console.log('PendingGame: Game mode:', this.props.currentGame.gameMode);
+        this.props.decks.forEach((deck, idx) => {
+            console.log(`Deck ${idx}: ${deck.name}, format:`, deck.format);
+        });
+        const filtered = _.filter(this.props.decks, deck => deck.format && deck.format.value === this.props.currentGame.gameMode);
+        console.log('PendingGame: Filtered decks:', filtered.length);
+        return filtered;
     }
 
     render() {
@@ -200,8 +215,7 @@ class InnerPendingGame extends React.Component {
         } else if(this.props.apiError) {
             decks = <AlertPanel type='error' message={ this.props.apiError } />;
         } else {
-            let filteredDecks = this.getDecks();
-            decks = _.size(filteredDecks) > 0 ? _.map(filteredDecks, deck => {
+            decks = _.size(this.state.filteredDecks) > 0 ? _.map(this.state.filteredDecks, deck => {
                 let row = <DeckRow key={ deck.name + index.toString() } deck={ deck } onClick={ this.selectDeck.bind(this, index) } active={ index === this.state.selectedDeck } />;
 
                 index++;

@@ -74,7 +74,7 @@ class InnerDeckEditor extends React.Component {
     }
 
     // XXX One could argue this is a bit hacky, because we're updating the innards of the deck object, react doesn't update components that use it unless we change the reference itself
-    copyDeck(deck) {
+    copyDeck(deck, clearStatus = false) {
         if(!deck) {
             return { name: 'New Deck'};
         }
@@ -90,7 +90,7 @@ class InnerDeckEditor extends React.Component {
             faction: deck.faction,
             format: deck.format,
             alliance: deck.alliance,
-            status: deck.status
+            status: clearStatus ? undefined : deck.status
         };
     }
 
@@ -108,7 +108,7 @@ class InnerDeckEditor extends React.Component {
     }
 
     onFormatChange(selectedFormat) {
-        let deck = this.copyDeck(this.state.deck);
+        let deck = this.copyDeck(this.state.deck, true);
 
         deck.format = selectedFormat;
 
@@ -117,7 +117,7 @@ class InnerDeckEditor extends React.Component {
     }
 
     onFactionChange(selectedFaction) {
-        let deck = this.copyDeck(this.state.deck);
+        let deck = this.copyDeck(this.state.deck, true);
 
         deck.faction = selectedFaction;
 
@@ -126,7 +126,7 @@ class InnerDeckEditor extends React.Component {
     }
 
     onAllianceChange(selectedAlliance) {
-        let deck = this.copyDeck(this.state.deck);
+        let deck = this.copyDeck(this.state.deck, true);
 
         if(!selectedAlliance) {
             deck.alliance = { name: '', value: '' };
@@ -156,7 +156,7 @@ class InnerDeckEditor extends React.Component {
         this.setState({ cardList: cardList });
         let deck = this.state.deck;
 
-        deck = this.copyDeck(deck);
+        deck = this.copyDeck(deck, true);
 
         this.props.updateDeck(deck);
     }
@@ -209,7 +209,7 @@ class InnerDeckEditor extends React.Component {
             }
         });
 
-        deck = this.copyDeck(deck);
+        deck = this.copyDeck(deck, true);
 
         this.setState({ cardList: event.target.value, deck: deck }); // Alliance
         this.props.updateDeck(deck);
@@ -257,8 +257,11 @@ class InnerDeckEditor extends React.Component {
     }
 
     getCardListEntry(count, card) {
+        if(!card) {
+            return '';
+        }
         let packName = '';
-        if(card.versions.length) {
+        if(card.versions && card.versions.length) {
             let packData = card.versions[0];
             this.setState({ test: packData.id });
             let pack = _.find(this.props.packs, p => p.id === packData.pack_id);
@@ -316,18 +319,28 @@ class InnerDeckEditor extends React.Component {
             if(deckAlliance) {
                 deck.alliance = this.props.factions[deckAlliance];
             } else {
-                deck.alliance = this.props.factions['crab'];
+                deck.alliance = { name: '', value: '' };
             }
 
             if(deckFormat) {
                 if(deckFormat === 'standard') {
                     deckFormat = 'stronghold';
                 }
-                deck.format = this.props.formats[deckFormat] || 'emerald';
+                deck.format = this.props.formats[deckFormat] || this.props.formats['emerald'];
             }
 
+            // Initialize card arrays
+            deck.stronghold = [];
+            deck.role = [];
+            deck.provinceCards = [];
+            deck.conflictCards = [];
+            deck.dynastyCards = [];
+
             _.each(deckList, (count, id) => {
-                cardList += this.getCardListEntry(count, this.props.cards[id]);
+                const card = this.props.cards[id];
+                if(card) {
+                    cardList += this.getCardListEntry(count, card);
+                }
             });
 
             //Duplicate onCardListChange to get this working correctly
@@ -462,18 +475,28 @@ class InnerDeckEditor extends React.Component {
             if(deckAlliance) {
                 deck.alliance = this.props.factions[deckAlliance];
             } else {
-                deck.alliance = this.props.factions['crab'];
+                deck.alliance = { name: '', value: '' };
             }
 
             if(deckFormat) {
                 if(deckFormat === 'standard') {
                     deckFormat = 'stronghold';
                 }
-                deck.format = this.props.formats[deckFormat] || 'stronghold';
+                deck.format = this.props.formats[deckFormat] || this.props.formats['stronghold'];
             }
 
+            // Initialize card arrays
+            deck.stronghold = [];
+            deck.role = [];
+            deck.provinceCards = [];
+            deck.conflictCards = [];
+            deck.dynastyCards = [];
+
             _.each(deckList, (count, id) => {
-                cardList += this.getCardListEntry(count, this.props.cards[id]);
+                const card = this.props.cards[id];
+                if(card) {
+                    cardList += this.getCardListEntry(count, card);
+                }
             });
 
             //Duplicate onCardListChange to get this working correctly

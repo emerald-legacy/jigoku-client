@@ -205,6 +205,25 @@ export default function(state = {}, action) {
             }
 
             return newState;
+        case 'UPDATE_DECK_STATUS':
+            newState = Object.assign({}, state);
+
+            // Update status in the decks array
+            if(newState.decks) {
+                newState.decks = newState.decks.map(deck => {
+                    if(deck._id === action.deckId) {
+                        return Object.assign({}, deck, { status: action.status });
+                    }
+                    return deck;
+                });
+            }
+
+            // Update status in the selected deck if it matches
+            if(newState.selectedDeck && newState.selectedDeck._id === action.deckId) {
+                newState.selectedDeck = Object.assign({}, newState.selectedDeck, { status: action.status });
+            }
+
+            return newState;
         case 'SAVE_DECK':
             newState = Object.assign({}, state, {
                 deckSaved: false
