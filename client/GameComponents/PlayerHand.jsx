@@ -95,14 +95,39 @@ class PlayerHand extends React.Component {
 
     render() {
         let className = 'panel hand';
+        let titleBarClassName = 'hand-title-bar no-highlight';
 
         if(this.props.cardSize !== 'normal') {
             className += ' ' + this.props.cardSize;
+            titleBarClassName += ' ' + this.props.cardSize;
         }
 
         let cardWidth = this.getCardWidth();
+        let maxWidth = 480;
 
-        let needsSquish = this.props.cards && this.props.cards.length * cardWidth > 480;
+        // Calculate width based on card size
+        switch(this.props.cardSize) {
+            case 'small':
+                maxWidth = cardWidth * 7.5;
+                break;
+            case 'large':
+                maxWidth = cardWidth * 7.5;
+                break;
+            case 'x-large':
+                maxWidth = cardWidth * 7.5;
+                break;
+            case 'xxl':
+                maxWidth = cardWidth * 7.5;
+                break;
+        }
+
+        let needsSquish = this.props.cards && this.props.cards.length * cardWidth > maxWidth;
+
+        // Calculate dynamic width based on number of cards
+        let handWidth = maxWidth;
+        if(this.props.cards && !needsSquish) {
+            handWidth = Math.max(cardWidth * this.props.cards.length, cardWidth);
+        }
 
         if(needsSquish) {
             className += ' squish';
@@ -110,13 +135,17 @@ class PlayerHand extends React.Component {
 
         let cards = this.getCards(needsSquish);
 
+        let handStyle = { width: handWidth + 'px' };
+        let titleBarStyle = { width: handWidth + 'px' };
+
         return (<div>
             <grip>
-                <div className={ 'hand-title-bar no-highlight ' } >
+                <div className={ titleBarClassName } style={ titleBarStyle } >
                     { 'Hand (' + cards.length + ')' }
                 </div>
             </grip>
             <div className={ className }
+                style={ handStyle }
                 onDragLeave={ this.onDragLeave }
                 onDragOver={ this.onDragOver }
                 onDrop={ event => this.onDragDrop(event, 'hand') }>
