@@ -26,8 +26,7 @@ class About extends React.Component {
                     <h3>The artwork on this site is pretty cool, where's that from?</h3>
                     <p>You're right, it is pretty nice isn't it?</p>
 
-                    <p>The background of the site is by an artist named <a href='https://speeh.deviantart.com/' target='_blank'>Speeh</a> and can be found <a href='https://speeh.deviantart.com/art/L5R-Fu-Leng-575822238' target='_blank'>here</a>.</p>
-                    <p>The in game backgrounds are by <a href='https://alayna.deviantart.com/' target='_blank'>Alayna Lemmer-Danner</a>.  She's very talented, you should check out her work!</p>
+                    <p>The background of the site as well as all our other clan specific backgrounds are made by artists of Emerald Legacy, they also appear on our cards.</p>
                     <p>The tokens used for Spirit of the River are by <a href='https://www.dojocreativedesign.com/l5r-cardgame' target='_blank'>David Robotham</a>.  He has a selection of L5R related merchandise, check it out <a href='https://www.dojocreativedesign.com/shop' target='_blank'>here</a>.</p>
                     <p>Don't want to be distracted by beautiful art during your games? In-game backgrounds can be disabled from your <Link href='/profile'>Profile</Link>.</p>
 
