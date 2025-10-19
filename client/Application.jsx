@@ -395,20 +395,62 @@ class App extends React.Component {
                 case 'LION':
                     backgroundClass = 'bg-board-lion';
                     break;
-                case 'MANTIS':
-                    backgroundClass = 'bg-board-mantis';
-                    break;
                 case 'PHOENIX':
                     backgroundClass = 'bg-board-phoenix';
                     break;
                 case 'SCORPION':
                     backgroundClass = 'bg-board-scorpion';
                     break;
-                case 'SPIDER':
-                    backgroundClass = 'bg-board-spider';
-                    break;
                 case 'UNICORN':
                     backgroundClass = 'bg-board-unicorn';
+                    break;
+                case 'CRAB2':
+                    backgroundClass = 'bg-board-crab2';
+                    break;
+                case 'CRAB3':
+                    backgroundClass = 'bg-board-crab3';
+                    break;
+                case 'CRANE2':
+                    backgroundClass = 'bg-board-crane2';
+                    break;
+                case 'CRANE3':
+                    backgroundClass = 'bg-board-crane3';
+                    break;
+                case 'CRANE4':
+                    backgroundClass = 'bg-board-crane4';
+                    break;
+                case 'DRAGON2':
+                    backgroundClass = 'bg-board-dragon2';
+                    break;
+                case 'DRAGON3':
+                    backgroundClass = 'bg-board-dragon3';
+                    break;
+                case 'LION2':
+                    backgroundClass = 'bg-board-lion2';
+                    break;
+                case 'LION3':
+                    backgroundClass = 'bg-board-lion3';
+                    break;
+                case 'PHOENIX2':
+                    backgroundClass = 'bg-board-phoenix2';
+                    break;
+                case 'PHOENIX3':
+                    backgroundClass = 'bg-board-phoenix3';
+                    break;
+                case 'SCORPION2':
+                    backgroundClass = 'bg-board-scorpion2';
+                    break;
+                case 'SCORPION3':
+                    backgroundClass = 'bg-board-scorpion3';
+                    break;
+                case 'UNICORN2':
+                    backgroundClass = 'bg-board-unicorn2';
+                    break;
+                case 'UNICORN3':
+                    backgroundClass = 'bg-board-unicorn3';
+                    break;
+                case 'OTTER':
+                    backgroundClass = 'bg-board-otter';
                     break;
                 default:
                     backgroundClass = 'bg-board-default';
