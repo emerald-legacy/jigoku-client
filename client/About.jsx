@@ -33,7 +33,7 @@ class About extends React.Component {
                     <h3>Can I help?</h3>
                     <p>Sure!  The project is all written in Javascript.  The server is node.js and the client is React.js.  The source code can be found in the&nbsp;
                         <a target='_blank' href='http://github.com/gryffon/ringteki'>GitHub Repository</a>.  Check out the code and instructions on there on how to get started and hack away!  See the card implementation
-                status list above to have a look at what needs to be done.  If you want to join the dev discord, there's a link on the <Link href='/community'>Community</Link> page.
+                status list above to have a look at what needs to be done.  If you want to join the dev Discord, there's a link on the <Link href='/community'>Community</Link> page.
                     </p>
 
                     <h3>Donations</h3>
