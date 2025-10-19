@@ -8,9 +8,25 @@
     background: @header-background;
     text-align: center;
     text-transform: uppercase;
-    width: 480px !important;
+    width: 480px;
     position: relative;
     font-weight: bold;
+
+    &.small {
+        width: @card-sm-width * 7.5;
+    }
+
+    &.large {
+        width: @card-lg-width * 7.5;
+    }
+
+    &.x-large {
+        width: @card-xl-width * 7.5;
+    }
+
+    &.xxl {
+        width: @card-xxl-width * 7.5;
+    }
 }
 
 .hand {
@@ -20,14 +36,22 @@
 
     &.small {
         height: @card-sm-height;
+        width: @card-sm-width * 7.5;
     }
 
     &.large {
         height: @card-lg-height;
+        width: @card-lg-width * 7.5;
     }
 
     &.x-large {
         height: @card-xl-height;
+        width: @card-xl-width * 7.5;
+    }
+
+    &.xxl {
+        height: @card-xxl-height;
+        width: @card-xxl-width * 7.5;
     }
 
     height: @card-height;
@@ -52,10 +76,15 @@
             min-width:@attachment-offset-sm;
             flex-basis:@card-sm-width;
         }
-        
+
         &.x-large {
             min-width:@attachment-offset-xl;
             flex-basis:@card-xl-width;
+        }
+
+        &.xxl {
+            min-width:@attachment-offset-xxl;
+            flex-basis:@card-xxl-width;
         }
         &.tail {
             overflow:hidden;

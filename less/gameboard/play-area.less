@@ -28,6 +28,11 @@
         grid-template-rows: minmax(@card-xl-height+@attachment-offset-xl*2,auto) minmax(@card-xl-height + @attachment-offset-xl + 5px,auto) minmax(2*@attachment-offset,auto);
     }
 
+    &.xxl {
+        grid-template-columns: 1fr repeat(3, (@card-xxl-width + 10px));
+        grid-template-rows: minmax(@card-xxl-height+@attachment-offset-xxl*2,auto) minmax(@card-xxl-height + @attachment-offset-xxl + 5px,auto) minmax(2*@attachment-offset,auto);
+    }
+
 
     &.our-side {
         grid-row-start:5;
@@ -45,6 +50,10 @@
         &.x-large {
             grid-template-columns: repeat(3, (@card-xl-width + 10px)) 1fr;
             grid-template-rows: minmax(2*@attachment-offset-xl,auto) minmax(@card-xl-height+@attachment-offset-xl  + 5px,auto) minmax(@card-xl-height + @attachment-offset-xl + 5px,auto);
+        }
+        &.xxl {
+            grid-template-columns: repeat(3, (@card-xxl-width + 10px)) 1fr;
+            grid-template-rows: minmax(2*@attachment-offset-xxl,auto) minmax(@card-xxl-height+@attachment-offset-xxl  + 5px,auto) minmax(@card-xxl-height + @attachment-offset-xxl + 5px,auto);
         }
     }
 }
@@ -113,6 +122,9 @@
         &.x-large {
             padding-left:@card-xl-width;
         }
+        &.xxl {
+            padding-left:@card-xxl-width;
+        }
         grid-row-start:2;
         grid-column-start:1;
         grid-column-end:3;
@@ -141,6 +153,9 @@
             }
             &.x-large {
                 padding-right:@card-xl-width;
+            }
+            &.xxl {
+                padding-right:@card-xxl-width;
             }
         }
     }
@@ -224,5 +239,10 @@
     &.x-large {
         grid-template-rows: minmax(2*@card-xl-height + 2*@attachment-offset-xl,max-content) 1fr @center-bar-height 1fr minmax(2*@card-xl-height + 2*@attachment-offset-xl,max-content);
         grid-template-columns: minmax(9*(@card-xl-width+10px), auto) 1fr minmax(@chat-width, 2fr);
+    }
+
+    &.xxl {
+        grid-template-rows: minmax(2*@card-xxl-height + 2*@attachment-offset-xxl,max-content) 1fr @center-bar-height 1fr minmax(2*@card-xxl-height + 2*@attachment-offset-xxl,max-content);
+        grid-template-columns: minmax(9*(@card-xxl-width+10px), auto) 1fr minmax(@chat-width, 2fr);
     }
 }

@@ -63,6 +63,18 @@
       width: @card-xl-height;
     }
   }
+
+  &.xxl {
+    &.vertical {
+      height: @card-xxl-height;
+      min-width: @card-xxl-width;
+    }
+
+    &.horizontal {
+      height: @card-xxl-width;
+      width: @card-xxl-height;
+    }
+  }
 }
 
 .generate-wrappers(@n, @i: 0) when (@i =< @n) {
@@ -79,6 +91,10 @@
 
     &.x-large {
       margin-left: (@attachment-offset-xl)*@i;
+    }
+
+    &.xxl {
+      margin-left: (@attachment-offset-xxl)*@i;
     }
   }
   .generate-wrappers(@n, (@i + 1));
@@ -140,6 +156,20 @@
     &.horizontal {
       height: @card-xl-width;
       width: @card-xl-height;
+
+    }
+  }
+
+  &.xxl {
+    &.vertical {
+      height: @card-xxl-height;
+      width: @card-xxl-width;
+
+    }
+
+    &.horizontal {
+      height: @card-xxl-width;
+      width: @card-xxl-height;
 
     }
   }
@@ -264,6 +294,23 @@
     }
   }
 
+  &.xxl {
+    &.vertical {
+      height: @card-xxl-height;
+      width: @card-xxl-width;
+    }
+
+    &.horizontal {
+      height: @card-xxl-width;
+      width: @card-xxl-height;
+    }
+
+    &.bowed {
+      left: 25px;
+      top: -26px;
+    }
+  }
+
   &.bowed {
     left: 9px;
     top: -10px;
@@ -352,6 +399,11 @@
 
   }
 
+  &.xxl {
+    margin-top: -(@card-xxl-height);
+
+  }
+
 }
 
 .generate-attachments(@n, @i: 1) when (@i =< @n) {
@@ -369,6 +421,10 @@
 
     &.x-large {
       margin-left: -(@attachment-offset-xl)*@i;
+    }
+
+    &.xxl {
+      margin-left: -(@attachment-offset-xxl)*@i;
     }
   }
 
@@ -390,6 +446,11 @@
     &.x-large {
       margin-left: -(@attachment-offset-xl)*@i;
       margin-top: -(@card-xl-height)-(@attachment-offset-xl);
+    }
+
+    &.xxl {
+      margin-left: -(@attachment-offset-xxl)*@i;
+      margin-top: -(@card-xxl-height)-(@attachment-offset-xxl);
     }
 
   }
@@ -569,6 +630,10 @@
   &.x-large {
     margin-top: @attachment-offset-xl - @card-xl-height;
   }
+
+  &.xxl {
+    margin-top: @attachment-offset-xxl - @card-xxl-height;
+  }
 }
 
 .generate-province-attachment(@n, @i: 1) when (@i =< @n) {
@@ -595,5 +660,9 @@
 
   &.x-large {
     margin-top: -(@card-xl-height + @card-xl-height / 2);
+  }
+
+  &.xxl {
+    margin-top: -(@card-xxl-height + @card-xxl-height / 2);
   }
 }

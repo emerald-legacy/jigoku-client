@@ -345,27 +345,78 @@ class InnerProfile extends React.Component {
                                             src='/img/bgs/crab.jpg' />
                                         <span className='bg-label'>Crab</span>
                                     </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('CRAB2') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'CRAB2' ? ' selected' : '') }
+                                            src='/img/bgs/crab2.jpg' />
+                                        <span className='bg-label'>Crab 2</span>
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('CRAB3') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'CRAB3' ? ' selected' : '') }
+                                            src='/img/bgs/crab3.jpg' />
+                                        <span className='bg-label'>Crab 3</span>
+                                    </div>
                                     <div className='col-sm-4' onClick={ () => this.onBackgroundClick('CRANE') }>
                                         <img className={ 'img-responsive' + (this.state.selectedBackground === 'CRANE' ? ' selected' : '') }
                                             src='/img/bgs/crane.jpg' />
                                         <span className='bg-label'>Crane</span>
                                     </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('CRANE2') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'CRANE2' ? ' selected' : '') }
+                                            src='/img/bgs/crane2.jpg' />
+                                        <span className='bg-label'>Crane 2</span>
+                                    </div>
                                 </div>
                                 <div className='row'>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('CRANE3') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'CRANE3' ? ' selected' : '') }
+                                            src='/img/bgs/crane3.jpg' />
+                                        <span className='bg-label'>Crane 3</span>
+                                    </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('CRANE4') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'CRANE4' ? ' selected' : '') }
+                                            src='/img/bgs/crane4.jpg' />
+                                        <span className='bg-label'>Crane 4</span>
+                                    </div>
                                     <div className='col-sm-4' onClick={ () => this.onBackgroundClick('DRAGON') }>
                                         <img className={ 'img-responsive' + (this.state.selectedBackground === 'DRAGON' ? ' selected' : '') }
                                             src='/img/bgs/dragon.jpg' />
                                         <span className='bg-label'>Dragon</span>
+                                    </div>
+                                </div>
+                                <div className='row'>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('DRAGON2') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'DRAGON2' ? ' selected' : '') }
+                                            src='/img/bgs/dragon2.jpg' />
+                                        <span className='bg-label'>Dragon 2</span>
+                                    </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('DRAGON3') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'DRAGON3' ? ' selected' : '') }
+                                            src='/img/bgs/dragon3.jpg' />
+                                        <span className='bg-label'>Dragon 3</span>
                                     </div>
                                     <div className='col-sm-4' onClick={ () => this.onBackgroundClick('LION') }>
                                         <img className={ 'img-responsive' + (this.state.selectedBackground === 'LION' ? ' selected' : '') }
                                             src='/img/bgs/lion.jpg' />
                                         <span className='bg-label'>Lion</span>
                                     </div>
-                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('MANTIS') }>
-                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'MANTIS' ? ' selected' : '') }
-                                            src='/img/bgs/mantis.jpg' />
-                                        <span className='bg-label'>Mantis</span>
+                                </div>
+                                <div className='row'>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('LION2') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'LION2' ? ' selected' : '') }
+                                            src='/img/bgs/lion2.jpg' />
+                                        <span className='bg-label'>Lion 2</span>
+                                    </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('LION3') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'LION3' ? ' selected' : '') }
+                                            src='/img/bgs/lion3.jpg' />
+                                        <span className='bg-label'>Lion 3</span>
+                                    </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('OTTER') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'OTTER' ? ' selected' : '') }
+                                            src='/img/bgs/otter.jpg' />
+                                        <span className='bg-label'>Otter</span>
                                     </div>
                                 </div>
                                 <div className='row'>
@@ -374,15 +425,32 @@ class InnerProfile extends React.Component {
                                             src='/img/bgs/phoenix.jpg' />
                                         <span className='bg-label'>Phoenix</span>
                                     </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('PHOENIX2') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'PHOENIX2' ? ' selected' : '') }
+                                            src='/img/bgs/phoenix2.jpg' />
+                                        <span className='bg-label'>Phoenix 2</span>
+                                    </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('PHOENIX3') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'PHOENIX3' ? ' selected' : '') }
+                                            src='/img/bgs/phoenix3.jpg' />
+                                        <span className='bg-label'>Phoenix 3</span>
+                                    </div>
+                                </div>
+                                <div className='row'>
                                     <div className='col-sm-4' onClick={ () => this.onBackgroundClick('SCORPION') }>
                                         <img className={ 'img-responsive' + (this.state.selectedBackground === 'SCORPION' ? ' selected' : '') }
                                             src='/img/bgs/scorpion.jpg' />
                                         <span className='bg-label'>Scorpion</span>
                                     </div>
-                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('SPIDER') }>
-                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'SPIDER' ? ' selected' : '') }
-                                            src='/img/bgs/spider.jpg' />
-                                        <span className='bg-label'>Spider</span>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('SCORPION2') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'SCORPION2' ? ' selected' : '') }
+                                            src='/img/bgs/scorpion2.jpg' />
+                                        <span className='bg-label'>Scorpion 2</span>
+                                    </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('SCORPION3') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'SCORPION3' ? ' selected' : '') }
+                                            src='/img/bgs/scorpion3.jpg' />
+                                        <span className='bg-label'>Scorpion 3</span>
                                     </div>
                                 </div>
                                 <div className='row'>
@@ -390,6 +458,16 @@ class InnerProfile extends React.Component {
                                         <img className={ 'img-responsive' + (this.state.selectedBackground === 'UNICORN' ? ' selected' : '') }
                                             src='/img/bgs/unicorn.jpg' />
                                         <span className='bg-label'>Unicorn</span>
+                                    </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('UNICORN2') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'UNICORN2' ? ' selected' : '') }
+                                            src='/img/bgs/unicorn2.jpg' />
+                                        <span className='bg-label'>Unicorn 2</span>
+                                    </div>
+                                    <div className='col-sm-4' onClick={ () => this.onBackgroundClick('UNICORN3') }>
+                                        <img className={ 'img-responsive' + (this.state.selectedBackground === 'UNICORN3' ? ' selected' : '') }
+                                            src='/img/bgs/unicorn3.jpg' />
+                                        <span className='bg-label'>Unicorn 3</span>
                                     </div>
                                 </div>
                             </div>
@@ -428,6 +506,13 @@ class InnerProfile extends React.Component {
                                                     src='img/cards/dynastycardback.png' />
                                             </div>
                                             <span className='bg-label'>Extra-Large</span>
+                                        </div>
+                                        <div className='card-settings' onClick={ () => this.onCardClick('xxl') }>
+                                            <div className={ 'card vertical xxl' + (this.state.selectedCardSize === 'xxl' ? ' selected' : '') }>
+                                                <img className='card-image xxl vertical'
+                                                    src='img/cards/dynastycardback.png' />
+                                            </div>
+                                            <span className='bg-label'>XXL</span>
                                         </div>
                                     </div>
                                 </div>

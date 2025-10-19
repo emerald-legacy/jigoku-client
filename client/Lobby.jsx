@@ -212,7 +212,7 @@ class InnerLobby extends React.Component {
                                     <h3>L5R Community Discord Server</h3>
                                 </div>
                                 <p><a href='https://discord.gg/zPvBePb' target='_blank'>Invite Link</a></p>
-                                <p>Are you interested in the L5R LCG?  Come and chat on our Discard server!</p>
+                                <p>Are you interested in the L5R LCG?  Come and chat on our Discord server!</p>
                                 <p>The server was created by members of the L5R community, and is maintained by the community, so come and talk any thing L5R related.</p>
                             </div>
                             <div className='discord-grid-cell'>
@@ -221,7 +221,7 @@ class InnerLobby extends React.Component {
                                     <h3>L5R Event Discord Server</h3>
                                 </div>
                                 <p><a href='https://discord.gg/mfpZTqxxah' target='_blank'>Invite Link</a></p>
-                                <p>This discord server is used by the community to coordinate community run events.</p>
+                                <p>This Discord server is used by the community to coordinate community run events.</p>
                                 <p>Whether you want to play in a sanctioned Emerald Legacy tournament, join the monthly Discord League, or find fellow beginners in the Beginner's League, this server has something for everyone, not just competitive players.</p>
                             </div>
                         </div>
