@@ -88,6 +88,9 @@ class InnerNewGame extends React.Component {
             clocks: clocks,
             password: this.state.password
         });
+
+        // Preload decks so they're ready when PendingGame mounts
+        this.props.loadDecks();
     }
 
     onRadioChange(gameType) {
@@ -268,6 +271,7 @@ InnerNewGame.propTypes = {
     allowMelee: PropTypes.bool,
     cancelNewGame: PropTypes.func,
     defaultGameName: PropTypes.string,
+    loadDecks: PropTypes.func,
     socket: PropTypes.object
 };
 
