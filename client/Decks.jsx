@@ -204,7 +204,7 @@ class InnerDecks extends React.Component {
                                     </label>
                                 </div>
                             )}
-                            <div className='deck-list' style={{ clear: 'both' }}>{ !this.props.decks || this.props.decks.length === 0 ? 'You have no decks, try adding one.' : deckList }</div>
+                            <div className='deck-list' style={{ top: this.props.decks && this.props.decks.length > 0 ? '95px' : '55px' }}>{ !this.props.decks || this.props.decks.length === 0 ? 'You have no decks, try adding one.' : deckList }</div>
                         </div>
                     </div>
                     { deckInfo }
