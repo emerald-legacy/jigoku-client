@@ -38,7 +38,9 @@ class InnerPendingGame extends React.Component {
     }
 
     componentDidMount() {
-        this.props.loadDecks();
+        // Load only decks for the current game format
+        const format = this.props.currentGame ? this.props.currentGame.gameMode : null;
+        this.props.loadDecks(format);
     }
 
     componentWillReceiveProps(props) {
@@ -70,9 +72,8 @@ class InnerPendingGame extends React.Component {
     }
 
     onSelectDeckClick() {
-        // Filter decks only when modal is opened
-        const filteredDecks = this.getDecks();
-        this.setState({ filteredDecks: filteredDecks });
+        // Decks are already filtered by format from the server
+        this.setState({ filteredDecks: this.props.decks || [] });
         $(findDOMNode(this.refs.modal)).modal('show');
     }
 
@@ -185,10 +186,6 @@ class InnerPendingGame extends React.Component {
             return `Clock: ${game.clocks.time} mins + ${game.clocks.periods} x ${game.clocks.timePeriod} secs (byoyomi)`;
         }
         return 'Clock: ' + game.clocks.time + ' mins (' + (game.clocks.type) + ')';
-    }
-
-    getDecks() {
-        return _.filter(this.props.decks, deck => deck.format && deck.format.value === this.props.currentGame.gameMode);
     }
 
     render() {

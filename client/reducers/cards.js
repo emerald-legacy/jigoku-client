@@ -249,10 +249,60 @@ export default function(state = {}, action) {
             newState.selectedDeck = _.first(newState.decks);
 
             return newState;
+        case 'DECKS_DELETED':
+            newState = Object.assign({}, state, {
+                deckDeleted: true
+            });
+
+            newState.decks = _.reject(newState.decks, deck => {
+                return _.contains(action.response.deckIds, deck._id);
+            });
+
+            newState.selectedDeck = _.first(newState.decks);
+
+            return newState;
         case 'CLEAR_DECK_STATUS':
             return Object.assign({}, state, {
                 deckDeleted: false,
                 deckSaved: false
+            });
+        case 'RECEIVE_DECKS_UNVALIDATED':
+            processDecks(action.decks, state);
+            newState = Object.assign({}, state, {
+                singleDeck: false,
+                decks: action.decks,
+                decksValidating: true
+            });
+
+            newState = selectDeck(newState, newState.decks[0]);
+
+            return newState;
+        case 'UPDATE_DECKS_VALIDATION':
+            newState = Object.assign({}, state);
+
+            // Update validation status for each deck in the batch
+            if(newState.decks) {
+                newState.decks = newState.decks.map(deck => {
+                    const validation = _.find(action.validations, v => v.deckId === deck._id);
+                    if(validation) {
+                        return Object.assign({}, deck, { status: validation.status });
+                    }
+                    return deck;
+                });
+            }
+
+            // Update selected deck if it was validated
+            if(newState.selectedDeck) {
+                const selectedValidation = _.find(action.validations, v => v.deckId === newState.selectedDeck._id);
+                if(selectedValidation) {
+                    newState.selectedDeck = Object.assign({}, newState.selectedDeck, { status: selectedValidation.status });
+                }
+            }
+
+            return newState;
+        case 'DECKS_VALIDATION_COMPLETE':
+            return Object.assign({}, state, {
+                decksValidating: false
             });
         default:
             return state;
