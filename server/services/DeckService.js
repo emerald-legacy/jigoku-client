@@ -13,8 +13,19 @@ class DeckService {
             });
     }
 
-    findByUserName(userName) {
-        return this.decks.find({ username: userName }, { sort: { lastUpdated: -1 } });
+    findByUserName(userName, options = {}) {
+        let query = { username: userName };
+
+        // Add format filter if provided
+        if(options.format) {
+            query['format.value'] = options.format;
+        }
+
+        return this.decks.find(query, { sort: { lastUpdated: -1 } });
+    }
+
+    countByUserName(userName) {
+        return this.decks.count({ username: userName });
     }
 
     create(deck) {

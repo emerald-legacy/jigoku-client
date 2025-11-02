@@ -34,7 +34,12 @@ module.exports.init = function(server) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        let decks = await deckService.findByUserName(req.user.username);
+        let options = {};
+        if(req.query.format) {
+            options.format = req.query.format;
+        }
+
+        let decks = await deckService.findByUserName(req.user.username, options);
         res.send({ success: true, decks: decks });
     }));
 
@@ -65,6 +70,15 @@ module.exports.init = function(server) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
+        // Check deck limit (50 decks per user)
+        const deckCount = await deckService.countByUserName(req.user.username);
+        if(deckCount >= 50) {
+            return res.status(400).send({
+                success: false,
+                message: 'You have reached the maximum limit of 50 decks. Please delete some decks before creating new ones.'
+            });
+        }
+
         let deck = Object.assign(JSON.parse(req.body.data), { username: req.user.username });
         await deckService.create(deck);
         res.send({ success: true });
@@ -89,5 +103,37 @@ module.exports.init = function(server) {
 
         await deckService.delete(id);
         res.send({ success: true, message: 'Deck deleted successfully', deckId: id });
+    }));
+
+    server.post('/api/decks/delete-batch', wrapAsync(async function(req, res) {
+        if(!req.user) {
+            return res.status(401).send({ message: 'Unauthorized' });
+        }
+
+        const deckIds = req.body.deckIds;
+        if(!deckIds || !Array.isArray(deckIds) || deckIds.length === 0) {
+            return res.status(400).send({ success: false, message: 'Invalid deck IDs' });
+        }
+
+        // Verify all decks belong to the user
+        const decks = await Promise.all(deckIds.map(id => deckService.getById(id)));
+
+        for(let deck of decks) {
+            if(!deck) {
+                return res.status(404).send({ success: false, message: 'One or more decks not found' });
+            }
+            if(deck.username !== req.user.username) {
+                return res.status(401).send({ success: false, message: 'Unauthorized' });
+            }
+        }
+
+        // Delete all decks
+        await Promise.all(deckIds.map(id => deckService.delete(id)));
+
+        res.send({
+            success: true,
+            message: `Successfully deleted ${deckIds.length} deck(s)`,
+            deckIds: deckIds
+        });
     }));
 };
