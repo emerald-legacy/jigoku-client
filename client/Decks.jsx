@@ -193,7 +193,7 @@ class InnerDecks extends React.Component {
                                 )}
                             </div>
                             { this.props.decks && this.props.decks.length > 0 && (
-                                <div className='checkbox' style={{ marginTop: '10px' }}>
+                                <div className='checkbox' style={{ marginTop: '10px', marginBottom: '10px' }}>
                                     <label>
                                         <input
                                             type='checkbox'
@@ -204,7 +204,7 @@ class InnerDecks extends React.Component {
                                     </label>
                                 </div>
                             )}
-                            <div className='deck-list'>{ !this.props.decks || this.props.decks.length === 0 ? 'You have no decks, try adding one.' : deckList }</div>
+                            <div className='deck-list' style={{ clear: 'both' }}>{ !this.props.decks || this.props.decks.length === 0 ? 'You have no decks, try adding one.' : deckList }</div>
                         </div>
                     </div>
                     { deckInfo }
