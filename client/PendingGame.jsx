@@ -38,7 +38,6 @@ class InnerPendingGame extends React.Component {
     }
 
     componentDidMount() {
-        // Load only decks for the current game format
         const format = this.props.currentGame ? this.props.currentGame.gameMode : null;
         this.props.loadDecks(format);
     }
@@ -72,7 +71,6 @@ class InnerPendingGame extends React.Component {
     }
 
     onSelectDeckClick() {
-        // Decks are already filtered by format from the server
         this.setState({ filteredDecks: this.props.decks || [] });
         $(findDOMNode(this.refs.modal)).modal('show');
     }

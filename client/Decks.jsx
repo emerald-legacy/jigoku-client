@@ -30,8 +30,6 @@ class InnerDecks extends React.Component {
     }
 
     componentWillMount() {
-        // Use lazy loading for the Decks management page to show decks immediately
-        // Validation happens progressively in the background
         this.props.loadDecksWithLazyValidation();
     }
 

@@ -16,7 +16,6 @@ class DeckService {
     findByUserName(userName, options = {}) {
         let query = { username: userName };
 
-        // Add format filter if provided
         if(options.format) {
             query['format.value'] = options.format;
         }

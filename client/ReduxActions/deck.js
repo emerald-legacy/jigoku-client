@@ -12,7 +12,6 @@ export function loadDecks(format = null) {
             const url = format ? `/api/decks?format=${format}` : '/api/decks';
             const response = await $.ajax(url, { cache: false });
 
-            // Validate all decks after loading
             if(response.decks && response.decks.length > 0) {
                 const validationPromises = response.decks.map(async (deck) => {
                     const gameMode = deck.format && deck.format.value ? deck.format.value : 'stronghold';
@@ -50,7 +49,6 @@ export function loadDeck(deckId) {
         callAPI: async () => {
             const response = await $.ajax('/api/decks/' + deckId, { cache: false });
 
-            // Validate the deck after loading
             if(response.deck) {
                 const gameMode = response.deck.format && response.deck.format.value ? response.deck.format.value : 'stronghold';
                 try {
@@ -151,7 +149,6 @@ export function clearDeckStatus() {
     };
 }
 
-// Lazy loading: Load decks first, then validate progressively in batches
 export function loadDecksWithLazyValidation() {
     return async (dispatch) => {
         dispatch({ type: 'REQUEST_DECKS' });
@@ -159,13 +156,11 @@ export function loadDecksWithLazyValidation() {
         try {
             const response = await $.ajax('/api/decks', { cache: false });
 
-            // Send decks immediately without validation
             dispatch({
                 type: 'RECEIVE_DECKS_UNVALIDATED',
                 decks: response.decks
             });
 
-            // Start validating in batches (don't await - runs in background)
             if(response.decks && response.decks.length > 0) {
                 validateDecksInBatches(response.decks, dispatch);
             }
@@ -183,7 +178,6 @@ async function validateDecksInBatches(decks, dispatch, batchSize = 10) {
     for(let i = 0; i < decks.length; i += batchSize) {
         const batch = decks.slice(i, i + batchSize);
 
-        // Validate batch concurrently
         const validationPromises = batch.map(async (deck) => {
             const gameMode = deck.format && deck.format.value ? deck.format.value : 'stronghold';
             try {
@@ -199,17 +193,14 @@ async function validateDecksInBatches(decks, dispatch, batchSize = 10) {
 
         const results = await Promise.all(validationPromises);
 
-        // Update Redux store with validated batch
         dispatch({
             type: 'UPDATE_DECKS_VALIDATION',
             validations: results
         });
 
-        // Small delay to prevent hammering EmeraldDB API
         await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    // Mark validation as complete
     dispatch({ type: 'DECKS_VALIDATION_COMPLETE' });
 }
 

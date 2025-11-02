@@ -280,7 +280,6 @@ export default function(state = {}, action) {
         case 'UPDATE_DECKS_VALIDATION':
             newState = Object.assign({}, state);
 
-            // Update validation status for each deck in the batch
             if(newState.decks) {
                 newState.decks = newState.decks.map(deck => {
                     const validation = _.find(action.validations, v => v.deckId === deck._id);
@@ -291,7 +290,6 @@ export default function(state = {}, action) {
                 });
             }
 
-            // Update selected deck if it was validated
             if(newState.selectedDeck) {
                 const selectedValidation = _.find(action.validations, v => v.deckId === newState.selectedDeck._id);
                 if(selectedValidation) {

@@ -89,7 +89,6 @@ class InnerNewGame extends React.Component {
             password: this.state.password
         });
 
-        // Preload decks for the selected format so they're ready when PendingGame mounts
         this.props.loadDecks(this.state.selectedGameMode);
     }
 

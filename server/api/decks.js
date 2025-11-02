@@ -70,7 +70,6 @@ module.exports.init = function(server) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        // Check deck limit (50 decks per user)
         const deckCount = await deckService.countByUserName(req.user.username);
         if(deckCount >= 50) {
             return res.status(400).send({
@@ -115,7 +114,6 @@ module.exports.init = function(server) {
             return res.status(400).send({ success: false, message: 'Invalid deck IDs' });
         }
 
-        // Verify all decks belong to the user
         const decks = await Promise.all(deckIds.map(id => deckService.getById(id)));
 
         for(let deck of decks) {
@@ -127,7 +125,6 @@ module.exports.init = function(server) {
             }
         }
 
-        // Delete all decks
         await Promise.all(deckIds.map(id => deckService.delete(id)));
 
         res.send({
