@@ -16,15 +16,21 @@ class InnerDecks extends React.Component {
 
         this.onDeleteClick = this.onDeleteClick.bind(this);
         this.onConfirmDeleteClick = this.onConfirmDeleteClick.bind(this);
+        this.onToggleSelectAll = this.onToggleSelectAll.bind(this);
+        this.onToggleSelectDeck = this.onToggleSelectDeck.bind(this);
+        this.onDeleteSelectedClick = this.onDeleteSelectedClick.bind(this);
+        this.onConfirmDeleteSelectedClick = this.onConfirmDeleteSelectedClick.bind(this);
 
         this.state = {
             decks: [],
-            showDelete: false
+            showDelete: false,
+            selectedDeckIds: [],
+            showDeleteSelected: false
         };
     }
 
     componentWillMount() {
-        this.props.loadDecks();
+        this.props.loadDecksWithLazyValidation();
     }
 
     onDeleteClick(event) {
@@ -47,12 +53,53 @@ class InnerDecks extends React.Component {
         this.setState({ showDelete: false });
     }
 
+    onToggleSelectAll(event) {
+        if(event.target.checked) {
+            const allDeckIds = this.props.decks.map(deck => deck._id);
+            this.setState({ selectedDeckIds: allDeckIds });
+        } else {
+            this.setState({ selectedDeckIds: [] });
+        }
+    }
+
+    onToggleSelectDeck(deckId) {
+        const selectedDeckIds = [...this.state.selectedDeckIds];
+        const index = selectedDeckIds.indexOf(deckId);
+
+        if(index === -1) {
+            selectedDeckIds.push(deckId);
+        } else {
+            selectedDeckIds.splice(index, 1);
+        }
+
+        this.setState({ selectedDeckIds });
+    }
+
+    onDeleteSelectedClick(event) {
+        event.preventDefault();
+        this.setState({ showDeleteSelected: !this.state.showDeleteSelected });
+    }
+
+    onConfirmDeleteSelectedClick(event) {
+        event.preventDefault();
+
+        if(this.state.selectedDeckIds.length > 0) {
+            this.props.deleteDecks(this.state.selectedDeckIds);
+            this.setState({ showDeleteSelected: false, selectedDeckIds: [] });
+        }
+    }
+
     render() {
         var index = 0;
         var decks = _.map(this.props.decks, deck => {
-            var row = (<DeckRow key={ deck.name + index.toString() } deck={ deck }
+            var row = (<DeckRow
+                key={ deck.name + index.toString() }
+                deck={ deck }
                 onClick={ () => this.props.selectDeck(deck) }
-                active={ this.props.selectedDeck && deck._id === this.props.selectedDeck._id } />);
+                active={ this.props.selectedDeck && deck._id === this.props.selectedDeck._id }
+                showCheckbox={ true }
+                isSelected={ this.state.selectedDeckIds.includes(deck._id) }
+                onCheckboxChange={ this.onToggleSelectDeck } />);
 
             index++;
 
@@ -103,16 +150,59 @@ class InnerDecks extends React.Component {
         } else if(this.props.apiError) {
             content = <AlertPanel type='error' message={ this.props.apiError } />;
         } else {
+            const deckCount = this.props.decks ? this.props.decks.length : 0;
+            const isAtLimit = deckCount >= 50;
+            const isNearLimit = deckCount >= 45 && deckCount < 50;
+
+            let limitWarning = null;
+            if(isAtLimit) {
+                limitWarning = (
+                    <AlertPanel type='warning' message={ `You have reached the maximum limit of 50 decks. Please delete some decks before creating new ones.` } />
+                );
+            } else if(isNearLimit) {
+                limitWarning = (
+                    <AlertPanel type='info' message={ `You have ${deckCount} out of 50 decks. Consider deleting unused decks.` } />
+                );
+            }
+
             content = (
                 <div className='full-height'>
                     { successPanel }
+                    { limitWarning }
                     <div className='col-sm-5 full-height'>
                         <div className='panel-title text-center'>
-                            Your decks
+                            Your decks ({ deckCount } / 50)
                         </div>
                         <div className='panel deck-list-container'>
-                            <Link className='btn btn-primary' href='/decks/add'>New Deck</Link>
-                            <div className='deck-list'>{ !this.props.decks || this.props.decks.length === 0 ? 'You have no decks, try adding one.' : deckList }</div>
+                            <div className='btn-group'>
+                                { isAtLimit ?
+                                    <button className='btn btn-primary' disabled title='Maximum deck limit reached'>New Deck</button> :
+                                    <Link className='btn btn-primary' href='/decks/add'>New Deck</Link>
+                                }
+                                { this.state.selectedDeckIds.length > 0 && (
+                                    <button className='btn btn-danger' onClick={ this.onDeleteSelectedClick }>
+                                        Delete Selected ({ this.state.selectedDeckIds.length })
+                                    </button>
+                                )}
+                                { this.state.showDeleteSelected && (
+                                    <button className='btn btn-danger' onClick={ this.onConfirmDeleteSelectedClick }>
+                                        Confirm Delete
+                                    </button>
+                                )}
+                            </div>
+                            { this.props.decks && this.props.decks.length > 0 && (
+                                <div className='checkbox' style={{ marginTop: '10px', marginBottom: '10px' }}>
+                                    <label>
+                                        <input
+                                            type='checkbox'
+                                            checked={ this.state.selectedDeckIds.length === this.props.decks.length }
+                                            onChange={ this.onToggleSelectAll }
+                                        />
+                                        Select All
+                                    </label>
+                                </div>
+                            )}
+                            <div className='deck-list' style={{ top: this.props.decks && this.props.decks.length > 0 ? '95px' : '55px' }}>{ !this.props.decks || this.props.decks.length === 0 ? 'You have no decks, try adding one.' : deckList }</div>
                         </div>
                     </div>
                     { deckInfo }
@@ -130,7 +220,9 @@ InnerDecks.propTypes = {
     deckDeleted: PropTypes.bool,
     decks: PropTypes.array,
     deleteDeck: PropTypes.func,
+    deleteDecks: PropTypes.func,
     loadDecks: PropTypes.func,
+    loadDecksWithLazyValidation: PropTypes.func,
     loading: PropTypes.bool,
     navigate: PropTypes.func,
     selectDeck: PropTypes.func,
