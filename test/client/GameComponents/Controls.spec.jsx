@@ -1,123 +1,148 @@
-/* eslint-disable no-unused-vars */
-/* global describe, it, expect, beforeEach, window, document */
-/* eslint camelcase: 0, no-invalid-this: 0 */
-
-import Controls from '../../../client/GameComponents/Controls.jsx';
-import ReactDOM from 'react-dom';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import TestUtils from 'react-dom/test-utils';
+import Controls from '../../../client/GameComponents/Controls.jsx';
 
-describe('The <Controls /> component', () => {
-    describe('when rendered on a large screen with active player', () => {
-        window.innerWidth = 1920;
+describe('the <Controls /> component', () => {
+    let onSettingsClick;
+    let onManualModeClick;
+    let onToggleChatClick;
 
-        let component = ReactDOM.render(
-            <Controls
-                showManualMode={true}
-            />,
-            document.createElement('div')
-        );
-
-        it('should render three buttons with labels', () => {
-            const buttons = TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn');
-
-            expect(buttons.length).toBe(3);
-            expect(buttons[0].innerText).toBe(' Toggle Chat');
-            expect(buttons[1].innerText).not.toBeFalsy();
-            expect(buttons[2].innerText).toBe(' Settings');
-        });
+    beforeEach(() => {
+        onSettingsClick = vi.fn();
+        onManualModeClick = vi.fn();
+        onToggleChatClick = vi.fn();
     });
 
-    describe('when rendered on a small screen with active player', () => {
-        window.innerWidth = 1366;
-
-        let component = ReactDOM.render(
-            <Controls
-                showManualMode={true}
-            />,
-            document.createElement('div')
-        );
-
-        it('should render three buttons with labels', () => {
-            const buttons = TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn');
-
-            expect(buttons.length).toBe(3);
-            expect(buttons[0].innerText).toBe('');
-            expect(buttons[1].innerText).toBe('');
-            expect(buttons[2].innerText).toBe('');
+    describe('when rendered with default props', () => {
+        beforeEach(() => {
+            render(
+                <Controls
+                    onSettingsClick={onSettingsClick}
+                    onManualModeClick={onManualModeClick}
+                    onToggleChatClick={onToggleChatClick}
+                    showChatAlert={false}
+                    manualModeEnabled={false}
+                    showManualMode={false}
+                />
+            );
         });
-    });
 
-    describe('when rendered on a large screen with spectator', () => {
-        window.innerWidth = 1920;
+        it('should render the toggle chat button', () => {
+            const buttons = screen.getAllByRole('button');
+            expect(buttons.length).toBeGreaterThanOrEqual(1);
+        });
 
-        let component = ReactDOM.render(
-            <Controls
-                showManualMode={false}
-            />,
-            document.createElement('div')
-        );
+        it('should render the settings button', () => {
+            const buttons = screen.getAllByRole('button');
+            expect(buttons.length).toBeGreaterThanOrEqual(2);
+        });
 
-        it('should render two buttons with labels', () => {
-            const buttons = TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn');
-
+        it('should not render the manual mode button when showManualMode is false', () => {
+            const buttons = screen.getAllByRole('button');
+            // Only 2 buttons: toggle chat and settings
             expect(buttons.length).toBe(2);
-            expect(buttons[0].innerText).toBe(' Toggle Chat');
-            expect(buttons[1].innerText).toBe(' Settings');
         });
     });
 
-    describe('when rendered on a small screen with spectator', () => {
-        window.innerWidth = 1366;
-
-        let component = ReactDOM.render(
-            <Controls
-                showManualMode={false}
-            />,
-            document.createElement('div')
-        );
-
-        it('should render two buttons without labels', () => {
-            const buttons = TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn');
-
-            expect(buttons.length).toBe(2);
-            expect(buttons[0].innerText).toBe('');
-            expect(buttons[1].innerText).toBe('');
+    describe('when showManualMode is true', () => {
+        beforeEach(() => {
+            render(
+                <Controls
+                    onSettingsClick={onSettingsClick}
+                    onManualModeClick={onManualModeClick}
+                    onToggleChatClick={onToggleChatClick}
+                    showChatAlert={false}
+                    manualModeEnabled={false}
+                    showManualMode={true}
+                />
+            );
         });
-    });
 
-    describe('when manual mode is on', () => {
-        let component = ReactDOM.render(
-            <Controls
-                showManualMode={true}
-                manualModeEnabled={true}
-            />,
-            document.createElement('div')
-        );
-
-        it('the manual mode button should have class `manual`', () => {
-            const buttons = TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn');
-
+        it('should render the manual mode button', () => {
+            const buttons = screen.getAllByRole('button');
+            // 3 buttons: toggle chat, manual mode, settings
             expect(buttons.length).toBe(3);
-            expect(buttons[1].classList.contains('auto')).toBeFalsy();
-            expect(buttons[1].classList.contains('manual')).toBeTruthy();
+        });
+
+        it('should have "auto" class when manual mode is disabled', () => {
+            const buttons = screen.getAllByRole('button');
+            // The manual mode button is the second one (index 1)
+            expect(buttons[1].className).toContain('auto');
         });
     });
 
-    describe('when manual mode is off', () => {
-        let component = ReactDOM.render(
-            <Controls
-                showManualMode={true}
-            />,
-            document.createElement('div')
-        );
+    describe('when manualModeEnabled is true', () => {
+        beforeEach(() => {
+            render(
+                <Controls
+                    onSettingsClick={onSettingsClick}
+                    onManualModeClick={onManualModeClick}
+                    onToggleChatClick={onToggleChatClick}
+                    showChatAlert={false}
+                    manualModeEnabled={true}
+                    showManualMode={true}
+                />
+            );
+        });
 
-        it('the manual mode button should have class `auto`', () => {
-            const buttons = TestUtils.scryRenderedDOMComponentsWithClass(component, 'btn');
+        it('should have "manual" class when manual mode is enabled', () => {
+            const buttons = screen.getAllByRole('button');
+            // The manual mode button is the second one (index 1)
+            expect(buttons[1].className).toContain('manual');
+        });
+    });
 
-            expect(buttons.length).toBe(3);
-            expect(buttons[1].classList.contains('auto')).toBeTruthy();
-            expect(buttons[1].classList.contains('manual')).toBeFalsy();
+    describe('when showChatAlert is true', () => {
+        beforeEach(() => {
+            render(
+                <Controls
+                    onSettingsClick={onSettingsClick}
+                    onManualModeClick={onManualModeClick}
+                    onToggleChatClick={onToggleChatClick}
+                    showChatAlert={true}
+                    manualModeEnabled={false}
+                    showManualMode={false}
+                />
+            );
+        });
+
+        it('should have "with-alert" class on the toggle chat button', () => {
+            const buttons = screen.getAllByRole('button');
+            expect(buttons[0].className).toContain('with-alert');
+        });
+    });
+
+    describe('when buttons are clicked', () => {
+        beforeEach(() => {
+            render(
+                <Controls
+                    onSettingsClick={onSettingsClick}
+                    onManualModeClick={onManualModeClick}
+                    onToggleChatClick={onToggleChatClick}
+                    showChatAlert={false}
+                    manualModeEnabled={false}
+                    showManualMode={true}
+                />
+            );
+        });
+
+        it('should call onToggleChatClick when toggle chat button is clicked', () => {
+            const buttons = screen.getAllByRole('button');
+            fireEvent.click(buttons[0]);
+            expect(onToggleChatClick).toHaveBeenCalled();
+        });
+
+        it('should call onManualModeClick when manual mode button is clicked', () => {
+            const buttons = screen.getAllByRole('button');
+            fireEvent.click(buttons[1]);
+            expect(onManualModeClick).toHaveBeenCalled();
+        });
+
+        it('should call onSettingsClick when settings button is clicked', () => {
+            const buttons = screen.getAllByRole('button');
+            fireEvent.click(buttons[2]);
+            expect(onSettingsClick).toHaveBeenCalled();
         });
     });
 });

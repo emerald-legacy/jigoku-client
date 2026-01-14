@@ -1,324 +1,306 @@
-/* global describe, it, expect, beforeEach, afterEach jasmine */
-/* eslint camelcase: 0, no-invalid-this: 0 */
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import React from 'react';
+
+// Mock jQuery and its plugins before importing the component
+vi.mock('jquery', () => {
+    const mockJQuery = vi.fn(() => ({
+        offset: vi.fn(() => ({ left: 0, top: 0 })),
+        width: vi.fn(() => 100),
+        height: vi.fn(() => 100),
+        nearest: vi.fn(() => []),
+        css: vi.fn(),
+        attr: vi.fn(() => ''),
+        addClass: vi.fn(),
+        removeClass: vi.fn()
+    }));
+    mockJQuery.fn = { jquery: '3.6.0' };
+    return { default: mockJQuery };
+});
+
+vi.mock('jquery-migrate', () => ({ default: {} }));
+vi.mock('jquery-nearest', () => ({ default: {} }));
+
+// Mock child components
+vi.mock('../../client/GameComponents/CardMenu.jsx', () => ({
+    default: ({ menu }) => menu ? <div data-testid="card-menu">Menu</div> : null
+}));
+
+vi.mock('../../client/GameComponents/CardStats.jsx', () => ({
+    default: () => <div data-testid="card-stats">Stats</div>
+}));
+
+vi.mock('../../client/GameComponents/CardCounters.jsx', () => ({
+    default: ({ counters }) => <div data-testid="card-counters">{JSON.stringify(counters)}</div>
+}));
+
+vi.mock('../../client/GameComponents/CardPile.jsx', () => ({
+    default: ({ title }) => <div data-testid="card-pile">{title}</div>
+}));
 
 import Card from '../../client/GameComponents/Card.jsx';
-import ReactDOM from 'react-dom';
-import React from 'react';
-import TestUtils from 'react-dom/test-utils';
 
-xdescribe('the <Card /> component', function() {
-    beforeEach(function() {
-        this.node = document.createElement('div');
+describe('the <Card /> component', () => {
+    let card;
+    let onMouseOver;
+    let onMouseOut;
+    let onClick;
 
-        this.card = {
-            code: '00001',
-            name: 'Test Card'
+    beforeEach(() => {
+        card = {
+            id: 'test-card-1',
+            name: 'Test Card',
+            uuid: 'abc-123',
+            type: 'character'
         };
 
-        this.spy = jasmine.createSpyObj('spy', ['onMouseOver', 'onMouseOut', 'onClick']);
-
-        this.component = ReactDOM.render(<Card card={{}} source='hand' />, this.node);
+        onMouseOver = vi.fn();
+        onMouseOut = vi.fn();
+        onClick = vi.fn();
     });
 
-    describe('when initially rendered', function() {
-        it('should show a facedown card with a card back rendered', function() {
-            var cardImage = TestUtils.findRenderedDOMComponentWithTag(this.component, 'img');
-
-            expect(cardImage.src.indexOf('/img/cards/cardback.png')).not.toBe(-1);
-        });
-    });
-
-    describe('when rendered with a card', function() {
-        beforeEach(function() {
-            this.component = ReactDOM.render(<Card card={this.card} source='hand' />, this.node);
+    describe('when initially rendered with empty card', () => {
+        beforeEach(() => {
+            render(<Card card={{}} source="hand" />);
         });
 
-        describe('that is selected', function() {
-            beforeEach(function() {
-                this.card.selected = true;
-                this.component = ReactDOM.render(<Card card={this.card} source='hand' />, this.node);
-            });
-
-            afterEach(function() {
-                this.card.selected = undefined;
-            });
-
-            describe('and also new', function() {
-                beforeEach(function() {
-                    this.card.selected = true;
-                    this.component = ReactDOM.render(<Card card={this.card} source='hand' />, this.node);
-                });
-
-                it('should flag as selected and not new', function() {
-                    var selectedClass = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'selected');
-                    expect(selectedClass.length).not.toBe(0);
-
-                    var newClass = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'new');
-                    expect(newClass.length).toBe(0);
-                });
-            });
-
-            it('should mark the card as selected', function() {
-                var selectedClass = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'selected');
-
-                expect(selectedClass.length).not.toBe(0);
-            });
-        });
-
-        describe('that is new', function() {
-            beforeEach(function() {
-                this.card.new = true;
-
-                this.component = ReactDOM.render(<Card card={this.card} source='hand' />, this.node);
-            });
-
-            afterEach(function() {
-                this.card.new = undefined;
-            });
-
-            it('should mark the card as new', function() {
-                var newClass = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'new');
-
-                expect(newClass.length).not.toBe(0);
-            });
-        });
-
-        describe('that is facedown', function() {
-            beforeEach(function() {
-                this.card.facedown = true;
-
-                this.component = ReactDOM.render(<Card card={this.card} source='hand' />, this.node);
-            });
-
-            afterEach(function() {
-                this.card.facedown = undefined;
-            });
-
-            it('should show a facedown image', function() {
-                var cardImage = TestUtils.findRenderedDOMComponentWithTag(this.component, 'img');
-
-                expect(cardImage.src.indexOf('/img/cards/00001.png')).toBe(-1);
-                expect(cardImage.src.indexOf('/img/cards/cardback.png')).not.toBe(-1);
-            });
-        });
-
-        it('should show the card image and name', function() {
-            var cardImage = TestUtils.findRenderedDOMComponentWithTag(this.component, 'img');
-            var cardLabel = TestUtils.findRenderedDOMComponentWithClass(this.component, 'card-name');
-
-            expect(cardImage.src.indexOf('/img/cards/00001.png')).not.toBe(-1);
-            expect(cardLabel.innerText).toBe(this.card.name);
-        });
-
-        describe('that is bowed', function() {
-            beforeEach(function() {
-                this.card.bowed = true;
-
-                this.component = ReactDOM.render(<Card card={this.card} source='hand' />, this.node);
-            });
-
-            afterEach(function() {
-                this.card.bowed = undefined;
-            });
-
-            it('should add the bowed styling to the card', function() {
-                var card = TestUtils.findRenderedDOMComponentWithClass(this.component, 'card');
-                var cardImage = TestUtils.findRenderedDOMComponentWithClass(this.component, 'card-image');
-                expect(card.className).toContain('horizontal');
-                expect(card.className).not.toContain('vertical');
-                expect(cardImage.className).toContain('vertical');
-                expect(cardImage.className).toContain('bowed');
-            });
+        it('should show a facedown card with a card back rendered', () => {
+            const cardImage = document.querySelector('.card-image');
+            expect(cardImage.src).toContain('/img/cards/cardback.png');
         });
     });
 
-    describe('when moused over', function() {
-        describe('and mouseover is disabled', function() {
-            beforeEach(function() {
-                this.component = ReactDOM.render(<Card card={this.card} source='hand' disableMouseOver onMouseOver={this.spy.onMouseOver} onMouseOut={this.spy.onMouseOut} />, this.node);
-                this.cardDiv = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'card')[0];
+    describe('when rendered with a card', () => {
+        beforeEach(() => {
+            render(<Card card={card} source="hand" />);
+        });
 
-                TestUtils.Simulate.mouseOver(this.cardDiv);
+        it('should show the card image', () => {
+            const cardImage = document.querySelector('.card-image');
+            expect(cardImage.src).toContain('/img/cards/test-card-1');
+        });
+
+        it('should show the card name', () => {
+            expect(screen.getByText('Test Card')).toBeInTheDocument();
+        });
+    });
+
+    describe('that is selected', () => {
+        beforeEach(() => {
+            render(<Card card={{ ...card, selected: true }} source="hand" />);
+        });
+
+        it('should mark the card as selected', () => {
+            const cardElement = document.querySelector('.card');
+            expect(cardElement.className).toContain('selected');
+        });
+    });
+
+    describe('that is selected and also new', () => {
+        beforeEach(() => {
+            render(<Card card={{ ...card, selected: true, new: true }} source="hand" />);
+        });
+
+        it('should flag as selected and not new (selected takes priority)', () => {
+            const cardElement = document.querySelector('.card');
+            expect(cardElement.className).toContain('selected');
+            expect(cardElement.className).not.toContain('new');
+        });
+    });
+
+    describe('that is new', () => {
+        beforeEach(() => {
+            render(<Card card={{ ...card, new: true }} source="hand" />);
+        });
+
+        it('should mark the card as new', () => {
+            const cardElement = document.querySelector('.card');
+            expect(cardElement.className).toContain('new');
+        });
+    });
+
+    describe('that is facedown', () => {
+        beforeEach(() => {
+            render(<Card card={{ ...card, facedown: true }} source="hand" />);
+        });
+
+        it('should show a facedown image', () => {
+            const cardImage = document.querySelector('.card-image');
+            expect(cardImage.src).not.toContain('/img/cards/test-card-1');
+            expect(cardImage.src).toContain('/img/cards/cardback.png');
+        });
+    });
+
+    describe('that is bowed', () => {
+        beforeEach(() => {
+            render(<Card card={{ ...card, bowed: true }} source="hand" />);
+        });
+
+        it('should add the bowed styling to the card', () => {
+            const cardElement = document.querySelector('.card');
+            const cardImage = document.querySelector('.card-image');
+
+            expect(cardElement.className).toContain('horizontal');
+            expect(cardElement.className).not.toContain('vertical');
+            expect(cardImage.className).toContain('vertical');
+            expect(cardImage.className).toContain('bowed');
+        });
+    });
+
+    describe('that is broken (province)', () => {
+        beforeEach(() => {
+            render(<Card card={{ ...card, isBroken: true, type: 'province' }} source="province 1" />);
+        });
+
+        it('should add the broken styling to the card image', () => {
+            const cardImage = document.querySelector('.card-image');
+            expect(cardImage.className).toContain('broken');
+        });
+    });
+
+    describe('that is selectable', () => {
+        beforeEach(() => {
+            render(<Card card={{ ...card, selectable: true }} source="hand" />);
+        });
+
+        it('should mark the card as selectable', () => {
+            const cardElement = document.querySelector('.card');
+            expect(cardElement.className).toContain('selectable');
+        });
+    });
+
+    describe('that is in danger', () => {
+        beforeEach(() => {
+            render(<Card card={{ ...card, inDanger: true }} source="hand" />);
+        });
+
+        it('should mark the card as in-danger', () => {
+            const cardElement = document.querySelector('.card');
+            expect(cardElement.className).toContain('in-danger');
+        });
+    });
+
+    describe('that is in conflict', () => {
+        beforeEach(() => {
+            render(<Card card={{ ...card, inConflict: true }} source="play area" />);
+        });
+
+        it('should mark the card as in conflict', () => {
+            const cardElement = document.querySelector('.card');
+            expect(cardElement.className).toContain('conflict');
+        });
+    });
+
+    describe('mouse over events', () => {
+        describe('when mouseover is disabled', () => {
+            beforeEach(() => {
+                render(
+                    <Card
+                        card={card}
+                        source="hand"
+                        disableMouseOver
+                        onMouseOver={onMouseOver}
+                        onMouseOut={onMouseOut}
+                    />
+                );
             });
 
-            it('should not call the mouse over handler', function() {
-                expect(this.spy.onMouseOver).not.toHaveBeenCalled();
+            it('should not call the mouse over handler', () => {
+                const cardDiv = document.querySelector('.card');
+                fireEvent.mouseOver(cardDiv);
+                expect(onMouseOver).not.toHaveBeenCalled();
             });
         });
 
-        describe('and mouseover is not disabled', function() {
-            beforeEach(function() {
-                this.component = ReactDOM.render(<Card card={this.card} source='hand' onMouseOver={this.spy.onMouseOver} onMouseOut={this.spy.onMouseOut} />, this.node);
-                this.cardDiv = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'card')[0];
-
-                TestUtils.Simulate.mouseOver(this.cardDiv);
+        describe('when mouseover is not disabled', () => {
+            beforeEach(() => {
+                render(
+                    <Card
+                        card={card}
+                        source="hand"
+                        onMouseOver={onMouseOver}
+                        onMouseOut={onMouseOut}
+                    />
+                );
             });
 
-            it('should call the mouse over handler', function() {
-                expect(this.spy.onMouseOver).toHaveBeenCalled();
+            it('should call the mouse over handler', () => {
+                const cardDiv = document.querySelector('.card');
+                fireEvent.mouseOver(cardDiv);
+                expect(onMouseOver).toHaveBeenCalledWith(card);
+            });
+
+            it('should call the mouse out handler', () => {
+                const cardDiv = document.querySelector('.card');
+                fireEvent.mouseOut(cardDiv);
+                expect(onMouseOut).toHaveBeenCalled();
             });
         });
     });
 
-    describe('when mouse out', function() {
-        describe('and mouseover is disabled', function() {
-            beforeEach(function() {
-                this.component = ReactDOM.render(<Card card={this.card} source='hand' disableMouseOver onMouseOver={this.spy.onMouseOver} onMouseOut={this.spy.onMouseOut} />, this.node);
-                this.cardDiv = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'card')[0];
-
-                TestUtils.Simulate.mouseOut(this.cardDiv);
-            });
-
-            it('should not call the mouse out handler', function() {
-                expect(this.spy.onMouseOut).not.toHaveBeenCalled();
-            });
+    describe('click events', () => {
+        beforeEach(() => {
+            render(
+                <Card
+                    card={card}
+                    source="hand"
+                    onClick={onClick}
+                />
+            );
         });
 
-        describe('and mouseover is not disabled', function() {
-            beforeEach(function() {
-                this.component = ReactDOM.render(<Card card={this.card} source='hand' onMouseOver={this.spy.onMouseOver} onMouseOut={this.spy.onMouseOut} />, this.node);
-                this.cardDiv = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'card')[0];
-
-                TestUtils.Simulate.mouseOut(this.cardDiv);
-            });
-
-            it('should call the mouse out handler', function() {
-                expect(this.spy.onMouseOut).toHaveBeenCalled();
-            });
+        it('should call onClick when card is clicked', () => {
+            const cardDiv = document.querySelector('.card');
+            fireEvent.click(cardDiv);
+            expect(onClick).toHaveBeenCalledWith(card);
         });
     });
 
-    describe('when the card is clicked', function() {
-        beforeEach(function() {
-            this.component = ReactDOM.render(<Card card={this.card} source='hand' onMouseOver={this.spy.onMouseOver} onMouseOut={this.spy.onMouseOut} onClick={this.spy.onClick} />, this.node);
-            this.cardDiv = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'card')[0];
-
-            TestUtils.Simulate.click(this.cardDiv);
+    describe('card back based on card type', () => {
+        it('should use conflict card back for conflict cards', () => {
+            render(<Card card={{ ...card, facedown: true, isConflict: true }} source="conflict deck" />);
+            const cardImage = document.querySelector('.card-image');
+            expect(cardImage.src).toContain('conflictcardback.png');
         });
 
-        it('should call the on click handler with the card source', function() {
-            expect(this.spy.onClick).toHaveBeenCalledWith(this.card);
-        });
-    });
-
-    describe('when card has power', function() {
-        beforeEach(function() {
-            this.card.power = 4;
-            this.component = ReactDOM.render(<Card card={this.card} source='play area' />, this.node);
+        it('should use dynasty card back for dynasty cards', () => {
+            render(<Card card={{ ...card, facedown: true, isDynasty: true }} source="dynasty deck" />);
+            const cardImage = document.querySelector('.card-image');
+            expect(cardImage.src).toContain('dynastycardback.png');
         });
 
-        afterEach(function() {
-            this.card.power = undefined;
-        });
-
-        it('should render the power counters', function() {
-            var counter = TestUtils.findRenderedDOMComponentWithClass(this.component, 'counter');
-
-            expect(counter.innerText).toBe('P' + this.card.power.toString());
-            expect(counter.className).toBe('counter card-power');
+        it('should use province card back for province cards', () => {
+            render(<Card card={{ ...card, facedown: true, isProvince: true }} source="province deck" />);
+            const cardImage = document.querySelector('.card-image');
+            expect(cardImage.src).toContain('provincecardback.png');
         });
     });
 
-    describe('when a card has strength matching its base strength', function() {
-        beforeEach(function() {
-            this.card.strength = 1;
-            this.card.baseStrength = 1;
-
-            this.component = ReactDOM.render(<Card card={this.card} source='hand' />, this.node);
+    describe('card size classes', () => {
+        it('should add large class when size is large', () => {
+            render(<Card card={card} source="hand" size="large" />);
+            const cardElement = document.querySelector('.card');
+            expect(cardElement.className).toContain('large');
         });
 
-        it('should render no counters', function() {
-            var counter = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'counter');
-
-            expect(counter.length).toBe(0);
-        });
-    });
-
-    describe('when a card has strength that does not match its base strength', function() {
-        beforeEach(function() {
-            this.card.strength = 1;
-            this.card.baseStrength = 2;
-
-            this.component = ReactDOM.render(<Card card={this.card} source='play area' />, this.node);
+        it('should add small class when size is small', () => {
+            render(<Card card={card} source="hand" size="small" />);
+            const cardElement = document.querySelector('.card');
+            expect(cardElement.className).toContain('small');
         });
 
-        afterEach(function() {
-            this.card.strength = undefined;
-            this.card.baseStrength = undefined;
-        });
-
-        it('should render a counter for its current strength', function() {
-            var counter = TestUtils.findRenderedDOMComponentWithClass(this.component, 'counter');
-
-            expect(counter.innerText).toBe('S' + this.card.strength.toString());
-            expect(counter.className).toBe('counter strength');
+        it('should add x-large class when size is x-large', () => {
+            render(<Card card={card} source="hand" size="x-large" />);
+            const cardElement = document.querySelector('.card');
+            expect(cardElement.className).toContain('x-large');
         });
     });
 
-    describe('when a card has dupes', function() {
-        beforeEach(function() {
-            this.card.dupes = [{}, {}];
-
-            this.component = ReactDOM.render(<Card card={this.card} source='play area' />, this.node);
-        });
-
-        afterEach(function() {
-            this.card.dupes = undefined;
-        });
-
-        it('should render a counter for the dupes', function() {
-            var counter = TestUtils.findRenderedDOMComponentWithClass(this.component, 'counter');
-
-            expect(counter.innerText).toBe('D2');
-            expect(counter.className).toBe('counter dupe');
-        });
-    });
-
-    describe('when a card has other tokens', function() {
-        beforeEach(function() {
-            this.card.tokens = { 'poison': 1 };
-
-            this.component = ReactDOM.render(<Card card={this.card} source='play area' />, this.node);
-        });
-
-        afterEach(function() {
-            this.card.tokens = undefined;
-        });
-
-        it('should render the tokens', function() {
-            var counter = TestUtils.findRenderedDOMComponentWithClass(this.component, 'counter');
-
-            expect(counter.innerText).toBe('O1');
-            expect(counter.className).toBe('counter poison');
-        });
-    });
-
-    describe('when a card has multiple counters', function() {
-        beforeEach(function() {
-            this.card.tokens = { 'poison': 1 };
-            this.card.power = 3;
-            this.card.dupes = [{}, {}];
-
-            this.component = ReactDOM.render(<Card card={this.card} source='play area' />, this.node);
-        });
-
-        afterEach(function() {
-            this.card.tokens = undefined;
-            this.card.power = undefined;
-            this.card.dupes = undefined;
-        });
-
-        it('should render all of the counters', function() {
-            var counters = TestUtils.scryRenderedDOMComponentsWithClass(this.component, 'counter');
-
-            expect(counters.length).toBe(3);
-
-            expect(counters[0].innerText).toBe('P' + this.card.power.toString());
-            expect(counters[0].className).toBe('counter card-power');
-            expect(counters[1].innerText).toBe('D' + this.card.dupes.length.toString());
-            expect(counters[1].className).toBe('counter dupe');
-            expect(counters[2].innerText).toBe('O' + this.card.tokens.poison.toString());
-            expect(counters[2].className).toBe('counter poison');
+    describe('card with packId', () => {
+        it('should include packId in the image path', () => {
+            render(<Card card={{ ...card, packId: 'core' }} source="hand" />);
+            const cardImage = document.querySelector('.card-image');
+            expect(cardImage.src).toContain('/img/cards/test-card-1-core.jpg');
         });
     });
 });
