@@ -14,7 +14,8 @@ export class InnerAddDeck extends React.Component {
 
         this.state = {
             error: '',
-            faction: {}
+            faction: {},
+            ready: false // Don't render DeckEditor until addDeck has been called
         };
 
         this.onAddDeck = this.onAddDeck.bind(this);
@@ -22,6 +23,8 @@ export class InnerAddDeck extends React.Component {
 
     componentDidMount() {
         this.props.addDeck();
+        // Now allow DeckEditor to render - it will see the fresh empty deck from Redux
+        this.setState({ ready: true });
     }
 
     componentDidUpdate(prevProps) {
@@ -37,7 +40,7 @@ export class InnerAddDeck extends React.Component {
     render() {
         let content;
 
-        if(this.props.loading) {
+        if(this.props.loading || !this.state.ready) {
             content = <div>Loading decks from the server...</div>;
         } else if(this.props.apiError) {
             content = <AlertPanel type='error' message={ this.props.apiError } />;
