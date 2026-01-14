@@ -369,6 +369,16 @@ class Card extends React.Component {
         return this.props.card.facedown || !this.props.card.id;
     }
 
+    getCardImagePath() {
+        const card = this.props.card;
+        // All images are stored as {id}-{packId}.jpg
+        if(card.packId) {
+            return '/img/cards/' + card.id + '-' + card.packId + '.jpg';
+        }
+        // Fallback for legacy cards without packId - should not happen in normal use
+        return '/img/cards/' + card.id + '.jpg';
+    }
+
     isInPopup() {
         if(this.props.isInPopup) {
             return true;
@@ -470,7 +480,7 @@ class Card extends React.Component {
                     draggable>
                     <div>
                         <span className='card-name'>{ this.props.card.name }</span>
-                        <img className={ imageClass } src={ '/img/cards/' + (!this.isFacedown() && !this.props.card.isToken ? (this.props.card.id + '.jpg') : cardBack) } />
+                        <img className={ imageClass } src={ !this.isFacedown() && !this.props.card.isToken ? this.getCardImagePath() : ('/img/cards/' + cardBack) } />
                     </div>
                     <CardCounters counters={ this.getCountersForCard(this.props.card) } />
                 </div>

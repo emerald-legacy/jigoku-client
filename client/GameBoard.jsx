@@ -199,6 +199,16 @@ export class InnerGameBoard extends React.Component {
         this.props.clearZoom();
     }
 
+    getCardImageUrl(card) {
+        if(!card || !card.id) {
+            return '';
+        }
+        if(card.packId) {
+            return '/img/cards/' + card.id + '-' + card.packId + '.jpg';
+        }
+        return '/img/cards/' + card.id + '.jpg';
+    }
+
     onCardClick(card) {
         if(card && card.uuid) {
             this.props.sendGameMessage('cardClicked', card.uuid);
@@ -802,7 +812,7 @@ export class InnerGameBoard extends React.Component {
                         </div>
                     </div>
                     <div className='right-side'>
-                        <CardZoom imageUrl={ this.props.cardToZoom ? '/img/cards/' + this.props.cardToZoom.id + '.jpg' : '' }
+                        <CardZoom imageUrl={ this.props.cardToZoom ? this.getCardImageUrl(this.props.cardToZoom) : '' }
                             orientation={ this.props.cardToZoom ? this.props.cardToZoom.type === 'plot' ? 'horizontal' : 'vertical' : 'vertical' }
                             show={ !!this.props.cardToZoom } cardName={ this.props.cardToZoom ? this.props.cardToZoom.name : null } />
                         <Chat

@@ -15,6 +15,16 @@ class AbilityTargeting extends React.Component {
         }
     }
 
+    getCardImagePath(card) {
+        if(!card.id) {
+            return '/img/cards/' + (card.isDynasty ? 'dynasty' : card.isConflict ? 'conflict' : 'province') + 'cardback.jpg';
+        }
+        if(card.packId) {
+            return '/img/cards/' + card.id + '-' + card.packId + '.jpg';
+        }
+        return '/img/cards/' + card.id + '.jpg';
+    }
+
     renderSimpleCard(card) {
         return (
             <div className='target-card vertical'
@@ -22,7 +32,7 @@ class AbilityTargeting extends React.Component {
                 onMouseOver={ event => this.onMouseOver(event, card) }>
                 <img className='target-card-image vertical'
                     alt={ card.name }
-                    src={ '/img/cards/' + (card.id ? card.id : (card.isDynasty ? 'dynasty' : card.isConflict ? 'conflict' : 'province') + 'cardback') + '.jpg' } />
+                    src={ this.getCardImagePath(card) } />
             </div>);
     }
 

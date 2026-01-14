@@ -151,15 +151,8 @@ const fetchCards = apiRequest('cards')
 
                 const imageSrc = version.image_url;
 
-                // Naming scheme:
-                // - First version: {card.id}.jpg
-                // - Additional versions: {card.id}-{pack_id}.jpg
-                let filename;
-                if (versionIndex === 0) {
-                    filename = card.id + '.jpg';
-                } else {
-                    filename = card.id + '-' + version.pack_id + '.jpg';
-                }
+                // Naming scheme: always {card.id}-{pack_id}.jpg
+                const filename = card.id + '-' + version.pack_id + '.jpg';
 
                 const imagePath = path.join(imageDir, filename);
 

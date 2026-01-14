@@ -32,13 +32,13 @@ class DeckSummary extends React.Component {
         if(!card) {
             return '';
         }
-        // If pack_id matches a non-first version, use card-pack_id.jpg
-        // Otherwise use card.jpg (the default/first version)
-        if(packId && card.versions && card.versions.length > 1) {
-            const firstVersionPackId = card.versions[0].pack_id;
-            if(packId !== firstVersionPackId) {
-                return '/img/cards/' + card.id + '-' + packId + '.jpg';
-            }
+        // All images are stored as {id}-{packId}.jpg
+        if(packId) {
+            return '/img/cards/' + card.id + '-' + packId + '.jpg';
+        }
+        // Fallback: use first version's pack_id if available
+        if(card.versions && card.versions.length > 0) {
+            return '/img/cards/' + card.id + '-' + card.versions[0].pack_id + '.jpg';
         }
         return '/img/cards/' + card.id + '.jpg';
     }
