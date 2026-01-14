@@ -41,23 +41,23 @@ function processDecks(decks, state) {
         }
 
         deck.stronghold = _.map(deck.stronghold, card => {
-            return { count: card.count, card: state.cards[card.card.id] };
+            return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
         });
 
         deck.role = _.map(deck.role, card => {
-            return { count: card.count, card: state.cards[card.card.id] };
+            return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
         });
 
         deck.provinceCards = _.map(deck.provinceCards, card => {
-            return { count: card.count, card: state.cards[card.card.id] };
+            return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
         });
 
         deck.conflictCards = _.map(deck.conflictCards, card => {
-            return { count: card.count, card: state.cards[card.card.id] };
+            return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
         });
 
         deck.dynastyCards = _.map(deck.dynastyCards, card => {
-            return { count: card.count, card: state.cards[card.card.id] };
+            return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
         });
     });
 }

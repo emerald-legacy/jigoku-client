@@ -206,6 +206,6 @@ async function validateDecksInBatches(decks, dispatch, batchSize = 10) {
 
 function formatCards(cards) {
     return _.map(cards, card => {
-        return { card: { id: card.card.id }, count: card.count };
+        return { card: { id: card.card.id }, count: card.count, pack_id: card.pack_id };
     });
 }

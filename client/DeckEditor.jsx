@@ -287,10 +287,6 @@ class InnerDeckEditor extends React.Component {
     importDeck() {
         $(findDOMNode(this.refs.modal)).modal('hide');
         let importUrl = document.getElementById('importUrl').value;
-        if(importUrl.includes('fiveringsdb.com')) {
-            this.importDeck5rdb();
-            return;
-        }
 
         let emeraldUrl = importUrl.replace('/decks', '/api/decklists');
         let deckResponse = {};
@@ -305,283 +301,60 @@ class InnerDeckEditor extends React.Component {
             }
         });
 
-        let deckClan = '';
-        let deckAlliance = '';
-        let deckName = '';
-        let deckList = '';
+        if(!deckResponse) {
+            return;
+        }
+
+        let deck = this.copyDeck(this.state.deck);
+
+        deck.name = deckResponse.name || 'Imported Deck';
+        deck.faction = this.props.factions[deckResponse.primary_clan] || this.props.factions['crab'];
+        deck.alliance = deckResponse.secondary_clan
+            ? this.props.factions[deckResponse.secondary_clan]
+            : { name: '', value: '' };
+
+        let deckFormat = deckResponse.format;
+        if(deckFormat === 'standard') {
+            deckFormat = 'stronghold';
+        }
+        deck.format = this.props.formats[deckFormat] || this.props.formats['emerald'];
+
+        // Initialize card arrays
+        deck.stronghold = [];
+        deck.role = [];
+        deck.provinceCards = [];
+        deck.conflictCards = [];
+        deck.dynastyCards = [];
+
+        // Build card list and add cards to deck
         let cardList = '';
-        let deckFormat = '';
+        _.each(deckResponse.cards, (count, id) => {
+            const card = this.props.cards[id];
+            if(card) {
+                // Get default pack_id from first version
+                let packId = card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined;
+                cardList += this.getCardListEntry(count, card, packId);
 
-        if(deckResponse) {
-            deckClan = deckResponse.primary_clan;
-            deckAlliance = deckResponse.secondary_clan;
-            deckName = deckResponse.name;
-            deckList = deckResponse.cards;
-            deckFormat = deckResponse.format;
-
-            let deck = this.copyDeck(this.state.deck);
-
-            deck.name = deckName;
-            if(deckClan) {
-                deck.faction = this.props.factions[deckClan];
-            } else {
-                deck.faction = this.props.factions['crab'];
-            }
-
-            if(deckAlliance) {
-                deck.alliance = this.props.factions[deckAlliance];
-            } else {
-                deck.alliance = { name: '', value: '' };
-            }
-
-            if(deckFormat) {
-                if(deckFormat === 'standard') {
-                    deckFormat = 'stronghold';
-                }
-                deck.format = this.props.formats[deckFormat] || this.props.formats['emerald'];
-            }
-
-            // Initialize card arrays
-            deck.stronghold = [];
-            deck.role = [];
-            deck.provinceCards = [];
-            deck.conflictCards = [];
-            deck.dynastyCards = [];
-
-            _.each(deckList, (count, id) => {
-                const card = this.props.cards[id];
-                if(card) {
-                    cardList += this.getCardListEntry(count, card);
-                }
-            });
-
-            //Duplicate onCardListChange to get this working correctly
-            let split = cardList.split('\n');
-            _.each(split, line => {
-                line = line.trim();
-                let index = 2;
-
-                if(!$.isNumeric(line[0])) {
-                    return;
+                // Add to appropriate deck list
+                let list;
+                if(card.type === 'province') {
+                    list = deck.provinceCards;
+                } else if(card.side === 'dynasty') {
+                    list = deck.dynastyCards;
+                } else if(card.side === 'conflict') {
+                    list = deck.conflictCards;
+                } else if(card.type === 'stronghold') {
+                    list = deck.stronghold;
+                } else {
+                    list = deck.role;
                 }
 
-                let num = parseInt(line[0]);
-                if(line[1] === 'x') {
-                    index++;
-                }
-
-                let packOffset = line.indexOf('(');
-                let cardName = line.substr(index, packOffset === -1 ? line.length : packOffset - index - 1);
-                let packName = packOffset > -1 ? line.substr(packOffset + 1, line.length - packOffset - 2) : '';
-
-                let pack = _.find(this.props.packs, function(pack) {
-                    return pack.id.toLowerCase() === packName.toLowerCase() || pack.name.toLowerCase() === packName.toLowerCase();
-                });
-
-                let card = _.find(this.props.cards, function(card) {
-                    if(pack && card.versions.length) {
-                        return card.name.toLowerCase() === cardName.toLowerCase() && _.any(card.versions, data => data.pack_id === pack.id);
-                    }
-                    return card.name.toLowerCase() === cardName.toLowerCase();
-                });
-
-                if(card) {
-                    //Duplicate addCard as well
-                    let provinces = deck.provinceCards;
-                    let stronghold = deck.stronghold;
-                    let role = deck.role;
-                    let conflict = deck.conflictCards;
-                    let dynasty = deck.dynastyCards;
-                    // Use specified pack or default to first version's pack
-                    let packId = pack ? pack.id : (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
-
-                    let list;
-
-                    if(card.type === 'province') {
-                        list = provinces;
-                    } else if(card.side === 'dynasty') {
-                        list = dynasty;
-                    } else if(card.side === 'conflict') {
-                        list = conflict;
-                    } else if(card.type === 'stronghold') {
-                        list = stronghold;
-                    } else {
-                        list = role;
-                    }
-
-                    let existingEntry = _.find(list, entry => entry.card.id === card.id && entry.pack_id === packId);
-                    if(existingEntry) {
-                        existingEntry.count += num;
-                    } else {
-                        list.push({ count: num, card: card, pack_id: packId });
-                    }
-                }
-            });
-
-
-            this.setState({cardList: cardList, deck: deck, showAlliance: deck.alliance });
-            this.props.updateDeck(deck);
-
-        }
-    }
-
-    importDeck5rdb() {
-        $(findDOMNode(this.refs.modal)).modal('hide');
-
-        let importUrl = document.getElementById('importUrl').value;
-
-        let apiUrl = 'https://api.fiveringsdb.com/';
-        let strainPath = 'strains';
-        let deckPath = 'decks';
-        let deckResponse = {};
-
-        let importId = String(importUrl).split('/')[4];
-        let selector = String(importUrl).split('/')[3];
-
-        let path = '';
-        if(selector === 'decks') {
-            path = deckPath;
-        } else if(selector === 'strains') {
-            path = strainPath;
-        }
-
-        $.ajax({
-            type: 'GET',
-            url: apiUrl + path + '/' + importId,
-            dataType: 'json',
-            async: false,
-            success: function(data) {
-                deckResponse = data;
+                list.push({ count: count, card: card, pack_id: packId });
             }
         });
 
-        let deckClan = '';
-        let deckAlliance = '';
-        let deckName = '';
-        let deckList = '';
-        let cardList = '';
-        let deckFormat = '';
-
-        if(deckResponse.success) {
-            let deckRecord = deckResponse.record;
-            if(selector === 'decks') {
-                deckClan = deckRecord.primary_clan;
-                deckAlliance = deckRecord.secondary_clan;
-                deckName = deckRecord.name;
-                deckList = deckRecord.cards;
-                deckFormat = deckRecord.format;
-            } else if(selector === 'strains') {
-                deckClan = deckRecord.head.primary_clan;
-                deckAlliance = deckRecord.head.secondary_clan;
-                deckName = deckRecord.head.name;
-                deckList = deckRecord.head.cards;
-                deckFormat = deckRecord.head.format;
-            }
-
-            let deck = this.copyDeck(this.state.deck);
-
-            deck.name = deckName;
-            if(deckClan) {
-                deck.faction = this.props.factions[deckClan];
-            } else {
-                deck.faction = this.props.factions['crab'];
-            }
-
-            if(deckAlliance) {
-                deck.alliance = this.props.factions[deckAlliance];
-            } else {
-                deck.alliance = { name: '', value: '' };
-            }
-
-            if(deckFormat) {
-                if(deckFormat === 'standard') {
-                    deckFormat = 'stronghold';
-                }
-                deck.format = this.props.formats[deckFormat] || this.props.formats['stronghold'];
-            }
-
-            // Initialize card arrays
-            deck.stronghold = [];
-            deck.role = [];
-            deck.provinceCards = [];
-            deck.conflictCards = [];
-            deck.dynastyCards = [];
-
-            _.each(deckList, (count, id) => {
-                const card = this.props.cards[id];
-                if(card) {
-                    cardList += this.getCardListEntry(count, card);
-                }
-            });
-
-            //Duplicate onCardListChange to get this working correctly
-            let split = cardList.split('\n');
-            _.each(split, line => {
-                line = line.trim();
-                let index = 2;
-
-                if(!$.isNumeric(line[0])) {
-                    return;
-                }
-
-                let num = parseInt(line[0]);
-                if(line[1] === 'x') {
-                    index++;
-                }
-
-                let packOffset = line.indexOf('(');
-                let cardName = line.substr(index, packOffset === -1 ? line.length : packOffset - index - 1);
-                let packName = packOffset > -1 ? line.substr(packOffset + 1, line.length - packOffset - 2) : '';
-
-                let pack = _.find(this.props.packs, function(pack) {
-                    return pack.id.toLowerCase() === packName.toLowerCase() || pack.name.toLowerCase() === packName.toLowerCase();
-                });
-
-                let card = _.find(this.props.cards, function(card) {
-                    if(pack && card.versions.length) {
-                        return card.name.toLowerCase() === cardName.toLowerCase() && _.any(card.versions, data => data.pack_id === pack.id);
-                    }
-                    return card.name.toLowerCase() === cardName.toLowerCase();
-                });
-
-                if(card) {
-                    //Duplicate addCard as well
-                    let provinces = deck.provinceCards;
-                    let stronghold = deck.stronghold;
-                    let role = deck.role;
-                    let conflict = deck.conflictCards;
-                    let dynasty = deck.dynastyCards;
-                    // Use specified pack or default to first version's pack
-                    let packId = pack ? pack.id : (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
-
-                    let list;
-
-                    if(card.type === 'province') {
-                        list = provinces;
-                    } else if(card.side === 'dynasty') {
-                        list = dynasty;
-                    } else if(card.side === 'conflict') {
-                        list = conflict;
-                    } else if(card.type === 'stronghold') {
-                        list = stronghold;
-                    } else {
-                        list = role;
-                    }
-
-                    let existingEntry = _.find(list, entry => entry.card.id === card.id && entry.pack_id === packId);
-                    if(existingEntry) {
-                        existingEntry.count += num;
-                    } else {
-                        list.push({ count: num, card: card, pack_id: packId });
-                    }
-                }
-            });
-
-
-            this.setState({cardList: cardList, deck: deck, showAlliance: deck.alliance });
-            this.props.updateDeck(deck);
-
-        }
+        this.setState({ cardList: cardList, deck: deck, showAlliance: deck.alliance });
+        this.props.updateDeck(deck);
     }
 
     render() {

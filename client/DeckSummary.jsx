@@ -16,16 +16,31 @@ class DeckSummary extends React.Component {
         };
     }
 
-    onCardMouseOver(event, id) {
+    onCardMouseOver(event, id, packId) {
         var cardToDisplay = _.filter(this.props.cards, card => {
             return id === card.id;
         });
 
-        this.setState({ cardToShow: cardToDisplay[0] });
+        this.setState({ cardToShow: cardToDisplay[0], packIdToShow: packId });
     }
 
     onCardMouseOut() {
-        this.setState({ cardToShow: undefined });
+        this.setState({ cardToShow: undefined, packIdToShow: undefined });
+    }
+
+    getCardImagePath(card, packId) {
+        if(!card) {
+            return '';
+        }
+        // If pack_id matches a non-first version, use card-pack_id.jpg
+        // Otherwise use card.jpg (the default/first version)
+        if(packId && card.versions && card.versions.length > 1) {
+            const firstVersionPackId = card.versions[0].pack_id;
+            if(packId !== firstVersionPackId) {
+                return '/img/cards/' + card.id + '-' + packId + '.jpg';
+            }
+        }
+        return '/img/cards/' + card.id + '.jpg';
     }
 
     getCardsToRender() {
@@ -52,7 +67,8 @@ class DeckSummary extends React.Component {
             let count = 0;
 
             _.each(cardList, card => {
-                cards.push(<div key={ card.card.id }><span>{ card.count + 'x ' }</span><span className='card-link' onMouseOver={ event => this.onCardMouseOver(event, card.card.id) } onMouseOut={ this.onCardMouseOut }>{ card.card.name }</span></div>);
+                const cardKey = card.pack_id ? card.card.id + '-' + card.pack_id : card.card.id;
+                cards.push(<div key={ cardKey }><span>{ card.count + 'x ' }</span><span className='card-link' onMouseOver={ event => this.onCardMouseOver(event, card.card.id, card.pack_id) } onMouseOut={ this.onCardMouseOut }>{ card.card.name }</span></div>);
                 count += parseInt(card.count);
             });
 
@@ -88,7 +104,7 @@ class DeckSummary extends React.Component {
 
         return (
             <div className='deck-summary col-xs-12'>
-                { this.state.cardToShow ? <img className='hover-image' src={ '/img/cards/' + this.state.cardToShow.id + '.jpg' } /> : null }
+                { this.state.cardToShow ? <img className='hover-image' src={ this.getCardImagePath(this.state.cardToShow, this.state.packIdToShow) } /> : null }
                 <div className='decklist'>
                     <div className='col-xs-2 col-sm-3 no-x-padding'>{ this.props.deck.faction ? <img className='deck-mon img-responsive' src={ '/img/mons/' + this.props.deck.faction.value + '.png' } /> : null }</div>
                     <div className='col-xs-8 col-sm-6'>
