@@ -13,7 +13,6 @@ const api = require('./api');
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const http = require('http');
-const Raven = require('raven');
 const helmet = require('helmet');
 const { rateLimit } = require('express-rate-limit');
 const webpackDevMiddleware = require('webpack-dev-middleware');
@@ -24,7 +23,6 @@ const monk = require('monk');
 const _ = require('underscore');
 
 const UserService = require('./services/UserService.js');
-const version = require('../version.js');
 const Settings = require('./settings.js');
 
 // Rate limiting configuration
@@ -54,13 +52,6 @@ class Server {
     }
 
     init() {
-        if(!this.isDeveloping) {
-            Raven.config(config.sentryDsn, { release: version }).install();
-
-            app.use(Raven.requestHandler());
-            app.use(Raven.errorHandler());
-        }
-
         // Security headers with Helmet v7
         app.use(
             // @ts-ignore - helmet v7 types
@@ -134,18 +125,7 @@ class Server {
         if(this.isDeveloping) {
             const compiler = webpack(webpackConfig);
             const middleware = webpackDevMiddleware(compiler, {
-                hot: true,
-                contentBase: 'client',
-                publicPath: webpackConfig.output.publicPath,
-                stats: {
-                    colors: true,
-                    hash: false,
-                    timings: true,
-                    chunks: false,
-                    chunkModules: false,
-                    modules: false
-                },
-                historyApiFallback: true
+                publicPath: webpackConfig.output.publicPath
             });
 
             app.use(middleware);

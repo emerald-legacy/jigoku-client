@@ -130,5 +130,11 @@
       2
     ]
   },
-  "parser": "babel-eslint"
+  "parser": "@babel/eslint-parser",
+  "parserOptions": {
+    "requireConfigFile": true,
+    "babelOptions": {
+      "configFile": "./babel.config.json"
+    }
+  }
 }

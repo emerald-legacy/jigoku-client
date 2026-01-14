@@ -73,7 +73,8 @@ class DeckValidator {
         };
 
         const json = JSON.stringify(body);
-        const key = Buffer.from(json).toString('base64');
+        // Use btoa for browser compatibility (Buffer is Node.js only)
+        const key = btoa(unescape(encodeURIComponent(json)));
         const cachedValue = this.cache.getCache(key);
 
         if (cachedValue) {

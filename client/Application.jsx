@@ -4,7 +4,7 @@ import $ from 'jquery';
 import _ from 'underscore';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 import Login from './Login.jsx';
 import Logout from './Logout.jsx';
@@ -75,16 +75,18 @@ class App extends React.Component {
             }
         });
 
-        let queryString = this.props.token ? 'token=' + this.props.token + '&' : '';
-        queryString += 'version=' + version;
-
-        let socket = io.connect(window.location.origin, {
+        let socket = io(window.location.origin, {
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
             reconnectionAttempts: Infinity,
-            query: queryString
+            auth: {
+                token: this.props.token,
+                version: version
+            }
         });
+
+        this.lobbySocket = socket;
 
         socket.on('connect', () => {
             this.props.socketConnected(socket);
@@ -145,13 +147,15 @@ class App extends React.Component {
 
             this.props.gameSocketConnecting(url + '/' + server.name);
 
-            let gameSocket = io.connect(url, {
+            let gameSocket = io(url, {
                 path: '/' + server.name + '/socket.io',
                 reconnection: true,
                 reconnectionDelay: 1000,
                 reconnectionDelayMax: 5000,
                 reconnectionAttempts: 5,
-                query: this.props.token ? 'token=' + this.props.token : undefined
+                auth: {
+                    token: this.props.token
+                }
             });
 
             gameSocket.on('connect_error', (err) => {
@@ -166,7 +170,7 @@ class App extends React.Component {
                 this.props.gameSocketDisconnect();
             });
 
-            gameSocket.on('reconnecting', (attemptNumber) => {
+            gameSocket.io.on('reconnect_attempt', (attemptNumber) => {
                 toastr.info('Reconnecting', 'Attempt number ' + attemptNumber + ' to reconnect..');
 
                 this.props.gameSocketReconnecting(attemptNumber);
@@ -204,6 +208,13 @@ class App extends React.Component {
         this.props.receiveLobbyMessage({});
         if(!this.props.currentGame) {
             this.props.setContextMenu([]);
+        }
+    }
+
+    componentWillUnmount() {
+        if(this.lobbySocket) {
+            this.lobbySocket.removeAllListeners();
+            this.lobbySocket.disconnect();
         }
     }
 

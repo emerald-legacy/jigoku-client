@@ -7,7 +7,6 @@ import { navigate, login } from './actions';
 import DevTools from './DevTools';
 import 'bootstrap/dist/js/bootstrap';
 import ReduxToastr from 'react-redux-toastr';
-import { AppContainer } from 'react-hot-loader';
 
 const store = configureStore();
 
@@ -23,7 +22,7 @@ if(typeof user !== 'undefined') {
 
 const render = () => {
     const Application = require('./Application.jsx').default;
-    ReactDOM.render(<AppContainer>
+    ReactDOM.render(
         <Provider store={ store }>
             <div className='body'>
                 <ReduxToastr
@@ -36,8 +35,7 @@ const render = () => {
                 <Application />
                 <DevTools />
             </div>
-        </Provider>
-    </AppContainer>, document.getElementById('component'));
+        </Provider>, document.getElementById('component'));
 };
 
 if(module.hot) {

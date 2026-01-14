@@ -1,7 +1,6 @@
 const logger = require('./log.js');
 const EventEmitter = require('events');
 const jwt = require('jsonwebtoken');
-const Raven = require('raven');
 
 class Socket extends EventEmitter {
     constructor(socket, options = {}) {
@@ -50,8 +49,7 @@ class Socket extends EventEmitter {
         try {
             callback(this, ...args);
         } catch(err) {
-            logger.info(err);
-            Raven.captureException(err, { extra: args });
+            logger.error('Socket event error:', err);
         }
     }
 

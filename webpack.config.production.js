@@ -1,15 +1,15 @@
-require('es6-promise').polyfill();
-var webpack = require('webpack');
-var path = require('path');
+const webpack = require('webpack');
+const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 
-var BUILD_DIR = path.resolve(__dirname, 'public');
-var APP_DIR = path.resolve(__dirname, 'client');
-var LESS_DIR = path.resolve(__dirname, 'less');
+const BUILD_DIR = path.resolve(__dirname, 'public');
+const APP_DIR = path.resolve(__dirname, 'client');
+const LESS_DIR = path.resolve(__dirname, 'less');
 
-var config = {
+const config = {
+    mode: 'production',
     devtool: 'source-map',
     entry: [
-        'babel-polyfill',
         path.join(__dirname, 'client/index.jsx'),
         LESS_DIR + '/site.less'
     ],
@@ -18,14 +18,29 @@ var config = {
         filename: 'bundle.min.js',
         publicPath: '/'
     },
-    plugins: [
-        new webpack.optimize.UglifyJsPlugin({
-            sourceMap: true,
-            compressor: {
-                warnings: false,
-                screw_ie8: true
+    optimization: {
+        minimizer: [
+            new TerserPlugin({
+                terserOptions: {
+                    compress: {
+                        drop_console: false
+                    }
+                }
+            })
+        ],
+        splitChunks: {
+            chunks: 'all',
+            cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendors',
+                    chunks: 'all',
+                    filename: 'vendors.min.js'
+                }
             }
-        }),
+        }
+    },
+    plugins: [
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('production')
         }),
@@ -37,15 +52,24 @@ var config = {
     module: {
         rules: [
             {
-                test: /\.jsx?/,
-                exclude: /(node_modules|bower_components)/,
-                loader: 'babel-loader'
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader'
+                }
             },
             {
                 test: /\.scss$/,
                 use: [
                     'style-loader',
-                    'css-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            url: {
+                                filter: (url) => !url.startsWith('/')
+                            }
+                        }
+                    },
                     'sass-loader'
                 ]
             },
@@ -53,13 +77,44 @@ var config = {
                 test: /\.less$/,
                 use: [
                     'style-loader',
-                    'css-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            url: {
+                                filter: (url) => !url.startsWith('/')
+                            }
+                        }
+                    },
                     'less-loader'
                 ]
-            }, {
-                test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/, 
-                loader: 'url-loader?limit=100000'
-            }]
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            url: {
+                                filter: (url) => !url.startsWith('/')
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.(png|woff|woff2|eot|ttf|svg)(\?.*)?$/,
+                type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 100 * 1024
+                    }
+                }
+            }
+        ]
+    },
+    resolve: {
+        extensions: ['.js', '.jsx', '.json']
     }
 };
 
