@@ -35,9 +35,7 @@ class InnerLobby extends React.Component {
     }
 
     componentDidUpdate() {
-        if(this.state.canScroll) {
-            $(this.refs.messages).scrollTop(999999);
-        }
+        // Scroll functionality removed - no chat elements in current render
     }
 
     sendMessage() {
@@ -54,8 +52,6 @@ class InnerLobby extends React.Component {
         if(event.key === 'Enter') {
             this.sendMessage();
 
-            this.refs.message.clear();
-
             event.preventDefault();
         }
     }
@@ -71,15 +67,7 @@ class InnerLobby extends React.Component {
     }
 
     onScroll() {
-        let messages = this.refs.messages;
-
-        setTimeout(() => {
-            if(messages.scrollTop >= messages.scrollHeight - messages.offsetHeight - 20) {
-                this.setState({ canScroll: true });
-            } else {
-                this.setState({ canScroll: false });
-            }
-        }, 500);
+        // Scroll functionality removed - no chat elements in current render
     }
 
     onBurgerClick() {

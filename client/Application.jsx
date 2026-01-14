@@ -61,7 +61,7 @@ class App extends React.Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.loadCards();
         this.props.loadPacks();
         this.props.loadFactions();

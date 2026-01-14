@@ -19,21 +19,21 @@ class InnerDeckStatus extends React.Component {
         this.getDeckStatus();
     }
 
-    componentWillReceiveProps(props) {
-        if(!props.deck) {
+    componentDidUpdate(prevProps) {
+        if(!this.props.deck) {
             return;
         }
 
         // If deck ID changed, validate immediately
-        if(!this.props.deck || this.props.deck._id !== props.deck._id) {
+        if(!prevProps.deck || prevProps.deck._id !== this.props.deck._id) {
             this.clearValidationTimeout();
-            this.getDeckStatus(props.deck);
+            this.getDeckStatus(this.props.deck);
             return;
         }
 
         // If deck content changed (same ID but different cards), debounce validation
-        if(this.hasDeckContentChanged(this.props.deck, props.deck)) {
-            this.scheduleValidation(props.deck);
+        if(this.hasDeckContentChanged(prevProps.deck, this.props.deck)) {
+            this.scheduleValidation(this.props.deck);
         }
     }
 

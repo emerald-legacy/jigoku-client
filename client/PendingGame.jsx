@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
-import { findDOMNode } from 'react-dom';
 import { connect } from 'react-redux';
 import $ from 'jquery';
 import _ from 'underscore';
@@ -16,6 +15,10 @@ import * as actions from './actions';
 class InnerPendingGame extends React.Component {
     constructor() {
         super();
+
+        this.modalRef = createRef();
+        this.notificationRef = createRef();
+        this.messagePanelRef = createRef();
 
         this.isGameReady = this.isGameReady.bind(this);
         this.onSelectDeckClick = this.onSelectDeckClick.bind(this);
@@ -42,22 +45,27 @@ class InnerPendingGame extends React.Component {
         this.props.loadDecks(format);
     }
 
-    componentWillReceiveProps(props) {
-        let players = _.size(props.currentGame.players);
+    componentDidUpdate(prevProps) {
+        let players = _.size(this.props.currentGame.players);
+        let prevPlayers = _.size(prevProps.currentGame?.players);
 
-        if(this.state.playerCount === 1 && players === 2 && props.currentGame.owner === this.props.username) {
-            this.refs.notification.play();
+        if(prevPlayers === 1 && players === 2 && this.props.currentGame.owner === this.props.username) {
+            if(this.notificationRef.current) {
+                this.notificationRef.current.play();
+            }
         }
 
-        if(props.connecting) {
+        if(!prevProps.connecting && this.props.connecting) {
             this.setState({ waiting: false });
         }
 
-        this.setState({ playerCount: players });
-    }
+        if(prevPlayers !== players) {
+            this.setState({ playerCount: players });
+        }
 
-    componentDidUpdate() {
-        $(this.refs.messagePanel).scrollTop(999999);
+        if(this.messagePanelRef.current) {
+            $(this.messagePanelRef.current).scrollTop(999999);
+        }
     }
 
     isGameReady() {
@@ -72,11 +80,15 @@ class InnerPendingGame extends React.Component {
 
     onSelectDeckClick() {
         this.setState({ filteredDecks: this.props.decks || [] });
-        $(findDOMNode(this.refs.modal)).modal('show');
+        if(this.modalRef.current) {
+            $(this.modalRef.current).modal('show');
+        }
     }
 
     selectDeck(index) {
-        $(findDOMNode(this.refs.modal)).modal('hide');
+        if(this.modalRef.current) {
+            $(this.modalRef.current).modal('hide');
+        }
         this.props.socket.emit('selectdeck', this.props.currentGame.id, this.state.filteredDecks[index]);
     }
 
@@ -211,7 +223,7 @@ class InnerPendingGame extends React.Component {
         let game = this.props.currentGame;
 
         let popup = (
-            <div id='decks-modal' ref='modal' className='modal fade' tabIndex='-1' role='dialog'>
+            <div id='decks-modal' ref={this.modalRef} className='modal fade' tabIndex='-1' role='dialog'>
                 <div className='modal-dialog' role='document'>
                     <div className='modal-content deck-popup'>
                         <div className='modal-header'>
@@ -229,7 +241,7 @@ class InnerPendingGame extends React.Component {
 
         return (
             <div>
-                <audio ref='notification'>
+                <audio ref={this.notificationRef}>
                     <source src='/sound/charge.mp3' type='audio/mpeg' />
                     <source src='/sound/charge.ogg' type='audio/ogg' />
                 </audio>

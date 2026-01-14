@@ -1,10 +1,17 @@
 import { Typeahead } from 'react-bootstrap-typeahead';
-import React from 'react';
+import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 
 class Input extends React.Component {
+    constructor(props) {
+        super(props);
+        this.typeaheadRef = createRef();
+    }
+
     clear() {
-        this.refs.typeahead.getInstance().clear();
+        if(this.typeaheadRef.current) {
+            this.typeaheadRef.current.clear();
+        }
     }
 
     render() {
@@ -13,7 +20,7 @@ class Input extends React.Component {
             <div className='form-group'>
                 { label }
                 <div className={ this.props.fieldClass }>
-                    <Typeahead ref='typeahead' options={ this.props.options } labelKey={ this.props.labelKey } emptyLabel={ this.props.emptyLabel }
+                    <Typeahead ref={this.typeaheadRef} options={ this.props.options } labelKey={ this.props.labelKey } emptyLabel={ this.props.emptyLabel }
                         onChange={ this.props.onChange } placeholder={ this.props.placeholder } autoFocus={ this.props.autoFocus } dropup={ this.props.dropup }
                         minLength={ this.props.minLength } onInputChange={ this.props.onInputChange }
                         submitFormOnEnter={ this.props.submitFormOnEnter } onKeyDown={ this.props.onKeyDown } />

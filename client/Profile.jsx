@@ -43,16 +43,19 @@ class InnerProfile extends React.Component {
         ];
     }
 
-    componentWillReceiveProps(props) {
-        if(!props.user) {
+    componentDidUpdate(prevProps) {
+        if(!this.props.user) {
             return;
         }
 
-        this.setState({
-            email: props.user.email,
-            disableGravatar: props.user.settings.disableGravatar,
-            promptedActionWindows: props.user.promptedActionWindows
-        });
+        // Only update state if user changed
+        if(prevProps.user !== this.props.user) {
+            this.setState({
+                email: this.props.user.email,
+                disableGravatar: this.props.user.settings.disableGravatar,
+                promptedActionWindows: this.props.user.promptedActionWindows
+            });
+        }
     }
 
     onChange(field, event) {

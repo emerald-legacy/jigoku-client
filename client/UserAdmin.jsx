@@ -29,8 +29,10 @@ class InnerUserAdmin extends React.Component {
         ];
     }
 
-    componentWillReceiveProps(props) {
-        this.setState({ permissions: props.currentUser ? (props.currentUser.permissions || this.defaultPermissions) : this.defaultPermissions });
+    componentDidUpdate(prevProps) {
+        if(prevProps.currentUser !== this.props.currentUser) {
+            this.setState({ permissions: this.props.currentUser ? (this.props.currentUser.permissions || this.defaultPermissions) : this.defaultPermissions });
+        }
     }
 
     onUsernameChange(event) {

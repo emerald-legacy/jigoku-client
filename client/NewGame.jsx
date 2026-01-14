@@ -13,8 +13,8 @@ const defaultTime = {
 };
 
 class InnerNewGame extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.onCancelClick = this.onCancelClick.bind(this);
         this.onSubmitClick = this.onSubmitClick.bind(this);
@@ -34,12 +34,9 @@ class InnerNewGame extends React.Component {
             byoyomiPeriods: 5,
             byoyomiTimePeriod: 30,
             selectedGameType: 'casual',
-            password: ''
+            password: '',
+            gameName: props.defaultGameName || ''
         };
-    }
-
-    componentWillMount() {
-        this.setState({ gameName: this.props.defaultGameName });
     }
 
     onCancelClick(event) {

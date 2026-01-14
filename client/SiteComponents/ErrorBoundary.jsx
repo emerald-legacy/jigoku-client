@@ -13,9 +13,9 @@ class ErrorBoundary extends React.Component {
         this.onReturnClick = this.onReturnClick.bind(this);
     }
 
-    componentWillReceiveProps(props) {
-        if(props.errorPath !== this.state.errorPath) {
-            this.setState({ error: null, errorPath: props.errorPath });
+    componentDidUpdate(prevProps) {
+        if(this.props.errorPath !== prevProps.errorPath) {
+            this.setState({ error: null, errorPath: this.props.errorPath });
         }
     }
 

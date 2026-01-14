@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import Messages from './Messages.jsx';
 import $ from 'jquery';
@@ -7,6 +7,7 @@ class Chat extends React.Component {
     constructor () {
         super();
 
+        this.messagePanelRef = createRef();
         this.onChange = this.onChange.bind(this);
         this.onKeyPress = this.onKeyPress.bind(this);
         this.onScroll = this.onScroll.bind(this);
@@ -18,8 +19,8 @@ class Chat extends React.Component {
     }
 
     componentDidUpdate() {
-        if(this.state.canScroll) {
-            $(this.refs.messagePanel).scrollTop(999999);
+        if(this.state.canScroll && this.messagePanelRef.current) {
+            $(this.messagePanelRef.current).scrollTop(999999);
         }
     }
 
@@ -37,7 +38,10 @@ class Chat extends React.Component {
     }
 
     onScroll() {
-        let messages = this.refs.messagePanel;
+        let messages = this.messagePanelRef.current;
+        if(!messages) {
+            return;
+        }
 
         setTimeout(() => {
             if(messages.scrollTop >= messages.scrollHeight - messages.offsetHeight - 20) {
@@ -53,7 +57,7 @@ class Chat extends React.Component {
 
         return (
             <div className={ classes }>
-                <div className='messages panel' ref='messagePanel' onScroll={ this.onScroll }>
+                <div className='messages panel' ref={this.messagePanelRef} onScroll={ this.onScroll }>
                     <Messages
                         messages={ this.props.messages }
                         onCardMouseOver={ this.props.onMouseOver }

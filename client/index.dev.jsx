@@ -1,10 +1,9 @@
 /*global user, authToken */
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import configureStore from './configureStore';
 import { navigate, login } from './actions';
-import DevTools from './DevTools';
 import 'bootstrap/dist/js/bootstrap';
 import ReduxToastr from 'react-redux-toastr';
 
@@ -20,9 +19,12 @@ if(typeof user !== 'undefined') {
     store.dispatch(login(user, authToken, user.admin));
 }
 
+const container = document.getElementById('component');
+const root = createRoot(container);
+
 const render = () => {
     const Application = require('./Application.jsx').default;
-    ReactDOM.render(
+    root.render(
         <Provider store={ store }>
             <div className='body'>
                 <ReduxToastr
@@ -33,9 +35,9 @@ const render = () => {
                     transitionIn='fadeIn'
                     transitionOut='fadeOut' />
                 <Application />
-                <DevTools />
             </div>
-        </Provider>, document.getElementById('component'));
+        </Provider>
+    );
 };
 
 if(module.hot) {

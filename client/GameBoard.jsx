@@ -1,7 +1,6 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { findDOMNode } from 'react-dom';
 import _ from 'underscore';
 import $ from 'jquery';
 import { toastr } from 'react-redux-toastr';
@@ -31,6 +30,8 @@ import * as actions from './actions';
 export class InnerGameBoard extends React.Component {
     constructor() {
         super();
+
+        this.modalRef = createRef();
 
         this.onMouseOut = this.onMouseOut.bind(this);
         this.onMouseOver = this.onMouseOver.bind(this);
@@ -67,16 +68,19 @@ export class InnerGameBoard extends React.Component {
         this.updateContextMenu(this.props);
     }
 
-    componentWillReceiveProps(props) {
-        this.updateContextMenu(props);
-        this.notifyOfNewMessages(props);
+    componentDidUpdate(prevProps) {
+        if(prevProps.currentGame !== this.props.currentGame || prevProps.username !== this.props.username) {
+            this.updateContextMenu(this.props);
+        }
+        this.notifyOfNewMessages(this.props, prevProps);
     }
 
-    notifyOfNewMessages({ currentGame }) {
-        if(this.props.currentGame && !this.state.showChat) {
-            const currentLength = this.getMessagesFromPlayers(this.props.currentGame.messages || []).length;
+    notifyOfNewMessages(currentProps, prevProps) {
+        if(currentProps.currentGame && !this.state.showChat) {
+            const prevLength = this.getMessagesFromPlayers(prevProps.currentGame?.messages || []).length;
+            const currentLength = this.getMessagesFromPlayers(currentProps.currentGame.messages || []).length;
 
-            if(currentLength < this.getMessagesFromPlayers(currentGame.messages || []).length) {
+            if(prevLength < currentLength) {
                 this.setState({ showChatAlert: true });
             }
         }
@@ -349,7 +353,9 @@ export class InnerGameBoard extends React.Component {
     onSettingsClick(event) {
         event.preventDefault();
 
-        $(findDOMNode(this.refs.modal)).modal('show');
+        if(this.modalRef.current) {
+            $(this.modalRef.current).modal('show');
+        }
     }
 
     onToggleChatClick(event) {
@@ -672,7 +678,7 @@ export class InnerGameBoard extends React.Component {
         // }
 
         let popup = (
-            <div id='settings-modal' ref='modal' className='modal fade' tabIndex='-1' role='dialog'>
+            <div id='settings-modal' ref={this.modalRef} className='modal fade' tabIndex='-1' role='dialog'>
                 <div className='modal-dialog' role='document'>
                     <div className='modal-content settings-popup row'>
                         <div className='modal-header'>

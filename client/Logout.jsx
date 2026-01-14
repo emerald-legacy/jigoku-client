@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import * as actions from './actions';
 
 class InnerLogout extends React.Component {
-    componentWillMount() {
+    componentDidMount() {
         $.ajax({
             url: '/api/account/logout',
             type: 'POST',

@@ -1,9 +1,8 @@
-import React from 'react';
+import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'underscore';
 import $ from 'jquery';
 import { connect } from 'react-redux';
-import { findDOMNode } from 'react-dom';
 
 import Input from './FormComponents/Input.jsx';
 import Select from './FormComponents/Select.jsx';
@@ -16,6 +15,7 @@ class InnerDeckEditor extends React.Component {
     constructor(props) {
         super(props);
 
+        this.modalRef = createRef();
         this.onImportDeckClick = this.onImportDeckClick.bind(this);
 
         this.state = {
@@ -29,7 +29,7 @@ class InnerDeckEditor extends React.Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         let deck = this.copyDeck(this.state.deck);
         let updatedDefaultFields = false;
         if(!this.props.deck.faction && this.props.factions) {
@@ -263,7 +263,9 @@ class InnerDeckEditor extends React.Component {
     }
 
     onImportDeckClick() {
-        $(findDOMNode(this.refs.modal)).modal('show');
+        if(this.modalRef.current) {
+            $(this.modalRef.current).modal('show');
+        }
     }
 
     getCardListEntry(count, card, packId) {
@@ -285,7 +287,9 @@ class InnerDeckEditor extends React.Component {
     }
 
     importDeck() {
-        $(findDOMNode(this.refs.modal)).modal('hide');
+        if(this.modalRef.current) {
+            $(this.modalRef.current).modal('hide');
+        }
         let importUrl = document.getElementById('importUrl').value;
 
         let emeraldUrl = importUrl.replace('/decks', '/api/decklists');
@@ -363,7 +367,7 @@ class InnerDeckEditor extends React.Component {
         }
 
         let popup = (
-            <div id='decks-modal' ref='modal' className='modal fade' tabIndex='-1' role='dialog'>
+            <div id='decks-modal' ref={this.modalRef} className='modal fade' tabIndex='-1' role='dialog'>
                 <div className='modal-dialog' role='document'>
                     <div className='modal-content deck-popup'>
                         <div className='modal-header'>

@@ -15,7 +15,7 @@ class InnerEditDeck extends React.Component {
         this.onEditDeck = this.onEditDeck.bind(this);
     }
 
-    componentWillMount() {
+    componentDidMount() {
         if(this.props.deckId) {
             return this.props.loadDeck(this.props.deckId);
         } else if(this.props.deck) {
@@ -25,11 +25,9 @@ class InnerEditDeck extends React.Component {
         }
     }
 
-    componentWillUpdate() {
-        if(this.props.deckSaved) {
+    componentDidUpdate(prevProps) {
+        if(!prevProps.deckSaved && this.props.deckSaved) {
             this.props.navigate('/decks');
-
-            return;
         }
     }
 

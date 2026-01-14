@@ -21,12 +21,12 @@ class InnerGameLobby extends React.Component {
         };
     }
 
-    componentWillReceiveProps(props) {
-        if(!props.currentGame) {
+    componentDidUpdate(prevProps) {
+        if(prevProps.currentGame && !this.props.currentGame) {
             this.props.setContextMenu([]);
         }
 
-        if(props.username) {
+        if(!prevProps.username && this.props.username) {
             this.setState({ errorMessage: undefined });
         }
     }

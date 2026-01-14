@@ -29,7 +29,7 @@ class InnerDecks extends React.Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.loadDecksWithLazyValidation();
     }
 

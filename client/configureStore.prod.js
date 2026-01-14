@@ -1,15 +1,18 @@
-import { applyMiddleware, createStore, compose } from 'redux';
-import thunkMiddleware from 'redux-thunk';
+import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from './reducers';
-
 import callAPIMiddleware from './middleware/api-middleware.js';
 
-const enhancer = compose(
-    applyMiddleware(thunkMiddleware, callAPIMiddleware)
-);
-
-export default function configureStore(initialState) {
-    const store = createStore(rootReducer, initialState, enhancer);
+export default function createStore(initialState) {
+    const store = configureStore({
+        reducer: rootReducer,
+        preloadedState: initialState,
+        middleware: (getDefaultMiddleware) =>
+            getDefaultMiddleware({
+                serializableCheck: false, // Disable for socket.io objects
+                immutableCheck: false // Disable for performance with large game state
+            }).concat(callAPIMiddleware),
+        devTools: false
+    });
 
     return store;
 }

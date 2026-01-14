@@ -24,24 +24,24 @@ class ActivePlayerPrompt extends React.Component {
             newState.timeLeft !== this.state.timeLeft || newState.timerClass !== this.state.timerClass;
     }
 
-    componentWillUpdate(newProps, newState) {
-        if(_.difference(newProps.buttons, this.props.buttons).length === 0) {
+    componentDidUpdate(prevProps) {
+        if(_.difference(this.props.buttons, prevProps.buttons).length === 0) {
             return;
         }
 
-        if(newProps.user.settings.windowTimer === 0) {
+        if(!this.props.user?.settings?.windowTimer) {
             return;
         }
 
-        if(_.any(newProps.buttons, button => {
+        if(_.any(this.props.buttons, button => {
             return button.timer;
         })) {
-            if(newState.timerHandle) {
+            if(this.state.timerHandle) {
                 return;
             }
 
             this.timer.started = new Date();
-            this.timer.timerTime = newProps.user.settings.windowTimer;
+            this.timer.timerTime = this.props.user.settings.windowTimer;
 
             let handle = setInterval(() => {
                 let now = new Date();
@@ -55,8 +55,8 @@ class ActivePlayerPrompt extends React.Component {
 
                     this.setState({ timerHandle: undefined });
 
-                    if(newProps.onTimerExpired) {
-                        newProps.onTimerExpired();
+                    if(this.props.onTimerExpired) {
+                        this.props.onTimerExpired();
                     }
                 }
 

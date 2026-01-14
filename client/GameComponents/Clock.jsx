@@ -10,34 +10,36 @@ class Clock extends React.Component {
         this.state = { timeLeft: 0, periods: 0, mainTime: 0, timePeriod: 0, delayToStartClock: 0, manuallyPaused: false };
     }
 
-    componentWillReceiveProps(newProps) {
-        if(newProps.secondsLeft === 0 || this.stateId === newProps.stateId) {
+    componentDidUpdate(prevProps) {
+        if(this.props.secondsLeft === 0 || this.stateId === this.props.stateId) {
             return;
         }
-        this.stateId = newProps.stateId;
-        this.setState({
-            timeLeft: newProps.secondsLeft,
-            periods: newProps.periods,
-            mainTime: newProps.mainTime,
-            timePeriod: newProps.timePeriod,
-            manuallyPaused: newProps.manuallyPaused,
-            delayToStartClock: newProps.delayToStartClock
-        });
+        if(prevProps.stateId !== this.props.stateId) {
+            this.stateId = this.props.stateId;
+            this.setState({
+                timeLeft: this.props.secondsLeft,
+                periods: this.props.periods,
+                mainTime: this.props.mainTime,
+                timePeriod: this.props.timePeriod,
+                manuallyPaused: this.props.manuallyPaused,
+                delayToStartClock: this.props.delayToStartClock
+            });
 
-        if(this.timerHandle) {
-            clearInterval(this.timerHandle);
-        }
+            if(this.timerHandle) {
+                clearInterval(this.timerHandle);
+            }
 
-        if(newProps.mode !== 'stop' && !newProps.manuallyPaused) {
-            this.timerHandle = setInterval(() => {
-                if(this.state.delayToStartClock > 0) {
-                    this.setState({ delayToStartClock: this.state.delayToStartClock - 1 });
-                } else {
-                    this.setState({
-                        timeLeft: this.state.timeLeft + (newProps.mode === 'up' ? 1 : -1)
-                    });
-                }
-            }, 1000);
+            if(this.props.mode !== 'stop' && !this.props.manuallyPaused) {
+                this.timerHandle = setInterval(() => {
+                    if(this.state.delayToStartClock > 0) {
+                        this.setState({ delayToStartClock: this.state.delayToStartClock - 1 });
+                    } else {
+                        this.setState({
+                            timeLeft: this.state.timeLeft + (this.props.mode === 'up' ? 1 : -1)
+                        });
+                    }
+                }, 1000);
+            }
         }
     }
 
