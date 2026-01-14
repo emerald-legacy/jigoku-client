@@ -50,23 +50,23 @@ class InnerDeckEditor extends React.Component {
         if(this.props.deck && (this.props.deck.stronghold || this.props.deck.role || this.props.deck.provinceCards ||
                 this.props.deck.conflictCards || this.props.deck.dynastyCards)) {
             _.each(this.props.deck.stronghold, card => {
-                cardList += this.getCardListEntry(card.count, card.card);
+                cardList += this.getCardListEntry(card.count, card.card, card.pack_id);
             });
 
             _.each(this.props.deck.role, card => {
-                cardList += this.getCardListEntry(card.count, card.card);
+                cardList += this.getCardListEntry(card.count, card.card, card.pack_id);
             });
 
             _.each(this.props.deck.conflictCards, card => {
-                cardList += this.getCardListEntry(card.count, card.card);
+                cardList += this.getCardListEntry(card.count, card.card, card.pack_id);
             });
 
             _.each(this.props.deck.dynastyCards, card => {
-                cardList += this.getCardListEntry(card.count, card.card);
+                cardList += this.getCardListEntry(card.count, card.card, card.pack_id);
             });
 
             _.each(this.props.deck.provinceCards, card => {
-                cardList += this.getCardListEntry(card.count, card.card);
+                cardList += this.getCardListEntry(card.count, card.card, card.pack_id);
             });
 
             this.setState({ cardList: cardList });
@@ -149,10 +149,16 @@ class InnerDeckEditor extends React.Component {
             return;
         }
 
-        let cardList = this.state.cardList;
-        cardList += this.getCardListEntry(this.state.numberToAdd, this.state.cardToAdd);
+        // Get the default pack_id from the first version (if available)
+        let defaultPackId;
+        if(this.state.cardToAdd.versions && this.state.cardToAdd.versions.length > 0) {
+            defaultPackId = this.state.cardToAdd.versions[0].pack_id;
+        }
 
-        this.addCard(this.state.cardToAdd, parseInt(this.state.numberToAdd));
+        let cardList = this.state.cardList;
+        cardList += this.getCardListEntry(this.state.numberToAdd, this.state.cardToAdd, defaultPackId);
+
+        this.addCard(this.state.cardToAdd, parseInt(this.state.numberToAdd), defaultPackId);
         this.setState({ cardList: cardList });
         let deck = this.state.deck;
 
@@ -205,7 +211,9 @@ class InnerDeckEditor extends React.Component {
             });
 
             if(card) {
-                this.addCard(card, num);
+                // Use specified pack or default to first version's pack
+                let packId = pack ? pack.id : (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
+                this.addCard(card, num, packId);
             }
         });
 
@@ -215,7 +223,7 @@ class InnerDeckEditor extends React.Component {
         this.props.updateDeck(deck);
     }
 
-    addCard(card, number) {
+    addCard(card, number, packId) {
         let deck = this.copyDeck(this.state.deck);
         let provinces = deck.provinceCards;
         let stronghold = deck.stronghold;
@@ -237,10 +245,12 @@ class InnerDeckEditor extends React.Component {
             list = role;
         }
 
-        if(list[card.id]) {
-            list[card.id].count += number;
+        // Find existing entry for this card with the same pack
+        let existingEntry = _.find(list, entry => entry.card.id === card.id && entry.pack_id === packId);
+        if(existingEntry) {
+            existingEntry.count += number;
         } else {
-            list.push({ count: number, card: card });
+            list.push({ count: number, card: card, pack_id: packId });
         }
     }
 
@@ -256,14 +266,16 @@ class InnerDeckEditor extends React.Component {
         $(findDOMNode(this.refs.modal)).modal('show');
     }
 
-    getCardListEntry(count, card) {
+    getCardListEntry(count, card, packId) {
         if(!card) {
             return '';
         }
         let packName = '';
         if(card.versions && card.versions.length) {
-            let packData = card.versions[0];
-            this.setState({ test: packData.id });
+            // Use the provided packId if available, otherwise fall back to first version
+            let packData = packId
+                ? _.find(card.versions, v => v.pack_id === packId) || card.versions[0]
+                : card.versions[0];
             let pack = _.find(this.props.packs, p => p.id === packData.pack_id);
             if(pack && pack.name) {
                 packName = ' (' + pack.name + ')';
@@ -380,6 +392,8 @@ class InnerDeckEditor extends React.Component {
                     let role = deck.role;
                     let conflict = deck.conflictCards;
                     let dynasty = deck.dynastyCards;
+                    // Use specified pack or default to first version's pack
+                    let packId = pack ? pack.id : (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
 
                     let list;
 
@@ -395,10 +409,11 @@ class InnerDeckEditor extends React.Component {
                         list = role;
                     }
 
-                    if(list[card.id]) {
-                        list[card.id].count += num;
+                    let existingEntry = _.find(list, entry => entry.card.id === card.id && entry.pack_id === packId);
+                    if(existingEntry) {
+                        existingEntry.count += num;
                     } else {
-                        list.push({ count: num, card: card });
+                        list.push({ count: num, card: card, pack_id: packId });
                     }
                 }
             });
@@ -536,6 +551,8 @@ class InnerDeckEditor extends React.Component {
                     let role = deck.role;
                     let conflict = deck.conflictCards;
                     let dynasty = deck.dynastyCards;
+                    // Use specified pack or default to first version's pack
+                    let packId = pack ? pack.id : (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
 
                     let list;
 
@@ -551,10 +568,11 @@ class InnerDeckEditor extends React.Component {
                         list = role;
                     }
 
-                    if(list[card.id]) {
-                        list[card.id].count += num;
+                    let existingEntry = _.find(list, entry => entry.card.id === card.id && entry.pack_id === packId);
+                    if(existingEntry) {
+                        existingEntry.count += num;
                     } else {
-                        list.push({ count: num, card: card });
+                        list.push({ count: num, card: card, pack_id: packId });
                     }
                 }
             });

@@ -1,21 +1,28 @@
 /*eslint no-console:0 */
-const already = require('already');
 const download = require('download');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
 const monk = require('monk');
 const path = require('path');
 const request = require('request');
+const sharp = require('sharp');
 
 const CardService = require('../services/CardService.js');
 
-const [, , env] = process.argv;
+const [, , env, forceFlag] = process.argv;
+const forceDownload = forceFlag === '--force' || forceFlag === '-f';
 
 if(env !== 'live' && env !== 'playtest') {
     console.error(
         'Must pass parameter with valid environment. The options are `live` or `playtest`'
     );
+    console.error('Usage: node fetchdata.js <live|playtest> [--force]');
+    console.error('  --force, -f: Re-download existing images');
     process.exit(1);
+}
+
+if (forceDownload) {
+    console.log('Force download enabled - will re-download existing images');
 }
 
 const apiUrl =
@@ -35,12 +42,69 @@ function apiRequest(path) {
     });
 }
 
-const db = monk('mongodb://127.0.0.1:27017/ringteki');
+const dbPath = process.env.DB_PATH || 'mongodb://127.0.0.1:27017/ringteki';
+const db = monk(dbPath);
 const cardService = new CardService(db);
+
+async function downloadWithRetry(url, dest, filename, maxRetries = 3) {
+    const isPng = url.toLowerCase().endsWith('.png');
+    const tempFilename = isPng ? filename.replace('.jpg', '.png') : filename;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            await download(url, dest, { filename: tempFilename, timeout: 30000 });
+
+            // Convert PNG to JPG if needed
+            if (isPng) {
+                const tempPath = path.join(dest, tempFilename);
+                const finalPath = path.join(dest, filename);
+
+                await sharp(tempPath)
+                    .jpeg({ quality: 90 })
+                    .toFile(finalPath);
+
+                // Remove the temporary PNG file
+                fs.unlinkSync(tempPath);
+
+                return { success: true, converted: true };
+            }
+
+            return { success: true, converted: false };
+        } catch (error) {
+            if (attempt === maxRetries) {
+                return { success: false, error: error.message };
+            }
+            // Wait before retry
+            await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+        }
+    }
+}
+
+// Parallel download with concurrency limit
+async function downloadParallel(tasks, concurrency = 10) {
+    const results = [];
+    let index = 0;
+
+    async function worker() {
+        while (index < tasks.length) {
+            const currentIndex = index++;
+            const task = tasks[currentIndex];
+            const result = await task();
+            results[currentIndex] = result;
+        }
+    }
+
+    const workers = Array(Math.min(concurrency, tasks.length))
+        .fill(null)
+        .map(() => worker());
+
+    await Promise.all(workers);
+    return results;
+}
 
 const fetchCards = apiRequest('cards')
     .then((cards) => cardService.replaceCards(cards))
-    .then((cards) => {
+    .then(async (cards) => {
         console.info(cards.length + ' cards fetched');
 
         const imageDir = path.join(
@@ -53,29 +117,119 @@ const fetchCards = apiRequest('cards')
         );
         mkdirp(imageDir);
 
-        return already.map(cards, { concurrency: 10 }, (card) => {
-            const firstCardWithImageUrl = card.versions.find(
-                (card) => card.image_url
-            );
-            if(!firstCardWithImageUrl) {
-                return;
+        let downloaded = 0;
+        let skipped = 0;
+        let failed = 0;
+        let converted = 0;
+        const failedCards = [];
+        const convertedCards = [];
+
+        console.log('Starting image downloads (10 parallel)...');
+
+        // Build list of download tasks for ALL versions of each card
+        const downloadTasks = [];
+        let skippedCount = 0;
+        let totalVersions = 0;
+
+        for (let i = 0; i < cards.length; i++) {
+            const card = cards[i];
+
+            if (!card.versions || card.versions.length === 0) {
+                skippedCount++;
+                continue;
             }
 
-            const imageSrc = firstCardWithImageUrl.image_url;
-            const ext = path.extname(imageSrc);
-            var imagePath = path.format({
-                dir: imageDir,
-                name: card.id,
-                ext: ext
-            });
-            var filename = path.format({ name: card.id, ext: ext });
-            if(imageSrc && !fs.existsSync(imagePath)) {
-                return download(imageSrc, imageDir, { filename: filename });
+            // Download ALL versions of the card
+            for (let versionIndex = 0; versionIndex < card.versions.length; versionIndex++) {
+                const version = card.versions[versionIndex];
+                totalVersions++;
+
+                if (!version.image_url) {
+                    skippedCount++;
+                    continue;
+                }
+
+                const imageSrc = version.image_url;
+
+                // Naming scheme:
+                // - First version: {card.id}.jpg
+                // - Additional versions: {card.id}-{pack_id}.jpg
+                let filename;
+                if (versionIndex === 0) {
+                    filename = card.id + '.jpg';
+                } else {
+                    filename = card.id + '-' + version.pack_id + '.jpg';
+                }
+
+                const imagePath = path.join(imageDir, filename);
+
+                if (!forceDownload && fs.existsSync(imagePath)) {
+                    skippedCount++;
+                    continue;
+                }
+
+                // Create a download task
+                downloadTasks.push(async () => {
+                    const result = await downloadWithRetry(imageSrc, imageDir, filename);
+                    return { card, version, result, url: imageSrc, filename };
+                });
             }
-        });
+        }
+
+        skipped = skippedCount;
+        console.log(`Skipping ${skipped} cards (already exist or no image)`);
+        console.log(`Downloading ${downloadTasks.length} images...`);
+
+        // Execute downloads in parallel
+        const results = await downloadParallel(downloadTasks, 10);
+
+        // Process results
+        for (const { card, version, result, url, filename } of results) {
+            if (result.success) {
+                downloaded++;
+                if (result.converted) {
+                    converted++;
+                    convertedCards.push({ id: card.id, name: card.name, filename: filename, url: url });
+                }
+                if (downloaded % 50 === 0) {
+                    console.log(`Downloaded ${downloaded}/${downloadTasks.length} images...`);
+                }
+            } else {
+                failed++;
+                failedCards.push({ id: card.id, name: card.name, filename: filename, url: url, error: result.error });
+            }
+        }
+
+        console.log('\n=== Download Summary ===');
+        console.log(`Total cards: ${cards.length}`);
+        console.log(`Total versions: ${totalVersions}`);
+        console.log(`Downloaded: ${downloaded}`);
+        console.log(`Converted PNG to JPG: ${converted}`);
+        console.log(`Skipped (already exist or no image): ${skipped}`);
+        console.log(`Failed: ${failed}`);
+
+        if (convertedCards.length > 0) {
+            console.log('\n=== Converted from PNG ===');
+            convertedCards.forEach(card => {
+                console.log(`${card.filename} - ${card.name}`);
+            });
+        }
+
+        if (failedCards.length > 0) {
+            console.log('\n=== Failed Downloads ===');
+            failedCards.slice(0, 20).forEach(card => {
+                console.log(`${card.filename} (${card.name}): ${card.error}`);
+            });
+            if (failedCards.length > 20) {
+                console.log(`... and ${failedCards.length - 20} more`);
+            }
+        }
+
+        return cards;
     })
-    .catch(() => {
-        console.error('Unable to fetch cards');
+    .catch((error) => {
+        console.error('Unable to fetch cards:', error.message);
+        console.error(error.stack);
     });
 
 const fetchPacks = apiRequest('packs')

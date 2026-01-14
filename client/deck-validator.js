@@ -53,7 +53,7 @@ class DeckValidator {
     }
 
     async validateDeck(deck) {
-        let allCards = deck.provinceCards.concat(deck.dynastyCards).concat(deck.conflictCards).concat(deck.role).concat(deck.stronghold);
+        let allCards = (deck.provinceCards || []).concat(deck.dynastyCards || []).concat(deck.conflictCards || []).concat(deck.role || []).concat(deck.stronghold || []);
         let cardCountByName = {};
         _.each(allCards, cardQuantity => {
             if (cardQuantity.card) {

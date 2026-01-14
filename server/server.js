@@ -3,7 +3,7 @@ const app = express();
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = require('connect-mongo');
 const config = require('config');
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
@@ -15,6 +15,7 @@ const jwt = require('jsonwebtoken');
 const http = require('http');
 const Raven = require('raven');
 const helmet = require('helmet');
+const { rateLimit } = require('express-rate-limit');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const webpack = require('webpack');
@@ -25,6 +26,23 @@ const _ = require('underscore');
 const UserService = require('./services/UserService.js');
 const version = require('../version.js');
 const Settings = require('./settings.js');
+
+// Rate limiting configuration
+const apiLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many requests, please try again later' }
+});
+
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 auth attempts per windowMs
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: 'Too many authentication attempts, please try again later' }
+});
 
 class Server {
     constructor(isDeveloping) {
@@ -43,22 +61,42 @@ class Server {
             app.use(Raven.errorHandler());
         }
 
-        app.use(helmet());
+        // Security headers with Helmet v7
+        app.use(
+            // @ts-ignore - helmet v7 types
+            helmet({
+                contentSecurityPolicy: {
+                    directives: {
+                        defaultSrc: ["'self'"],
+                        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+                        styleSrc: ["'self'", "'unsafe-inline'"],
+                        imgSrc: ["'self'", 'data:', 'https:'],
+                        connectSrc: ["'self'", 'wss:', 'ws:', 'https://www.emeralddb.org', 'https://emeralddb.org'].concat(config.cspConnectSources || []),
+                        fontSrc: ["'self'", 'data:'],
+                        objectSrc: ["'none'"]
+                    }
+                },
+                crossOriginEmbedderPolicy: false // Needed for Socket.io compatibility
+            })
+        );
 
         app.set('trust proxy', 1);
         app.use(session({
-            store: new MongoStore({ url: config.dbPath }),
+            store: MongoStore.create({
+                mongoUrl: config.dbPath,
+                ttl: config.cookieLifetime ? config.cookieLifetime / 1000 : 14 * 24 * 60 * 60 // Default 14 days in seconds
+            }),
             saveUninitialized: false,
             resave: false,
             secret: config.secret,
             cookie: {
                 maxAge: config.cookieLifetime,
                 secure: config.https,
-                httpOnly: false,
+                httpOnly: true, // SECURITY FIX: Prevent XSS access to cookies
+                sameSite: 'lax',
                 domain: config.domain
             },
             name: 'sessionId'
-
         }));
 
         app.use(passport.initialize());
@@ -72,11 +110,26 @@ class Server {
         app.use(bodyParser.json());
         app.use(bodyParser.urlencoded({ extended: false }));
 
+        // Apply rate limiting to API routes
+        app.use('/api/', apiLimiter);
+        app.use('/api/account/login', authLimiter);
+        app.use('/api/account/register', authLimiter);
+        app.use('/api/account/password-reset', authLimiter);
+
         api.init(app);
 
         app.use(express.static(__dirname + '/../public'));
         app.set('view engine', 'pug');
         app.set('views', path.join(__dirname, '..', 'views'));
+
+        // Health check endpoint
+        app.get('/health', (req, res) => {
+            res.json({
+                status: 'ok',
+                timestamp: Date.now(),
+                uptime: process.uptime()
+            });
+        });
 
         if(this.isDeveloping) {
             const compiler = webpack(webpackConfig);
@@ -126,7 +179,7 @@ class Server {
     run() {
         var port = config.lobby.port;
 
-        this.server.listen(port, '127.0.0.1', function onStart(err) {
+        this.server.listen(port, '0.0.0.0', function onStart(err) {
             if(err) {
                 logger.error(err);
             }
@@ -135,48 +188,39 @@ class Server {
         });
     }
 
-    verifyUser(username, password, done) {
-        this.userService.getUserByUsername(username)
-            .then(user => {
-                if(!user) {
-                    done(null, false, { message: 'Invalid username/password' });
+    async verifyUser(username, password, done) {
+        try {
+            const user = await this.userService.getUserByUsername(username);
 
-                    return Promise.reject('Failed auth');
-                }
+            if(!user) {
+                return done(null, false, { message: 'Invalid username/password' });
+            }
 
-                bcrypt.compare(password, user.password, function(err, valid) {
-                    if(err) {
-                        logger.info(err.message);
+            const valid = await bcrypt.compare(password, user.password);
 
-                        return done(err);
-                    }
+            if(!valid) {
+                return done(null, false, { message: 'Invalid username/password' });
+            }
 
-                    if(!valid) {
-                        return done(null, false, { message: 'Invalid username/password' });
-                    }
+            let userObj = {
+                username: user.username,
+                email: user.email,
+                emailHash: user.emailHash,
+                _id: user._id,
+                admin: user.admin,
+                settings: user.settings,
+                promptedActionWindows: user.promptedActionWindows,
+                permissions: user.permissions,
+                blockList: user.blockList
+            };
 
-                    let userObj = {
-                        username: user.username,
-                        email: user.email,
-                        emailHash: user.emailHash,
-                        _id: user._id,
-                        admin: user.admin,
-                        settings: user.settings,
-                        promptedActionWindows: user.promptedActionWindows,
-                        permissions: user.permissions,
-                        blockList: user.blockList
-                    };
+            userObj = Settings.getUserWithDefaultsSet(userObj);
 
-                    userObj = Settings.getUserWithDefaultsSet(userObj);
-
-                    return done(null, userObj);
-                });
-            })
-            .catch(err => {
-                done(err);
-
-                logger.info(err);
-            });
+            return done(null, userObj);
+        } catch(err) {
+            logger.error('Authentication error:', err);
+            return done(err);
+        }
     }
 
     serializeUser(user, done) {

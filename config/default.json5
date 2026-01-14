@@ -5,6 +5,10 @@
     dbPath: 'mongodb://127.0.0.1:27017/ringteki',
     mqUrl: 'tcp://127.0.0.1:6000',
 
+    // Additional CSP connect-src hosts (for game nodes, external APIs, etc.)
+    // In production, add your game node URLs here, e.g.: ['https://node1.example.com', 'wss://node1.example.com']
+    cspConnectSources: ['http://localhost:9501', 'http://localhost:9502', 'ws://localhost:9501', 'ws://localhost:9502'],
+
     /*
      * Other global configurations used, but not specified, include:
      *  - sentryDsn (for production only)
