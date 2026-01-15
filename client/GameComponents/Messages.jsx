@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import _ from 'underscore';
 import EmojiConvertor from 'emoji-js';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 import Avatar from '../Avatar.jsx';
 import * as actions from '../actions';

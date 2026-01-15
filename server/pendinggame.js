@@ -1,4 +1,4 @@
-const uuid = require('uuid');
+const { v1: uuidv1 } = require('uuid');
 const _ = require('underscore');
 const bcrypt = require('bcrypt');
 
@@ -11,7 +11,7 @@ class PendingGame {
         this.owner = owner;
         this.players = {};
         this.spectators = {};
-        this.id = uuid.v1();
+        this.id = uuidv1();
         this.name = details.name;
         this.allowSpectators = details.spectators;
         this.spectatorSquelch = details.spectatorSquelch;

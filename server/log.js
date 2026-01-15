@@ -1,17 +1,27 @@
 const winston = require('winston');
 require('winston-daily-rotate-file');
 
-let rotate = new (winston.transports.DailyRotateFile)({
-    filename: __dirname + '/logs/ringteki',
-    datePattern: '-yyyy-MM-dd.log',
-    timestamp: true,
-    json: false,
-    zippedArchive: true
+const { combine, timestamp, printf } = winston.format;
+
+const logFormat = printf(({ level, message, timestamp }) => {
+    return `${timestamp} [${level}]: ${message}`;
 });
 
-const logger = new winston.Logger({
+const rotate = new winston.transports.DailyRotateFile({
+    filename: __dirname + '/logs/ringteki-%DATE%.log',
+    datePattern: 'YYYY-MM-DD',
+    zippedArchive: true,
+    maxSize: '20m',
+    maxFiles: '14d'
+});
+
+const logger = winston.createLogger({
+    format: combine(
+        timestamp(),
+        logFormat
+    ),
     transports: [
-        new winston.transports.Console({ json: false, timestamp: true }),
+        new winston.transports.Console(),
         rotate
     ]
 });
