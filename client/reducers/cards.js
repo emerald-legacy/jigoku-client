@@ -38,25 +38,35 @@ function processDecks(decks, state) {
             deck.dynastyCards = deck.dynastyCards.filter(card => !!card.card);
         }
 
-        deck.stronghold = deck.stronghold.map(card => {
-            return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
-        });
+        if(deck.stronghold) {
+            deck.stronghold = deck.stronghold.map(card => {
+                return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
+            });
+        }
 
-        deck.role = deck.role.map(card => {
-            return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
-        });
+        if(deck.role) {
+            deck.role = deck.role.map(card => {
+                return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
+            });
+        }
 
-        deck.provinceCards = deck.provinceCards.map(card => {
-            return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
-        });
+        if(deck.provinceCards) {
+            deck.provinceCards = deck.provinceCards.map(card => {
+                return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
+            });
+        }
 
-        deck.conflictCards = deck.conflictCards.map(card => {
-            return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
-        });
+        if(deck.conflictCards) {
+            deck.conflictCards = deck.conflictCards.map(card => {
+                return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
+            });
+        }
 
-        deck.dynastyCards = deck.dynastyCards.map(card => {
-            return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
-        });
+        if(deck.dynastyCards) {
+            deck.dynastyCards = deck.dynastyCards.map(card => {
+                return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
+            });
+        }
     });
 }
 
