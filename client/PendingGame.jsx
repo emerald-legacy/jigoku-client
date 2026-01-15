@@ -36,6 +36,17 @@ export function InnerPendingGame({
     const [filteredDecks, setFilteredDecks] = useState([]);
     const [showModal, setShowModal] = useState(false);
 
+    // Handle Escape key to close modal
+    useEffect(() => {
+        const handleEscape = (event) => {
+            if (event.key === 'Escape' && showModal) {
+                setShowModal(false);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, [showModal]);
+
     useEffect(() => {
         const format = currentGame ? currentGame.gameMode : null;
         loadDecks(format);
@@ -213,12 +224,25 @@ export function InnerPendingGame({
 
     const game = currentGame;
 
+    const handleModalClick = useCallback((event) => {
+        // Close modal when clicking the overlay (outside the modal-dialog)
+        if (event.target === event.currentTarget) {
+            setShowModal(false);
+        }
+    }, []);
+
     const popup = (
-        <div className={`modal fade ${showModal ? 'in' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex='-1' role='dialog'>
+        <div
+            className={`modal fade ${showModal ? 'in' : ''}`}
+            style={{ display: showModal ? 'block' : 'none' }}
+            tabIndex='-1'
+            role='dialog'
+            onClick={handleModalClick}
+        >
             <div className='modal-dialog' role='document'>
                 <div className='modal-content deck-popup'>
                     <div className='modal-header'>
-                        <button type='button' className='close' aria-label='Close' onClick={() => setShowModal(false)}><span aria-hidden='true'>&times;</span></button>
+                        <button type='button' className='close' aria-label='Close' onClick={() => setShowModal(false)} style={{ fontSize: '28px', opacity: 1, color: '#fff', textShadow: 'none' }}><span aria-hidden='true'>&times;</span></button>
                         <h4 className='modal-title'>Select Deck</h4>
                     </div>
                     <div className='modal-body'>

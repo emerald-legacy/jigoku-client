@@ -48,6 +48,17 @@ export function InnerDeckEditor({
     const [showModal, setShowModal] = useState(false);
     const [importUrl, setImportUrl] = useState('');
 
+    // Handle Escape key to close modal
+    useEffect(() => {
+        const handleEscape = (event) => {
+            if (event.key === 'Escape' && showModal) {
+                setShowModal(false);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, [showModal]);
+
     const getCardListEntry = useCallback((count, card, packId) => {
         if (!card) {
             return '';
@@ -269,6 +280,12 @@ export function InnerDeckEditor({
         setShowModal(true);
     }, []);
 
+    const handleModalClick = useCallback((event) => {
+        if (event.target === event.currentTarget) {
+            setShowModal(false);
+        }
+    }, []);
+
     const handleImportDeck = useCallback(async () => {
         setShowModal(false);
         const emeraldUrl = importUrl.replace('/decks', '/api/decklists');
@@ -331,6 +348,13 @@ export function InnerDeckEditor({
         }
     }, [importUrl, deck, factions, formats, cards, getCardListEntry, updateDeck]);
 
+    const handleImportKeyPress = useCallback((event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            handleImportDeck();
+        }
+    }, [handleImportDeck]);
+
     const formatsArray = useMemo(() => formats ? Object.values(formats) : [], [formats]);
     const factionsArray = useMemo(() => factions ? Object.values(factions) : [], [factions]);
     const alliancesArray = useMemo(() => alliances ? Object.values(alliances) : [], [alliances]);
@@ -341,30 +365,36 @@ export function InnerDeckEditor({
     }
 
     const popup = (
-        <div className={`modal fade ${showModal ? 'in' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex='-1' role='dialog'>
+        <div
+            className={`modal fade ${showModal ? 'in' : ''}`}
+            style={{ display: showModal ? 'block' : 'none' }}
+            tabIndex='-1'
+            role='dialog'
+            onClick={handleModalClick}
+        >
             <div className='modal-dialog' role='document'>
                 <div className='modal-content deck-popup'>
-                    <div className='modal-header'>
-                        <button type='button' className='close' aria-label='Close' onClick={() => setShowModal(false)}>
+                    <div className='modal-header' style={{ padding: '10px 15px' }}>
+                        <button type='button' className='close' aria-label='Close' onClick={() => setShowModal(false)} style={{ fontSize: '24px', opacity: 1, color: '#fff', textShadow: 'none', marginTop: '-2px' }}>
                             <span aria-hidden='true'>&times;</span>
                         </button>
-                        <h4 className='modal-title'>Provide Permalink</h4>
+                        <h4 className='modal-title' style={{ margin: 0, fontSize: '16px' }}>Import from EmeraldDB</h4>
                     </div>
-                    <div className='modal-body'>
-                        <div className='form-group'>
-                            <div className='col-sm-9'>
-                                <input
-                                    className='form-control'
-                                    name='importUrl'
-                                    placeholder='Permalink'
-                                    type='text'
-                                    value={importUrl}
-                                    onChange={(e) => setImportUrl(e.target.value)}
-                                />
-                            </div>
-                            <div className='col-sm-1'>
-                                <button className='btn btn-default' onClick={handleImportDeck}>Import</button>
-                            </div>
+                    <div className='modal-body' style={{ padding: '10px 15px' }}>
+                        <p style={{ margin: '0 0 8px 0', fontSize: '13px' }}>Paste the permalink URL from EmeraldDB:</p>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+                            <input
+                                className='form-control'
+                                name='importUrl'
+                                placeholder='https://www.emeralddb.org/decks/...'
+                                type='text'
+                                value={importUrl}
+                                onChange={(e) => setImportUrl(e.target.value)}
+                                onKeyPress={handleImportKeyPress}
+                                style={{ flex: 1, height: '34px' }}
+                                autoFocus
+                            />
+                            <button className='btn btn-primary' onClick={handleImportDeck} style={{ height: '34px', padding: '6px 16px' }}>Import</button>
                         </div>
                     </div>
                 </div>
