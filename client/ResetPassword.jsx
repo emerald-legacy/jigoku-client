@@ -1,147 +1,147 @@
-import React from 'react';
+import { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'underscore';
-import $ from 'jquery';
+import axios from 'axios';
 
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 
 import * as actions from './actions';
 
-class InnerResetPassword extends React.Component {
-    constructor() {
-        super();
+export function InnerResetPassword({ id, token, navigate }) {
+    const [password, setPassword] = useState('');
+    const [password1, setPassword1] = useState('');
+    const [validation, setValidation] = useState({});
+    const [error, setError] = useState('');
 
-        this.state = {
-            password: '',
-            password1: '',
-            validation: {}
-        };
+    const verifyPassword = useCallback((isSubmitting, currentPassword, currentPassword1) => {
+        const newValidation = { ...validation };
+        delete newValidation['password'];
 
-        this.onSubmit = this.onSubmit.bind(this);
-    }
-
-    verifyPassword(isSubmitting) {
-        var validation = this.state.validation;
-
-        delete validation['password'];
-
-        if(this.state.password.length < 6) {
-            validation['password'] = 'The password you specify must be at least 6 characters long';
+        if (currentPassword.length < 6) {
+            newValidation['password'] = 'The password you specify must be at least 6 characters long';
         }
 
-        if(isSubmitting && !this.state.password1) {
-            validation['password'] = 'Please enter your password again';
+        if (isSubmitting && !currentPassword1) {
+            newValidation['password'] = 'Please enter your password again';
         }
 
-        if(this.state.password && this.state.password1 && this.state.password !== this.state.password1) {
-            validation['password'] = 'The passwords you have specified do not match';
+        if (currentPassword && currentPassword1 && currentPassword !== currentPassword1) {
+            newValidation['password'] = 'The passwords you have specified do not match';
         }
 
-        this.setState({ validation: validation });
-    }
+        setValidation(newValidation);
+        return newValidation;
+    }, [validation]);
 
-    onChange(field, event) {
-        var newState = {};
-
-        newState[field] = event.target.value;
-        this.setState(newState);
-    }
-
-    onSubmit(event) {
+    const onSubmit = useCallback(async (event) => {
         event.preventDefault();
 
-        this.setState({ error: '' });
+        setError('');
 
-        this.verifyPassword(true);
+        // Do synchronous validation
+        const newValidation = {};
+        if (password.length < 6) {
+            newValidation['password'] = 'The password you specify must be at least 6 characters long';
+        }
+        if (!password1) {
+            newValidation['password'] = 'Please enter your password again';
+        }
+        if (password && password1 && password !== password1) {
+            newValidation['password'] = 'The passwords you have specified do not match';
+        }
+        setValidation(newValidation);
 
-        if(_.any(this.state.validation, function(message) {
-            return message && message !== '';
-        })) {
-            this.setState({ error: 'There was an error in one or more fields, please see below, correct the error and try again' });
+        if (Object.values(newValidation).some((message) => message && message !== '')) {
+            setError('There was an error in one or more fields, please see below, correct the error and try again');
             return;
         }
 
-        $.ajax({
-            url: '/api/account/password-reset-finish',
-            type: 'POST',
-            data: JSON.stringify({ id: this.props.id, token: this.props.token, newPassword: this.state.password }),
-            contentType: 'application/json'
-        }).done((data) => {
-            if(!data.success) {
-                this.setState({ error: data.message });
+        try {
+            const response = await axios.post('/api/account/password-reset-finish', {
+                id: id,
+                token: token,
+                newPassword: password
+            });
+
+            if (!response.data.success) {
+                setError(response.data.message);
                 return;
             }
 
-            this.props.navigate('/login');
-        }).fail(() => {
-            this.setState({ error: 'Could not communicate with the server.  Please try again later.' });
-        });
+            navigate('/login');
+        } catch {
+            setError('Could not communicate with the server.  Please try again later.');
+        }
+    }, [id, token, password, password1, navigate]);
+
+    if (!id || !token) {
+        return <AlertPanel type='error' message='This page is not intended to be viewed directly.  Please click on the link in your email to reset your password' />;
     }
 
-    render() {
-        if(!this.props.id || !this.props.token) {
-            return <AlertPanel type='error' message='This page is not intended to be viewed directly.  Please click on the link in your email to reset your password' />;
+    const fields = [
+        {
+            name: 'password',
+            label: 'New Password',
+            placeholder: 'Password',
+            inputType: 'password',
+            value: password,
+            onChange: setPassword,
+            blurCallback: () => verifyPassword(false, password, password1)
+        },
+        {
+            name: 'password1',
+            label: 'New Password (again)',
+            placeholder: 'Password (again)',
+            inputType: 'password',
+            value: password1,
+            onChange: setPassword1,
+            blurCallback: () => verifyPassword(false, password, password1)
+        }
+    ];
+
+    const fieldsToRender = fields.map((field) => {
+        let className = 'form-group';
+        let validationMessage = null;
+
+        if (validation[field.name]) {
+            className += ' has-error';
+            validationMessage = <span className='help-block'>{validation[field.name]}</span>;
         }
 
-        var fields = [
-            {
-                name: 'password',
-                label: 'New Password',
-                placeholder: 'Password',
-                inputType: 'password',
-                blurCallback: () => this.verifyPassword(false)
-            },
-            {
-                name: 'password1',
-                label: 'New Password (again)',
-                placeholder: 'Password (again)',
-                inputType: 'password',
-                blurCallback: () => this.verifyPassword(false)
-            }
-        ];
-        var fieldsToRender = [];
-        var errorBar = this.state.error ? <AlertPanel type='error' message={ this.state.error } /> : null;
-
-        _.each(fields, (field) => {
-            var className = 'form-group';
-            var validation = null;
-
-            if(this.state.validation[field.name]) {
-                className += ' has-error';
-                validation = <span className='help-block'>{ this.state.validation[field.name] }</span>;
-            }
-
-            fieldsToRender.push(
-                <div key={ field.name } className={ className }>
-                    <label htmlFor={ field.name } className='col-sm-2 control-label'>{ field.label }</label>
-                    <div className='col-sm-3'>
-                        <input type={ field.inputType }
-                            ref={ field.name }
-                            className='form-control'
-                            id={ field.name }
-                            placeholder={ field.placeholder }
-                            value={ this.state[field.name] }
-                            onChange={ this.onChange.bind(this, field.name) }
-                            onBlur={ field.blurCallback } />
-                        { validation }
-                    </div>
-                </div>);
-        });
-
         return (
-            <div>
-                { errorBar }
-                <form className='form form-horizontal'>
-                    { fieldsToRender }
-                    <div className='form-group'>
-                        <div className='col-sm-offset-2 col-sm-3'>
-                            <button ref='submit' type='submit' className='btn btn-primary' onClick={ this.onSubmit }>Submit</button>
-                        </div>
+            <div key={field.name} className={className}>
+                <label htmlFor={field.name} className='col-sm-2 control-label'>{field.label}</label>
+                <div className='col-sm-3'>
+                    <input
+                        type={field.inputType}
+                        className='form-control'
+                        id={field.name}
+                        placeholder={field.placeholder}
+                        value={field.value}
+                        onChange={(e) => field.onChange(e.target.value)}
+                        onBlur={field.blurCallback}
+                    />
+                    {validationMessage}
+                </div>
+            </div>
+        );
+    });
+
+    const errorBar = error ? <AlertPanel type='error' message={error} /> : null;
+
+    return (
+        <div>
+            {errorBar}
+            <form className='form form-horizontal'>
+                {fieldsToRender}
+                <div className='form-group'>
+                    <div className='col-sm-offset-2 col-sm-3'>
+                        <button type='submit' className='btn btn-primary' onClick={onSubmit}>Submit</button>
                     </div>
-                </form>
-            </div>);
-    }
+                </div>
+            </form>
+        </div>
+    );
 }
 
 InnerResetPassword.propTypes = {
@@ -152,8 +152,7 @@ InnerResetPassword.propTypes = {
 InnerResetPassword.displayName = 'ResetPassword';
 
 function mapStateToProps() {
-    return {
-    };
+    return {};
 }
 
 const ResetPassword = connect(mapStateToProps, actions)(InnerResetPassword);

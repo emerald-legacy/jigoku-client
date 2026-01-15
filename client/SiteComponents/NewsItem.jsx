@@ -1,15 +1,13 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-class NewsItem extends React.Component {
-    render() {
-        return (
-            <div className={ this.props.icon + '-container' }>
-                <span className={ 'icon-' + this.props.icon } />
-                &nbsp;{ moment(this.props.date).format('YYYY-MM-DD') + ' - ' + this.props.text }
-            </div>);
-    }
+function NewsItem({ icon, date, text }) {
+    return (
+        <div className={`${icon}-container`}>
+            <span className={`icon-${icon}`} />
+            &nbsp;{moment(date).format('YYYY-MM-DD') + ' - ' + text}
+        </div>
+    );
 }
 
 NewsItem.displayName = 'NewsItem';

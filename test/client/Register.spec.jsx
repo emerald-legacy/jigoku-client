@@ -8,48 +8,14 @@ vi.mock('../../client/SiteComponents/AlertPanel.jsx', () => ({
     default: ({ type, message }) => <div data-testid="alert-panel" data-type={type}>{message}</div>
 }));
 
-// Create a more sophisticated jQuery mock
-const createMockDeferred = () => {
-    let resolveCallback, rejectCallback;
-    const promise = {
-        then: (resolve, reject) => {
-            resolveCallback = resolve;
-            rejectCallback = reject;
-            return promise;
-        },
-        done: (callback) => {
-            resolveCallback = callback;
-            return promise;
-        },
-        fail: (callback) => {
-            rejectCallback = callback;
-            return promise;
-        },
-        always: (callback) => {
-            // Call immediately for tests
-            setTimeout(callback, 0);
-            return promise;
-        }
-    };
-    return {
-        resolve: (data) => { if (resolveCallback) { resolveCallback(data); } return promise; },
-        reject: (data) => { if (rejectCallback) { rejectCallback(data); } return promise; },
-        promise: () => promise
-    };
-};
+// Mock axios
+vi.mock('axios', () => ({
+    default: {
+        post: vi.fn(() => Promise.resolve({ data: {} }))
+    }
+}));
 
-// Set up jQuery mock
-const mockPost = vi.fn();
-const mockAjax = vi.fn();
-
-const $ = {
-    post: mockPost,
-    ajax: mockAjax,
-    Deferred: createMockDeferred
-};
-
-// Make $ available globally
-global.$ = $;
+import axios from 'axios';
 
 describe('the <InnerRegister /> component', () => {
     let registerSpy;
@@ -62,15 +28,10 @@ describe('the <InnerRegister /> component', () => {
         navigateSpy = vi.fn();
 
         // Reset mocks
-        mockPost.mockReset();
-        mockAjax.mockReset();
+        vi.clearAllMocks();
 
-        // Default mock implementation for $.post (username check)
-        mockPost.mockImplementation(() => {
-            const defer = createMockDeferred();
-            setTimeout(() => defer.resolve({}), 0);
-            return defer.promise();
-        });
+        // Default mock implementation for axios.post (username check)
+        axios.post.mockImplementation(() => Promise.resolve({ data: {} }));
     });
 
     describe('when initially rendered', () => {
@@ -377,7 +338,7 @@ describe('the <InnerRegister /> component', () => {
             });
         });
 
-        it('should not call ajax when validation fails', async () => {
+        it('should not call axios when validation fails', async () => {
             render(
                 <InnerRegister
                     register={registerSpy}
@@ -389,18 +350,18 @@ describe('the <InnerRegister /> component', () => {
             const submitButton = screen.getByRole('button', { name: 'Register' });
             fireEvent.click(submitButton);
 
-            expect(mockAjax).not.toHaveBeenCalled();
+            // axios.post is called for username validation on blur, but not for registration
+            // Since we didn't blur any fields, it shouldn't be called
+            expect(axios.post).not.toHaveBeenCalledWith('/api/account/register', expect.anything());
         });
 
         // This test is skipped because the Register component has complex async validation
         // that requires reCAPTCHA and username availability checks that are difficult to
         // fully mock in the test environment. The form submission works in production.
-        it.skip('should call ajax with correct data when form is valid', async () => {
-            mockAjax.mockImplementation(() => {
-                const defer = createMockDeferred();
-                setTimeout(() => defer.resolve({ success: true, user: {}, token: 'test-token' }), 0);
-                return defer.promise();
-            });
+        it.skip('should call axios with correct data when form is valid', async () => {
+            axios.post.mockImplementation(() =>
+                Promise.resolve({ data: { success: true, user: {}, token: 'test-token' } })
+            );
 
             render(
                 <InnerRegister
@@ -418,7 +379,7 @@ describe('the <InnerRegister /> component', () => {
             fireEvent.click(screen.getByRole('button', { name: 'Register' }));
 
             await waitFor(() => {
-                expect(mockAjax).toHaveBeenCalled();
+                expect(axios.post).toHaveBeenCalledWith('/api/account/register', expect.anything());
             });
         });
     });

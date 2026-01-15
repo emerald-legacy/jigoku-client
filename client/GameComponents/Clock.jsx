@@ -1,90 +1,119 @@
-import React from 'react';
+import { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 
-const formattedSeconds = (sec) => (sec <= 0 ? '-' : '') + Math.floor(Math.abs(sec) / 60) + ':' + ('0' + Math.abs(sec) % 60).slice(-2);
+const formattedSeconds = (sec) =>
+    (sec <= 0 ? '-' : '') +
+    Math.floor(Math.abs(sec) / 60) +
+    ':' +
+    ('0' + (Math.abs(sec) % 60)).slice(-2);
 
-class Clock extends React.Component {
-    constructor() {
-        super();
+function Clock({
+    delayToStartClock: propDelayToStartClock,
+    mainTime: propMainTime,
+    manuallyPaused: propManuallyPaused,
+    mode,
+    periods: propPeriods,
+    secondsLeft,
+    stateId,
+    timePeriod: propTimePeriod
+}) {
+    const [timeLeft, setTimeLeft] = useState(0);
+    const [periods, setPeriods] = useState(0);
+    const [mainTime, setMainTime] = useState(0);
+    const [timePeriod, setTimePeriod] = useState(0);
+    const [delayToStartClock, setDelayToStartClock] = useState(0);
+    const [manuallyPaused, setManuallyPaused] = useState(false);
 
-        this.state = { timeLeft: 0, periods: 0, mainTime: 0, timePeriod: 0, delayToStartClock: 0, manuallyPaused: false };
-    }
+    const prevStateIdRef = useRef(null);
+    const timerHandleRef = useRef(null);
 
-    componentDidUpdate(prevProps) {
-        if(this.props.secondsLeft === 0 || this.stateId === this.props.stateId) {
+    useEffect(() => {
+        if (secondsLeft === 0 || prevStateIdRef.current === stateId) {
             return;
         }
-        if(prevProps.stateId !== this.props.stateId) {
-            this.stateId = this.props.stateId;
-            this.setState({
-                timeLeft: this.props.secondsLeft,
-                periods: this.props.periods,
-                mainTime: this.props.mainTime,
-                timePeriod: this.props.timePeriod,
-                manuallyPaused: this.props.manuallyPaused,
-                delayToStartClock: this.props.delayToStartClock
-            });
 
-            if(this.timerHandle) {
-                clearInterval(this.timerHandle);
+        if (prevStateIdRef.current !== stateId) {
+            prevStateIdRef.current = stateId;
+            setTimeLeft(secondsLeft);
+            setPeriods(propPeriods);
+            setMainTime(propMainTime);
+            setTimePeriod(propTimePeriod);
+            setManuallyPaused(propManuallyPaused);
+            setDelayToStartClock(propDelayToStartClock);
+
+            if (timerHandleRef.current) {
+                clearInterval(timerHandleRef.current);
             }
 
-            if(this.props.mode !== 'stop' && !this.props.manuallyPaused) {
-                this.timerHandle = setInterval(() => {
-                    if(this.state.delayToStartClock > 0) {
-                        this.setState({ delayToStartClock: this.state.delayToStartClock - 1 });
-                    } else {
-                        this.setState({
-                            timeLeft: this.state.timeLeft + (this.props.mode === 'up' ? 1 : -1)
-                        });
-                    }
+            if (mode !== 'stop' && !propManuallyPaused) {
+                timerHandleRef.current = setInterval(() => {
+                    setDelayToStartClock((prevDelay) => {
+                        if (prevDelay > 0) {
+                            return prevDelay - 1;
+                        }
+                        setTimeLeft((prevTime) => prevTime + (mode === 'up' ? 1 : -1));
+                        return prevDelay;
+                    });
                 }, 1000);
             }
         }
-    }
 
-    getFormattedClock() {
-        let delaySeconds = '';
-        if(typeof this.state.delayToStartClock === 'number') {
-            delaySeconds = this.state.delayToStartClock > 0 ? formattedSeconds(this.state.delayToStartClock) : '0:00';
-        }
-        if(!this.state.periods || this.state.timeLeft <= 0) {
-            if(delaySeconds) {
-                return `${formattedSeconds(this.state.timeLeft)}(${delaySeconds})`;
+        return () => {
+            if (timerHandleRef.current) {
+                clearInterval(timerHandleRef.current);
             }
-            return `${formattedSeconds(this.state.timeLeft)}`;
+        };
+    }, [
+        secondsLeft,
+        stateId,
+        mode,
+        propManuallyPaused,
+        propDelayToStartClock,
+        propPeriods,
+        propMainTime,
+        propTimePeriod
+    ]);
+
+    const getFormattedClock = () => {
+        let delaySeconds = '';
+        if (typeof delayToStartClock === 'number') {
+            delaySeconds = delayToStartClock > 0 ? formattedSeconds(delayToStartClock) : '0:00';
+        }
+        if (!periods || timeLeft <= 0) {
+            if (delaySeconds) {
+                return `${formattedSeconds(timeLeft)}(${delaySeconds})`;
+            }
+            return `${formattedSeconds(timeLeft)}`;
         }
         let stage = '';
         let timeLeftInPeriod = 0;
-        if(this.state.timeLeft > this.state.periods * this.state.timePeriod) {
+        if (timeLeft > periods * timePeriod) {
             stage = 'M';
-            timeLeftInPeriod = this.state.timeLeft - this.state.periods * this.state.timePeriod;
+            timeLeftInPeriod = timeLeft - periods * timePeriod;
         } else {
-            stage = Math.ceil(this.state.timeLeft / this.state.timePeriod);
-            if(stage === 1) {
+            stage = Math.ceil(timeLeft / timePeriod);
+            if (stage === 1) {
                 stage = 'SD';
             }
-            timeLeftInPeriod = this.state.timeLeft % this.state.timePeriod === 0 ?
-                this.state.timePeriod :
-                this.state.timeLeft % this.state.timePeriod;
+            timeLeftInPeriod =
+                timeLeft % timePeriod === 0 ? timePeriod : timeLeft % timePeriod;
         }
         return `${formattedSeconds(timeLeftInPeriod)} (${stage})`;
+    };
+
+    let className = 'player-stats-row state clock';
+    if (mode !== 'stop') {
+        className += ' clock-active';
     }
 
-    render() {
-        let className = 'player-stats-row state clock';
-        if(this.props.mode !== 'stop') {
-            className += ' clock-active';
-        }
-        return (
-            <div className={ className }>
-                <span>
-                    <img src='/img/free-clock-icon-png.png' className='clock-icon' />
-                </span>
-                { this.getFormattedClock() }
-            </div>
-        );
-    }
+    return (
+        <div className={className}>
+            <span>
+                <img src='/img/free-clock-icon-png.png' className='clock-icon' />
+            </span>
+            {getFormattedClock()}
+        </div>
+    );
 }
 
 Clock.displayName = 'Clock';

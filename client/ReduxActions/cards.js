@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import axios from 'axios';
 
 export function loadCards() {
     return {
@@ -6,7 +6,7 @@ export function loadCards() {
         shouldCallAPI: (state) => {
             return !state.cards.cards;
         },
-        callAPI: () => $.ajax('/api/cards', { cache: false })
+        callAPI: () => axios.get('/api/cards').then(response => response.data)
     };
 }
 
@@ -16,7 +16,7 @@ export function loadPacks() {
         shouldCallAPI: (state) => {
             return !state.cards.packs;
         },
-        callAPI: () => $.ajax('/api/packs', { cache: false })
+        callAPI: () => axios.get('/api/packs').then(response => response.data)
     };
 }
 
@@ -26,7 +26,7 @@ export function loadFactions() {
         shouldCallAPI: (state) => {
             return !state.cards.factions;
         },
-        callAPI: () => $.ajax('/api/factions', { cache: false })
+        callAPI: () => axios.get('/api/factions').then(response => response.data)
     };
 }
 
@@ -36,6 +36,6 @@ export function loadFormats() {
         shouldCallAPI: (state) => {
             return !state.cards.formats;
         },
-        callAPI: () => $.ajax('/api/formats', { cache: false })
+        callAPI: () => axios.get('/api/formats').then(response => response.data)
     };
 }

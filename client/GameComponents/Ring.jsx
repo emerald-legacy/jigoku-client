@@ -1,135 +1,141 @@
-const _ = require('underscore');
-
-import React from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import CardCounters from './CardCounters.jsx';
 import CardMenu from './CardMenu.jsx';
 
-class Ring extends React.Component {
-    constructor() {
-        super();
+function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
+    const [showMenu, setShowMenu] = useState(false);
 
-        this.onClick = this.onClick.bind(this);
-        this.onMenuItemClick = this.onMenuItemClick.bind(this);
-
-        this.state = {
-            showMenu: false
-        };
-
-    }
-
-    onClick(event, ring) {
+    const handleClick = (event, ringElement) => {
         event.preventDefault();
         event.stopPropagation();
 
-        if(!_.isEmpty(this.props.ring.menu)) {
-            this.setState({ showMenu: !this.state.showMenu });
-
+        if (ring.menu && ring.menu.length > 0) {
+            setShowMenu(!showMenu);
             return;
         }
 
-        if(this.props.onClick) {
-            this.props.onClick(ring);
+        if (onClick) {
+            onClick(ringElement);
         }
-    }
+    };
 
-    onMenuItemClick(menuItem) {
-        if(this.props.onMenuItemClick) {
-            this.props.onMenuItemClick(this.props.ring, menuItem);
-            this.setState({ showMenu: !this.state.showMenu });
+    const handleMenuItemClick = (menuItem) => {
+        if (onMenuItemClick) {
+            onMenuItemClick(ring, menuItem);
+            setShowMenu(!showMenu);
         }
-    }
+    };
 
-    getCountersForRing(ring) {
-        var counters = {};
+    const getCountersForRing = () => {
+        const counters = {};
 
-        counters['ring-fate'] = this.props.ring.fate ? { count: this.props.ring.fate, shortName: 'F' } : undefined;
+        counters['ring-fate'] = ring.fate
+            ? { count: ring.fate, shortName: 'F' }
+            : undefined;
 
-        _.each(ring.tokens, (token, key) => {
-            counters[key] = { count: token, fade: ring.type === 'attachment', shortName: this.shortNames[key] };
-        });
+        if (ring.tokens) {
+            const shortNames = {
+                honor: 'H',
+                fate: 'F'
+            };
+            for (const [key, token] of Object.entries(ring.tokens)) {
+                counters[key] = {
+                    count: token,
+                    fade: ring.type === 'attachment',
+                    shortName: shortNames[key]
+                };
+            }
+        }
 
-        var filteredCounters = _.omit(counters, counter => {
-            return _.isUndefined(counter) || _.isNull(counter) || counter < 0;
-        });
+        // Filter out undefined, null, or negative counters
+        const filteredCounters = {};
+        for (const [key, counter] of Object.entries(counters)) {
+            if (counter !== undefined && counter !== null && counter.count >= 0) {
+                filteredCounters[key] = counter;
+            }
+        }
 
         return filteredCounters;
-    }
+    };
 
-    showCounters() {
+    const shouldShowCounters = () => {
         return true;
-    }
+    };
 
-    showMenu() {
-        if(!this.props.ring.menu || !this.state.showMenu) {
+    const shouldShowMenu = () => {
+        if (!ring.menu || !showMenu) {
             return false;
         }
-
         return true;
-    }
+    };
 
-    getRingInfo() {
-        if(!this.props.ring.claimed && !this.props.ring.contested) {
+    const getIcon = () => {
+        if (ring.conflictType === 'military') {
             return (
-                <div className='ring-info'>
-                    Unclaimed
-                </div>
+                <span className='icon-military'>
+                    <span className='hide-text'>military</span>
+                </span>
             );
         }
         return (
-            <div className='ring-info' >
-                { this.getIcon() }
-                { this.props.ring.claimed ? ' Claimed: ' + this.props.ring.claimedBy : ' Contested' }
-            </div>
+            <span className='icon-political'>
+                <span className='hide-text'>political</span>
+            </span>
         );
+    };
+
+    let size = propSize;
+    if (ring.claimed) {
+        size = 'small';
     }
 
-    getIcon() {
-        if(this.props.ring.conflictType === 'military') {
-            return (<span className='icon-military'><span className='hide-text'>military</span></span>);
-        }
-        return (<span className='icon-political'><span className='hide-text'>political</span></span>);
+    let className = 'ring icon-element-' + ring.element + ' ' + size;
+    let bgClassName = 'ring-background  tint-' + ring.conflictType + ' ' + size;
+    let svgClassName =
+        'ring-svg tint-' +
+        ring.conflictType +
+        ' ' +
+        size +
+        ' ' +
+        (ring.selected || ring.contested ? 'contested' : '');
+    if (ring.unselectable) {
+        className = className + ' unselectable';
+        bgClassName += ' unselectable';
     }
 
-    render() {
-        let size = this.props.size;
-        if(this.props.ring.claimed) {
-            size = 'small';
-        }
-
-        let className = 'ring icon-element-' + this.props.ring.element + ' ' + size;
-        let bgClassName = 'ring-background  tint-' + this.props.ring.conflictType + ' ' + size;
-        let svgClassName = 'ring-svg tint-' + this.props.ring.conflictType + ' ' + size + ' ' + (this.props.ring.selected || this.props.ring.contested ? 'contested' : '');
-        if(this.props.ring.unselectable) {
-            className = className + ' unselectable';
-            bgClassName += ' unselectable';
-        }
-
-        let visible = true;
-        if((this.props.owner && (!this.props.ring.claimed || this.props.owner !== this.props.ring.claimedBy)) || (!this.props.owner && this.props.ring.claimed)) {
-            className += ' hidden';
-            svgClassName += ' hidden';
-            visible = false;
-        }
-        if(!visible) {
-            return (<div/>);
-        }
-        return (
-            <div className='ring no-highlight' onClick={ event => this.onClick(event, this.props.ring.element) } >
-                <svg className={ svgClassName } >
-                    <circle cx='50%' cy='50%' r='50%' className={ bgClassName } />
-                </svg>
-                <div className={ className } />
-                { (this.showCounters() && visible) ? <CardCounters counters={ this.getCountersForRing(this.props.ring.element) } /> : null }
-                { this.showMenu() ? <CardMenu menu={ this.props.ring.menu } onMenuItemClick={ this.onMenuItemClick } /> : null }
-            </div>);
+    let visible = true;
+    if (
+        (owner && (!ring.claimed || owner !== ring.claimedBy)) ||
+        (!owner && ring.claimed)
+    ) {
+        className += ' hidden';
+        svgClassName += ' hidden';
+        visible = false;
     }
+    if (!visible) {
+        return <div />;
+    }
+    return (
+        <div
+            className='ring no-highlight'
+            onClick={(event) => handleClick(event, ring.element)}
+        >
+            <svg className={svgClassName}>
+                <circle cx='50%' cy='50%' r='50%' className={bgClassName} />
+            </svg>
+            <div className={className} />
+            {shouldShowCounters() && visible ? (
+                <CardCounters counters={getCountersForRing()} />
+            ) : null}
+            {shouldShowMenu() ? (
+                <CardMenu menu={ring.menu} onMenuItemClick={handleMenuItemClick} />
+            ) : null}
+        </div>
+    );
 }
-//<img className={ className } title={ this.props.ring.element } src={ '/img/' + this.props.ring.conflictType + '-' + this.props.ring.element + '.png' } />
-//     <div className={ this.props.ring.claimedBy.length > 12 ? 'ring-info-xs ' : 'ring-info ' } >
-//     { this.props.ring.claimed ? 'Claimed: ' + this.props.ring.claimedBy : this.props.ring.contested ? 'Contested' : 'Unclaimed' }
-// </div>
+
 Ring.displayName = 'Ring';
 Ring.propTypes = {
     buttons: PropTypes.array,

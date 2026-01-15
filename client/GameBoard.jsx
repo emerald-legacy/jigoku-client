@@ -1,8 +1,6 @@
 import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'underscore';
-import $ from 'jquery';
 import { toastr } from 'react-redux-toastr';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import Draggable from 'react-draggable';
@@ -60,7 +58,8 @@ export class InnerGameBoard extends React.Component {
             showDynastyDeck: false,
             spectating: true,
             showActionWindowsMenu: false,
-            showCardMenu: {}
+            showCardMenu: {},
+            showSettingsModal: false
         };
     }
 
@@ -106,9 +105,9 @@ export class InnerGameBoard extends React.Component {
         }
 
         if(thisPlayer && thisPlayer.selectCard) {
-            $('body').addClass('select-cursor');
+            document.body.classList.add('select-cursor');
         } else {
-            $('body').removeClass('select-cursor');
+            document.body.classList.remove('select-cursor');
         }
 
         let menuOptions = [
@@ -116,13 +115,13 @@ export class InnerGameBoard extends React.Component {
         ];
 
         if(props.currentGame && props.currentGame.started) {
-            if(_.find(props.currentGame.players, p => {
+            if(Object.values(props.currentGame.players).find(p => {
                 return p.name === props.username;
             })) {
                 menuOptions.unshift({ text: 'Concede', onClick: this.onConcedeClick });
             }
 
-            let spectators = _.map(props.currentGame.spectators, spectator => {
+            let spectators = props.currentGame.spectators.map(spectator => {
                 return <li key={ spectator.id }>{ spectator.name }</li>;
             });
 
@@ -161,10 +160,10 @@ export class InnerGameBoard extends React.Component {
 
         let thisPlayer = this.props.currentGame.players[this.props.username];
         if(!thisPlayer) {
-            thisPlayer = _.toArray(this.props.currentGame.players)[0];
+            thisPlayer = Object.values(this.props.currentGame.players)[0];
         }
 
-        let otherPlayer = _.find(this.props.currentGame.players, player => {
+        let otherPlayer = Object.values(this.props.currentGame.players).find(player => {
             return player.name !== thisPlayer.name;
         });
 
@@ -267,8 +266,10 @@ export class InnerGameBoard extends React.Component {
             return [];
         }
 
-        let sortedCards = _.sortBy(player.cardPiles.cardsInPlay, card => {
-            return card.type;
+        let sortedCards = [...player.cardPiles.cardsInPlay].sort((a, b) => {
+            if(a.type < b.type) return -1;
+            if(a.type > b.type) return 1;
+            return 0;
         });
 
         if(!isMe) {
@@ -276,8 +277,14 @@ export class InnerGameBoard extends React.Component {
             sortedCards = sortedCards.reverse();
         }
 
-        let cardsByType = _.groupBy(sortedCards, card => {
-            return card.type;
+        // Group by type
+        const cardsByType = {};
+        sortedCards.forEach(card => {
+            const type = card.type;
+            if(!cardsByType[type]) {
+                cardsByType[type] = [];
+            }
+            cardsByType[type].push(card);
         });
 
         let cardsByLocation = [];
@@ -285,8 +292,8 @@ export class InnerGameBoard extends React.Component {
         let playerIsDefending = (player && conflict.defendingPlayerId && player.id.includes(conflict.defendingPlayerId));
         let playerDeclaringParticipants = conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen));
 
-        _.each(cardsByType, cards => {
-            let cardsInPlay = _.map(cards, card => {
+        Object.values(cardsByType).forEach(cards => {
+            let cardsInPlay = cards.map(card => {
                 return (<Card key={ card.uuid } id={ card.uuid } source='play area' card={ card } disableMouseOver={ card.facedown && !card.code }
                     onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
                     showStats={ !this.props.user.settings.optionSettings.disableCardStats } player={ player }
@@ -352,10 +359,7 @@ export class InnerGameBoard extends React.Component {
 
     onSettingsClick(event) {
         event.preventDefault();
-
-        if(this.modalRef.current) {
-            $(this.modalRef.current).modal('show');
-        }
+        this.setState({ showSettingsModal: true });
     }
 
     onToggleChatClick(event) {
@@ -644,27 +648,27 @@ export class InnerGameBoard extends React.Component {
 
         let thisPlayer = this.props.currentGame.players[this.props.username];
         if(!thisPlayer) {
-            thisPlayer = _.toArray(this.props.currentGame.players)[0];
+            thisPlayer = Object.values(this.props.currentGame.players)[0];
         }
 
         if(!thisPlayer) {
             return <div>Waiting for game to have players or close...</div>;
         }
 
-        let otherPlayer = _.find(this.props.currentGame.players, player => {
+        let otherPlayer = Object.values(this.props.currentGame.players).find(player => {
             return player.name !== thisPlayer.name;
         });
 
         let thisPlayerCards = [];
         let index = 0;
         let thisCardsInPlay = this.getCardsInPlay(thisPlayer, true);
-        _.each(thisCardsInPlay, cards => {
+        thisCardsInPlay.forEach(cards => {
             thisPlayerCards.push(<div className={ 'card-row our-side player-home' + (thisPlayer && thisPlayer.imperialFavor ? ' favor' : '') } key={ 'this-loc' + index++ }>{ cards }</div>);
         });
 
         let otherPlayerCards = [];
         if(otherPlayer) {
-            _.each(this.getCardsInPlay(otherPlayer, false), cards => {
+            this.getCardsInPlay(otherPlayer, false).forEach(cards => {
                 otherPlayerCards.push(<div className={ 'card-row player-home' + (otherPlayer.imperialFavor ? ' favor' : '') } key={ 'other-loc' + index++ }>{ cards }</div>);
             });
         }
@@ -678,11 +682,11 @@ export class InnerGameBoard extends React.Component {
         // }
 
         let popup = (
-            <div id='settings-modal' ref={this.modalRef} className='modal fade' tabIndex='-1' role='dialog'>
+            <div id='settings-modal' ref={this.modalRef} className={`modal fade ${this.state.showSettingsModal ? 'in' : ''}`} style={{ display: this.state.showSettingsModal ? 'block' : 'none' }} tabIndex='-1' role='dialog'>
                 <div className='modal-dialog' role='document'>
                     <div className='modal-content settings-popup row'>
                         <div className='modal-header'>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>×</span></button>
+                            <button type='button' className='close' aria-label='Close' onClick={() => this.setState({ showSettingsModal: false })}><span aria-hidden='true'>×</span></button>
                             <h4 className='modal-title'>Game Configuration</h4>
                         </div>
                         <div className='modal-body col-xs-12'>
@@ -695,9 +699,12 @@ export class InnerGameBoard extends React.Component {
                 </div>
             </div>);
 
+        let backdrop = this.state.showSettingsModal ? <div className='modal-backdrop fade in' onClick={() => this.setState({ showSettingsModal: false })} /> : null;
+
         return (
             <div className='game-board'>
                 { popup }
+                { backdrop }
                 { this.getPrompt(thisPlayer) }
                 { this.getPlayerHand(thisPlayer) }
                 {

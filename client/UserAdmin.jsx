@@ -1,7 +1,6 @@
-import React from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import _ from 'underscore';
+import { connect } from 'react-redux';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 import Input from './FormComponents/Input.jsx';
@@ -9,120 +8,120 @@ import Checkbox from './FormComponents/Checkbox.jsx';
 
 import * as actions from './actions';
 
-class InnerUserAdmin extends React.Component {
-    constructor(props) {
-        super(props);
+const defaultPermissions = {
+    canEditNews: false,
+    canManageUsers: false
+};
 
-        this.defaultPermissions = {
-            canEditNews: false,
-            canManageUsers: false
-        };
+const permissionsList = [
+    { name: 'canEditNews', label: 'News Editor' },
+    { name: 'canManageUsers', label: 'User Manager' }
+];
 
-        this.state = {
-            permissions: this.props.currentUser ? (this.props.currentUser.permissions || this.defaultPermissions) : this.defaultPermissions,
-            username: ''
-        };
+export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUser, findUser, loading, saveUser, userSaved }) {
+    const [permissions, setPermissions] = useState(currentUser ? (currentUser.permissions || defaultPermissions) : defaultPermissions);
+    const [username, setUsername] = useState('');
 
-        this.permissions = [
-            { name: 'canEditNews', label: 'News Editor' },
-            { name: 'canManageUsers', label: 'User Manager' }
-        ];
-    }
+    useEffect(() => {
+        setPermissions(currentUser ? (currentUser.permissions || defaultPermissions) : defaultPermissions);
+    }, [currentUser]);
 
-    componentDidUpdate(prevProps) {
-        if(prevProps.currentUser !== this.props.currentUser) {
-            this.setState({ permissions: this.props.currentUser ? (this.props.currentUser.permissions || this.defaultPermissions) : this.defaultPermissions });
-        }
-    }
-
-    onUsernameChange(event) {
-        this.setState({ username: event.target.value });
-    }
-
-    onFindClick(event) {
-        event.preventDefault();
-
-        this.props.findUser(this.state.username);
-    }
-
-    onSaveClick(event) {
-        event.preventDefault();
-
-        this.props.currentUser.permissions = this.state.permissions;
-
-        this.props.saveUser(this.props.currentUser);
-    }
-
-    onPermissionToggle(field, event) {
-        var newState = {};
-        newState.permissions = this.state.permissions;
-
-        newState.permissions[field] = event.target.checked;
-        this.setState(newState);
-    }
-
-    render() {
-        let content = null;
-        let successPanel = null;
-
-        if(this.props.userSaved) {
-            setTimeout(() => {
-                this.props.clearUserStatus();
+    useEffect(() => {
+        if (userSaved) {
+            const timer = setTimeout(() => {
+                clearUserStatus();
             }, 5000);
-            successPanel = (
-                <AlertPanel message='User saved successfully' type={ 'success' } />
-            );
+            return () => clearTimeout(timer);
         }
+    }, [userSaved, clearUserStatus]);
 
-        let notFoundMessage = this.props.apiStatus === 404 ? <AlertPanel type='warning' message='No users found' /> : null;
+    const onUsernameChange = useCallback((event) => {
+        setUsername(event.target.value);
+    }, []);
 
-        let renderedUser = null;
+    const onFindClick = useCallback((event) => {
+        event.preventDefault();
+        findUser(username);
+    }, [findUser, username]);
 
-        if(this.props.currentUser) {
-            let permissions = _.map(this.permissions, (permission) => {
-                return (<Checkbox key={ permission.name } name={ 'permissions.' + permission.name } label={ permission.label } fieldClass='col-sm-offset-3 col-sm-4'
-                    type='checkbox' onChange={ this.onPermissionToggle.bind(this, permission.name) } checked={ this.state.permissions[permission.name] } />);
-            });
+    const onSaveClick = useCallback((event) => {
+        event.preventDefault();
+        currentUser.permissions = permissions;
+        saveUser(currentUser);
+    }, [currentUser, permissions, saveUser]);
 
-            renderedUser = (
-                <div>
-                    <h3>User details</h3>
+    const onPermissionToggle = useCallback((field, event) => {
+        setPermissions(prev => ({
+            ...prev,
+            [field]: event.target.checked
+        }));
+    }, []);
 
-                    <form className='form'>
-                        <dl>
-                            <dt>Username:</dt><dd>{ this.props.currentUser.username }</dd>
-                            <dt>Email:</dt><dd>{ this.props.currentUser.email }</dd>
-                            <dt>Registered:</dt><dd>{ this.props.currentUser.registered }</dd>
-                        </dl>
+    let content = null;
+    let successPanel = null;
 
-                        <h4>Permissions</h4>
-                        { permissions }
-                        <button type='button' className='btn btn-primary' onClick={ this.onSaveClick.bind(this) }>Save</button>
-                    </form>
-                </div>
-            );
-        }
-
-        if(this.props.loading) {
-            content = <div>Searching for user...</div>;
-        } else if(this.props.apiError && this.props.apiStatus !== 404) {
-            content = <AlertPanel type='error' message={ this.props.apiError } />;
-        } else {
-            content = (
-                <div>
-                    { notFoundMessage }
-                    { successPanel }
-                    <form className='form'>
-                        <Input name='username' label={ 'Search for a user' } value={ this.state.username } onChange={ this.onUsernameChange.bind(this) } placeholder={ 'Enter username' } />
-                        <button type='submit' className='btn btn-primary' onClick={ this.onFindClick.bind(this) }>Find</button>
-                    </form>
-
-                    { renderedUser }
-                </div>);
-        }
-
-        return content;
+    if (userSaved) {
+        successPanel = (
+            <AlertPanel message='User saved successfully' type='success' />
+        );
     }
+
+    const notFoundMessage = apiStatus === 404 ? <AlertPanel type='warning' message='No users found' /> : null;
+
+    let renderedUser = null;
+
+    if (currentUser) {
+        const permissionsElements = permissionsList.map((permission) => (
+            <Checkbox
+                key={permission.name}
+                name={'permissions.' + permission.name}
+                label={permission.label}
+                fieldClass='col-sm-offset-3 col-sm-4'
+                type='checkbox'
+                onChange={(e) => onPermissionToggle(permission.name, e)}
+                checked={permissions[permission.name]}
+            />
+        ));
+
+        renderedUser = (
+            <div>
+                <h3>User details</h3>
+
+                <form className='form'>
+                    <dl>
+                        <dt>Username:</dt><dd>{currentUser.username}</dd>
+                        <dt>Email:</dt><dd>{currentUser.email}</dd>
+                        <dt>Registered:</dt><dd>{currentUser.registered}</dd>
+                    </dl>
+
+                    <h4>Permissions</h4>
+                    {permissionsElements}
+                    <button type='button' className='btn btn-primary' onClick={onSaveClick}>Save</button>
+                </form>
+            </div>
+        );
+    }
+
+    if (loading) {
+        content = <div>Searching for user...</div>;
+    } else if (apiError && apiStatus !== 404) {
+        content = <AlertPanel type='error' message={apiError} />;
+    } else {
+        content = (
+            <div>
+                {notFoundMessage}
+                {successPanel}
+                <form className='form'>
+                    <Input name='username' label='Search for a user' value={username} onChange={onUsernameChange} placeholder='Enter username' />
+                    <button type='submit' className='btn btn-primary' onClick={onFindClick}>Find</button>
+                </form>
+
+                {renderedUser}
+            </div>
+        );
+    }
+
+    return content;
 }
 
 InnerUserAdmin.displayName = 'UserAdmin';
@@ -150,4 +149,3 @@ function mapStateToProps(state) {
 const UserAdmin = connect(mapStateToProps, actions)(InnerUserAdmin);
 
 export default UserAdmin;
-

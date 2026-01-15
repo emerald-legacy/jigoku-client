@@ -1,8 +1,6 @@
-import React, { createRef } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import $ from 'jquery';
-import _ from 'underscore';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 import DeckRow from './DeckRow.jsx';
@@ -12,298 +10,291 @@ import DeckStatus from './DeckStatus.jsx';
 
 import * as actions from './actions';
 
-class InnerPendingGame extends React.Component {
-    constructor() {
-        super();
+export function InnerPendingGame({
+    apiError,
+    connecting,
+    currentGame,
+    decks,
+    gameSocketClose,
+    host,
+    loadDecks,
+    loading,
+    sendSocketMessage,
+    socket,
+    username,
+    zoomCard
+}) {
+    const notificationRef = useRef(null);
+    const messagePanelRef = useRef(null);
+    const prevPlayersRef = useRef(null);
 
-        this.modalRef = createRef();
-        this.notificationRef = createRef();
-        this.messagePanelRef = createRef();
+    const [playerCount, setPlayerCount] = useState(1);
+    const [playSound, setPlaySound] = useState(true);
+    const [message, setMessage] = useState('');
+    const [decksLoading, setDecksLoading] = useState(true);
+    const [waiting, setWaiting] = useState(false);
+    const [filteredDecks, setFilteredDecks] = useState([]);
+    const [showModal, setShowModal] = useState(false);
 
-        this.isGameReady = this.isGameReady.bind(this);
-        this.onSelectDeckClick = this.onSelectDeckClick.bind(this);
-        this.onLeaveClick = this.onLeaveClick.bind(this);
-        this.onStartClick = this.onStartClick.bind(this);
-        this.onChange = this.onChange.bind(this);
-        this.onKeyPress = this.onKeyPress.bind(this);
-        this.onSendClick = this.onSendClick.bind(this);
-        this.onMouseOut = this.onMouseOver.bind(this);
+    useEffect(() => {
+        const format = currentGame ? currentGame.gameMode : null;
+        loadDecks(format);
+    }, [loadDecks, currentGame]);
 
-        this.state = {
-            playerCount: 1,
-            decks: [],
-            playSound: true,
-            message: '',
-            decksLoading: true,
-            waiting: false,
-            filteredDecks: []
-        };
-    }
+    useEffect(() => {
+        const players = currentGame?.players ? Object.keys(currentGame.players).length : 0;
+        const prevPlayers = prevPlayersRef.current;
+        prevPlayersRef.current = players;
 
-    componentDidMount() {
-        const format = this.props.currentGame ? this.props.currentGame.gameMode : null;
-        this.props.loadDecks(format);
-    }
-
-    componentDidUpdate(prevProps) {
-        let players = _.size(this.props.currentGame.players);
-        let prevPlayers = _.size(prevProps.currentGame?.players);
-
-        if(prevPlayers === 1 && players === 2 && this.props.currentGame.owner === this.props.username) {
-            if(this.notificationRef.current) {
-                this.notificationRef.current.play();
+        if (prevPlayers === 1 && players === 2 && currentGame.owner === username) {
+            if (notificationRef.current) {
+                notificationRef.current.play();
             }
         }
 
-        if(!prevProps.connecting && this.props.connecting) {
-            this.setState({ waiting: false });
+        if (prevPlayers !== players) {
+            setPlayerCount(players);
         }
+    }, [currentGame, username]);
 
-        if(prevPlayers !== players) {
-            this.setState({ playerCount: players });
+    useEffect(() => {
+        if (connecting) {
+            setWaiting(false);
         }
+    }, [connecting]);
 
-        if(this.messagePanelRef.current) {
-            $(this.messagePanelRef.current).scrollTop(999999);
+    useEffect(() => {
+        if (messagePanelRef.current) {
+            messagePanelRef.current.scrollTop = 999999;
         }
-    }
+    });
 
-    isGameReady() {
-        if(!_.all(this.props.currentGame.players, player => {
-            return !!player.deck.selected;
-        })) {
+    const isGameReady = useCallback(() => {
+        if (!currentGame?.players) {
             return false;
         }
 
-        return this.props.currentGame.owner === this.props.username;
-    }
-
-    onSelectDeckClick() {
-        this.setState({ filteredDecks: this.props.decks || [] });
-        if(this.modalRef.current) {
-            $(this.modalRef.current).modal('show');
+        const allPlayersHaveDecks = Object.values(currentGame.players).every(player => !!player.deck?.selected);
+        if (!allPlayersHaveDecks) {
+            return false;
         }
-    }
 
-    selectDeck(index) {
-        if(this.modalRef.current) {
-            $(this.modalRef.current).modal('hide');
-        }
-        this.props.socket.emit('selectdeck', this.props.currentGame.id, this.state.filteredDecks[index]);
-    }
+        return currentGame.owner === username;
+    }, [currentGame, username]);
 
-    getPlayerStatus(player, username) {
-        let playerIsMe = player && player.name === username;
+    const handleSelectDeckClick = useCallback(() => {
+        setFilteredDecks(decks || []);
+        setShowModal(true);
+    }, [decks]);
+
+    const selectDeck = useCallback((index) => {
+        setShowModal(false);
+        socket.emit('selectdeck', currentGame.id, filteredDecks[index]);
+    }, [socket, currentGame, filteredDecks]);
+
+    const getPlayerStatus = useCallback((player) => {
+        const playerIsMe = player && player.name === username;
 
         let deck = null;
         let selectLink = null;
         let status = null;
 
-        if(player && player.deck && player.deck.selected) {
-            if(playerIsMe) {
-                deck = <span className='deck-selection clickable' onClick={ this.onSelectDeckClick }>{ player.deck.name }</span>;
+        if (player && player.deck && player.deck.selected) {
+            if (playerIsMe) {
+                deck = <span className='deck-selection clickable' onClick={handleSelectDeckClick}>{player.deck.name}</span>;
             } else {
                 deck = <span className='deck-selection'>Deck Selected</span>;
             }
 
-            status = <DeckStatus deck={ player.deck } />;
-        } else if(player && playerIsMe) {
-            selectLink = <span className='card-link' onClick={ this.onSelectDeckClick }>Select deck...</span>;
+            status = <DeckStatus deck={player.deck} />;
+        } else if (player && playerIsMe) {
+            selectLink = <span className='card-link' onClick={handleSelectDeckClick}>Select deck...</span>;
         }
 
         return (
-            <div className='player-row' key={ player.name }>
-                <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } /><span>{ player.name }</span>{ deck } { status } { selectLink }
-            </div>);
-    }
+            <div className='player-row' key={player.name}>
+                <Avatar emailHash={player.emailHash} forceDefault={player.settings ? player.settings.disableGravatar : false} /><span>{player.name}</span>{deck} {status} {selectLink}
+            </div>
+        );
+    }, [username, handleSelectDeckClick]);
 
-    getGameStatus() {
-        if(this.props.connecting) {
-            return 'Connecting to game server: ' + this.props.host;
+    const getGameStatus = useCallback(() => {
+        if (connecting) {
+            return 'Connecting to game server: ' + host;
         }
 
-        if(this.state.waiting) {
+        if (waiting) {
             return 'Waiting for lobby server...';
         }
 
-        if(_.size(this.props.currentGame.players) < 2) {
+        const playerSize = currentGame?.players ? Object.keys(currentGame.players).length : 0;
+        if (playerSize < 2) {
             return 'Waiting for players...';
         }
 
-        if(!_.all(this.props.currentGame.players, player => {
-            return !!player.deck.selected;
-        })) {
+        const allPlayersHaveDecks = Object.values(currentGame.players).every(player => !!player.deck?.selected);
+        if (!allPlayersHaveDecks) {
             return 'Waiting for players to select decks';
         }
 
         return 'Ready to begin, click start to begin the game';
-    }
+    }, [connecting, host, waiting, currentGame]);
 
-    onLeaveClick(event) {
+    const handleLeaveClick = useCallback((event) => {
         event.preventDefault();
+        socket.emit('leavegame', currentGame.id);
+        gameSocketClose();
+    }, [socket, currentGame, gameSocketClose]);
 
-        this.props.socket.emit('leavegame', this.props.currentGame.id);
-
-        this.props.gameSocketClose();
-    }
-
-    onStartClick(event) {
+    const handleStartClick = useCallback((event) => {
         event.preventDefault();
+        setWaiting(true);
+        socket.emit('startgame', currentGame.id);
+    }, [socket, currentGame]);
 
-        this.setState({ waiting: true });
-
-        this.props.socket.emit('startgame', this.props.currentGame.id);
-    }
-
-    sendMessage() {
-        if(this.state.message === '') {
+    const sendMessage = useCallback(() => {
+        if (message === '') {
             return;
         }
 
-        this.props.sendSocketMessage('chat', this.state.message);
+        sendSocketMessage('chat', message);
+        setMessage('');
+    }, [message, sendSocketMessage]);
 
-        this.setState({ message: '' });
-    }
-
-    onKeyPress(event) {
-        if(event.key === 'Enter') {
-            this.sendMessage();
-
+    const handleKeyPress = useCallback((event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
             event.preventDefault();
         }
-    }
+    }, [sendMessage]);
 
-    onSendClick(event) {
+    const handleSendClick = useCallback((event) => {
         event.preventDefault();
+        sendMessage();
+    }, [sendMessage]);
 
-        this.sendMessage();
-    }
+    const handleChange = useCallback((event) => {
+        setMessage(event.target.value);
+    }, []);
 
-    onChange(event) {
-        this.setState({ message: event.target.value });
-    }
+    const handleMouseOver = useCallback((card) => {
+        zoomCard(card);
+    }, [zoomCard]);
 
-    onMouseOver(card) {
-        this.props.zoomCard(card);
-    }
-
-    getClock() {
-        let game = this.props.currentGame;
-        if(!game.clocks || game.clocks.type === 'none') {
+    const getClock = useCallback(() => {
+        const game = currentGame;
+        if (!game.clocks || game.clocks.type === 'none') {
             return;
         }
-        if(game.clocks.type === 'byoyomi') {
+        if (game.clocks.type === 'byoyomi') {
             return `Clock: ${game.clocks.time} mins + ${game.clocks.periods} x ${game.clocks.timePeriod} secs (byoyomi)`;
         }
         return 'Clock: ' + game.clocks.time + ' mins (' + (game.clocks.type) + ')';
+    }, [currentGame]);
+
+    const renderedDecks = useMemo(() => {
+        if (loading) {
+            return <div>Loading decks from the server...</div>;
+        }
+        if (apiError) {
+            return <AlertPanel type='error' message={apiError} />;
+        }
+        if (filteredDecks.length > 0) {
+            return filteredDecks.map((deck, index) => (
+                <DeckRow key={deck.name + index.toString()} deck={deck} onClick={() => selectDeck(index)} />
+            ));
+        }
+        return <div>You have no decks for this format, please add one</div>;
+    }, [loading, apiError, filteredDecks, selectDeck]);
+
+    if (currentGame && currentGame.started) {
+        return <div>Loading game in progress, please wait...</div>;
     }
 
-    render() {
-        if(this.props.currentGame && this.props.currentGame.started) {
-            return <div>Loading game in progress, please wait...</div>;
-        }
+    const game = currentGame;
 
-        let index = 0;
-        let decks = null;
-
-        if(this.props.loading) {
-            decks = <div>Loading decks from the server...</div>;
-        } else if(this.props.apiError) {
-            decks = <AlertPanel type='error' message={ this.props.apiError } />;
-        } else {
-            decks = _.size(this.state.filteredDecks) > 0 ? _.map(this.state.filteredDecks, deck => {
-                let row = <DeckRow key={ deck.name + index.toString() } deck={ deck } onClick={ this.selectDeck.bind(this, index) } active={ index === this.state.selectedDeck } />;
-
-                index++;
-
-                return row;
-            }) : <div>You have no decks for this format, please add one</div>;
-        }
-
-        let game = this.props.currentGame;
-
-        let popup = (
-            <div id='decks-modal' ref={this.modalRef} className='modal fade' tabIndex='-1' role='dialog'>
-                <div className='modal-dialog' role='document'>
-                    <div className='modal-content deck-popup'>
-                        <div className='modal-header'>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>×</span></button>
-                            <h4 className='modal-title'>Select Deck</h4>
-                        </div>
-                        <div className='modal-body'>
-                            <div className='deck-list-popup'>
-                                { decks }
-                            </div>
+    const popup = (
+        <div className={`modal fade ${showModal ? 'in' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex='-1' role='dialog'>
+            <div className='modal-dialog' role='document'>
+                <div className='modal-content deck-popup'>
+                    <div className='modal-header'>
+                        <button type='button' className='close' aria-label='Close' onClick={() => setShowModal(false)}><span aria-hidden='true'>&times;</span></button>
+                        <h4 className='modal-title'>Select Deck</h4>
+                    </div>
+                    <div className='modal-body'>
+                        <div className='deck-list-popup'>
+                            {renderedDecks}
                         </div>
                     </div>
                 </div>
-            </div>);
+            </div>
+        </div>
+    );
 
-        return (
-            <div>
-                <audio ref={this.notificationRef}>
-                    <source src='/sound/charge.mp3' type='audio/mpeg' />
-                    <source src='/sound/charge.ogg' type='audio/ogg' />
-                </audio>
-                <div className='panel-title text-center'>
-                    { this.props.currentGame.name }
-                </div>
-                <div className='panel'>
-                    <div className='row-flex-box'>
-                        <div className='column-flex-box'>
-                            <div className='btn-group'>
-                                <button className='btn btn-primary' disabled={ !this.isGameReady() || this.props.connecting || this.state.waiting } onClick={ this.onStartClick }>Start</button>
-                                <button className='btn btn-primary' onClick={ this.onLeaveClick }>Leave</button>
-                            </div>
-                            <div className='game-status'>{ this.getGameStatus() }</div>
+    const backdrop = showModal ? <div className='modal-backdrop fade in' onClick={() => setShowModal(false)} /> : null;
+
+    return (
+        <div>
+            <audio ref={notificationRef}>
+                <source src='/sound/charge.mp3' type='audio/mpeg' />
+                <source src='/sound/charge.ogg' type='audio/ogg' />
+            </audio>
+            <div className='panel-title text-center'>
+                {currentGame.name}
+            </div>
+            <div className='panel'>
+                <div className='row-flex-box'>
+                    <div className='column-flex-box'>
+                        <div className='btn-group'>
+                            <button className='btn btn-primary' disabled={!isGameReady() || connecting || waiting} onClick={handleStartClick}>Start</button>
+                            <button className='btn btn-primary' onClick={handleLeaveClick}>Leave</button>
                         </div>
-                        <div className='column-flex-box'>
-                            <div>
-                                { 'Spectators allowed: ' + (game.allowSpectators ? 'Yes' : 'No') }
-                            </div>
-                            <div>
-                                { game.allowSpectators ? 'Spectators can chat: ' + (game.spectatorSquelch ? 'No' : 'Yes') : null }
-                            </div>
-                            <div>
-                                { this.getClock() }
-                            </div>
+                        <div className='game-status'>{getGameStatus()}</div>
+                    </div>
+                    <div className='column-flex-box'>
+                        <div>
+                            {'Spectators allowed: ' + (game.allowSpectators ? 'Yes' : 'No')}
+                        </div>
+                        <div>
+                            {game.allowSpectators ? 'Spectators can chat: ' + (game.spectatorSquelch ? 'No' : 'Yes') : null}
+                        </div>
+                        <div>
+                            {getClock()}
                         </div>
                     </div>
                 </div>
-                <div className='panel-title text-center'>
-                    Players
+            </div>
+            <div className='panel-title text-center'>
+                Players
+            </div>
+            <div className='players panel'>
+                {currentGame.players && Object.values(currentGame.players).map(player => getPlayerStatus(player))}
+            </div>
+            <div className='panel-title text-center'>
+                Spectators ({currentGame.spectators.length})
+            </div>
+            <div className='spectators panel'>
+                {currentGame.spectators.map(spectator => (
+                    <div key={spectator.name}>{spectator.name}</div>
+                ))}
+            </div>
+            <div className='panel-title text-center'>
+                Chat</div>
+            <div className='chat-box panel'>
+                <div className='message-list' ref={messagePanelRef}>
+                    <Messages messages={currentGame.messages} onCardMouseOver={handleMouseOver} onCardMouseOut={handleMouseOver} />
                 </div>
-                <div className='players panel'>
-                    {
-                        _.map(this.props.currentGame.players, player => {
-                            return this.getPlayerStatus(player, this.props.username);
-                        })
-                    }
-                </div>
-                <div className='panel-title text-center'>
-                    Spectators ({ this.props.currentGame.spectators.length })
-                </div>
-                <div className='spectators panel'>
-                    { _.map(this.props.currentGame.spectators, spectator => {
-                        return <div key={ spectator.name }>{ spectator.name }</div>;
-                    }) }
-                </div>
-                <div className='panel-title text-center'>
-                    Chat</div>
-                <div className='chat-box panel'>
-                    <div className='message-list'>
-                        <Messages messages={ this.props.currentGame.messages } onCardMouseOver={ this.onMouseOver } onCardMouseOut={ this.onMouseOut } />
+                <form className='form form-horizontal'>
+                    <div className='form-group'>
+                        <input className='form-control' type='text' placeholder='Enter a message...' value={message}
+                            onKeyPress={handleKeyPress} onChange={handleChange} />
                     </div>
-                    <form className='form form-horizontal'>
-                        <div className='form-group'>
-                            <input className='form-control' type='text' placeholder='Enter a message...' value={ this.state.message }
-                                onKeyPress={ this.onKeyPress } onChange={ this.onChange } />
-                        </div>
-                    </form>
-                </div>
-                { popup }
-            </div >);
-    }
+                </form>
+            </div>
+            {popup}
+            {backdrop}
+        </div>
+    );
 }
 
 InnerPendingGame.displayName = 'PendingGame';

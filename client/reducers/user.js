@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 export default function(state = {}, action) {
     switch(action.type) {
         case 'REFRESH_USER':
@@ -21,8 +19,8 @@ export default function(state = {}, action) {
 
             return addedState;
         case 'BLOCKLIST_DELETED':
-            var blockList = _.reject(state.blockList, user => {
-                return user === action.response.username;
+            var blockList = state.blockList.filter(user => {
+                return user !== action.response.username;
             });
 
             return Object.assign({}, state, {

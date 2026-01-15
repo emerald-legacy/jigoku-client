@@ -1,37 +1,36 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
-class AlertPanel extends React.Component {
-    render() {
-        var icon = 'glyphicon';
-        var alertClass = 'alert fade in';
+function AlertPanel({ children, message, noIcon, title, type }) {
+    let icon = 'glyphicon';
+    let alertClass = 'alert fade in';
 
-        switch(this.props.type) {
-            case 'warning':
-                icon += ' glyphicon-warning-sign';
-                alertClass += ' alert-warning';
-                break;
-            case 'error':
-                icon += ' glyphicon-exclamation-sign';
-                alertClass += ' alert-danger';
-                break;
-            case 'info':
-                icon += ' glyphicon-info-sign';
-                alertClass += ' alert-info';
-                break;
-            case 'success':
-                icon += ' glyphicon-ok-sign';
-                alertClass += ' alert-success';
-                break;
-        }
-
-        return (<div ref='alertPanel' className={ alertClass } role='alert'>
-            { this.props.noIcon ? null : <span className={ icon } aria-hidden='true' /> }
-            { this.props.title ? <span className='sr-only'>{ this.props.title }</span> : null }
-            &nbsp;{ this.props.message }
-            &nbsp;{ this.props.children }
-        </div>);
+    switch (type) {
+        case 'warning':
+            icon += ' glyphicon-warning-sign';
+            alertClass += ' alert-warning';
+            break;
+        case 'error':
+            icon += ' glyphicon-exclamation-sign';
+            alertClass += ' alert-danger';
+            break;
+        case 'info':
+            icon += ' glyphicon-info-sign';
+            alertClass += ' alert-info';
+            break;
+        case 'success':
+            icon += ' glyphicon-ok-sign';
+            alertClass += ' alert-success';
+            break;
     }
+
+    return (
+        <div className={alertClass} role='alert'>
+            {noIcon ? null : <span className={icon} aria-hidden='true' />}
+            {title ? <span className='sr-only'>{title}</span> : null}
+            &nbsp;{message}
+            &nbsp;{children}
+        </div>
+    );
 }
 
 AlertPanel.displayName = 'AlertPanel';

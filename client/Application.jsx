@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import $ from 'jquery';
-import _ from 'underscore';
+import axios from 'axios';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import { connect } from 'react-redux';
 import { io } from 'socket.io-client';
@@ -67,13 +66,20 @@ class App extends React.Component {
         this.props.loadFactions();
         this.props.loadFormats();
 
-        $(document).ajaxError((event, xhr) => {
-            if(xhr.status === 401) {
-                this.props.navigate('/login');
-            } else if(xhr.status === 403) {
-                this.props.navigate('/unauth');
+        // Set up axios interceptor for global error handling (replaces jQuery ajaxError)
+        this.axiosInterceptor = axios.interceptors.response.use(
+            response => response,
+            error => {
+                if(error.response) {
+                    if(error.response.status === 401) {
+                        this.props.navigate('/login');
+                    } else if(error.response.status === 403) {
+                        this.props.navigate('/unauth');
+                    }
+                }
+                return Promise.reject(error);
             }
-        });
+        );
 
         let socket = io(window.location.origin, {
             reconnection: true,
@@ -216,6 +222,10 @@ class App extends React.Component {
             this.lobbySocket.removeAllListeners();
             this.lobbySocket.disconnect();
         }
+        // Clean up axios interceptor
+        if(this.axiosInterceptor !== undefined) {
+            axios.interceptors.response.eject(this.axiosInterceptor);
+        }
     }
 
     getUrlParameter(name) {
@@ -278,7 +288,7 @@ class App extends React.Component {
             }
         }
 
-        if(_.size(adminMenuItems) > 0) {
+        if(adminMenuItems.length > 0) {
             leftMenu.push({ name: 'Admin', childItems: adminMenuItems });
         }
 

@@ -1,8 +1,6 @@
-import React from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'underscore';
-import $ from 'jquery';
 import EmojiConvertor from 'emoji-js';
 import moment from 'moment';
 
@@ -12,221 +10,204 @@ import News from './SiteComponents/News.jsx';
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 import Link from './Link.jsx';
 
-class InnerLobby extends React.Component {
-    constructor() {
-        super();
+const emoji = new EmojiConvertor();
 
-        this.onChange = this.onChange.bind(this);
-        this.onKeyPress = this.onKeyPress.bind(this);
-        this.onSendClick = this.onSendClick.bind(this);
-        this.onScroll = this.onScroll.bind(this);
+export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, socket, users }) {
+    const [canScroll, setCanScroll] = useState(true);
+    const [message, setMessage] = useState('');
+    const [showUsers, setShowUsers] = useState(false);
 
-        this.emoji = new EmojiConvertor();
+    useEffect(() => {
+        loadNews({ limit: 3 });
+    }, [loadNews]);
 
-        this.state = {
-            canScroll: true,
-            message: '',
-            showUsers: false
-        };
-    }
-
-    componentDidMount() {
-        this.props.loadNews({ limit: 3 });
-    }
-
-    componentDidUpdate() {
-        // Scroll functionality removed - no chat elements in current render
-    }
-
-    sendMessage() {
-        if(this.state.message === '') {
+    const sendMessage = useCallback(() => {
+        if (message === '') {
             return;
         }
 
-        this.props.socket.emit('lobbychat', this.state.message);
+        socket.emit('lobbychat', message);
+        setMessage('');
+    }, [message, socket]);
 
-        this.setState({ message: '' });
-    }
-
-    onKeyPress(event) {
-        if(event.key === 'Enter') {
-            this.sendMessage();
-
+    const handleKeyPress = useCallback((event) => {
+        if (event.key === 'Enter') {
+            sendMessage();
             event.preventDefault();
         }
-    }
+    }, [sendMessage]);
 
-    onSendClick(event) {
+    const handleSendClick = useCallback((event) => {
         event.preventDefault();
+        sendMessage();
+    }, [sendMessage]);
 
-        this.sendMessage();
-    }
+    const handleChange = useCallback((value) => {
+        setMessage(value);
+    }, []);
 
-    onChange(value) {
-        this.setState({ message: value });
-    }
+    const handleBurgerClick = useCallback(() => {
+        setShowUsers(prev => !prev);
+    }, []);
 
-    onScroll() {
-        // Scroll functionality removed - no chat elements in current render
-    }
+    const renderedMessages = useMemo(() => {
+        if (!messages) {
+            return [];
+        }
 
-    onBurgerClick() {
-        this.setState({ showUsers: !this.state.showUsers });
-    }
-
-    getMessages() {
-        let groupedMessages = {};
+        const groupedMessages = {};
         let index = 0;
-        let today = moment();
-        let yesterday = moment().add(-1, 'days');
+        const today = moment();
+        const yesterday = moment().add(-1, 'days');
         let lastUser;
         let currentGroup = 0;
 
-        _.each(this.props.messages, message => {
-            if(!message.user) {
-                return;
+        for (const msg of messages) {
+            if (!msg.user) {
+                continue;
             }
 
-            let formattedTime = moment(message.time).format('YYYYMMDDHHmm');
-            if(lastUser && message.user && lastUser !== message.user.username) {
+            const formattedTime = moment(msg.time).format('YYYYMMDDHHmm');
+            if (lastUser && msg.user && lastUser !== msg.user.username) {
                 currentGroup++;
             }
 
-            let key = message.user.username + formattedTime + currentGroup;
+            const key = msg.user.username + formattedTime + currentGroup;
 
-            if(!groupedMessages[key]) {
+            if (!groupedMessages[key]) {
                 groupedMessages[key] = [];
             }
 
-            groupedMessages[key].push(message);
+            groupedMessages[key].push(msg);
+            lastUser = msg.user.username;
+        }
 
-            lastUser = message.user.username;
-        });
+        return Object.values(groupedMessages).map((msgGroup) => {
+            const firstMessage = msgGroup[0];
 
-        return _.map(groupedMessages, messages => {
-            let timestamp = '';
-            let firstMessage = _.first(messages);
-
-            if(!firstMessage.user) {
-                return;
+            if (!firstMessage.user) {
+                return null;
             }
 
-            if(today.isSame(firstMessage.time, 'd')) {
+            let timestamp = '';
+            if (today.isSame(firstMessage.time, 'd')) {
                 timestamp = moment(firstMessage.time).format('H:mm');
-            } else if(yesterday.isSame(firstMessage.time, 'd')) {
+            } else if (yesterday.isSame(firstMessage.time, 'd')) {
                 timestamp = 'yesterday ' + moment(firstMessage.time).format('H:mm');
             } else {
                 timestamp = moment(firstMessage.time).format('MMM Do H:mm');
             }
 
-            let renderedMessages = _.map(messages, message => {
-                if(!message.user) {
-                    return;
+            const renderedMsgs = msgGroup.map((msg, msgIndex) => {
+                if (!msg.user) {
+                    return null;
                 }
-                return (<div className='lobby-message'>{ this.emoji.replace_colons(message.message) }</div>);
+                return <div key={msgIndex} className='lobby-message'>{emoji.replace_colons(msg.message)}</div>;
             });
 
             return (
-                <div key={ timestamp + firstMessage.user.username + (index++).toString() }>
-                    <Avatar emailHash={ firstMessage.user.emailHash } float forceDefault={ firstMessage.user.noAvatar } />
-                    <span className='username'>{ firstMessage.user.username }</span><span>{ timestamp }</span>
-                    { renderedMessages }
+                <div key={timestamp + firstMessage.user.username + (index++).toString()}>
+                    <Avatar emailHash={firstMessage.user.emailHash} float forceDefault={firstMessage.user.noAvatar} />
+                    <span className='username'>{firstMessage.user.username}</span><span>{timestamp}</span>
+                    {renderedMsgs}
                 </div>
             );
         });
-    }
+    }, [messages]);
 
-    render() {
-        let userList = _.map(this.props.users, user => {
-            return (
-                <div className='user-row' key={ user.name }>
-                    <Avatar emailHash={ user.emailHash } forceDefault={ user.noAvatar } />
-                    <span>{ user.name }</span>
-                </div>
-            );
-        });
+    const userList = useMemo(() => {
+        if (!users) {
+            return [];
+        }
+        return users.map(user => (
+            <div className='user-row' key={user.name}>
+                <Avatar emailHash={user.emailHash} forceDefault={user.noAvatar} />
+                <span>{user.name}</span>
+            </div>
+        ));
+    }, [users]);
 
-
-        return (
-            <div className='flex-container'>
-                <div className={ 'sidebar' + (this.state.showUsers ? ' expanded' : '') }>
-                    { this.state.showUsers ?
-                        <div>
-                            <a href='#' className='btn pull-right' onClick={ this.onBurgerClick.bind(this) }>
-                                <span className='glyphicon glyphicon-remove' />
-                            </a>
-                            <div className='userlist'>Online Users
-                                { userList }
-                            </div>
-                        </div> :
-                        <div>
-                            <a href='#' className='btn' onClick={ this.onBurgerClick.bind(this) }>
-                                <span className='glyphicon glyphicon-menu-hamburger' />
-                            </a>
-                        </div>
-                    }
-                </div>
-                <div className='col-sm-offset-1 col-sm-10'>
-                    <div className='main-header'>
-                        <span className='text-center'><h1>Legend of the Five Rings LCG</h1></span>
-                    </div>
-                </div>
-                { this.props.bannerNotice ? <AlertPanel message={ this.props.bannerNotice } type='error' /> : null }
-                <div className='col-sm-offset-1 col-sm-10'>
-                    <div className='panel-title text-center'>Getting Started</div>
-                    <div className='panel panel-darker'>
-                        <p>This site allows you to play the Legend of the Five Rings LCG in your browser.</p>
-                        <p>If you're new, head on over to the <Link href='/how-to-play'>How To Play guide</Link> for a thorough explanation on how to use the site!</p>
-                    </div>
-                </div>
-
-                <div className='col-sm-offset-1 col-sm-10'>
-                    <div className='panel-title text-center'>
-                        Latest site news
-                    </div>
-                    <div className='panel panel-darker'>
-                        { this.props.loading ? <div>News loading...</div> : null }
-                        <News news={ this.props.news } />
-                    </div>
-                </div>
-
-                <div className='col-sm-offset-1 col-sm-10 chat-container'>
-                    <div className='panel-title text-center'>Community Information</div>
-                    <div className='panel panel-darker'>
-                        <div className='discord-grid'>
-                            <div className='discord-grid-cell'>
-                                <div className='discord-label'>
-                                    <img src='/img/community_discord_icon.gif' className='discord-server-icon'/>
-                                    <h3>L5R Community Discord Server</h3>
-                                </div>
-                                <p><a href='https://discord.gg/zPvBePb' target='_blank'>Invite Link</a></p>
-                                <p>Are you interested in the L5R LCG?  Come and chat on our Discord server!</p>
-                                <p>The server was created by members of the L5R community, and is maintained by the community, so come and talk any thing L5R related.</p>
-                            </div>
-                            <div className='discord-grid-cell'>
-                                <div className='discord-label'>
-                                    <img src='/img/event_discord_icon.webp' className='discord-server-icon'/>
-                                    <h3>L5R Event Discord Server</h3>
-                                </div>
-                                <p><a href='https://discord.gg/mfpZTqxxah' target='_blank'>Invite Link</a></p>
-                                <p>This Discord server is used by the community to coordinate community run events.</p>
-                                <p>Whether you want to play in a sanctioned Emerald Legacy tournament, join the monthly Discord League, or find fellow beginners in the Beginner's League, this server has something for everyone, not just competitive players.</p>
-                            </div>
-                        </div>
-
-                        <div className='emerald-legacy-panel'>
-                            <img className='emerald-legacy-logo' src='/img/emerald-legacy-logo.png'/>
-                            <h3><a href='https://emeraldlegacy.org/' target='_blank'>Emerald Legacy</a></h3>
-                            <p>The Emerald Legacy project is a fan-run nonprofit volunteer collective. Its mission is to provide a living and thriving continuation of the LCG after the end of official support for the game.
-                            Emerald Legacy is responsible for creating and releasing new cards, organizing tournaments, and maintaining the rules and balance of the game.</p>
-                            <br />
-                            <p>Emerald Legacy provides the <a href='https://www.emeralddb.org/' target='_blank'>EmeraldDB</a> service, which is an online collection of all cards and rules for the LCG.
-                            EmeraldDB includes a deck builder for the LCG, as well as lists that have been made public by other players.  Deck lists that you create are able to be directly imported into the Deckbuilder here!</p>
+    return (
+        <div className='flex-container'>
+            <div className={'sidebar' + (showUsers ? ' expanded' : '')}>
+                {showUsers ? (
+                    <div>
+                        <a href='#' className='btn pull-right' onClick={handleBurgerClick}>
+                            <span className='glyphicon glyphicon-remove' />
+                        </a>
+                        <div className='userlist'>Online Users
+                            {userList}
                         </div>
                     </div>
+                ) : (
+                    <div>
+                        <a href='#' className='btn' onClick={handleBurgerClick}>
+                            <span className='glyphicon glyphicon-menu-hamburger' />
+                        </a>
+                    </div>
+                )}
+            </div>
+            <div className='col-sm-offset-1 col-sm-10'>
+                <div className='main-header'>
+                    <span className='text-center'><h1>Legend of the Five Rings LCG</h1></span>
                 </div>
-            </div>);
-    }
+            </div>
+            {bannerNotice ? <AlertPanel message={bannerNotice} type='error' /> : null}
+            <div className='col-sm-offset-1 col-sm-10'>
+                <div className='panel-title text-center'>Getting Started</div>
+                <div className='panel panel-darker'>
+                    <p>This site allows you to play the Legend of the Five Rings LCG in your browser.</p>
+                    <p>If you're new, head on over to the <Link href='/how-to-play'>How To Play guide</Link> for a thorough explanation on how to use the site!</p>
+                </div>
+            </div>
+
+            <div className='col-sm-offset-1 col-sm-10'>
+                <div className='panel-title text-center'>
+                    Latest site news
+                </div>
+                <div className='panel panel-darker'>
+                    {loading ? <div>News loading...</div> : null}
+                    <News news={news} />
+                </div>
+            </div>
+
+            <div className='col-sm-offset-1 col-sm-10 chat-container'>
+                <div className='panel-title text-center'>Community Information</div>
+                <div className='panel panel-darker'>
+                    <div className='discord-grid'>
+                        <div className='discord-grid-cell'>
+                            <div className='discord-label'>
+                                <img src='/img/community_discord_icon.gif' className='discord-server-icon' />
+                                <h3>L5R Community Discord Server</h3>
+                            </div>
+                            <p><a href='https://discord.gg/zPvBePb' target='_blank'>Invite Link</a></p>
+                            <p>Are you interested in the L5R LCG?  Come and chat on our Discord server!</p>
+                            <p>The server was created by members of the L5R community, and is maintained by the community, so come and talk any thing L5R related.</p>
+                        </div>
+                        <div className='discord-grid-cell'>
+                            <div className='discord-label'>
+                                <img src='/img/event_discord_icon.webp' className='discord-server-icon' />
+                                <h3>L5R Event Discord Server</h3>
+                            </div>
+                            <p><a href='https://discord.gg/mfpZTqxxah' target='_blank'>Invite Link</a></p>
+                            <p>This Discord server is used by the community to coordinate community run events.</p>
+                            <p>Whether you want to play in a sanctioned Emerald Legacy tournament, join the monthly Discord League, or find fellow beginners in the Beginner's League, this server has something for everyone, not just competitive players.</p>
+                        </div>
+                    </div>
+
+                    <div className='emerald-legacy-panel'>
+                        <img className='emerald-legacy-logo' src='/img/emerald-legacy-logo.png' />
+                        <h3><a href='https://emeraldlegacy.org/' target='_blank'>Emerald Legacy</a></h3>
+                        <p>The Emerald Legacy project is a fan-run nonprofit volunteer collective. Its mission is to provide a living and thriving continuation of the LCG after the end of official support for the game.
+                        Emerald Legacy is responsible for creating and releasing new cards, organizing tournaments, and maintaining the rules and balance of the game.</p>
+                        <br />
+                        <p>Emerald Legacy provides the <a href='https://www.emeralddb.org/' target='_blank'>EmeraldDB</a> service, which is an online collection of all cards and rules for the LCG.
+                        EmeraldDB includes a deck builder for the LCG, as well as lists that have been made public by other players.  Deck lists that you create are able to be directly imported into the Deckbuilder here!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 InnerLobby.displayName = 'Lobby';

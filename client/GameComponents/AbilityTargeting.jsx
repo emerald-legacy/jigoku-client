@@ -1,70 +1,86 @@
-import React from 'react';
+import { useCallback } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'underscore';
 
-class AbilityTargeting extends React.Component {
-    onMouseOver(event, card) {
-        if(card && !card.facedown && this.props.onMouseOver) {
-            this.props.onMouseOver(card);
+function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
+    const handleMouseOver = useCallback((event, card) => {
+        if (card && !card.facedown && onMouseOver) {
+            onMouseOver(card);
         }
-    }
+    }, [onMouseOver]);
 
-    onMouseOut(event, card) {
-        if(card && this.props.onMouseOut) {
-            this.props.onMouseOut(card);
+    const handleMouseOut = useCallback((event, card) => {
+        if (card && onMouseOut) {
+            onMouseOut(card);
         }
-    }
+    }, [onMouseOut]);
 
-    getCardImagePath(card) {
-        if(!card.id) {
+    const getCardImagePath = useCallback((card) => {
+        if (!card.id) {
             return '/img/cards/' + (card.isDynasty ? 'dynasty' : card.isConflict ? 'conflict' : 'province') + 'cardback.jpg';
         }
-        if(card.packId) {
+        if (card.packId) {
             return '/img/cards/' + card.id + '-' + card.packId + '.jpg';
         }
         return '/img/cards/' + card.id + '.jpg';
-    }
+    }, []);
 
-    renderSimpleCard(card) {
+    const renderSimpleCard = useCallback((card) => {
         return (
-            <div className='target-card vertical'
-                onMouseOut={ event => this.onMouseOut(event, card) }
-                onMouseOver={ event => this.onMouseOver(event, card) }>
-                <img className='target-card-image vertical'
-                    alt={ card.name }
-                    src={ this.getCardImagePath(card) } />
-            </div>);
-    }
+            <div
+                className='target-card vertical'
+                onMouseOut={(event) => handleMouseOut(event, card)}
+                onMouseOver={(event) => handleMouseOver(event, card)}
+            >
+                <img
+                    className='target-card-image vertical'
+                    alt={card.name}
+                    src={getCardImagePath(card)}
+                />
+            </div>
+        );
+    }, [handleMouseOut, handleMouseOver, getCardImagePath]);
 
-    renderSimpleRing(ring) {
+    const renderSimpleRing = useCallback((ring) => {
         return (
             <div className='ring-prompt'>
                 <div className='ring no-highlight'>
-                    <div className={ 'ring icon-element-' + ring.element + ' large' }/>
+                    <div className={'ring icon-element-' + ring.element + ' large'} />
                 </div>
-            </div>);
-    }
-
-    renderStringChoice(string) {
-        return (
-            <div className='target-card vertical'>
-                { string }
-            </div>);
-    }
-
-    render() {
-        let targetCards = _.map(this.props.targets, target => {
-            return target.type === 'select' ? this.renderStringChoice(target.name) : target.type === 'ring' ? this.renderSimpleRing(target) : this.renderSimpleCard(target);
-        });
-        let source = this.props.source.type ? (this.props.source.type === 'ring' ? this.renderSimpleRing(this.props.source) : this.renderSimpleCard(this.props.source)) : this.renderStringChoice(this.props.source.name);
-        return (
-            <div className='prompt-control-targeting'>
-                { source }
-                { targetCards.length ? <span className='glyphicon glyphicon-arrow-right targeting-arrow' /> : null }
-                { targetCards.length ? targetCards : null }
             </div>
         );
+    }, []);
+
+    const renderStringChoice = useCallback((string) => {
+        return (
+            <div className='target-card vertical'>
+                {string}
+            </div>
+        );
+    }, []);
+
+    const targetCards = targets?.map((target, index) => {
+        if (target.type === 'select') {
+            return <span key={index}>{renderStringChoice(target.name)}</span>;
+        } else if (target.type === 'ring') {
+            return <span key={index}>{renderSimpleRing(target)}</span>;
+        }
+        return <span key={index}>{renderSimpleCard(target)}</span>;
+    });
+
+    let sourceElement;
+    if (source.type) {
+        sourceElement = source.type === 'ring' ? renderSimpleRing(source) : renderSimpleCard(source);
+    } else {
+        sourceElement = renderStringChoice(source.name);
     }
+
+    return (
+        <div className='prompt-control-targeting'>
+            {sourceElement}
+            {targetCards && targetCards.length > 0 ? <span className='glyphicon glyphicon-arrow-right targeting-arrow' /> : null}
+            {targetCards && targetCards.length > 0 ? targetCards : null}
+        </div>
+    );
 }
 
 AbilityTargeting.displayName = 'AbilityTargeting';

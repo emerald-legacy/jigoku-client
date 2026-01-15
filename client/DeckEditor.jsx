@@ -1,7 +1,6 @@
-import React, { createRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'underscore';
-import $ from 'jquery';
+import axios from 'axios';
 import { connect } from 'react-redux';
 
 import Input from './FormComponents/Input.jsx';
@@ -11,416 +10,406 @@ import TextArea from './FormComponents/TextArea.jsx';
 
 import * as actions from './actions';
 
-class InnerDeckEditor extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.modalRef = createRef();
-        this.onImportDeckClick = this.onImportDeckClick.bind(this);
-
-        this.state = {
-            cardList: '',
-            deck: this.copyDeck(props.deck),
-            numberToAdd: 1,
-            validation: {
-                deckname: '',
-                cardToAdd: ''
-            }
-        };
+function copyDeck(deck, clearStatus = false) {
+    if (!deck) {
+        return { name: 'New Deck' };
     }
 
-    componentDidMount() {
-        let deck = this.copyDeck(this.state.deck);
+    return {
+        _id: deck._id,
+        name: deck.name,
+        stronghold: deck.stronghold,
+        role: deck.role,
+        provinceCards: deck.provinceCards,
+        conflictCards: deck.conflictCards,
+        dynastyCards: deck.dynastyCards,
+        faction: deck.faction,
+        format: deck.format,
+        alliance: deck.alliance,
+        status: clearStatus ? undefined : deck.status
+    };
+}
+
+export function InnerDeckEditor({
+    alliances,
+    cards,
+    deck: propDeck,
+    factions,
+    formats,
+    loading,
+    onDeckSave,
+    packs,
+    updateDeck
+}) {
+    const [cardList, setCardList] = useState('');
+    const [deck, setDeck] = useState(copyDeck(propDeck));
+    const [numberToAdd, setNumberToAdd] = useState(1);
+    const [cardToAdd, setCardToAdd] = useState(null);
+    const [showModal, setShowModal] = useState(false);
+    const [importUrl, setImportUrl] = useState('');
+
+    const getCardListEntry = useCallback((count, card, packId) => {
+        if (!card) {
+            return '';
+        }
+        let packName = '';
+        if (card.versions && card.versions.length) {
+            const packData = packId
+                ? card.versions.find(v => v.pack_id === packId) || card.versions[0]
+                : card.versions[0];
+            const pack = packs?.find(p => p.id === packData.pack_id);
+            if (pack && pack.name) {
+                packName = ' (' + pack.name + ')';
+            }
+        }
+        return count + ' ' + card.name + packName + '\n';
+    }, [packs]);
+
+    useEffect(() => {
+        let updatedDeck = copyDeck(deck);
         let updatedDefaultFields = false;
-        if(!this.props.deck.faction && this.props.factions) {
-            deck.faction = this.props.factions['crab'];
-            deck.alliance = { name: '', value: '' };
+        if (!propDeck.faction && factions) {
+            updatedDeck.faction = factions['crab'];
+            updatedDeck.alliance = { name: '', value: '' };
             updatedDefaultFields = true;
         }
-        if(!this.props.deck.format && this.props.formats) {
-            deck.format = this.props.formats['emerald'];
+        if (!propDeck.format && formats) {
+            updatedDeck.format = formats['emerald'];
             updatedDefaultFields = true;
         }
-        if(updatedDefaultFields) {
-            this.setState({ deck: deck });
-            this.props.updateDeck(deck);
-        }
-        let cardList = '';
-
-        if(this.props.deck && (this.props.deck.stronghold || this.props.deck.role || this.props.deck.provinceCards ||
-                this.props.deck.conflictCards || this.props.deck.dynastyCards)) {
-            _.each(this.props.deck.stronghold, card => {
-                cardList += this.getCardListEntry(card.count, card.card, card.pack_id);
-            });
-
-            _.each(this.props.deck.role, card => {
-                cardList += this.getCardListEntry(card.count, card.card, card.pack_id);
-            });
-
-            _.each(this.props.deck.conflictCards, card => {
-                cardList += this.getCardListEntry(card.count, card.card, card.pack_id);
-            });
-
-            _.each(this.props.deck.dynastyCards, card => {
-                cardList += this.getCardListEntry(card.count, card.card, card.pack_id);
-            });
-
-            _.each(this.props.deck.provinceCards, card => {
-                cardList += this.getCardListEntry(card.count, card.card, card.pack_id);
-            });
-
-            this.setState({ cardList: cardList });
-        }
-    }
-
-    // XXX One could argue this is a bit hacky, because we're updating the innards of the deck object, react doesn't update components that use it unless we change the reference itself
-    copyDeck(deck, clearStatus = false) {
-        if(!deck) {
-            return { name: 'New Deck'};
+        if (updatedDefaultFields) {
+            setDeck(updatedDeck);
+            updateDeck(updatedDeck);
         }
 
-        return {
-            _id: deck._id,
-            name: deck.name,
-            stronghold: deck.stronghold,
-            role: deck.role,
-            provinceCards: deck.provinceCards,
-            conflictCards: deck.conflictCards,
-            dynastyCards: deck.dynastyCards,
-            faction: deck.faction,
-            format: deck.format,
-            alliance: deck.alliance,
-            status: clearStatus ? undefined : deck.status
-        };
-    }
-
-    onChange(field, event) {
-        let deck = this.copyDeck(this.state.deck);
-
-        deck[field] = event.target.value;
-
-        this.setState({ deck: deck });
-        this.props.updateDeck(deck);
-    }
-
-    onNumberToAddChange(event) {
-        this.setState({ numberToAdd: event.target.value });
-    }
-
-    onFormatChange(selectedFormat) {
-        let deck = this.copyDeck(this.state.deck, true);
-
-        deck.format = selectedFormat;
-
-        this.setState({ deck: deck });
-        this.props.updateDeck(deck);
-    }
-
-    onFactionChange(selectedFaction) {
-        let deck = this.copyDeck(this.state.deck, true);
-
-        deck.faction = selectedFaction;
-
-        this.setState({ deck: deck });
-        this.props.updateDeck(deck);
-    }
-
-    onAllianceChange(selectedAlliance) {
-        let deck = this.copyDeck(this.state.deck, true);
-
-        if(!selectedAlliance) {
-            deck.alliance = { name: '', value: '' };
-        } else {
-            deck.alliance = selectedAlliance;
-        }
-
-        this.setState({ deck: deck, showAlliance: deck.alliance }); // Alliance
-        this.props.updateDeck(deck);
-    }
-
-    addCardChange(selectedCards) {
-        this.setState({ cardToAdd: selectedCards[0] });
-    }
-
-    onAddCard(event) {
-        event.preventDefault();
-
-        if(!this.state.cardToAdd || !this.state.cardToAdd.name) {
-            return;
-        }
-
-        // Get the default pack_id from the first version (if available)
-        let defaultPackId;
-        if(this.state.cardToAdd.versions && this.state.cardToAdd.versions.length > 0) {
-            defaultPackId = this.state.cardToAdd.versions[0].pack_id;
-        }
-
-        let cardList = this.state.cardList;
-        cardList += this.getCardListEntry(this.state.numberToAdd, this.state.cardToAdd, defaultPackId);
-
-        this.addCard(this.state.cardToAdd, parseInt(this.state.numberToAdd), defaultPackId);
-        this.setState({ cardList: cardList });
-        let deck = this.state.deck;
-
-        deck = this.copyDeck(deck, true);
-
-        this.props.updateDeck(deck);
-    }
-
-    onCardListChange(event) {
-        let deck = this.state.deck;
-        let split = event.target.value.split('\n');
-
-        deck.stronghold = [];
-        deck.role = [];
-        deck.provinceCards = [];
-        deck.conflictCards = [];
-        deck.dynastyCards = [];
-
-        _.each(split, line => {
-            line = line.trim();
-            let index = 2;
-
-            if(!$.isNumeric(line[0])) {
-                return;
-            }
-
-            let num = parseInt(line[0]);
-            if(line[1] === 'x') {
-                index++;
-            }
-
-            let packOffset = line.indexOf('(');
-            let cardName = line.substr(index, packOffset === -1 ? line.length : packOffset - index - 1);
-            let packName = packOffset > -1 ? line.substr(packOffset + 1, line.length - packOffset - 2) : '';
-
-            let pack = _.find(this.props.packs, function(pack) {
-                return pack.id.toLowerCase() === packName.toLowerCase() || pack.name.toLowerCase() === packName.toLowerCase();
+        let list = '';
+        if (propDeck && (propDeck.stronghold || propDeck.role || propDeck.provinceCards ||
+            propDeck.conflictCards || propDeck.dynastyCards)) {
+            propDeck.stronghold?.forEach(card => {
+                list += getCardListEntry(card.count, card.card, card.pack_id);
             });
-
-            let card = _.find(this.props.cards, function(card) {
-                if(pack && card.versions.length) {
-                    if(card.name.toLowerCase() === cardName.toLowerCase()) {
-                        return _.find(card.versions, function(packCard) {
-                            return packCard.pack_id === pack.id;
-                        });
-                    }
-                    return false;
-                }
-                return card.name.toLowerCase() === cardName.toLowerCase();
+            propDeck.role?.forEach(card => {
+                list += getCardListEntry(card.count, card.card, card.pack_id);
             });
+            propDeck.conflictCards?.forEach(card => {
+                list += getCardListEntry(card.count, card.card, card.pack_id);
+            });
+            propDeck.dynastyCards?.forEach(card => {
+                list += getCardListEntry(card.count, card.card, card.pack_id);
+            });
+            propDeck.provinceCards?.forEach(card => {
+                list += getCardListEntry(card.count, card.card, card.pack_id);
+            });
+            setCardList(list);
+        }
+    }, []);
 
-            if(card) {
-                // Use specified pack or default to first version's pack
-                let packId = pack ? pack.id : (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
-                this.addCard(card, num, packId);
-            }
-        });
-
-        deck = this.copyDeck(deck, true);
-
-        this.setState({ cardList: event.target.value, deck: deck }); // Alliance
-        this.props.updateDeck(deck);
-    }
-
-    addCard(card, number, packId) {
-        let deck = this.copyDeck(this.state.deck);
-        let provinces = deck.provinceCards;
-        let stronghold = deck.stronghold;
-        let role = deck.role;
-        let conflict = deck.conflictCards;
-        let dynasty = deck.dynastyCards;
+    const addCard = useCallback((card, number, packId, currentDeck) => {
+        const deckCopy = copyDeck(currentDeck);
+        const provinces = deckCopy.provinceCards || [];
+        const stronghold = deckCopy.stronghold || [];
+        const role = deckCopy.role || [];
+        const conflict = deckCopy.conflictCards || [];
+        const dynasty = deckCopy.dynastyCards || [];
 
         let list;
-
-        if(card.type === 'province') {
+        if (card.type === 'province') {
             list = provinces;
-        } else if(card.side === 'dynasty') {
+        } else if (card.side === 'dynasty') {
             list = dynasty;
-        } else if(card.side === 'conflict') {
+        } else if (card.side === 'conflict') {
             list = conflict;
-        } else if(card.type === 'stronghold') {
+        } else if (card.type === 'stronghold') {
             list = stronghold;
         } else {
             list = role;
         }
 
-        // Find existing entry for this card with the same pack
-        let existingEntry = _.find(list, entry => entry.card.id === card.id && entry.pack_id === packId);
-        if(existingEntry) {
+        const existingEntry = list.find(entry => entry.card.id === card.id && entry.pack_id === packId);
+        if (existingEntry) {
             existingEntry.count += number;
         } else {
             list.push({ count: number, card: card, pack_id: packId });
         }
-    }
 
-    onSaveClick(event) {
+        deckCopy.stronghold = stronghold;
+        deckCopy.role = role;
+        deckCopy.provinceCards = provinces;
+        deckCopy.conflictCards = conflict;
+        deckCopy.dynastyCards = dynasty;
+
+        return deckCopy;
+    }, []);
+
+    const handleChange = useCallback((field, event) => {
+        const newDeck = copyDeck(deck);
+        newDeck[field] = event.target.value;
+        setDeck(newDeck);
+        updateDeck(newDeck);
+    }, [deck, updateDeck]);
+
+    const handleNumberToAddChange = useCallback((event) => {
+        setNumberToAdd(event.target.value);
+    }, []);
+
+    const handleFormatChange = useCallback((selectedFormat) => {
+        const newDeck = copyDeck(deck, true);
+        newDeck.format = selectedFormat;
+        setDeck(newDeck);
+        updateDeck(newDeck);
+    }, [deck, updateDeck]);
+
+    const handleFactionChange = useCallback((selectedFaction) => {
+        const newDeck = copyDeck(deck, true);
+        newDeck.faction = selectedFaction;
+        setDeck(newDeck);
+        updateDeck(newDeck);
+    }, [deck, updateDeck]);
+
+    const handleAllianceChange = useCallback((selectedAlliance) => {
+        const newDeck = copyDeck(deck, true);
+        if (!selectedAlliance) {
+            newDeck.alliance = { name: '', value: '' };
+        } else {
+            newDeck.alliance = selectedAlliance;
+        }
+        setDeck(newDeck);
+        updateDeck(newDeck);
+    }, [deck, updateDeck]);
+
+    const handleAddCardChange = useCallback((selectedCards) => {
+        setCardToAdd(selectedCards[0]);
+    }, []);
+
+    const handleAddCard = useCallback((event) => {
         event.preventDefault();
 
-        if(this.props.onDeckSave) {
-            this.props.onDeckSave(this.props.deck);
-        }
-    }
-
-    onImportDeckClick() {
-        if(this.modalRef.current) {
-            $(this.modalRef.current).modal('show');
-        }
-    }
-
-    getCardListEntry(count, card, packId) {
-        if(!card) {
-            return '';
-        }
-        let packName = '';
-        if(card.versions && card.versions.length) {
-            // Use the provided packId if available, otherwise fall back to first version
-            let packData = packId
-                ? _.find(card.versions, v => v.pack_id === packId) || card.versions[0]
-                : card.versions[0];
-            let pack = _.find(this.props.packs, p => p.id === packData.pack_id);
-            if(pack && pack.name) {
-                packName = ' (' + pack.name + ')';
-            }
-        }
-        return count + ' ' + card.name + packName + '\n';
-    }
-
-    importDeck() {
-        if(this.modalRef.current) {
-            $(this.modalRef.current).modal('hide');
-        }
-        let importUrl = document.getElementById('importUrl').value;
-
-        let emeraldUrl = importUrl.replace('/decks', '/api/decklists');
-        let deckResponse = {};
-
-        $.ajax({
-            type: 'GET',
-            url: emeraldUrl,
-            dataType: 'json',
-            async: false,
-            success: function(data) {
-                deckResponse = data;
-            }
-        });
-
-        if(!deckResponse) {
+        if (!cardToAdd || !cardToAdd.name) {
             return;
         }
 
-        let deck = this.copyDeck(this.state.deck);
-
-        deck.name = deckResponse.name || 'Imported Deck';
-        deck.faction = this.props.factions[deckResponse.primary_clan] || this.props.factions['crab'];
-        deck.alliance = deckResponse.secondary_clan
-            ? this.props.factions[deckResponse.secondary_clan]
-            : { name: '', value: '' };
-
-        let deckFormat = deckResponse.format;
-        if(deckFormat === 'standard') {
-            deckFormat = 'stronghold';
+        let defaultPackId;
+        if (cardToAdd.versions && cardToAdd.versions.length > 0) {
+            defaultPackId = cardToAdd.versions[0].pack_id;
         }
-        deck.format = this.props.formats[deckFormat] || this.props.formats['emerald'];
 
-        // Initialize card arrays
-        deck.stronghold = [];
-        deck.role = [];
-        deck.provinceCards = [];
-        deck.conflictCards = [];
-        deck.dynastyCards = [];
+        let list = cardList;
+        list += getCardListEntry(numberToAdd, cardToAdd, defaultPackId);
 
-        // Build card list and add cards to deck
-        let cardList = '';
-        _.each(deckResponse.cards, (count, id) => {
-            const card = this.props.cards[id];
-            if(card) {
-                // Get default pack_id from first version
-                let packId = card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined;
-                cardList += this.getCardListEntry(count, card, packId);
+        const updatedDeck = addCard(cardToAdd, parseInt(numberToAdd), defaultPackId, deck);
+        const clearedDeck = copyDeck(updatedDeck, true);
 
-                // Add to appropriate deck list
-                let list;
-                if(card.type === 'province') {
-                    list = deck.provinceCards;
-                } else if(card.side === 'dynasty') {
-                    list = deck.dynastyCards;
-                } else if(card.side === 'conflict') {
-                    list = deck.conflictCards;
-                } else if(card.type === 'stronghold') {
-                    list = deck.stronghold;
-                } else {
-                    list = deck.role;
+        setCardList(list);
+        setDeck(clearedDeck);
+        updateDeck(clearedDeck);
+    }, [cardToAdd, numberToAdd, cardList, deck, addCard, getCardListEntry, updateDeck]);
+
+    const handleCardListChange = useCallback((event) => {
+        let currentDeck = copyDeck(deck);
+        const split = event.target.value.split('\n');
+
+        currentDeck.stronghold = [];
+        currentDeck.role = [];
+        currentDeck.provinceCards = [];
+        currentDeck.conflictCards = [];
+        currentDeck.dynastyCards = [];
+
+        split.forEach(line => {
+            line = line.trim();
+            let index = 2;
+
+            if (isNaN(parseInt(line[0]))) {
+                return;
+            }
+
+            const num = parseInt(line[0]);
+            if (line[1] === 'x') {
+                index++;
+            }
+
+            const packOffset = line.indexOf('(');
+            const cardName = line.substr(index, packOffset === -1 ? line.length : packOffset - index - 1);
+            const packName = packOffset > -1 ? line.substr(packOffset + 1, line.length - packOffset - 2) : '';
+
+            const pack = packs?.find(p =>
+                p.id.toLowerCase() === packName.toLowerCase() || p.name.toLowerCase() === packName.toLowerCase()
+            );
+
+            const cardsArray = cards ? Object.values(cards) : [];
+            const card = cardsArray.find(c => {
+                if (pack && c.versions && c.versions.length) {
+                    if (c.name.toLowerCase() === cardName.toLowerCase()) {
+                        return c.versions.find(packCard => packCard.pack_id === pack.id);
+                    }
+                    return false;
                 }
+                return c.name.toLowerCase() === cardName.toLowerCase();
+            });
 
-                list.push({ count: count, card: card, pack_id: packId });
+            if (card) {
+                const packId = pack ? pack.id : (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
+                currentDeck = addCard(card, num, packId, currentDeck);
             }
         });
 
-        this.setState({ cardList: cardList, deck: deck, showAlliance: deck.alliance });
-        this.props.updateDeck(deck);
+        currentDeck = copyDeck(currentDeck, true);
+        setCardList(event.target.value);
+        setDeck(currentDeck);
+        updateDeck(currentDeck);
+    }, [deck, cards, packs, addCard, updateDeck]);
+
+    const handleSaveClick = useCallback((event) => {
+        event.preventDefault();
+        if (onDeckSave) {
+            onDeckSave(propDeck);
+        }
+    }, [onDeckSave, propDeck]);
+
+    const handleImportDeckClick = useCallback(() => {
+        setShowModal(true);
+    }, []);
+
+    const handleImportDeck = useCallback(async () => {
+        setShowModal(false);
+        const emeraldUrl = importUrl.replace('/decks', '/api/decklists');
+
+        try {
+            const response = await axios.get(emeraldUrl);
+            const deckResponse = response.data;
+
+            if (!deckResponse) {
+                return;
+            }
+
+            let newDeck = copyDeck(deck);
+            newDeck.name = deckResponse.name || 'Imported Deck';
+            newDeck.faction = factions[deckResponse.primary_clan] || factions['crab'];
+            newDeck.alliance = deckResponse.secondary_clan
+                ? factions[deckResponse.secondary_clan]
+                : { name: '', value: '' };
+
+            let deckFormat = deckResponse.format;
+            if (deckFormat === 'standard') {
+                deckFormat = 'stronghold';
+            }
+            newDeck.format = formats[deckFormat] || formats['emerald'];
+
+            newDeck.stronghold = [];
+            newDeck.role = [];
+            newDeck.provinceCards = [];
+            newDeck.conflictCards = [];
+            newDeck.dynastyCards = [];
+
+            let list = '';
+            Object.entries(deckResponse.cards || {}).forEach(([id, count]) => {
+                const card = cards[id];
+                if (card) {
+                    const packId = card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined;
+                    list += getCardListEntry(count, card, packId);
+
+                    let targetList;
+                    if (card.type === 'province') {
+                        targetList = newDeck.provinceCards;
+                    } else if (card.side === 'dynasty') {
+                        targetList = newDeck.dynastyCards;
+                    } else if (card.side === 'conflict') {
+                        targetList = newDeck.conflictCards;
+                    } else if (card.type === 'stronghold') {
+                        targetList = newDeck.stronghold;
+                    } else {
+                        targetList = newDeck.role;
+                    }
+                    targetList.push({ count: count, card: card, pack_id: packId });
+                }
+            });
+
+            setCardList(list);
+            setDeck(newDeck);
+            updateDeck(newDeck);
+        } catch (error) {
+            console.error('Failed to import deck:', error);
+        }
+    }, [importUrl, deck, factions, formats, cards, getCardListEntry, updateDeck]);
+
+    const formatsArray = useMemo(() => formats ? Object.values(formats) : [], [formats]);
+    const factionsArray = useMemo(() => factions ? Object.values(factions) : [], [factions]);
+    const alliancesArray = useMemo(() => alliances ? Object.values(alliances) : [], [alliances]);
+    const cardsArray = useMemo(() => cards ? Object.values(cards) : [], [cards]);
+
+    if (!propDeck || loading) {
+        return <div>Waiting for deck...</div>;
     }
 
-    render() {
-        if(!this.props.deck || this.props.loading) {
-            return <div>Waiting for deck...</div>;
-        }
-
-        let popup = (
-            <div id='decks-modal' ref={this.modalRef} className='modal fade' tabIndex='-1' role='dialog'>
-                <div className='modal-dialog' role='document'>
-                    <div className='modal-content deck-popup'>
-                        <div className='modal-header'>
-                            <button type='button' className='close' data-dismiss='modal' aria-label='Close'><span aria-hidden='true'>×</span></button>
-                            <h4 className='modal-title'>Provide Permalink</h4>
-                        </div>
-                        <div className='modal-body'>
-                            <Input name='importUrl' fieldClass='col-sm-9' placeholder='Permalink' type='text' >
-                                <div className='col-sm-1'>
-                                    <button className='btn btn-default' onClick={ this.importDeck.bind(this) }>Import</button>
-                                </div>
-                            </Input>
+    const popup = (
+        <div className={`modal fade ${showModal ? 'in' : ''}`} style={{ display: showModal ? 'block' : 'none' }} tabIndex='-1' role='dialog'>
+            <div className='modal-dialog' role='document'>
+                <div className='modal-content deck-popup'>
+                    <div className='modal-header'>
+                        <button type='button' className='close' aria-label='Close' onClick={() => setShowModal(false)}>
+                            <span aria-hidden='true'>&times;</span>
+                        </button>
+                        <h4 className='modal-title'>Provide Permalink</h4>
+                    </div>
+                    <div className='modal-body'>
+                        <div className='form-group'>
+                            <div className='col-sm-9'>
+                                <input
+                                    className='form-control'
+                                    name='importUrl'
+                                    placeholder='Permalink'
+                                    type='text'
+                                    value={importUrl}
+                                    onChange={(e) => setImportUrl(e.target.value)}
+                                />
+                            </div>
+                            <div className='col-sm-1'>
+                                <button className='btn btn-default' onClick={handleImportDeck}>Import</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>);
-
-        return (
-            <div>
-                { popup }
-                <span className='btn btn-primary' data-toggle='modal' data-target='#decks-modal'>Import deck</span>
-                <h4>Either type the cards manually into the box below, add the cards one by one using the card box and autocomplete or for best results, copy the permalink url from <a href='https://www.emeralddb.org' target='_blank'>Emerald DB</a> and paste it into the popup from clicking the "Import Deck" button.</h4>
-                <form className='form form-horizontal'>
-                    <Input name='deckName' label='Deck Name' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Deck Name'
-                        type='text' onChange={ this.onChange.bind(this, 'name') } value={ this.state.deck.name } />
-                    <Select name='format' label='Format' labelClass='col-sm-3' fieldClass='col-sm-9' options={ _.toArray(this.props.formats) }
-                        onChange={ this.onFormatChange.bind(this) } value={ this.state.deck.format ? this.state.deck.format.value : 'emerald' } />
-                    <Select name='faction' label='Clan' labelClass='col-sm-3' fieldClass='col-sm-9' options={ _.toArray(this.props.factions) }
-                        onChange={ this.onFactionChange.bind(this) } value={ this.state.deck.faction ? this.state.deck.faction.value : undefined } />
-                    <Select name='alliance' label='Alliance' labelClass='col-sm-3' fieldClass='col-sm-9' options={ _.toArray(this.props.alliances) }
-                        onChange={ this.onAllianceChange.bind(this) } value={ this.state.deck.alliance ? this.state.deck.alliance.value : undefined }
-                        valueKey='value' nameKey='name' blankOption={ { name: '- Select -', value: '' } } />
-
-                    <Typeahead label='Card' labelClass={ 'col-sm-3' } fieldClass='col-sm-4' labelKey={ 'name' } options={ _.toArray(this.props.cards) }
-                        onChange={ this.addCardChange.bind(this) }>
-                        <Input name='numcards' type='text' label='Num' labelClass='col-sm-1' fieldClass='col-sm-2'
-                            value={ this.state.numberToAdd.toString() } onChange={ this.onNumberToAddChange.bind(this) }>
-                            <div className='col-sm-1'>
-                                <button className='btn btn-primary add-card-button' onClick={ this.onAddCard.bind(this) }>Add</button>
-                            </div>
-                        </Input>
-                    </Typeahead>
-                    <TextArea label='Cards' labelClass='col-sm-3' fieldClass='col-sm-9' rows='10' value={ this.state.cardList }
-                        onChange={ this.onCardListChange.bind(this) } />
-                    <div className='form-group'>
-                        <div className='col-sm-offset-3 col-sm-8'>
-                            <button ref='submit' type='submit' className='btn btn-primary' onClick={ this.onSaveClick.bind(this) }>Save Deck</button>
-                        </div>
-                    </div>
-                </form>
             </div>
-        );
-    }
+        </div>
+    );
+
+    const backdrop = showModal ? <div className='modal-backdrop fade in' onClick={() => setShowModal(false)} /> : null;
+
+    return (
+        <div>
+            {popup}
+            {backdrop}
+            <span className='btn btn-primary' onClick={handleImportDeckClick}>Import deck</span>
+            <h4>Either type the cards manually into the box below, add the cards one by one using the card box and autocomplete or for best results, copy the permalink url from <a href='https://www.emeralddb.org' target='_blank'>Emerald DB</a> and paste it into the popup from clicking the "Import Deck" button.</h4>
+            <form className='form form-horizontal'>
+                <Input name='deckName' label='Deck Name' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Deck Name'
+                    type='text' onChange={(e) => handleChange('name', e)} value={deck.name} />
+                <Select name='format' label='Format' labelClass='col-sm-3' fieldClass='col-sm-9' options={formatsArray}
+                    onChange={handleFormatChange} value={deck.format ? deck.format.value : 'emerald'} />
+                <Select name='faction' label='Clan' labelClass='col-sm-3' fieldClass='col-sm-9' options={factionsArray}
+                    onChange={handleFactionChange} value={deck.faction ? deck.faction.value : undefined} />
+                <Select name='alliance' label='Alliance' labelClass='col-sm-3' fieldClass='col-sm-9' options={alliancesArray}
+                    onChange={handleAllianceChange} value={deck.alliance ? deck.alliance.value : undefined}
+                    valueKey='value' nameKey='name' blankOption={{ name: '- Select -', value: '' }} />
+
+                <Typeahead label='Card' labelClass='col-sm-3' fieldClass='col-sm-4' labelKey='name' options={cardsArray}
+                    onChange={handleAddCardChange}>
+                    <Input name='numcards' type='text' label='Num' labelClass='col-sm-1' fieldClass='col-sm-2'
+                        value={numberToAdd.toString()} onChange={handleNumberToAddChange}>
+                        <div className='col-sm-1'>
+                            <button className='btn btn-primary add-card-button' onClick={handleAddCard}>Add</button>
+                        </div>
+                    </Input>
+                </Typeahead>
+                <TextArea label='Cards' labelClass='col-sm-3' fieldClass='col-sm-9' rows='10' value={cardList}
+                    onChange={handleCardListChange} />
+                <div className='form-group'>
+                    <div className='col-sm-offset-3 col-sm-8'>
+                        <button type='submit' className='btn btn-primary' onClick={handleSaveClick}>Save Deck</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    );
 }
 
 InnerDeckEditor.displayName = 'DeckEditor';

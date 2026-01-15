@@ -1,155 +1,142 @@
-import React from 'react';
+import { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'underscore';
-import $ from 'jquery';
-import {connect} from 'react-redux';
+import axios from 'axios';
+import { connect } from 'react-redux';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 
 import * as actions from './actions';
 
-class InnerForgotPassword extends React.Component {
-    constructor() {
-        super();
+export function InnerForgotPassword() {
+    const [username, setUsername] = useState('');
+    const [validation, setValidation] = useState({});
+    const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
-        this.state = {
-            error: '',
-            username: '',
-            password: '',
-            validation: {}
-        };
+    const verifyUsername = useCallback(() => {
+        const newValidation = { ...validation };
+        delete newValidation['username'];
 
-        this.onChange = this.onChange.bind(this);
-        this.verifyUsername = this.verifyUsername.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
-    }
-
-    onChange(field, event) {
-        var newState = {};
-
-        newState[field] = event.target.value;
-        this.setState(newState);
-    }
-
-    verifyUsername() {
-        var validation = this.state.validation;
-
-        delete validation['username'];
-
-        if(!this.state.username || this.state.username === '') {
-            validation['username'] = 'Please enter your username';
+        if (!username || username === '') {
+            newValidation['username'] = 'Please enter your username';
         }
 
-        this.setState({ validation: validation });
-    }
+        setValidation(newValidation);
+        return newValidation;
+    }, [username, validation]);
 
-    onSubmit(event) {
+    const onSubmit = useCallback((event) => {
         event.preventDefault();
-        grecaptcha.ready(()=> {
-            grecaptcha.execute('6LcIUw8rAAAAANoZo59wKxiypGadOD5iXaN659la', { action: 'submit' }).then((token) => {
-                this.setState({ error: '' });
+        grecaptcha.ready(() => {
+            grecaptcha.execute('6LcIUw8rAAAAANoZo59wKxiypGadOD5iXaN659la', { action: 'submit' }).then(async (token) => {
+                setError('');
 
-                this.verifyUsername();
+                // Do synchronous validation to avoid stale state
+                const newValidation = {};
+                if (!username || username === '') {
+                    newValidation['username'] = 'Please enter your username';
+                }
+                setValidation(newValidation);
 
-                if(_.any(this.state.validation, (message) => message && message !== '' )) {
-                    this.setState({ error: 'Please complete the fields and try again' });
+                if (Object.values(newValidation).some((message) => message && message !== '')) {
+                    setError('Please complete the fields and try again');
                     return;
                 }
 
-                this.setState({ submitting: true });
+                setSubmitting(true);
 
-                $.ajax({
-                    url: '/api/account/password-reset',
-                    type: 'POST',
-                    data: JSON.stringify({ username: this.state.username, captcha: token }),
-                    contentType: 'application/json'
-                }).done((data) => {
-                    this.setState({ submitting: false });
+                try {
+                    const response = await axios.post('/api/account/password-reset', {
+                        username: username,
+                        captcha: token
+                    });
 
-                    if(!data.success) {
-                        this.setState({ error: data.message });
+                    setSubmitting(false);
+
+                    if (!response.data.success) {
+                        setError(response.data.message);
                         return;
                     }
 
-                    this.setState({ success: 'Your request was submitted, if you have an account, an email will have been sent to the address you used to register with more instructions. This request could end up in your Spam folder, so make sure to check there if you do not see it.' });
-                }).fail(() => {
-                    this.setState({ submitting: false });
-
-                    this.setState({ error: 'Could not communicate with the server.  Please try again later.' });
-                });
+                    setSuccess('Your request was submitted, if you have an account, an email will have been sent to the address you used to register with more instructions. This request could end up in your Spam folder, so make sure to check there if you do not see it.');
+                } catch {
+                    setSubmitting(false);
+                    setError('Could not communicate with the server.  Please try again later.');
+                }
             });
         });
+    }, [username]);
 
-    }
+    const fields = [
+        {
+            name: 'username',
+            label: 'Username',
+            placeholder: 'Username',
+            inputType: 'text',
+            blurCallback: verifyUsername
+        }
+    ];
 
-    render() {
-        var fields = [
-            {
-                name: 'username',
-                label: 'Username',
-                placeholder: 'Username',
-                inputType: 'text',
-                blurCallback: this.verifyUsername
-            }
-        ];
+    const fieldsToRender = fields.map((field) => {
+        let className = 'form-group';
+        let validationMessage = null;
 
-        var fieldsToRender = [];
-        var errorBar = this.state.error ? <div className='alert alert-danger' role='alert'>{ this.state.error }</div> : null;
-        var successBar = this.state.success ? <div className='alert alert-success' role='alert'>{ this.state.success }</div> : null;
-
-        _.each(fields, (field) => {
-            var className = 'form-group';
-            var validation = null;
-
-            if(this.state.validation[field.name]) {
-                className += ' has-error';
-                validation = <span className='help-block'>{ this.state.validation[field.name] }</span>;
-            }
-
-            fieldsToRender.push(
-                <div key={ field.name } className={ className }>
-                    <label htmlFor={ field.name } className='col-sm-2 control-label'>{ field.label }</label>
-                    <div className='col-sm-6'>
-                        <input type={ field.inputType }
-                            ref={ field.name }
-                            className='form-control'
-                            id={ field.name }
-                            placeholder={ field.placeholder }
-                            value={ this.state[field.name] }
-                            onChange={ this.onChange.bind(this, field.name) }
-                            onBlur={ field.blurCallback } />
-                        { validation }
-                    </div>
-                </div>);
-        });
-
-        if(this.state.success) {
-            return <div>{ successBar }</div>;
+        if (validation[field.name]) {
+            className += ' has-error';
+            validationMessage = <span className='help-block'>{validation[field.name]}</span>;
         }
 
         return (
-            <div>
-                { errorBar }
-                <AlertPanel type='info' message='To start the password recovery process, please enter your username and click the submit button.' />
-                <div className='col-sm-6 col-sm-offset-3'>
-                    <div className='panel-title'>
-                    Forgot password
-                    </div>
-                    <div className='panel'>
-                        <form className='form form-horizontal'>
-                            { fieldsToRender }
-                            <div className='form-group'>
-                                <div className='col-sm-offset-2 col-sm-3'>
-                                    { this.state.submitting ? <button type='submit' className='btn btn-primary' disabled>Submitting...</button> :
-                                        <button ref='submit' type='submit' className='btn btn-primary' onClick={ this.onSubmit }>Submit</button>
-                                    }
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+            <div key={field.name} className={className}>
+                <label htmlFor={field.name} className='col-sm-2 control-label'>{field.label}</label>
+                <div className='col-sm-6'>
+                    <input
+                        type={field.inputType}
+                        className='form-control'
+                        id={field.name}
+                        placeholder={field.placeholder}
+                        value={field.name === 'username' ? username : ''}
+                        onChange={(e) => setUsername(e.target.value)}
+                        onBlur={field.blurCallback}
+                    />
+                    {validationMessage}
                 </div>
-            </div>);
+            </div>
+        );
+    });
+
+    if (success) {
+        return <div><div className='alert alert-success' role='alert'>{success}</div></div>;
     }
+
+    const errorBar = error ? <div className='alert alert-danger' role='alert'>{error}</div> : null;
+
+    return (
+        <div>
+            {errorBar}
+            <AlertPanel type='info' message='To start the password recovery process, please enter your username and click the submit button.' />
+            <div className='col-sm-6 col-sm-offset-3'>
+                <div className='panel-title'>
+                    Forgot password
+                </div>
+                <div className='panel'>
+                    <form className='form form-horizontal'>
+                        {fieldsToRender}
+                        <div className='form-group'>
+                            <div className='col-sm-offset-2 col-sm-3'>
+                                {submitting ? (
+                                    <button type='submit' className='btn btn-primary' disabled>Submitting...</button>
+                                ) : (
+                                    <button type='submit' className='btn btn-primary' onClick={onSubmit}>Submit</button>
+                                )}
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 InnerForgotPassword.displayName = 'ForgotPassword';

@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 function selectDeck(state, deck) {
     if(state.decks && state.decks.length !== 0) {
         state.selectedDeck = deck;
@@ -11,7 +9,7 @@ function selectDeck(state, deck) {
 }
 
 function processDecks(decks, state) {
-    _.each(decks, deck => {
+    decks.forEach(deck => {
         if(!state.cards || !deck.faction) {
             return;
         }
@@ -40,23 +38,23 @@ function processDecks(decks, state) {
             deck.dynastyCards = deck.dynastyCards.filter(card => !!card.card);
         }
 
-        deck.stronghold = _.map(deck.stronghold, card => {
+        deck.stronghold = deck.stronghold.map(card => {
             return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
         });
 
-        deck.role = _.map(deck.role, card => {
+        deck.role = deck.role.map(card => {
             return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
         });
 
-        deck.provinceCards = _.map(deck.provinceCards, card => {
+        deck.provinceCards = deck.provinceCards.map(card => {
             return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
         });
 
-        deck.conflictCards = _.map(deck.conflictCards, card => {
+        deck.conflictCards = deck.conflictCards.map(card => {
             return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
         });
 
-        deck.dynastyCards = _.map(deck.dynastyCards, card => {
+        deck.dynastyCards = deck.dynastyCards.map(card => {
             return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
         });
     });
@@ -68,13 +66,13 @@ export default function(state = {}, action) {
         case 'RECEIVE_CARDS':
             var agendas = {};
 
-            _.each(action.response.cards, card => {
+            Object.values(action.response.cards).forEach(card => {
                 if(card.type === 'agenda' && card.pack_code !== 'VDS') {
                     agendas[card.id] = card;
                 }
             });
 
-            var banners = _.filter(agendas, card => {
+            var banners = Object.values(agendas).filter(card => {
                 return card.label.startsWith('Banner of the');
             });
 
@@ -90,7 +88,7 @@ export default function(state = {}, action) {
         case 'RECEIVE_FACTIONS':
             var factions = {};
 
-            _.each(action.response.factions, faction => {
+            action.response.factions.forEach(faction => {
                 factions[faction.value] = faction;
             });
 
@@ -100,7 +98,7 @@ export default function(state = {}, action) {
         case 'RECEIVE_FORMATS':
             var formats = {};
 
-            _.each(action.response.formats, format => {
+            action.response.formats.forEach(format => {
                 formats[format.value] = format;
             });
 
@@ -137,7 +135,7 @@ export default function(state = {}, action) {
             });
 
             if(newState.selectedDeck && !newState.selectedDeck._id) {
-                if(_.size(newState.decks) > 0) {
+                if(newState.decks && newState.decks.length > 0) {
                     newState.selectedDeck = newState.decks[0];
                 }
             }
@@ -151,7 +149,7 @@ export default function(state = {}, action) {
 
             processDecks([action.response.deck], state);
 
-            newState.decks = _.map(state.decks, deck => {
+            newState.decks = state.decks.map(deck => {
                 if(action.response.deck._id === deck.id) {
                     return deck;
                 }
@@ -159,13 +157,13 @@ export default function(state = {}, action) {
                 return deck;
             });
 
-            if(!_.any(newState.decks, deck => {
+            if(!newState.decks.some(deck => {
                 return deck._id === action.response.deck._id;
             })) {
                 newState.decks.push(action.response.deck);
             }
 
-            var selected = _.find(newState.decks, deck => {
+            var selected = newState.decks.find(deck => {
                 return deck._id === action.response.deck._id;
             });
 
@@ -242,11 +240,11 @@ export default function(state = {}, action) {
                 deckDeleted: true
             });
 
-            newState.decks = _.reject(newState.decks, deck => {
-                return deck._id === action.response.deckId;
+            newState.decks = newState.decks.filter(deck => {
+                return deck._id !== action.response.deckId;
             });
 
-            newState.selectedDeck = _.first(newState.decks);
+            newState.selectedDeck = newState.decks[0];
 
             return newState;
         case 'DECKS_DELETED':
@@ -254,11 +252,11 @@ export default function(state = {}, action) {
                 deckDeleted: true
             });
 
-            newState.decks = _.reject(newState.decks, deck => {
-                return _.contains(action.response.deckIds, deck._id);
+            newState.decks = newState.decks.filter(deck => {
+                return !action.response.deckIds.includes(deck._id);
             });
 
-            newState.selectedDeck = _.first(newState.decks);
+            newState.selectedDeck = newState.decks[0];
 
             return newState;
         case 'CLEAR_DECK_STATUS':
@@ -282,7 +280,7 @@ export default function(state = {}, action) {
 
             if(newState.decks) {
                 newState.decks = newState.decks.map(deck => {
-                    const validation = _.find(action.validations, v => v.deckId === deck._id);
+                    const validation = action.validations.find(v => v.deckId === deck._id);
                     if(validation) {
                         return Object.assign({}, deck, { status: validation.status });
                     }
@@ -291,7 +289,7 @@ export default function(state = {}, action) {
             }
 
             if(newState.selectedDeck) {
-                const selectedValidation = _.find(action.validations, v => v.deckId === newState.selectedDeck._id);
+                const selectedValidation = action.validations.find(v => v.deckId === newState.selectedDeck._id);
                 if(selectedValidation) {
                     newState.selectedDeck = Object.assign({}, newState.selectedDeck, { status: selectedValidation.status });
                 }

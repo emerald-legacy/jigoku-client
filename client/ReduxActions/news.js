@@ -1,13 +1,12 @@
-import $ from 'jquery';
-import _ from 'underscore';
+import axios from 'axios';
 
 export function fetchNews() {
     return dispatch => {
         dispatch(requestNews());
 
-        return $.ajax('/api/news')
-            .done(function(data) {
-                dispatch(receiveNews(data));
+        return axios.get('/api/news')
+            .then(response => {
+                dispatch(receiveNews(response.data));
             });
     };
 }
@@ -29,7 +28,7 @@ export function loadNews(options) {
     return {
         types: ['REQUEST_NEWS', 'RECEIVE_NEWS'],
         shouldCallAPI: (state) => {
-            return _.size(state.news.news) === 0 || (options && !!options.forceLoad);
+            return !state.news.news || state.news.news.length === 0 || (options && !!options.forceLoad);
         },
         callAPI: () => {
             let params = {};
@@ -38,7 +37,7 @@ export function loadNews(options) {
                 params.limit = options.limit;
             }
 
-            return $.ajax('/api/news/', { cache: false, data: params });
+            return axios.get('/api/news/', { params }).then(response => response.data);
         }
     };
 }
@@ -49,10 +48,7 @@ export function addNews(newsText) {
         shouldCallAPI: (state) => {
             return state.news.news;
         },
-        callAPI: () => $.ajax('/api/news', {
-            type: 'PUT',
-            data: { text: newsText }
-        })
+        callAPI: () => axios.put('/api/news', { text: newsText }).then(response => response.data)
     };
 }
 

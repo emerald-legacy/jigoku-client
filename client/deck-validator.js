@@ -1,5 +1,3 @@
-const $ = require('jquery'); // eslint-disable-line no-unused-vars
-const _ = require('underscore');
 const axios = require('axios').default;
 const GameModes = require('./GameModes');
 
@@ -55,7 +53,7 @@ class DeckValidator {
     async validateDeck(deck) {
         let allCards = (deck.provinceCards || []).concat(deck.dynastyCards || []).concat(deck.conflictCards || []).concat(deck.role || []).concat(deck.stronghold || []);
         let cardCountByName = {};
-        _.each(allCards, cardQuantity => {
+        allCards.forEach(cardQuantity => {
             if (cardQuantity.card) {
                 cardCountByName[cardQuantity.card.id] = 0;
                 cardCountByName[cardQuantity.card.id] += cardQuantity.count;
@@ -107,7 +105,9 @@ module.exports = async function validateDeck(deck, options) {
     let result = await validator.validateDeck(deck);
 
     if (!options.includeExtendedStatus) {
-        return _.omit(result, 'extendedStatus');
+        // eslint-disable-next-line no-unused-vars
+        const { extendedStatus, ...resultWithoutExtendedStatus } = result;
+        return resultWithoutExtendedStatus;
     }
 
     return result;

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -8,66 +8,54 @@ import AlertPanel from './SiteComponents/AlertPanel.jsx';
 
 import * as actions from './actions';
 
-export class InnerAddDeck extends React.Component {
-    constructor() {
-        super();
+export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loading, navigate, saveDeck }) {
+    const [ready, setReady] = useState(false);
 
-        this.state = {
-            error: '',
-            faction: {},
-            ready: false // Don't render DeckEditor until addDeck has been called
-        };
+    useEffect(() => {
+        addDeck();
+        setReady(true);
+    }, [addDeck]);
 
-        this.onAddDeck = this.onAddDeck.bind(this);
-    }
-
-    componentDidMount() {
-        this.props.addDeck();
-        // Now allow DeckEditor to render - it will see the fresh empty deck from Redux
-        this.setState({ ready: true });
-    }
-
-    componentDidUpdate(prevProps) {
-        if(!prevProps.deckSaved && this.props.deckSaved) {
-            this.props.navigate('/decks');
+    useEffect(() => {
+        if (deckSaved) {
+            navigate('/decks');
         }
-    }
+    }, [deckSaved, navigate]);
 
-    onAddDeck(deck) {
-        this.props.saveDeck(deck);
-    }
+    const handleAddDeck = useCallback((deckData) => {
+        saveDeck(deckData);
+    }, [saveDeck]);
 
-    render() {
-        let content;
+    let content;
 
-        if(this.props.loading || !this.state.ready) {
-            content = <div>Loading decks from the server...</div>;
-        } else if(this.props.apiError) {
-            content = <AlertPanel type='error' message={ this.props.apiError } />;
-        } else {
-            content = (
-                <div>
-                    <div className='col-sm-6'>
-                        <div className='panel-title text-center'>
-                            Deck Editor
-                        </div>
-                        <div className='panel'>
-                            <DeckEditor mode='Add' onDeckSave={ this.onAddDeck } />
-                        </div>
+    if (loading || !ready) {
+        content = <div>Loading decks from the server...</div>;
+    } else if (apiError) {
+        content = <AlertPanel type='error' message={apiError} />;
+    } else {
+        content = (
+            <div>
+                <div className='col-sm-6'>
+                    <div className='panel-title text-center'>
+                        Deck Editor
                     </div>
-                    <div className='col-sm-6'>
-                        <div className='panel-title text-center col-xs-12'>
-                            { this.props.deck ? this.props.deck.name : 'New Deck' }
-                        </div>
-                        <div className='panel col-xs-12'>
-                            <DeckSummary cards={ this.props.cards } deck={ this.props.deck } />
-                        </div>
+                    <div className='panel'>
+                        <DeckEditor mode='Add' onDeckSave={handleAddDeck} />
                     </div>
-                </div>);
-        }
-
-        return content;
+                </div>
+                <div className='col-sm-6'>
+                    <div className='panel-title text-center col-xs-12'>
+                        {deck ? deck.name : 'New Deck'}
+                    </div>
+                    <div className='panel col-xs-12'>
+                        <DeckSummary cards={cards} deck={deck} />
+                    </div>
+                </div>
+            </div>
+        );
     }
+
+    return content;
 }
 
 InnerAddDeck.displayName = 'InnerAddDeck';

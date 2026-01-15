@@ -1,32 +1,29 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import _ from 'underscore';
 
 import CardPile from './CardPile.jsx';
 
-class AdditionalCardPile extends React.Component {
-    render() {
-        var topCard = _.last(this.props.pile.cards);
-        if(this.props.pile.isPrivate) {
-            topCard = { facedown: true, bowed: true };
-        } else if(topCard.facedown) {
-            topCard.bowed = true;
-        }
-
-        return (
-            <CardPile
-                className={ this.props.className }
-                title={ this.props.pile.title }
-                source='additional'
-                cards={ this.props.pile.cards }
-                topCard={ topCard }
-                onMouseOver={ this.props.onMouseOver }
-                onMouseOut={ this.props.onMouseOut }
-                popupLocation={ this.props.isMe || this.props.spectating ? 'top' : 'bottom' }
-                disableMenu={ this.props.pile.isPrivate && !(this.props.isMe || this.props.spectating) }
-                orientation='horizontal' />
-        );
+function AdditionalCardPile({ className, isMe, onMouseOut, onMouseOver, pile, spectating }) {
+    let topCard = pile.cards[pile.cards.length - 1];
+    if (pile.isPrivate) {
+        topCard = { facedown: true, bowed: true };
+    } else if (topCard.facedown) {
+        topCard.bowed = true;
     }
+
+    return (
+        <CardPile
+            className={className}
+            title={pile.title}
+            source='additional'
+            cards={pile.cards}
+            topCard={topCard}
+            onMouseOver={onMouseOver}
+            onMouseOut={onMouseOut}
+            popupLocation={isMe || spectating ? 'top' : 'bottom'}
+            disableMenu={pile.isPrivate && !(isMe || spectating)}
+            orientation='horizontal'
+        />
+    );
 }
 
 AdditionalCardPile.displayName = 'AdditionalCardPile';
