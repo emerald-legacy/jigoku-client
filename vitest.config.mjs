@@ -1,6 +1,9 @@
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
     plugins: [react()],
@@ -15,8 +18,10 @@ export default defineConfig({
             include: ['client/**/*.{js,jsx}'],
             exclude: ['client/DevTools.jsx']
         },
-        deps: {
-            inline: ['jquery-migrate', 'jquery-nearest']
+        server: {
+            deps: {
+                inline: ['jquery-migrate', 'jquery-nearest']
+            }
         }
     },
     resolve: {
