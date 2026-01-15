@@ -1,7 +1,7 @@
 /*eslint no-console:0 */
 const fs = require('fs');
+const { Readable } = require('stream');
 const { pipeline } = require('stream/promises');
-const mkdirp = require('mkdirp');
 const db = require('../db.js');
 const path = require('path');
 const sharp = require('sharp');
@@ -51,7 +51,9 @@ async function downloadFile(url, destPath, timeout = 30000) {
         }
 
         const fileStream = fs.createWriteStream(destPath);
-        await pipeline(response.body, fileStream);
+        // @ts-ignore - response.body is a Web ReadableStream
+        const nodeStream = Readable.fromWeb(response.body);
+        await pipeline(nodeStream, fileStream);
     } finally {
         clearTimeout(timeoutId);
     }
@@ -133,7 +135,7 @@ async function fetchCards() {
             'img',
             'cards'
         );
-        mkdirp(imageDir);
+        fs.mkdirSync(imageDir, { recursive: true });
 
         let downloaded = 0;
         let skipped = 0;

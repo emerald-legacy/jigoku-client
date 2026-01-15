@@ -124,7 +124,9 @@ class Server {
         });
 
         if(this.isDeveloping) {
-            const compiler = webpack(webpackConfig);
+            /** @type {any} */
+            const wpConfig = webpackConfig;
+            const compiler = webpack(wpConfig);
             const middleware = webpackDevMiddleware(compiler, {
                 publicPath: webpackConfig.output.publicPath
             });
@@ -139,14 +141,16 @@ class Server {
 
         app.get('/{*splat}', (req, res) => {
             let token = undefined;
+            /** @type {any} */
+            const authReq = req;
 
-            if(req.user) {
-                token = jwt.sign(req.user, config.secret);
-                const { blockList, ...userWithoutBlockList } = req.user;
-                req.user = userWithoutBlockList;
+            if(authReq.user) {
+                token = jwt.sign(authReq.user, config.secret);
+                const { blockList, ...userWithoutBlockList } = authReq.user;
+                authReq.user = userWithoutBlockList;
             }
 
-            res.render('index', { basedir: path.join(__dirname, '..', 'views'), user: Settings.getUserWithDefaultsSet(req.user), token: token, production: !this.isDeveloping });
+            res.render('index', { basedir: path.join(__dirname, '..', 'views'), user: Settings.getUserWithDefaultsSet(authReq.user), token: token, production: !this.isDeveloping });
         });
 
         // Define error middleware last

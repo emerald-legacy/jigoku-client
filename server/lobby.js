@@ -185,7 +185,7 @@ class Lobby {
         const gamesArray = Array.isArray(games) ? games : Object.values(games);
         return gamesArray
             .map(game => game.getSummary())
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .sort((a, b) => (a.started === b.started) ? 0 : a.started ? 1 : -1);
     }
 
