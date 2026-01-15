@@ -32,7 +32,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
     "already": "^2.2.1",
-    "axios": "^0.21.4",
+    "axios": "^1.7.9",
     "bcrypt": "^5.0.0",
     "bootstrap": "^3.3.7",
     "config": "^1.26.2",
@@ -50,7 +50,7 @@
     "jquery": "^3.1.0",
     "jquery-migrate": "3.0.0",
     "jquery-nearest": "^1.4.0",
-    "jsonwebtoken": "^7.4.3",
+    "jsonwebtoken": "^9.0.2",
     "moment": "^2.18.1",
     "mongodb": "^4.17.2",
     "monk": "^7.3.4",
@@ -61,8 +61,7 @@
     "prop-types": "^15.6.0",
     "react": "^18.3.1",
     "react-async-script": "^0.9.1",
-    "react-bootstrap-slider": "2.1.5",
-    "react-bootstrap-typeahead": "^2.0.0-alpha.3",
+    "react-bootstrap-typeahead": "^6.4.1",
     "react-dom": "^18.3.1",
     "react-draggable": "^4.5.0",
     "react-google-recaptcha": "^0.9.7",
@@ -78,7 +77,7 @@
     "uuid": "^3.1.0",
     "winston": "^2.2.0",
     "winston-daily-rotate-file": "^1.7.2",
-    "zeromq": "^5.1.0"
+    "zeromq": "^6.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.0",
@@ -89,7 +88,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^14.3.1",
     "@types/babel-types": "7.0.9",
-    "@types/node": "^6.0.0",
+    "@types/node": "^20.17.0",
     "@vitejs/plugin-react": "^4.2.0",
     "@vitest/coverage-v8": "^1.2.0",
     "ajv": "^8.17.1",
@@ -98,9 +97,9 @@
     "body-parser": "^1.18.2",
     "coveralls": "^3.0.0",
     "css-loader": "^6.9.0",
-    "eslint": "^4.7.2",
-    "eslint-plugin-jasmine": "^2.10.1",
-    "eslint-plugin-react": "^7.4.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
     "html-webpack-plugin": "^5.6.0",
     "jsdom": "^23.2.0",
     "less": "^4.2.0",
@@ -119,6 +118,6 @@
     "webpack-hot-middleware": "^2.26.0"
   },
   "volta": {
-    "node": "18.19.0"
+    "node": "22.13.0"
   }
 }

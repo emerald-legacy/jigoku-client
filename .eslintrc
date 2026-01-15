@@ -1,22 +1,29 @@
 {
   "plugins": [
-    "jasmine"
+    "react",
+    "react-hooks"
   ],
   "env": {
     "node": true,
     "es6": true,
-    "jasmine": true
+    "browser": true
   },
   "extends": [
     "eslint:recommended",
-    "plugin:jasmine/recommended"
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
   ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
   "rules": {
-    "jasmine/no-spec-dupes": 0,
-    "jasmine/no-suite-dupes": 0,
-    "jasmine/missing-expect": 1,
-    "jasmine/new-line-before-expect": 0,
-    "jasmine/prefer-toHaveBeenCalledWith": 0,
+    "react/prop-types": 1,
+    "react/no-string-refs": 1,
+    "react/no-deprecated": 1,
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "indent": [
       2,
       4,
@@ -32,7 +39,6 @@
       1,
       "global"
     ],
-    "global-strict": 0,
     "brace-style": [
       2,
       "1tbs"
@@ -132,9 +138,25 @@
   },
   "parser": "@babel/eslint-parser",
   "parserOptions": {
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
     "requireConfigFile": true,
     "babelOptions": {
       "configFile": "./babel.config.json"
     }
-  }
+  },
+  "overrides": [
+    {
+      "files": ["test/**/*.js", "test/**/*.jsx"],
+      "env": {
+        "node": true
+      },
+      "rules": {
+        "no-invalid-this": 0
+      }
+    }
+  ]
 }

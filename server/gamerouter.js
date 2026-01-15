@@ -1,5 +1,4 @@
-const zmq = require('zeromq');
-const router = zmq.socket('router');
+const { Router } = require('zeromq');
 const logger = require('./log.js');
 const _ = require('underscore');
 const monk = require('monk').default;
@@ -12,27 +11,46 @@ class GameRouter extends EventEmitter {
 
         this.workers = {};
         this.gameService = new GameService(monk(config.dbPath));
+        this.router = new Router();
+        this.running = false;
 
-        router.bind(config.mqUrl, err => {
-            if(err) {
-                logger.info(err);
-            }
-        });
-
-        router.on('message', this.onMessage.bind(this));
-
+        this.init(config.mqUrl);
         setInterval(this.checkTimeouts.bind(this), 1000 * 60);
+    }
+
+    async init(url) {
+        try {
+            await this.router.bind(url);
+            logger.info('GameRouter bound to', url);
+            this.running = true;
+            this.receiveMessages();
+        } catch (err) {
+            logger.error('Failed to bind GameRouter:', err);
+        }
+    }
+
+    async receiveMessages() {
+        while (this.running) {
+            try {
+                const [identity, delimiter, msg] = await this.router.receive();
+                this.onMessage(identity, msg);
+            } catch (err) {
+                if (this.running) {
+                    logger.error('Error receiving message:', err);
+                }
+            }
+        }
     }
 
     // External methods
     startGame(game) {
         var node = this.getNextAvailableGameNode();
 
-        if(!node) {
+        if (!node) {
             logger.error('Could not find new node for game');
             return;
         }
-        logger.info('starting game on node', node.identity.toString());
+        logger.info('starting game on node', node.identity);
 
         this.gameService.create(game.getSaveState());
 
@@ -47,18 +65,18 @@ class GameRouter extends EventEmitter {
     }
 
     getNextAvailableGameNode() {
-        if(_.isEmpty(this.workers)) {
+        if (_.isEmpty(this.workers)) {
             return undefined;
         }
 
         var returnedWorker = undefined;
 
         _.each(this.workers, worker => {
-            if(worker.numGames >= worker.maxGames || worker.disabled) {
+            if (worker.numGames >= worker.maxGames || worker.disabled) {
                 return;
             }
 
-            if(!returnedWorker || returnedWorker.numGames > worker.numGames) {
+            if (!returnedWorker || returnedWorker.numGames > worker.numGames) {
                 returnedWorker = worker;
             }
         });
@@ -74,7 +92,7 @@ class GameRouter extends EventEmitter {
 
     disableNode(nodeName) {
         var worker = this.workers[nodeName];
-        if(!worker) {
+        if (!worker) {
             return false;
         }
 
@@ -85,7 +103,7 @@ class GameRouter extends EventEmitter {
 
     enableNode(nodeName) {
         var worker = this.workers[nodeName];
-        if(!worker) {
+        if (!worker) {
             return false;
         }
 
@@ -95,8 +113,8 @@ class GameRouter extends EventEmitter {
     }
 
     notifyFailedConnect(game, username) {
-        logger.info('notify failed connect', game.node.identity.toString());
-        if(!game.node) {
+        logger.info('notify failed connect', game.node.identity);
+        if (!game.node) {
             return;
         }
 
@@ -104,7 +122,7 @@ class GameRouter extends EventEmitter {
     }
 
     closeGame(game) {
-        if(!game.node) {
+        if (!game.node) {
             return;
         }
 
@@ -121,14 +139,14 @@ class GameRouter extends EventEmitter {
 
         try {
             message = JSON.parse(msg.toString());
-        } catch(err) {
+        } catch (err) {
             logger.info(err);
             return;
         }
 
         logger.info('received message', message.command, message.arg);
 
-        switch(message.command) {
+        switch (message.command) {
             case 'HELLO':
                 this.emit('onWorkerStarted', identityStr);
                 this.workers[identityStr] = {
@@ -147,7 +165,7 @@ class GameRouter extends EventEmitter {
 
                 break;
             case 'PONG':
-                if(worker) {
+                if (worker) {
                     worker.pingSent = undefined;
                 } else {
                     logger.error('PONG received for unknown worker');
@@ -157,7 +175,7 @@ class GameRouter extends EventEmitter {
                 this.gameService.update(message.arg.game);
                 break;
             case 'GAMECLOSED':
-                if(worker) {
+                if (worker) {
                     worker.numGames--;
                 } else {
                     logger.error('Got close game for non existant worker', identity);
@@ -167,7 +185,7 @@ class GameRouter extends EventEmitter {
 
                 break;
             case 'PLAYERLEFT':
-                if(!message.arg.spectator) {
+                if (!message.arg.spectator) {
                     this.gameService.update(message.arg.game);
                 }
 
@@ -176,7 +194,7 @@ class GameRouter extends EventEmitter {
                 break;
         }
 
-        if(worker) {
+        if (worker) {
             worker.lastMessage = Date.now();
         }
     }
@@ -184,7 +202,9 @@ class GameRouter extends EventEmitter {
     // Internal methods
     sendCommand(identity, command, arg) {
         logger.info('sending command', command);
-        router.send([identity, '', JSON.stringify({ command: command, arg: arg })]);
+        this.router.send([identity, '', JSON.stringify({ command: command, arg: arg })]).catch(err => {
+            logger.error('Error sending command:', err);
+        });
     }
 
     checkTimeouts() {
@@ -192,17 +212,22 @@ class GameRouter extends EventEmitter {
         const pingTimeout = 1 * 60 * 1000;
 
         _.each(this.workers, worker => {
-            if(worker.pingSent && currentTime - worker.pingSent > pingTimeout) {
+            if (worker.pingSent && currentTime - worker.pingSent > pingTimeout) {
                 logger.info('worker', worker.identity + ' timed out');
                 delete this.workers[worker.identity];
                 this.emit('onWorkerTimedOut', worker.identity);
-            } else if(!worker.pingSent) {
-                if(currentTime - worker.lastMessage > pingTimeout) {
+            } else if (!worker.pingSent) {
+                if (currentTime - worker.lastMessage > pingTimeout) {
                     worker.pingSent = currentTime;
                     this.sendCommand(worker.identity, 'PING');
                 }
             }
         });
+    }
+
+    close() {
+        this.running = false;
+        this.router.close();
     }
 }
 

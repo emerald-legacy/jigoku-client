@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 import Input from './FormComponents/Input.jsx';
 import Checkbox from './FormComponents/Checkbox.jsx';
-import Slider from 'react-bootstrap-slider';
 
 import * as actions from './actions';
 
@@ -260,8 +259,10 @@ class InnerProfile extends React.Component {
                                 <div className='form-group'>
                                     <label className='col-sm-3 control-label'>Window timeout</label>
                                     <div className='col-sm-5'>
-                                        <Slider value={ this.state.windowTimer }
-                                            slideStop={ this.onSlideStop.bind(this) }
+                                        <input type='range'
+                                            className='form-control'
+                                            value={ this.state.windowTimer }
+                                            onChange={ this.onSlideStop.bind(this) }
                                             step={ 1 }
                                             max={ 10 }
                                             min={ 0 } />
