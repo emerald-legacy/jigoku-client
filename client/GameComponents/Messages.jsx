@@ -84,10 +84,10 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                     return '';
                 }
 
-                if (key === 'alert') {
-                    const alertMessage = formatMessageText(fragment.message);
+                if (fragment.alert) {
+                    const alertMessage = formatMessageText(fragment.alert.message);
 
-                    switch (fragment.type) {
+                    switch (fragment.alert.type) {
                         case 'endofround':
                             return (
                                 <div className='separator' key={index++}>
