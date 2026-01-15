@@ -1,5 +1,3 @@
-const _ = require('underscore');
-
 const logger = require('../log.js');
 
 class GameService {
@@ -36,9 +34,7 @@ class GameService {
     getAllGames(from, to) {
         return this.games.find()
             .then(games => {
-                return _.filter(games, game => {
-                    return game.startedAt >= from && game.startedAt < to;
-                });
+                return games.filter(game => game.startedAt >= from && game.startedAt < to);
             })
             .catch(err => {
                 logger.error('Unable to get all games from', from, 'to', to, err);

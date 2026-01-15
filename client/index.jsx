@@ -6,7 +6,6 @@ import { Provider } from 'react-redux';
 import configureStore from './configureStore';
 import { navigate, login } from './actions';
 import Application from './Application.jsx';
-import 'bootstrap/dist/js/bootstrap';
 import ReduxToastr from 'react-redux-toastr';
 import ErrorBoundary from './SiteComponents/ErrorBoundary.jsx';
 

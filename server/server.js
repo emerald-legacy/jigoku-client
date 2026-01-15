@@ -20,7 +20,6 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 const webpack = require('webpack');
 const webpackConfig = require('../webpack.config.js');
 const monk = require('monk').default;
-const _ = require('underscore');
 
 const UserService = require('./services/UserService.js');
 const Settings = require('./settings.js');
@@ -141,7 +140,8 @@ class Server {
 
             if(req.user) {
                 token = jwt.sign(req.user, config.secret);
-                req.user = _.omit(req.user, 'blockList');
+                const { blockList, ...userWithoutBlockList } = req.user;
+                req.user = userWithoutBlockList;
             }
 
             res.render('index', { basedir: path.join(__dirname, '..', 'views'), user: Settings.getUserWithDefaultsSet(req.user), token: token, production: !this.isDeveloping });

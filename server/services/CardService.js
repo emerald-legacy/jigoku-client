@@ -1,5 +1,3 @@
-const _ = require('underscore');
-
 const logger = require('../log.js');
 
 class CardService {
@@ -23,9 +21,10 @@ class CardService {
             .then(result => {
                 let cards = {};
 
-                _.each(result, card => {
+                result.forEach(card => {
                     if(options && options.shortForm) {
-                        cards[card.id] = _.pick(card, 'id', 'name', 'type', 'clan', 'faction', 'side', 'deck_limit', 'elements', 'is_unique', 'influence_cost', 'influence_pool', 'versions', 'role_restriction', 'allowed_clans');
+                        const { id, name, type, clan, faction, side, deck_limit, elements, is_unique, influence_cost, influence_pool, versions, role_restriction, allowed_clans } = card;
+                        cards[card.id] = { id, name, type, clan, faction, side, deck_limit, elements, is_unique, influence_cost, influence_pool, versions, role_restriction, allowed_clans };
                     } else {
                         cards[card.id] = card;
                     }

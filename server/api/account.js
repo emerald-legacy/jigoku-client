@@ -10,7 +10,6 @@ const moment = require('moment');
 const monk = require('monk').default;
 const UserService = require('../services/UserService.js');
 const Settings = require('../settings.js');
-const _ = require('underscore');
 const { wrapAsync } = require('../util.js');
 const axios = require('axios').default;
 
@@ -311,9 +310,7 @@ module.exports.init = function (server) {
             user.blockList = [];
         }
 
-        if (_.find(user.blockList, user => {
-            return user === req.body.username.toLowerCase();
-        })) {
+        if (user.blockList.find(u => u === req.body.username.toLowerCase())) {
             return res.send({ success: false, message: 'Entry already on block list' });
         }
 
@@ -339,15 +336,11 @@ module.exports.init = function (server) {
             user.blockList = [];
         }
 
-        if (!_.find(user.blockList, user => {
-            return user === req.params.entry.toLowerCase();
-        })) {
+        if (!user.blockList.find(u => u === req.params.entry.toLowerCase())) {
             return res.status(404).send({ message: 'Not found' });
         }
 
-        user.blockList = _.reject(user.blockList, user => {
-            return user === req.params.entry.toLowerCase();
-        });
+        user.blockList = user.blockList.filter(u => u !== req.params.entry.toLowerCase());
 
         await userService.updateBlockList(user);
 

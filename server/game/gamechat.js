@@ -1,5 +1,3 @@
-const _ = require('underscore');
-
 class GameChat {
     constructor() {
         this.messages = [];
@@ -74,7 +72,7 @@ class GameChat {
         } else if(array.length === 2) {
             format = '{0} and {1}';
         } else {
-            var range = _.map(_.range(array.length - 1), i => '{' + i + '}');
+            var range = Array.from({ length: array.length - 1 }, (_, i) => '{' + i + '}');
             format = range.join(', ') + ' and {' + (array.length - 1) + '}';
         }
 

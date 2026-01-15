@@ -1,7 +1,6 @@
 /*eslint no-console:0 */
 const monk = require('monk').default;
 const fs = require('fs');
-const _ = require('underscore');
 
 const CardService = require('../services/CardService.js');
 
@@ -13,16 +12,14 @@ let packs = JSON.parse(fs.readFileSync('fiveringdsdb-data/Pack.json').toString()
 let types = JSON.parse(fs.readFileSync('fiveringdsdb-data/Type.json').toString());
 let clans = JSON.parse(fs.readFileSync('fiveringdsdb-data/Clan.json').toString());
 
-_.each(files, file => {
+files.forEach(file => {
     let card = JSON.parse(fs.readFileSync('fiveringdsdb-data/Card/' + file).toString());
 
     totalCards = totalCards.concat(card);
 });
 
-_.each(totalCards, card => {
-    let cardsByName = _.filter(totalCards, filterCard => {
-        return filterCard.name === card.code;
-    });
+totalCards.forEach(card => {
+    let cardsByName = totalCards.filter(filterCard => filterCard.name === card.code);
 
     if(cardsByName.length > 1) {
         card.name = card.code + ' (' + card.pack_code + ')';
@@ -30,13 +27,9 @@ _.each(totalCards, card => {
         card.name = card.code;
     }
 
-    let clan = _.find(clans, clan => {
-        return clan.code === card.clan_code;
-    });
+    let clan = clans.find(c => c.code === card.clan_code);
 
-    let type = _.find(types, type => {
-        return type.code === card.type;
-    });
+    let type = types.find(t => t.code === card.type);
 
     if(clan) {
         card.clan_name = clan.name;
