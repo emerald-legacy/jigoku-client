@@ -1,21 +1,21 @@
 class NewsService {
     constructor(db) {
-        this.news = db.get('news');
+        this.news = db.collection('news');
     }
 
-    getRecentNewsItems(options) {
-        var params = {};
+    async getRecentNewsItems(options) {
+        let query = this.news.find({}).sort({ datePublished: -1 });
 
-        params.sort = { datePublished: -1 };
-        if(options.limit) {
-            params.limit = parseInt(options.limit);
+        if (options.limit) {
+            query = query.limit(parseInt(options.limit));
         }
 
-        return this.news.find({}, params);
+        return query.toArray();
     }
 
-    addNews(news) {
-        return this.news.insert(news);
+    async addNews(news) {
+        const result = await this.news.insertOne(news);
+        return { ...news, _id: result.insertedId };
     }
 }
 

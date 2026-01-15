@@ -1,28 +1,26 @@
-const monk = require('monk').default;
-const config = require('config');
+const db = require('../db.js');
 const DeckService = require('../services/DeckService.js');
-const {wrapAsync} = require('../util.js');
-
-let db = monk(config.dbPath);
-let deckService = new DeckService(db);
+const { wrapAsync } = require('../util.js');
 
 module.exports.init = function(server) {
+    const deckService = new DeckService(db.getDb());
+
     server.get('/api/decks/:id', wrapAsync(async function(req, res) {
-        if(!req.user) {
+        if (!req.user) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        if(!req.params.id || req.params.id === '') {
+        if (!req.params.id || req.params.id === '') {
             return res.status(404).send({ message: 'No such deck' });
         }
 
-        let deck = await deckService.getById(req.params.id);
+        const deck = await deckService.getById(req.params.id);
 
-        if(!deck) {
+        if (!deck) {
             return res.status(404).send({ message: 'No such deck' });
         }
 
-        if(deck.username !== req.user.username) {
+        if (deck.username !== req.user.username) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
@@ -30,73 +28,71 @@ module.exports.init = function(server) {
     }));
 
     server.get('/api/decks', wrapAsync(async function(req, res) {
-        if(!req.user) {
+        if (!req.user) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        let options = {};
-        if(req.query.format) {
+        const options = {};
+        if (req.query.format) {
             options.format = req.query.format;
         }
 
-        let decks = await deckService.findByUserName(req.user.username, options);
+        const decks = await deckService.findByUserName(req.user.username, options);
         res.send({ success: true, decks: decks });
     }));
 
     server.put('/api/decks/:id', wrapAsync(async function(req, res) {
-        if(!req.user) {
+        if (!req.user) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        let deck = await deckService.getById(req.params.id);
+        const deck = await deckService.getById(req.params.id);
 
-        if(!deck) {
+        if (!deck) {
             return res.status(404).send({ message: 'No such deck' });
         }
 
-        if(deck.username !== req.user.username) {
+        if (deck.username !== req.user.username) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        let data = Object.assign({ id: req.params.id }, JSON.parse(req.body.data));
-
-        deckService.update(data);
+        const data = { id: req.params.id, ...JSON.parse(req.body.data) };
+        await deckService.update(data);
 
         res.send({ success: true, message: 'Saved' });
     }));
 
     server.post('/api/decks', wrapAsync(async function(req, res) {
-        if(!req.user) {
+        if (!req.user) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
         const deckCount = await deckService.countByUserName(req.user.username);
-        if(deckCount >= 50) {
+        if (deckCount >= 50) {
             return res.status(400).send({
                 success: false,
                 message: 'You have reached the maximum limit of 50 decks. Please delete some decks before creating new ones.'
             });
         }
 
-        let deck = Object.assign(JSON.parse(req.body.data), { username: req.user.username });
+        const deck = { ...JSON.parse(req.body.data), username: req.user.username };
         await deckService.create(deck);
         res.send({ success: true });
     }));
 
     server.delete('/api/decks/:id', wrapAsync(async function(req, res) {
-        if(!req.user) {
+        if (!req.user) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        let id = req.params.id;
+        const id = req.params.id;
+        const deck = await deckService.getById(id);
 
-        let deck = await deckService.getById(id);
-
-        if(!deck) {
+        if (!deck) {
             return res.status(404).send({ success: false, message: 'No such deck' });
         }
 
-        if(deck.username !== req.user.username) {
+        if (deck.username !== req.user.username) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
@@ -105,22 +101,22 @@ module.exports.init = function(server) {
     }));
 
     server.post('/api/decks/delete-batch', wrapAsync(async function(req, res) {
-        if(!req.user) {
+        if (!req.user) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
         const deckIds = req.body.deckIds;
-        if(!deckIds || !Array.isArray(deckIds) || deckIds.length === 0) {
+        if (!deckIds || !Array.isArray(deckIds) || deckIds.length === 0) {
             return res.status(400).send({ success: false, message: 'Invalid deck IDs' });
         }
 
         const decks = await Promise.all(deckIds.map(id => deckService.getById(id)));
 
-        for(let deck of decks) {
-            if(!deck) {
+        for (const deck of decks) {
+            if (!deck) {
                 return res.status(404).send({ success: false, message: 'One or more decks not found' });
             }
-            if(deck.username !== req.user.username) {
+            if (deck.username !== req.user.username) {
                 return res.status(401).send({ success: false, message: 'Unauthorized' });
             }
         }

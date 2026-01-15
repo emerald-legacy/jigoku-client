@@ -1,24 +1,24 @@
 /*eslint no-console: 0*/
 
-const monk = require('monk').default;
+const db = require('./db.js');
 
 const GameService = require('./services/GameService.js');
 const config = require('config');
 
-let db = monk(config.dbPath);
-let gameService = new GameService(db);
+async function runStats() {
+    const args = process.argv.slice(2);
 
-let args = process.argv.slice(2);
+    if (args.length < 2) {
+        console.error('Must provide start and end date');
+        process.exit(1);
+    }
 
-if(args.length < 2) {
-    console.error('Must provide start and end date');
+    await db.connect(config.dbPath);
+    const gameService = new GameService(db.getDb());
 
-    db.close();
-}
+    console.info('Running stats between', args[0], 'and', args[1]);
 
-console.info('Running stats between', args[0], 'and', args[1]);
-
-gameService.getAllGames(args[0], args[1]).then(games => {
+    const games = await gameService.getAllGames(args[0], args[1]);
     let rejected = { singlePlayer: 0, noWinner: 0 };
 
     console.info('' + games.length, 'total games');
@@ -146,6 +146,11 @@ gameService.getAllGames(args[0], args[1]).then(games => {
     });
 
     console.info(rejected);
-})
+}
+
+runStats()
     .then(() => db.close())
-    .catch(() => db.close());
+    .catch(err => {
+        console.error('Error running stats:', err);
+        db.close();
+    });

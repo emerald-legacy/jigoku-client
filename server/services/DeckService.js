@@ -1,34 +1,36 @@
 const logger = require('../log.js');
+const { toObjectId } = require('../db.js');
 
 class DeckService {
     constructor(db) {
-        this.decks = db.get('decks');
+        this.decks = db.collection('decks');
     }
 
-    getById(id) {
-        return this.decks.findOne({ _id: id })
-            .catch(err => {
-                logger.error('Unable to fetch deck', err);
-                throw new Error('Unable to fetch deck ' + id);
-            });
+    async getById(id) {
+        try {
+            return await this.decks.findOne({ _id: toObjectId(id) });
+        } catch (err) {
+            logger.error('Unable to fetch deck', err);
+            throw new Error('Unable to fetch deck ' + id);
+        }
     }
 
-    findByUserName(userName, options = {}) {
-        let query = { username: userName };
+    async findByUserName(userName, options = {}) {
+        const query = { username: userName };
 
-        if(options.format) {
+        if (options.format) {
             query['format.value'] = options.format;
         }
 
-        return this.decks.find(query, { sort: { lastUpdated: -1 } });
+        return this.decks.find(query).sort({ lastUpdated: -1 }).toArray();
     }
 
-    countByUserName(userName) {
-        return this.decks.count({ username: userName });
+    async countByUserName(userName) {
+        return this.decks.countDocuments({ username: userName });
     }
 
-    create(deck) {
-        let properties = {
+    async create(deck) {
+        const properties = {
             username: deck.username,
             name: deck.deckName,
             provinceCards: deck.provinceCards,
@@ -42,11 +44,12 @@ class DeckService {
             lastUpdated: new Date()
         };
 
-        return this.decks.insert(properties);
+        const result = await this.decks.insertOne(properties);
+        return { ...properties, _id: result.insertedId };
     }
 
-    update(deck) {
-        let properties = {
+    async update(deck) {
+        const properties = {
             name: deck.deckName,
             provinceCards: deck.provinceCards,
             stronghold: deck.stronghold,
@@ -59,13 +62,12 @@ class DeckService {
             lastUpdated: new Date()
         };
 
-        return this.decks.update({ _id: deck.id }, { '$set': properties });
+        return this.decks.updateOne({ _id: toObjectId(deck.id) }, { $set: properties });
     }
 
-    delete(id) {
-        return this.decks.remove({ _id: id });
+    async delete(id) {
+        return this.decks.deleteOne({ _id: toObjectId(id) });
     }
 }
 
 module.exports = DeckService;
-

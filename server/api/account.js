@@ -4,17 +4,13 @@ const passport = require('passport');
 const config = require('config');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
-const util = require('../util.js');
 const nodemailer = require('nodemailer');
 const moment = require('moment');
-const monk = require('monk').default;
+const db = require('../db.js');
 const UserService = require('../services/UserService.js');
 const Settings = require('../settings.js');
 const { wrapAsync } = require('../util.js');
 const axios = require('axios').default;
-
-let db = monk(config.dbPath);
-let userService = new UserService(db);
 
 function hashPassword(password, rounds) {
     return new Promise((resolve, reject) => {
@@ -60,6 +56,29 @@ function sendEmail(address, email) {
 }
 
 module.exports.init = function (server) {
+    const userService = new UserService(db.getDb());
+
+    async function checkAuth(req, res) {
+        let user = await userService.getUserByUsername(req.params.username);
+
+        if (!req.user) {
+            res.status(401).send({ message: 'Unauthorized' });
+            return null;
+        }
+
+        if (req.user.username !== req.params.username) {
+            res.status(403).send({ message: 'Unauthorized' });
+            return null;
+        }
+
+        if (!user) {
+            res.status(404).send({ message: 'Not found' });
+            return null;
+        }
+
+        return user;
+    }
+
     server.post('/api/account/register', wrapAsync(async (req, res) => {
         if (!req.body.password) {
             return res.send({ success: false, message: 'No password specified' });
@@ -347,27 +366,3 @@ module.exports.init = function (server) {
         res.send({ success: true, message: 'Block list entry removed successfully', username: req.params.entry.toLowerCase() });
     }));
 };
-
-async function checkAuth(req, res) {
-    let user = await userService.getUserByUsername(req.params.username);
-
-    if (!req.user) {
-        res.status(401).send({ message: 'Unauthorized' });
-
-        return null;
-    }
-
-    if (req.user.username !== req.params.username) {
-        res.status(403).send({ message: 'Unauthorized' });
-
-        return null;
-    }
-
-    if (!user) {
-        res.status(404).send({ message: 'Not found' });
-
-        return null;
-    }
-
-    return user;
-}

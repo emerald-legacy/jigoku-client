@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
+const MongoStore = require('connect-mongo').default;
 const config = require('config');
 const passport = require('passport');
 const localStrategy = require('passport-local').Strategy;
@@ -18,7 +18,7 @@ const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const webpack = require('webpack');
 const webpackConfig = require('../webpack.config.js');
-const monk = require('monk').default;
+const db = require('./db.js');
 
 const UserService = require('./services/UserService.js');
 const Settings = require('./settings.js');
@@ -42,11 +42,14 @@ const authLimiter = rateLimit({
 
 class Server {
     constructor(isDeveloping) {
-        let db = monk(config.dbPath);
-        this.userService = new UserService(db);
         this.isDeveloping = isDeveloping;
         // @ts-ignore
         this.server = http.Server(app);
+    }
+
+    async initDb() {
+        const database = await db.connect(config.dbPath);
+        this.userService = new UserService(database);
     }
 
     init() {
@@ -134,7 +137,7 @@ class Server {
             }));
         }
 
-        app.get('*', (req, res) => {
+        app.get('/{*splat}', (req, res) => {
             let token = undefined;
 
             if(req.user) {

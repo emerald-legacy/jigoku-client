@@ -2,7 +2,7 @@
 const download = require('download');
 const fs = require('fs');
 const mkdirp = require('mkdirp');
-const monk = require('monk').default;
+const db = require('../db.js');
 const path = require('path');
 const request = require('request');
 const sharp = require('sharp');
@@ -30,9 +30,9 @@ const apiUrl =
         ? 'https://beta-emeralddb.herokuapp.com/api/'
         : 'https://www.emeralddb.org/api/';
 
-function apiRequest(path) {
+function apiRequest(apiPath) {
     return new Promise((resolve, reject) => {
-        request.get(apiUrl + path, function (error, res, body) {
+        request.get(apiUrl + apiPath, function (error, res, body) {
             if(error) {
                 return reject(error);
             }
@@ -43,8 +43,7 @@ function apiRequest(path) {
 }
 
 const dbPath = process.env.DB_PATH || 'mongodb://127.0.0.1:27017/ringteki';
-const db = monk(dbPath);
-const cardService = new CardService(db);
+let cardService;
 
 async function downloadWithRetry(url, dest, filename, maxRetries = 3) {
     const isPng = url.toLowerCase().endsWith('.png');
@@ -102,9 +101,10 @@ async function downloadParallel(tasks, concurrency = 10) {
     return results;
 }
 
-const fetchCards = apiRequest('cards')
-    .then((cards) => cardService.replaceCards(cards))
-    .then(async (cards) => {
+async function fetchCards() {
+    try {
+        const cards = await apiRequest('cards');
+        await cardService.replaceCards(cards);
         console.info(cards.length + ' cards fetched');
 
         const imageDir = path.join(
@@ -177,7 +177,7 @@ const fetchCards = apiRequest('cards')
         const results = await downloadParallel(downloadTasks, 10);
 
         // Process results
-        for (const { card, version, result, url, filename } of results) {
+        for (const { card, result, url, filename } of results) {
             if (result.success) {
                 downloaded++;
                 if (result.converted) {
@@ -203,15 +203,15 @@ const fetchCards = apiRequest('cards')
 
         if (convertedCards.length > 0) {
             console.log('\n=== Converted from PNG ===');
-            convertedCards.forEach(card => {
-                console.log(`${card.filename} - ${card.name}`);
+            convertedCards.forEach(c => {
+                console.log(`${c.filename} - ${c.name}`);
             });
         }
 
         if (failedCards.length > 0) {
             console.log('\n=== Failed Downloads ===');
-            failedCards.slice(0, 20).forEach(card => {
-                console.log(`${card.filename} (${card.name}): ${card.error}`);
+            failedCards.slice(0, 20).forEach(c => {
+                console.log(`${c.filename} (${c.name}): ${c.error}`);
             });
             if (failedCards.length > 20) {
                 console.log(`... and ${failedCards.length - 20} more`);
@@ -219,21 +219,32 @@ const fetchCards = apiRequest('cards')
         }
 
         return cards;
-    })
-    .catch((error) => {
+    } catch (error) {
         console.error('Unable to fetch cards:', error.message);
         console.error(error.stack);
-    });
+    }
+}
 
-const fetchPacks = apiRequest('packs')
-    .then((packs) => cardService.replacePacks(packs))
-    .then((packs) => {
+async function fetchPacks() {
+    try {
+        const packs = await apiRequest('packs');
+        await cardService.replacePacks(packs);
         console.info(packs.length + ' packs fetched');
-    })
-    .catch(() => {
-        console.error('Unable to fetch packs');
-    });
+    } catch (error) {
+        console.error('Unable to fetch packs:', error.message);
+    }
+}
 
-Promise.all([fetchCards, fetchPacks])
-    .then(() => db.close())
-    .catch(() => db.close());
+async function main() {
+    await db.connect(dbPath);
+    cardService = new CardService(db.getDb());
+
+    await Promise.all([fetchCards(), fetchPacks()]);
+    await db.close();
+}
+
+main().catch(err => {
+    console.error('Fatal error:', err);
+    db.close();
+    process.exit(1);
+});

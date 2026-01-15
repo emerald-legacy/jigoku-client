@@ -1,6 +1,6 @@
 const { Router } = require('zeromq');
 const logger = require('./log.js');
-const monk = require('monk').default;
+const db = require('./db.js');
 const EventEmitter = require('events');
 const GameService = require('./services/GameService.js');
 
@@ -9,7 +9,7 @@ class GameRouter extends EventEmitter {
         super();
 
         this.workers = {};
-        this.gameService = new GameService(monk(config.dbPath));
+        this.gameService = new GameService(db.getDb());
         this.router = new Router();
         this.running = false;
 
