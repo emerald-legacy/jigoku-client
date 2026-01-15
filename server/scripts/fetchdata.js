@@ -1,10 +1,9 @@
 /*eslint no-console:0 */
-const download = require('download');
 const fs = require('fs');
+const { pipeline } = require('stream/promises');
 const mkdirp = require('mkdirp');
 const db = require('../db.js');
 const path = require('path');
-const request = require('request');
 const sharp = require('sharp');
 
 const CardService = require('../services/CardService.js');
@@ -30,34 +29,46 @@ const apiUrl =
         ? 'https://beta-emeralddb.herokuapp.com/api/'
         : 'https://www.emeralddb.org/api/';
 
-function apiRequest(apiPath) {
-    return new Promise((resolve, reject) => {
-        request.get(apiUrl + apiPath, function (error, res, body) {
-            if(error) {
-                return reject(error);
-            }
-
-            resolve(JSON.parse(body));
-        });
-    });
+async function apiRequest(apiPath) {
+    const response = await fetch(apiUrl + apiPath);
+    if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    return response.json();
 }
 
 const dbPath = process.env.DB_PATH || 'mongodb://127.0.0.1:27017/ringteki';
 let cardService;
 
+async function downloadFile(url, destPath, timeout = 30000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    try {
+        const response = await fetch(url, { signal: controller.signal });
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const fileStream = fs.createWriteStream(destPath);
+        await pipeline(response.body, fileStream);
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
+
 async function downloadWithRetry(url, dest, filename, maxRetries = 3) {
     const isPng = url.toLowerCase().endsWith('.png');
     const tempFilename = isPng ? filename.replace('.jpg', '.png') : filename;
+    const tempPath = path.join(dest, tempFilename);
+    const finalPath = path.join(dest, filename);
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-            await download(url, dest, { filename: tempFilename, timeout: 30000 });
+            await downloadFile(url, tempPath, 30000);
 
             // Convert PNG to JPG if needed
             if (isPng) {
-                const tempPath = path.join(dest, tempFilename);
-                const finalPath = path.join(dest, filename);
-
                 await sharp(tempPath)
                     .jpeg({ quality: 90 })
                     .toFile(finalPath);
@@ -70,6 +81,11 @@ async function downloadWithRetry(url, dest, filename, maxRetries = 3) {
 
             return { success: true, converted: false };
         } catch (error) {
+            // Clean up partial file on error
+            if (fs.existsSync(tempPath)) {
+                try { fs.unlinkSync(tempPath); } catch {}
+            }
+
             if (attempt === maxRetries) {
                 return { success: false, error: error.message };
             }
