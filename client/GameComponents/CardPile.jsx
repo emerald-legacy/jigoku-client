@@ -36,11 +36,11 @@ function CardPile({
     const onCollectionClick = (event) => {
         event.preventDefault();
 
-        if (disableMenu) {
+        if(disableMenu) {
             return;
         }
 
-        if (menu) {
+        if(menu) {
             setShowMenu(!showMenu);
             return;
         }
@@ -49,7 +49,7 @@ function CardPile({
     };
 
     const handleMenuItemClick = (menuItem) => {
-        if (menuItem.showPopup) {
+        if(menuItem.showPopup) {
             setShowPopup(!showPopup);
         }
 
@@ -62,7 +62,7 @@ function CardPile({
 
         setShowPopup(!showPopup);
 
-        if (onCloseClick) {
+        if(onCloseClick) {
             onCloseClick();
         }
     };
@@ -73,13 +73,13 @@ function CardPile({
     };
 
     const onTopCardClick = () => {
-        if (menu && !disableMenu) {
+        if(menu && !disableMenu) {
             setShowMenu(!showMenu);
             return;
         }
 
-        if (disableMenu) {
-            if (onCardClick) {
+        if(disableMenu) {
+            if(onCardClick) {
                 onCardClick(topCard);
             }
 
@@ -106,27 +106,27 @@ function CardPile({
 
         const card = event.dataTransfer.getData('Text');
 
-        if (!card) {
+        if(!card) {
             return;
         }
 
         const dragData = tryParseJSON(card);
 
-        if (!dragData) {
+        if(!dragData) {
             return;
         }
 
-        if (onDragDrop) {
+        if(onDragDrop) {
             onDragDrop(dragData.card, dragData.source, target);
         }
     };
 
     const handleCardClick = (card) => {
-        if (closeOnClick) {
+        if(closeOnClick) {
             setShowPopup(false);
         }
 
-        if (onCardClick) {
+        if(onCardClick) {
             onCardClick(card);
         }
     };
@@ -138,36 +138,36 @@ function CardPile({
             const cardKey = card.uuid || cardIndex++;
             return (
                 <Card
-                    key={cardKey}
-                    card={card}
-                    source={source}
-                    disableMouseOver={disableMouseOver}
-                    onMouseOver={onMouseOver}
-                    onMouseOut={onMouseOut}
-                    onTouchMove={onTouchMove}
-                    onClick={() => handleCardClick(card)}
-                    onDragDrop={onDragDrop}
-                    orientation={orientation === 'bowed' ? 'vertical' : orientation}
-                    size={size}
+                    key={ cardKey }
+                    card={ card }
+                    source={ source }
+                    disableMouseOver={ disableMouseOver }
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    onTouchMove={ onTouchMove }
+                    onClick={ () => handleCardClick(card) }
+                    onDragDrop={ onDragDrop }
+                    orientation={ orientation === 'bowed' ? 'vertical' : orientation }
+                    size={ size }
                 />
             );
         });
 
-        if (!showPopup) {
+        if(!showPopup) {
             return null;
         }
 
         let popupClass = 'panel';
         let arrowClass = 'arrow lg';
 
-        if (popupLocation === 'top') {
+        if(popupLocation === 'top') {
             popupClass += ' our-side';
             arrowClass += ' down';
         } else {
             arrowClass += ' up';
         }
 
-        if (orientation === 'horizontal') {
+        if(orientation === 'horizontal') {
             arrowClass = 'arrow lg left';
         }
 
@@ -175,44 +175,44 @@ function CardPile({
 
         const popupMenuElement = popupMenu ? (
             <div>
-                {popupMenu.map((menuItem) => {
+                { popupMenu.map((menuItem) => {
                     return (
                         <a
                             className='btn btn-default'
-                            key={linkIndex++}
-                            onClick={() => onPopupMenuItemClick(menuItem)}
+                            key={ linkIndex++ }
+                            onClick={ () => onPopupMenuItemClick(menuItem) }
                         >
-                            {menuItem.text}
+                            { menuItem.text }
                         </a>
                     );
-                })}
+                }) }
             </div>
         ) : null;
 
         return (
             <Draggable handle='grip'>
-                <div className={`popup ${isMe ? '' : 'opponent'}`}>
+                <div className={ `popup ${isMe ? '' : 'opponent'}` }>
                     <grip>
                         <div
                             className='panel-title'
-                            onClick={(event) => event.stopPropagation()}
+                            onClick={ (event) => event.stopPropagation() }
                         >
-                            <span className='text-center'>{title}</span>
+                            <span className='text-center'>{ title }</span>
                             <span className='pull-right'>
                                 <a
                                     className='close-button glyphicon glyphicon-remove'
-                                    onClick={handleCloseClick}
+                                    onClick={ handleCloseClick }
                                 />
                             </span>
                         </div>
                     </grip>
                     <div
-                        className={popupClass}
-                        onClick={(event) => event.stopPropagation()}
+                        className={ popupClass }
+                        onClick={ (event) => event.stopPropagation() }
                     >
-                        {popupMenuElement}
-                        <div className='inner'>{cardList}</div>
-                        <div className={arrowClass} />
+                        { popupMenuElement }
+                        <div className='inner'>{ cardList }</div>
+                        <div className={ arrowClass } />
                     </div>
                 </div>
             </Draggable>
@@ -224,22 +224,22 @@ function CardPile({
 
         const menuElements = menu?.map((item) => {
             return (
-                <div key={(menuIndex++).toString()} onClick={() => handleMenuItemClick(item)}>
-                    {item.text}
+                <div key={ (menuIndex++).toString() } onClick={ () => handleMenuItemClick(item) }>
+                    { item.text }
                 </div>
             );
         });
 
-        return <div className='panel menu'>{menuElements}</div>;
+        return <div className='panel menu'>{ menuElements }</div>;
     };
 
     let className = 'card-pile ' + (propsClassName || '');
-    if (size !== 'normal') {
+    if(size !== 'normal') {
         className += ' ' + size;
     }
 
     const displayCardCount = cardCount || (cards ? cards.length : 0);
-    if (displayCardCount === 0) {
+    if(displayCardCount === 0) {
         className += ' panel';
     }
     const headerText = title ? title + ' (' + displayCardCount + ')' : '';
@@ -251,7 +251,7 @@ function CardPile({
 
     const displayTopCard = hiddenTopCard && !propsTopCard ? { facedown: true } : topCard;
 
-    if (orientation === 'horizontal' || orientation === 'bowed') {
+    if(orientation === 'horizontal' || orientation === 'bowed') {
         className += ' horizontal';
     } else {
         className += ' vertical';
@@ -259,31 +259,31 @@ function CardPile({
 
     return (
         <div
-            className={className}
-            onDragLeave={onDragLeave}
-            onDragOver={onDragOver}
-            onDrop={(event) => handleDragDrop(event, source)}
-            onClick={onCollectionClick}
+            className={ className }
+            onDragLeave={ onDragLeave }
+            onDragOver={ onDragOver }
+            onDrop={ (event) => handleDragDrop(event, source) }
+            onClick={ onCollectionClick }
         >
-            <div className='panel-header'>{headerText}</div>
-            {displayTopCard ? (
+            <div className='panel-header'>{ headerText }</div>
+            { displayTopCard ? (
                 <Card
-                    card={displayTopCard}
-                    source={source}
-                    onMouseOver={onMouseOver}
-                    onMouseOut={onMouseOut}
-                    disableMouseOver={hiddenTopCard}
-                    onClick={onTopCardClick}
-                    onMenuItemClick={onMenuItemClick}
-                    onDragDrop={onDragDrop}
-                    orientation={cardOrientation}
-                    size={size}
+                    card={ displayTopCard }
+                    source={ source }
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    disableMouseOver={ hiddenTopCard }
+                    onClick={ onTopCardClick }
+                    onMenuItemClick={ onMenuItemClick }
+                    onDragDrop={ onDragDrop }
+                    orientation={ cardOrientation }
+                    size={ size }
                 />
             ) : (
                 <div className='card-placeholder' />
-            )}
-            {showMenu ? getMenu() : null}
-            {getPopup()}
+            ) }
+            { showMenu ? getMenu() : null }
+            { getPopup() }
         </div>
     );
 }

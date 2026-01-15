@@ -16,32 +16,32 @@ function Input({
 }) {
     const inputControl = (
         <div>
-            <label htmlFor={name} className={(labelClass || '') + ' control-label'}>
-                {label}
+            <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
+                { label }
             </label>
-            <div className={fieldClass}>
+            <div className={ fieldClass }>
                 <input
-                    type={type}
+                    type={ type }
                     className='form-control'
-                    id={name}
-                    placeholder={placeholder}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
+                    id={ name }
+                    placeholder={ placeholder }
+                    value={ value }
+                    onChange={ onChange }
+                    onBlur={ onBlur }
                 />
-                {validationMessage ? (
-                    <span className='help-block'>{validationMessage} </span>
-                ) : null}
+                { validationMessage ? (
+                    <span className='help-block'>{ validationMessage } </span>
+                ) : null }
             </div>
-            {children}
+            { children }
         </div>
     );
 
-    if (noGroup) {
+    if(noGroup) {
         return inputControl;
     }
 
-    return <div className='form-group'>{inputControl}</div>;
+    return <div className='form-group'>{ inputControl }</div>;
 }
 
 Input.displayName = 'Input';

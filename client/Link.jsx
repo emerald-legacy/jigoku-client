@@ -9,8 +9,8 @@ function InnerLink({ children, className, href, navigate }) {
     };
 
     return (
-        <a className={className} href={href} onClick={onClick}>
-            {children}
+        <a className={ className } href={ href } onClick={ onClick }>
+            { children }
         </a>
     );
 }

@@ -11,9 +11,9 @@ export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordG
     const onJoinClick = (event) => {
         event.preventDefault();
 
-        if (passwordJoinType === 'Join') {
+        if(passwordJoinType === 'Join') {
             socket.emit('joingame', passwordGame.id, password);
-        } else if (passwordJoinType === 'Watch') {
+        } else if(passwordJoinType === 'Watch') {
             socket.emit('watchgame', passwordGame.id, password);
         }
     };
@@ -27,28 +27,28 @@ export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordG
         setPassword(event.target.value);
     };
 
-    if (!passwordGame) {
+    if(!passwordGame) {
         return null;
     }
 
     return (
         <div>
             <div className='col-sm-12'>
-                <h3>Enter the password for {passwordGame.name}</h3>
+                <h3>Enter the password for { passwordGame.name }</h3>
             </div>
             <div className='col-sm-5 game-password'>
-                <input className='form-control' type='password' onChange={onPasswordChange} value={password} />
+                <input className='form-control' type='password' onChange={ onPasswordChange } value={ password } />
             </div>
             <div className='row' />
-            {passwordError ? (
+            { passwordError ? (
                 <div className='col-sm-6'>
-                    <AlertPanel type='error' message={passwordError} />
+                    <AlertPanel type='error' message={ passwordError } />
                 </div>
-            ) : null}
+            ) : null }
             <div className='col-sm-12'>
                 <div className='btn-group'>
-                    <button className='btn btn-primary' onClick={onJoinClick}>{passwordJoinType}</button>
-                    <button className='btn btn-primary' onClick={onCancelClick}>Cancel</button>
+                    <button className='btn btn-primary' onClick={ onJoinClick }>{ passwordJoinType }</button>
+                    <button className='btn btn-primary' onClick={ onCancelClick }>Cancel</button>
                 </div>
             </div>
         </div>

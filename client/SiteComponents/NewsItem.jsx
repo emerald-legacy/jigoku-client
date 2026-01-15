@@ -3,9 +3,9 @@ import moment from 'moment';
 
 function NewsItem({ icon, date, text }) {
     return (
-        <div className={`${icon}-container`}>
-            <span className={`icon-${icon}`} />
-            &nbsp;{moment(date).format('YYYY-MM-DD') + ' - ' + text}
+        <div className={ `${icon}-container` }>
+            <span className={ `icon-${icon}` } />
+            &nbsp;{ moment(date).format('YYYY-MM-DD') + ' - ' + text }
         </div>
     );
 }

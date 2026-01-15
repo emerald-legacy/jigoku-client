@@ -16,7 +16,7 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
     }, [loadNews]);
 
     useEffect(() => {
-        if (newsSaved) {
+        if(newsSaved) {
             const timer = setTimeout(() => {
                 clearNewsStatus();
             }, 5000);
@@ -38,29 +38,29 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
     let content = null;
 
     const renderedNews = news?.map((newsItem, index) => (
-        <tr key={index}>
-            <td>{moment(newsItem.datePublished).format('YYYY-MM-DD')}</td>
-            <td>{newsItem.poster}</td>
-            <td>{newsItem.text}</td>
+        <tr key={ index }>
+            <td>{ moment(newsItem.datePublished).format('YYYY-MM-DD') }</td>
+            <td>{ newsItem.poster }</td>
+            <td>{ newsItem.text }</td>
         </tr>
     ));
 
     let successPanel = null;
 
-    if (newsSaved) {
+    if(newsSaved) {
         successPanel = (
             <AlertPanel message='News added successfully' type='success' />
         );
     }
 
-    if (loading) {
+    if(loading) {
         content = <div>Loading news from the server...</div>;
-    } else if (apiError) {
-        content = <AlertPanel type='error' message={apiError} />;
+    } else if(apiError) {
+        content = <AlertPanel type='error' message={ apiError } />;
     } else {
         content = (
             <div>
-                {successPanel}
+                { successPanel }
                 <table className='table table-striped'>
                     <thead>
                         <tr>
@@ -70,14 +70,14 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
                         </tr>
                     </thead>
                     <tbody>
-                        {renderedNews}
+                        { renderedNews }
                     </tbody>
                 </table>
 
                 <form className='form'>
-                    <TextArea name='newsText' label='Add news item' value={newsText} onChange={onNewsTextChange} />
+                    <TextArea name='newsText' label='Add news item' value={ newsText } onChange={ onNewsTextChange } />
 
-                    <button type='submit' className='btn btn-primary' onClick={onAddNews}>Add</button>
+                    <button type='submit' className='btn btn-primary' onClick={ onAddNews }>Add</button>
                 </form>
             </div>
         );

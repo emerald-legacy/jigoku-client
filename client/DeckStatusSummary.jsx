@@ -5,31 +5,31 @@ function DeckStatusSummary({ status }) {
     const { basicRules, officialRole, noUnreleasedCards, faqVersion, faqRestrictedList, gameMode } = status;
     let items = [];
 
-    if (gameMode === GameModes.Skirmish) {
+    if(gameMode === GameModes.Skirmish) {
         items = [
             { title: 'Basic deckbuilding rules', value: basicRules },
             { title: 'Official FFG OP role', value: officialRole },
             { title: `FAQ v${faqVersion} restricted/ban list`, value: faqRestrictedList },
             { title: 'Only released cards', value: noUnreleasedCards }
         ];
-    } else if (gameMode === GameModes.JadeEdict) {
+    } else if(gameMode === GameModes.JadeEdict) {
         items = [
             { title: 'Basic deckbuilding rules', value: basicRules },
             { title: 'Jade Edict restricted/ban list', value: faqRestrictedList },
             { title: 'Only released cards', value: noUnreleasedCards }
         ];
-    } else if (gameMode === GameModes.Emerald) {
+    } else if(gameMode === GameModes.Emerald) {
         items = [
             { title: 'Basic deckbuilding rules', value: basicRules },
             { title: 'Emerald Legacy restricted/ban list', value: faqRestrictedList },
             { title: 'Only released cards', value: noUnreleasedCards }
         ];
-    } else if (gameMode === GameModes.Sanctuary) {
+    } else if(gameMode === GameModes.Sanctuary) {
         items = [
             { title: 'Basic deckbuilding rules', value: basicRules },
             { title: 'Only released cards', value: noUnreleasedCards }
         ];
-    } else if (gameMode === GameModes.Obsidian) {
+    } else if(gameMode === GameModes.Obsidian) {
         items = [
             { title: 'Basic deckbuilding rules', value: basicRules },
             { title: 'Obsidian Heresy ban list', value: faqRestrictedList },
@@ -45,12 +45,12 @@ function DeckStatusSummary({ status }) {
 
     return (
         <ul className='deck-status-summary'>
-            {items.map((item, index) => (
-                <li className={item.value ? 'valid' : 'invalid'} key={index}>
-                    <span className={item.value ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove'} />
-                    {` ${item.title}`}
+            { items.map((item, index) => (
+                <li className={ item.value ? 'valid' : 'invalid' } key={ index }>
+                    <span className={ item.value ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove' } />
+                    { ` ${item.title}` }
                 </li>
-            ))}
+            )) }
         </ul>
     );
 }

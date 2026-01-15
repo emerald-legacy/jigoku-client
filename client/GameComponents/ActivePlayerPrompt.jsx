@@ -7,17 +7,25 @@ import CardNameLookup from './CardNameLookup.jsx';
 
 // Deep equality check for objects
 function isEqual(a, b) {
-    if (a === b) return true;
-    if (a == null || b == null) return false;
-    if (typeof a !== 'object' || typeof b !== 'object') return a === b;
+    if(a === b) {
+        return true;
+    }
+    if(a == null || b == null) {
+        return false;
+    }
+    if(typeof a !== 'object' || typeof b !== 'object') {
+        return a === b;
+    }
 
     const keysA = Object.keys(a);
     const keysB = Object.keys(b);
 
-    if (keysA.length !== keysB.length) return false;
+    if(keysA.length !== keysB.length) {
+        return false;
+    }
 
-    for (const key of keysA) {
-        if (!keysB.includes(key) || !isEqual(a[key], b[key])) {
+    for(const key of keysA) {
+        if(!keysB.includes(key) || !isEqual(a[key], b[key])) {
             return false;
         }
     }
@@ -26,12 +34,12 @@ function isEqual(a, b) {
 }
 
 function buttonsAreEqual(oldButtons, newButtons) {
-    if (!oldButtons || !newButtons || oldButtons.length !== newButtons.length) {
+    if(!oldButtons || !newButtons || oldButtons.length !== newButtons.length) {
         return false;
     }
 
-    for (let i = 0; i < oldButtons.length; ++i) {
-        if (!isEqual(oldButtons[i], newButtons[i])) {
+    for(let i = 0; i < oldButtons.length; ++i) {
+        if(!isEqual(oldButtons[i], newButtons[i])) {
             return false;
         }
     }
@@ -69,17 +77,17 @@ function ActivePlayerPrompt({
 
         // Check if buttons actually changed
         const buttonsChanged = !buttonsAreEqual(prevButtons, buttons);
-        if (!buttonsChanged) {
+        if(!buttonsChanged) {
             return;
         }
 
-        if (!user?.settings?.windowTimer) {
+        if(!user?.settings?.windowTimer) {
             return;
         }
 
         const hasTimerButton = buttons?.some(button => button.timer);
-        if (hasTimerButton) {
-            if (timerHandleRef.current) {
+        if(hasTimerButton) {
+            if(timerHandleRef.current) {
                 return;
             }
 
@@ -90,12 +98,12 @@ function ActivePlayerPrompt({
                 const now = new Date();
                 const difference = (now - timerRef.current.started) / 1000;
 
-                if (difference >= timerRef.current.timerTime) {
+                if(difference >= timerRef.current.timerTime) {
                     clearInterval(timerHandleRef.current);
                     timerHandleRef.current = null;
                     setShowTimer(false);
 
-                    if (onTimerExpired) {
+                    if(onTimerExpired) {
                         onTimerExpired();
                     }
                     return;
@@ -112,7 +120,7 @@ function ActivePlayerPrompt({
         }
 
         return () => {
-            if (timerHandleRef.current) {
+            if(timerHandleRef.current) {
                 clearInterval(timerHandleRef.current);
                 timerHandleRef.current = null;
             }
@@ -122,7 +130,7 @@ function ActivePlayerPrompt({
     const handleButtonClick = useCallback((event, command, arg, uuid, method) => {
         event.preventDefault();
 
-        if (timerHandleRef.current) {
+        if(timerHandleRef.current) {
             clearInterval(timerHandleRef.current);
             timerHandleRef.current = null;
         }
@@ -130,7 +138,7 @@ function ActivePlayerPrompt({
         setShowTimer(false);
         setTimerCancelled(true);
 
-        if (onButtonClick) {
+        if(onButtonClick) {
             onButtonClick(command, arg, uuid, method);
         }
     }, [onButtonClick]);
@@ -138,7 +146,7 @@ function ActivePlayerPrompt({
     const handleCancelTimerClick = useCallback((event, button) => {
         event.preventDefault();
 
-        if (timerHandleRef.current) {
+        if(timerHandleRef.current) {
             clearInterval(timerHandleRef.current);
             timerHandleRef.current = null;
         }
@@ -146,39 +154,39 @@ function ActivePlayerPrompt({
         setShowTimer(false);
         setTimerCancelled(true);
 
-        if (button.method) {
+        if(button.method) {
             onButtonClick(button.command, button.arg, button.uuid, button.method);
         }
     }, [onButtonClick]);
 
     const handleMouseOver = useCallback((event, card) => {
-        if (card && onMouseOver) {
+        if(card && onMouseOver) {
             onMouseOver(card);
         }
     }, [onMouseOver]);
 
     const handleMouseOut = useCallback((event, card) => {
-        if (card && onMouseOut) {
+        if(card && onMouseOut) {
             onMouseOut(card);
         }
     }, [onMouseOut]);
 
     const handleCardNameSelected = useCallback((command, uuid, method, cardName) => {
-        if (onButtonClick) {
+        if(onButtonClick) {
             onButtonClick(command, cardName, uuid, method);
         }
     }, [onButtonClick]);
 
     const renderedButtons = useMemo(() => {
-        if (!buttons) {
+        if(!buttons) {
             return [];
         }
 
         let buttonIndex = 0;
         const result = [];
 
-        for (const button of buttons) {
-            if (button.timer) {
+        for(const button of buttons) {
+            if(button.timer) {
                 continue;
             }
 
@@ -188,14 +196,14 @@ function ActivePlayerPrompt({
 
             const option = (
                 <button
-                    key={button.command + buttonIndex.toString()}
+                    key={ button.command + buttonIndex.toString() }
                     className='btn btn-default'
-                    onClick={clickCallback}
-                    onMouseOver={(event) => handleMouseOver(event, button.card)}
-                    onMouseOut={(event) => handleMouseOut(event, button.card)}
-                    disabled={button.disabled}
+                    onClick={ clickCallback }
+                    onMouseOver={ (event) => handleMouseOver(event, button.card) }
+                    onMouseOut={ (event) => handleMouseOut(event, button.card) }
+                    disabled={ button.disabled }
                 >
-                    {button.text}
+                    { button.text }
                 </button>
             );
 
@@ -207,28 +215,28 @@ function ActivePlayerPrompt({
     }, [buttons, handleButtonClick, handleCancelTimerClick, handleMouseOver, handleMouseOut]);
 
     const renderedControls = useMemo(() => {
-        if (!controls) {
+        if(!controls) {
             return [];
         }
 
         return controls.map((control, index) => {
-            switch (control.type) {
+            switch(control.type) {
                 case 'targeting':
                     return (
                         <AbilityTargeting
-                            key={index}
-                            onMouseOut={onMouseOut}
-                            onMouseOver={onMouseOver}
-                            source={control.source}
-                            targets={control.targets}
+                            key={ index }
+                            onMouseOut={ onMouseOut }
+                            onMouseOver={ onMouseOver }
+                            source={ control.source }
+                            targets={ control.targets }
                         />
                     );
                 case 'card-name':
                     return (
                         <CardNameLookup
-                            key={index}
-                            cards={cards}
-                            onCardSelected={(cardName) => handleCardNameSelected(control.command, control.uuid, control.method, cardName)}
+                            key={ index }
+                            cards={ cards }
+                            onCardSelected={ (cardName) => handleCardNameSelected(control.command, control.uuid, control.method, cardName) }
                         />
                     );
                 default:
@@ -250,37 +258,37 @@ function ActivePlayerPrompt({
     }), []);
 
     let promptTitleElement = null;
-    if (promptTitle) {
-        promptTitleElement = <div className='menu-pane-source'>{promptTitle}</div>;
+    if(promptTitle) {
+        promptTitleElement = <div className='menu-pane-source'>{ promptTitle }</div>;
     }
 
     let timer = null;
-    if (showTimer) {
+    if(showTimer) {
         timer = (
             <div>
-                <span>Auto passing in {timeLeft}...</span>
+                <span>Auto passing in { timeLeft }...</span>
                 <div className='progress'>
-                    <div className='progress-bar progress-bar-success' role='progressbar' style={{ width: timerClass }} />
+                    <div className='progress-bar progress-bar-success' role='progressbar' style={ { width: timerClass } } />
                 </div>
             </div>
         );
     }
 
     return (
-        <Draggable handle='grip' bounds={activePromptBounds} defaultPosition={getDefaultPosition()}>
+        <Draggable handle='grip' bounds={ activePromptBounds } defaultPosition={ getDefaultPosition() }>
             <div className='no-highlight'>
-                {timer}
+                { timer }
                 <grip>
-                    <div className={'phase-indicator ' + phase} onClick={onTitleClick}>
-                        {phase} phase
+                    <div className={ 'phase-indicator ' + phase } onClick={ onTitleClick }>
+                        { phase } phase
                     </div>
                 </grip>
-                {promptTitleElement}
+                { promptTitleElement }
                 <div className='menu-pane'>
                     <div className='panel'>
-                        <h4>{title}</h4>
-                        {renderedControls}
-                        {renderedButtons}
+                        <h4>{ title }</h4>
+                        { renderedControls }
+                        { renderedButtons }
                     </div>
                 </div>
             </div>

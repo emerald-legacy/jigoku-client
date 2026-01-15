@@ -59,13 +59,13 @@ class Server {
             helmet({
                 contentSecurityPolicy: {
                     directives: {
-                        defaultSrc: ["'self'"],
-                        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
-                        styleSrc: ["'self'", "'unsafe-inline'"],
-                        imgSrc: ["'self'", 'data:', 'https:'],
-                        connectSrc: ["'self'", 'wss:', 'ws:', 'https://www.emeralddb.org', 'https://emeralddb.org'].concat(config.cspConnectSources || []),
-                        fontSrc: ["'self'", 'data:'],
-                        objectSrc: ["'none'"]
+                        defaultSrc: ['\'self\''],
+                        scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
+                        styleSrc: ['\'self\'', '\'unsafe-inline\''],
+                        imgSrc: ['\'self\'', 'data:', 'https:'],
+                        connectSrc: ['\'self\'', 'wss:', 'ws:', 'https://www.emeralddb.org', 'https://emeralddb.org'].concat(config.cspConnectSources || []),
+                        fontSrc: ['\'self\'', 'data:'],
+                        objectSrc: ['\'none\'']
                     }
                 },
                 crossOriginEmbedderPolicy: false // Needed for Socket.io compatibility

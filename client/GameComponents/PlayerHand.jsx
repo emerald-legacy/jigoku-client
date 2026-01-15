@@ -22,22 +22,22 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
 
         const cardData = event.dataTransfer.getData('Text');
 
-        if (!cardData) {
+        if(!cardData) {
             return;
         }
 
         const dragData = tryParseJSON(cardData);
-        if (!dragData) {
+        if(!dragData) {
             return;
         }
 
-        if (onDragDrop) {
+        if(onDragDrop) {
             onDragDrop(dragData.card, dragData.source, target);
         }
     }, [onDragDrop]);
 
     const getCardWidth = useCallback(() => {
-        switch (cardSize) {
+        switch(cardSize) {
             case 'small':
                 return 65 * 0.8;
             case 'large':
@@ -53,7 +53,7 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
     const cardWidth = getCardWidth();
 
     const maxWidth = useMemo(() => {
-        switch (cardSize) {
+        switch(cardSize) {
             case 'small':
             case 'large':
             case 'x-large':
@@ -71,7 +71,7 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
         let cardIndex = 1;
         let attachmentOffset = 13;
 
-        switch (cardSize) {
+        switch(cardSize) {
             case 'large':
                 attachmentOffset *= 1.4;
                 break;
@@ -85,11 +85,11 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
 
         return cards?.map((card) => {
             let className = '';
-            if (needsSquish) {
+            if(needsSquish) {
                 className += ' squish';
-                if (cardIndex++ === handLength) {
+                if(cardIndex++ === handLength) {
                     className += ' tail';
-                    if (attachmentOffset > (480 / (cardWidth * handLength))) {
+                    if(attachmentOffset > (480 / (cardWidth * handLength))) {
                         className += ' nohide';
                     }
                 }
@@ -97,17 +97,17 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
 
             return (
                 <Card
-                    key={card.uuid}
-                    card={card}
-                    className={className}
-                    style={{}}
-                    disableMouseOver={!isMe}
+                    key={ card.uuid }
+                    card={ card }
+                    className={ className }
+                    style={ {} }
+                    disableMouseOver={ !isMe }
                     source='hand'
-                    onMouseOver={onMouseOver}
-                    onMouseOut={onMouseOut}
-                    onClick={onCardClick}
-                    onDragDrop={onDragDrop}
-                    size={cardSize}
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    onClick={ onCardClick }
+                    onDragDrop={ onDragDrop }
+                    size={ cardSize }
                 />
             );
         }) || [];
@@ -116,18 +116,18 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
     let className = 'panel hand';
     let titleBarClassName = 'hand-title-bar no-highlight';
 
-    if (cardSize !== 'normal') {
+    if(cardSize !== 'normal') {
         className += ' ' + cardSize;
         titleBarClassName += ' ' + cardSize;
     }
 
     // Calculate dynamic width based on number of cards
     let handWidth = maxWidth;
-    if (cards && !needsSquish) {
+    if(cards && !needsSquish) {
         handWidth = Math.max(cardWidth * cards.length, cardWidth);
     }
 
-    if (needsSquish) {
+    if(needsSquish) {
         className += ' squish';
     }
 
@@ -137,18 +137,18 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
     return (
         <div>
             <grip>
-                <div className={titleBarClassName} style={titleBarStyle}>
-                    {'Hand (' + handCards.length + ')'}
+                <div className={ titleBarClassName } style={ titleBarStyle }>
+                    { 'Hand (' + handCards.length + ')' }
                 </div>
             </grip>
             <div
-                className={className}
-                style={handStyle}
-                onDragLeave={handleDragLeave}
-                onDragOver={handleDragOver}
-                onDrop={(event) => handleDragDrop(event, 'hand')}
+                className={ className }
+                style={ handStyle }
+                onDragLeave={ handleDragLeave }
+                onDragOver={ handleDragOver }
+                onDrop={ (event) => handleDragDrop(event, 'hand') }
             >
-                {handCards}
+                { handCards }
             </div>
         </div>
     );

@@ -40,17 +40,17 @@ function Province({
 
         const card = event.dataTransfer.getData('Text');
 
-        if (!card) {
+        if(!card) {
             return;
         }
 
         const dragData = tryParseJSON(card);
 
-        if (!dragData) {
+        if(!dragData) {
             return;
         }
 
-        if (onDragDrop) {
+        if(onDragDrop) {
             onDragDrop(dragData.card, dragData.source, target);
         }
     };
@@ -59,7 +59,7 @@ function Province({
         let wrapperStyle = {};
         let attachmentOffset = 13;
         let cardHeight = 84;
-        switch (size) {
+        switch(size) {
             case 'large':
                 attachmentOffset *= 1.4;
                 cardHeight *= 1.4;
@@ -77,13 +77,13 @@ function Province({
         const attachments = provinceCard.attachments || [];
         const attachmentCount = attachments.length;
         let totalTiers = 0;
-        for (const attachment of attachments) {
-            if (attachment.bowed) {
+        for(const attachment of attachments) {
+            if(attachment.bowed) {
                 totalTiers += 1;
             }
         }
 
-        if (attachmentCount > 0) {
+        if(attachmentCount > 0) {
             wrapperStyle = {
                 marginLeft: 4 + attachmentCount * attachmentOffset + 'px',
                 minHeight: cardHeight + totalTiers * attachmentOffset + 'px'
@@ -104,24 +104,24 @@ function Province({
     const strongholdCard =
         propsStrongholdCard || cards?.find((card) => card.isStronghold);
 
-    if (hiddenProvinceCard && provinceCard) {
+    if(hiddenProvinceCard && provinceCard) {
         provinceCard = { ...provinceCard, facedown: true };
     }
 
-    if (hiddenDynastyCard && dynastyCards.length > 0) {
+    if(hiddenDynastyCard && dynastyCards.length > 0) {
         dynastyCards = dynastyCards.map((card) => ({ ...card, facedown: true }));
     }
 
     let cardClassName = '';
-    if (provinceCard) {
+    if(provinceCard) {
         cardClassName = 'province-attachment';
     }
 
-    if (size !== 'normal') {
+    if(size !== 'normal') {
         cardClassName += ' ' + size;
     }
 
-    if (orientation === 'horizontal' || orientation === 'bowed') {
+    if(orientation === 'horizontal' || orientation === 'bowed') {
         className += ' horizontal';
     } else {
         className += ' vertical';
@@ -129,64 +129,64 @@ function Province({
 
     return (
         <div
-            className={className}
-            onDragLeave={onDragLeave}
-            onDragOver={onDragOver}
-            onDrop={(event) => handleDragDrop(event, source)}
-            style={provinceCard ? { ...getWrapperStyle(provinceCard) } : {}}
+            className={ className }
+            onDragLeave={ onDragLeave }
+            onDragOver={ onDragOver }
+            onDrop={ (event) => handleDragDrop(event, source) }
+            style={ provinceCard ? { ...getWrapperStyle(provinceCard) } : {} }
         >
-            <div className='panel-header'>{headerText}</div>
-            {provinceCard ? (
+            <div className='panel-header'>{ headerText }</div>
+            { provinceCard ? (
                 <Card
-                    id={provinceCard.uuid}
-                    card={provinceCard}
-                    source={source}
-                    onMouseOver={onMouseOver}
-                    onMouseOut={onMouseOut}
-                    onClick={onCardClick}
-                    onMenuItemClick={onMenuItemClick}
-                    onDragDrop={onDragDrop}
-                    size={size}
+                    id={ provinceCard.uuid }
+                    card={ provinceCard }
+                    source={ source }
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    onClick={ onCardClick }
+                    onMenuItemClick={ onMenuItemClick }
+                    onDragDrop={ onDragDrop }
+                    size={ size }
                 />
-            ) : null}
-            {dynastyCards.length > 0
+            ) : null }
+            { dynastyCards.length > 0
                 ? dynastyCards.map((card) => {
-                      return (
-                          <Card
-                              id={card.uuid}
-                              className={cardClassName}
-                              card={card}
-                              source={source}
-                              popupLocation={popupLocation}
-                              isMe={isMe}
-                              key={card.uuid}
-                              onMouseOver={onMouseOver}
-                              onMouseOut={onMouseOut}
-                              disableMouseOver={card.facedown && !card.id}
-                              onClick={onCardClick}
-                              onMenuItemClick={onMenuItemClick}
-                              onDragDrop={onDragDrop}
-                              size={size}
-                          />
-                      );
-                  })
-                : null}
-            {strongholdCard ? (
+                    return (
+                        <Card
+                            id={ card.uuid }
+                            className={ cardClassName }
+                            card={ card }
+                            source={ source }
+                            popupLocation={ popupLocation }
+                            isMe={ isMe }
+                            key={ card.uuid }
+                            onMouseOver={ onMouseOver }
+                            onMouseOut={ onMouseOut }
+                            disableMouseOver={ card.facedown && !card.id }
+                            onClick={ onCardClick }
+                            onMenuItemClick={ onMenuItemClick }
+                            onDragDrop={ onDragDrop }
+                            size={ size }
+                        />
+                    );
+                })
+                : null }
+            { strongholdCard ? (
                 <Card
-                    id={strongholdCard.uuid}
-                    className={cardClassName}
-                    card={strongholdCard}
-                    source={source}
-                    onMouseOver={onMouseOver}
-                    onMouseOut={onMouseOut}
-                    disableMouseOver={strongholdCard.facedown}
-                    onClick={onCardClick}
-                    onMenuItemClick={onMenuItemClick}
-                    isMe={!!isMe}
-                    onDragDrop={onDragDrop}
-                    size={size}
+                    id={ strongholdCard.uuid }
+                    className={ cardClassName }
+                    card={ strongholdCard }
+                    source={ source }
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    disableMouseOver={ strongholdCard.facedown }
+                    onClick={ onCardClick }
+                    onMenuItemClick={ onMenuItemClick }
+                    isMe={ !!isMe }
+                    onDragDrop={ onDragDrop }
+                    size={ size }
                 />
-            ) : null}
+            ) : null }
         </div>
     );
 }

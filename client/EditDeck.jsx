@@ -10,16 +10,16 @@ import * as actions from './actions';
 
 export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDeck, loading, navigate, saveDeck, setUrl }) {
     useEffect(() => {
-        if (deckId) {
+        if(deckId) {
             loadDeck(deckId);
-        } else if (deck) {
+        } else if(deck) {
             setUrl('/decks/edit/' + deck._id);
             loadDeck(deck._id);
         }
     }, [deckId, deck, loadDeck, setUrl]);
 
     useEffect(() => {
-        if (deckSaved) {
+        if(deckSaved) {
             navigate('/decks');
         }
     }, [deckSaved, navigate]);
@@ -30,11 +30,11 @@ export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDe
 
     let content;
 
-    if (loading) {
+    if(loading) {
         content = <div>Loading decks from the server...</div>;
-    } else if (apiError) {
-        content = <AlertPanel type='error' message={apiError} />;
-    } else if (!deck) {
+    } else if(apiError) {
+        content = <AlertPanel type='error' message={ apiError } />;
+    } else if(!deck) {
         content = <AlertPanel message='The specified deck was not found' type='error' />;
     } else {
         content = (
@@ -44,15 +44,15 @@ export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDe
                         Deck Editor
                     </div>
                     <div className='panel'>
-                        <DeckEditor mode='Save' onDeckSave={handleEditDeck} />
+                        <DeckEditor mode='Save' onDeckSave={ handleEditDeck } />
                     </div>
                 </div>
                 <div className='col-sm-6'>
                     <div className='panel-title text-center col-xs-12'>
-                        {deck.name}
+                        { deck.name }
                     </div>
                     <div className='panel col-xs-12'>
-                        <DeckSummary cards={cards} deck={deck} />
+                        <DeckSummary cards={ cards } deck={ deck } />
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@ function HowToPlay() {
                 <p>
                     This guide is aimed at players familiar with the Legend of the Five Rings:
                     The Card Game who want to start playing online using the Jigoku Online
-                    platform. If you are new to this cardgame in general, there is a{' '}
+                    platform. If you are new to this cardgame in general, there is a{ ' ' }
                     <a
                         href='https://www.youtube.com/watch?v=wTtjYzq4T54'
                         target='_blank'
@@ -16,7 +16,7 @@ function HowToPlay() {
                     >
                         helpful tutorial video
                     </a>
-                    , a{' '}
+                    , a{ ' ' }
                     <a
                         href='https://images-cdn.fantasyflightgames.com/filer_public/74/46/7446c964-613e-4c01-8902-199257c5d4af/l5c01_learntoplay_web.pdf'
                         target='_blank'
@@ -24,14 +24,14 @@ function HowToPlay() {
                     >
                         Learn To Play guide
                     </a>
-                    , and a{' '}
+                    , and a{ ' ' }
                     <a
                         href='https://www.emeralddb.org/rules/emerald'
                         target='_blank'
                         rel='noopener noreferrer'
                     >
                         Rules Reference Guide
-                    </a>{' '}
+                    </a>{ ' ' }
                     to help you out.
                 </p>
 
@@ -68,10 +68,10 @@ function HowToPlay() {
                     Start by making sure you have created an account and are logged in. You must
                     be logged in to add decks and spectate or play games. Jigoku Online has a
                     functional <Link href='/decks'>Deckbuilder</Link>, although most people use
-                    the more fully featured{' '}
+                    the more fully featured{ ' ' }
                     <a target='_blank' rel='noopener noreferrer' href='https://www.emeralddb.org/'>
                         Emerald DB
-                    </a>{' '}
+                    </a>{ ' ' }
                     deckbuilder to build their decks. After building your deck on FiveRingsDB,
                     copy the Permalink URL, paste it into popup window in the deckbuilder that is
                     brought up when you click 'Import Deck'. You are now ready to start playing.

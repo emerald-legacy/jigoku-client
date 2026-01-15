@@ -8,7 +8,7 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        if (canScroll && messagePanelRef.current) {
+        if(canScroll && messagePanelRef.current) {
             messagePanelRef.current.scrollTop = 999999;
         }
     });
@@ -18,7 +18,7 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
     }, []);
 
     const handleKeyPress = useCallback((event) => {
-        if (event.key === 'Enter') {
+        if(event.key === 'Enter') {
             sendMessage(message);
             setMessage('');
 
@@ -28,12 +28,12 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
 
     const handleScroll = useCallback(() => {
         const messagesEl = messagePanelRef.current;
-        if (!messagesEl) {
+        if(!messagesEl) {
             return;
         }
 
         setTimeout(() => {
-            if (messagesEl.scrollTop >= messagesEl.scrollHeight - messagesEl.offsetHeight - 20) {
+            if(messagesEl.scrollTop >= messagesEl.scrollHeight - messagesEl.offsetHeight - 20) {
                 setCanScroll(true);
             } else {
                 setCanScroll(false);
@@ -44,21 +44,21 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
     const classes = 'chat' + (visible ? '' : ' collapsed');
 
     return (
-        <div className={classes}>
-            <div className='messages panel' ref={messagePanelRef} onScroll={handleScroll}>
+        <div className={ classes }>
+            <div className='messages panel' ref={ messagePanelRef } onScroll={ handleScroll }>
                 <Messages
-                    messages={messages}
-                    onCardMouseOver={onMouseOver}
-                    onCardMouseOut={onMouseOut}
+                    messages={ messages }
+                    onCardMouseOver={ onMouseOver }
+                    onCardMouseOut={ onMouseOut }
                 />
             </div>
             <form>
                 <input
                     className='form-control'
                     placeholder='Chat...'
-                    onKeyPress={handleKeyPress}
-                    onChange={handleChange}
-                    value={message}
+                    onKeyPress={ handleKeyPress }
+                    onChange={ handleChange }
+                    value={ message }
                 />
             </form>
         </div>

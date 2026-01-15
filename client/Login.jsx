@@ -18,7 +18,7 @@ export function InnerLogin({ login, navigate, socket }) {
         const newValidation = { ...validation };
         delete newValidation['username'];
 
-        if (!username || username === '') {
+        if(!username || username === '') {
             newValidation['username'] = 'Please enter your username';
         }
 
@@ -30,7 +30,7 @@ export function InnerLogin({ login, navigate, socket }) {
         const newValidation = { ...validation };
         delete newValidation['password'];
 
-        if (!password || password === '') {
+        if(!password || password === '') {
             newValidation['password'] = 'Please enter your password';
         }
 
@@ -45,15 +45,15 @@ export function InnerLogin({ login, navigate, socket }) {
 
         // Do synchronous validation to avoid stale state issues
         const newValidation = {};
-        if (!username || username === '') {
+        if(!username || username === '') {
             newValidation['username'] = 'Please enter your username';
         }
-        if (!password || password === '') {
+        if(!password || password === '') {
             newValidation['password'] = 'Please enter your password';
         }
         setValidation(newValidation);
 
-        if (Object.values(newValidation).some((message) => message && message !== '')) {
+        if(Object.values(newValidation).some((message) => message && message !== '')) {
             setError('Please complete both fields and try again');
             return;
         }
@@ -64,19 +64,19 @@ export function InnerLogin({ login, navigate, socket }) {
                 password: password
             });
 
-            if (!response.data.success) {
+            if(!response.data.success) {
                 setError(response.data.message);
                 return;
             }
 
             login(response.data.user, response.data.token);
-            if (socket) {
+            if(socket) {
                 socket.emit('authenticate', response.data.token);
             }
 
             navigate('/');
-        } catch (err) {
-            if (err.response && err.response.status === 401) {
+        } catch(err) {
+            if(err.response && err.response.status === 401) {
                 setError('Invalid Username/password');
             } else {
                 setError('Could not communicate with the server.  Please try again later.');
@@ -109,41 +109,41 @@ export function InnerLogin({ login, navigate, socket }) {
         let className = 'form-group';
         let validationMessage = null;
 
-        if (validation[field.name]) {
+        if(validation[field.name]) {
             className += ' has-error';
-            validationMessage = <span className='help-block'>{validation[field.name]}</span>;
+            validationMessage = <span className='help-block'>{ validation[field.name] }</span>;
         }
 
         return (
-            <div key={field.name} className={className}>
-                <label htmlFor={field.name} className='col-sm-2 control-label'>{field.label}</label>
+            <div key={ field.name } className={ className }>
+                <label htmlFor={ field.name } className='col-sm-2 control-label'>{ field.label }</label>
                 <div className='col-sm-8'>
                     <input
-                        type={field.inputType}
+                        type={ field.inputType }
                         className='form-control'
-                        id={field.name}
-                        placeholder={field.placeholder}
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        onBlur={field.blurCallback}
+                        id={ field.name }
+                        placeholder={ field.placeholder }
+                        value={ field.value }
+                        onChange={ (e) => field.onChange(e.target.value) }
+                        onBlur={ field.blurCallback }
                     />
-                    {validationMessage}
+                    { validationMessage }
                 </div>
             </div>
         );
     });
 
-    const errorBar = error ? <AlertPanel type='error' message={error} /> : null;
+    const errorBar = error ? <AlertPanel type='error' message={ error } /> : null;
 
     return (
         <div className='col-sm-6 col-sm-offset-3'>
-            {errorBar}
+            { errorBar }
             <div className='panel-title'>
                 Login
             </div>
             <div className='panel'>
                 <form className='form form-horizontal'>
-                    {fieldsToRender}
+                    { fieldsToRender }
                     <div className='form-group'>
                         <div className='col-sm-offset-2 col-sm-10'>
                             <Link href='/forgot'>Forgot your password?</Link>
@@ -151,7 +151,7 @@ export function InnerLogin({ login, navigate, socket }) {
                     </div>
                     <div className='form-group'>
                         <div className='col-sm-offset-2 col-sm-3'>
-                            <button type='submit' className='btn btn-primary' onClick={onLogin}>Login</button>
+                            <button type='submit' className='btn btn-primary' onClick={ onLogin }>Login</button>
                         </div>
                     </div>
                 </form>

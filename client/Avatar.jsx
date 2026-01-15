@@ -3,14 +3,14 @@ import PropTypes from 'prop-types';
 function Avatar({ emailHash, float, forceDefault }) {
     let className = 'gravatar';
 
-    if (float) {
+    if(float) {
         className += ' pull-left';
     }
 
     return (
         <img
-            className={className}
-            src={`https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=24${forceDefault ? '&f=y' : ''}`}
+            className={ className }
+            src={ `https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=24${forceDefault ? '&f=y' : ''}` }
         />
     );
 }

@@ -7,7 +7,7 @@ class ValidatorCache {
     }
 
     updateCache(key, value) {
-        if (typeof window === "undefined") {
+        if(typeof window === 'undefined') {
             return;
         }
 
@@ -20,21 +20,21 @@ class ValidatorCache {
     }
 
     getCache(key) {
-        if (typeof window === "undefined") {
+        if(typeof window === 'undefined') {
             return null;
         }
 
         const cachedValue = localStorage.getItem(key);
-        if (!cachedValue) {
+        if(!cachedValue) {
             return null;
         }
 
         const parsed = JSON.parse(cachedValue);
-        if (!parsed.expiryTime) {
+        if(!parsed.expiryTime) {
             localStorage.removeItem(key);
             return null;
         }
-        if (parsed.expiryTime < Date.now()) {
+        if(parsed.expiryTime < Date.now()) {
             localStorage.removeItem(key);
             return null;
         }
@@ -54,14 +54,14 @@ class DeckValidator {
         let allCards = (deck.provinceCards || []).concat(deck.dynastyCards || []).concat(deck.conflictCards || []).concat(deck.role || []).concat(deck.stronghold || []);
         let cardCountByName = {};
         allCards.forEach(cardQuantity => {
-            if (cardQuantity.card) {
+            if(cardQuantity.card) {
                 cardCountByName[cardQuantity.card.id] = 0;
                 cardCountByName[cardQuantity.card.id] += cardQuantity.count;
             }
         });
 
         let mode = this.gameMode;
-        if (mode === GameModes.Stronghold) {
+        if(mode === GameModes.Stronghold) {
             mode = 'standard';
         }
 
@@ -75,7 +75,7 @@ class DeckValidator {
         const key = btoa(unescape(encodeURIComponent(json)));
         const cachedValue = this.cache.getCache(key);
 
-        if (cachedValue) {
+        if(cachedValue) {
             return cachedValue;
         }
 
@@ -89,7 +89,7 @@ class DeckValidator {
             this.cache.updateCache(key, resultObj);
             // validatorCache.set(hash, resultObj, 600);
             return resultObj;
-        } catch (e) {
+        } catch(e) {
             return {
                 valid: undefined,
                 extendedStatus: ['Error Validating']
@@ -104,7 +104,7 @@ module.exports = async function validateDeck(deck, options) {
     let validator = new DeckValidator(options.packs, options.gameMode);
     let result = await validator.validateDeck(deck);
 
-    if (!options.includeExtendedStatus) {
+    if(!options.includeExtendedStatus) {
         // eslint-disable-next-line no-unused-vars
         const { extendedStatus, ...resultWithoutExtendedStatus } = result;
         return resultWithoutExtendedStatus;

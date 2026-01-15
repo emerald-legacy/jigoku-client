@@ -8,7 +8,7 @@ const config = require('config');
 async function runStats() {
     const args = process.argv.slice(2);
 
-    if (args.length < 2) {
+    if(args.length < 2) {
         console.error('Must provide start and end date');
         process.exit(1);
     }

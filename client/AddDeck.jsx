@@ -17,7 +17,7 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
     }, [addDeck]);
 
     useEffect(() => {
-        if (deckSaved) {
+        if(deckSaved) {
             navigate('/decks');
         }
     }, [deckSaved, navigate]);
@@ -28,10 +28,10 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
 
     let content;
 
-    if (loading || !ready) {
+    if(loading || !ready) {
         content = <div>Loading decks from the server...</div>;
-    } else if (apiError) {
-        content = <AlertPanel type='error' message={apiError} />;
+    } else if(apiError) {
+        content = <AlertPanel type='error' message={ apiError } />;
     } else {
         content = (
             <div>
@@ -40,15 +40,15 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
                         Deck Editor
                     </div>
                     <div className='panel'>
-                        <DeckEditor mode='Add' onDeckSave={handleAddDeck} />
+                        <DeckEditor mode='Add' onDeckSave={ handleAddDeck } />
                     </div>
                 </div>
                 <div className='col-sm-6'>
                     <div className='panel-title text-center col-xs-12'>
-                        {deck ? deck.name : 'New Deck'}
+                        { deck ? deck.name : 'New Deck' }
                     </div>
                     <div className='panel col-xs-12'>
-                        <DeckSummary cards={cards} deck={deck} />
+                        <DeckSummary cards={ cards } deck={ deck } />
                     </div>
                 </div>
             </div>

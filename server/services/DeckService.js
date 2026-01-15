@@ -9,7 +9,7 @@ class DeckService {
     async getById(id) {
         try {
             return await this.decks.findOne({ _id: toObjectId(id) });
-        } catch (err) {
+        } catch(err) {
             logger.error('Unable to fetch deck', err);
             throw new Error('Unable to fetch deck ' + id);
         }
@@ -18,7 +18,7 @@ class DeckService {
     async findByUserName(userName, options = {}) {
         const query = { username: userName };
 
-        if (options.format) {
+        if(options.format) {
             query['format.value'] = options.format;
         }
 

@@ -22,7 +22,7 @@ async function main() {
     totalCards.forEach(card => {
         const cardsByName = totalCards.filter(filterCard => filterCard.name === card.code);
 
-        if (cardsByName.length > 1) {
+        if(cardsByName.length > 1) {
             card.name = card.code + ' (' + card.pack_code + ')';
         } else {
             card.name = card.code;
@@ -31,13 +31,13 @@ async function main() {
         const clan = clans.find(c => c.code === card.clan_code);
         const type = types.find(t => t.code === card.type);
 
-        if (clan) {
+        if(clan) {
             card.clan_name = clan.name;
         } else {
             console.info(clan, card.clan_code);
         }
 
-        if (type) {
+        if(type) {
             card.type_name = type.name;
         } else {
             console.info(card.type);

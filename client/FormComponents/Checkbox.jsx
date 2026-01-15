@@ -11,25 +11,25 @@ function Checkbox({
     onChange
 }) {
     const checkBox = (
-        <div className={'checkbox ' + (fieldClass || '')}>
-            <label htmlFor={name} className={labelClass}>
+        <div className={ 'checkbox ' + (fieldClass || '') }>
+            <label htmlFor={ name } className={ labelClass }>
                 <input
                     type='checkbox'
-                    id={name}
-                    checked={checked}
-                    onChange={onChange}
+                    id={ name }
+                    checked={ checked }
+                    onChange={ onChange }
                 />
-                {label}
+                { label }
             </label>
-            {children}
+            { children }
         </div>
     );
 
-    if (noGroup) {
+    if(noGroup) {
         return checkBox;
     }
 
-    return <div className='form-group'>{checkBox}</div>;
+    return <div className='form-group'>{ checkBox }</div>;
 }
 
 Checkbox.displayName = 'Checkbox';

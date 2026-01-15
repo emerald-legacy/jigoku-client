@@ -9,7 +9,7 @@ class GameService {
         try {
             const result = await this.games.insertOne(game);
             return { ...game, _id: result.insertedId };
-        } catch (err) {
+        } catch(err) {
             logger.error('Unable to create game', err);
             throw new Error('Unable to create game');
         }
@@ -29,7 +29,7 @@ class GameService {
 
         try {
             return await this.games.updateOne({ gameId: game.gameId }, { $set: properties });
-        } catch (err) {
+        } catch(err) {
             logger.error('Unable to update game', err);
             throw new Error('Unable to update game');
         }
@@ -41,7 +41,7 @@ class GameService {
                 startedAt: { $gte: from, $lt: to }
             }).toArray();
             return games;
-        } catch (err) {
+        } catch(err) {
             logger.error('Unable to get all games from', from, 'to', to, err);
             throw new Error('Unable to get all games');
         }

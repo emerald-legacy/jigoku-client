@@ -11,18 +11,18 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
         event.preventDefault();
         event.stopPropagation();
 
-        if (ring.menu && ring.menu.length > 0) {
+        if(ring.menu && ring.menu.length > 0) {
             setShowMenu(!showMenu);
             return;
         }
 
-        if (onClick) {
+        if(onClick) {
             onClick(ringElement);
         }
     };
 
     const handleMenuItemClick = (menuItem) => {
-        if (onMenuItemClick) {
+        if(onMenuItemClick) {
             onMenuItemClick(ring, menuItem);
             setShowMenu(!showMenu);
         }
@@ -35,12 +35,12 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
             ? { count: ring.fate, shortName: 'F' }
             : undefined;
 
-        if (ring.tokens) {
+        if(ring.tokens) {
             const shortNames = {
                 honor: 'H',
                 fate: 'F'
             };
-            for (const [key, token] of Object.entries(ring.tokens)) {
+            for(const [key, token] of Object.entries(ring.tokens)) {
                 counters[key] = {
                     count: token,
                     fade: ring.type === 'attachment',
@@ -51,8 +51,8 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
 
         // Filter out undefined, null, or negative counters
         const filteredCounters = {};
-        for (const [key, counter] of Object.entries(counters)) {
-            if (counter !== undefined && counter !== null && counter.count >= 0) {
+        for(const [key, counter] of Object.entries(counters)) {
+            if(counter !== undefined && counter !== null && counter.count >= 0) {
                 filteredCounters[key] = counter;
             }
         }
@@ -65,14 +65,14 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
     };
 
     const shouldShowMenu = () => {
-        if (!ring.menu || !showMenu) {
+        if(!ring.menu || !showMenu) {
             return false;
         }
         return true;
     };
 
     const getIcon = () => {
-        if (ring.conflictType === 'military') {
+        if(ring.conflictType === 'military') {
             return (
                 <span className='icon-military'>
                     <span className='hide-text'>military</span>
@@ -87,7 +87,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
     };
 
     let size = propSize;
-    if (ring.claimed) {
+    if(ring.claimed) {
         size = 'small';
     }
 
@@ -100,13 +100,13 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
         size +
         ' ' +
         (ring.selected || ring.contested ? 'contested' : '');
-    if (ring.unselectable) {
+    if(ring.unselectable) {
         className = className + ' unselectable';
         bgClassName += ' unselectable';
     }
 
     let visible = true;
-    if (
+    if(
         (owner && (!ring.claimed || owner !== ring.claimedBy)) ||
         (!owner && ring.claimed)
     ) {
@@ -114,24 +114,24 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
         svgClassName += ' hidden';
         visible = false;
     }
-    if (!visible) {
+    if(!visible) {
         return <div />;
     }
     return (
         <div
             className='ring no-highlight'
-            onClick={(event) => handleClick(event, ring.element)}
+            onClick={ (event) => handleClick(event, ring.element) }
         >
-            <svg className={svgClassName}>
-                <circle cx='50%' cy='50%' r='50%' className={bgClassName} />
+            <svg className={ svgClassName }>
+                <circle cx='50%' cy='50%' r='50%' className={ bgClassName } />
             </svg>
-            <div className={className} />
-            {shouldShowCounters() && visible ? (
-                <CardCounters counters={getCountersForRing()} />
-            ) : null}
-            {shouldShowMenu() ? (
-                <CardMenu menu={ring.menu} onMenuItemClick={handleMenuItemClick} />
-            ) : null}
+            <div className={ className } />
+            { shouldShowCounters() && visible ? (
+                <CardCounters counters={ getCountersForRing() } />
+            ) : null }
+            { shouldShowMenu() ? (
+                <CardMenu menu={ ring.menu } onMenuItemClick={ handleMenuItemClick } />
+            ) : null }
         </div>
     );
 }

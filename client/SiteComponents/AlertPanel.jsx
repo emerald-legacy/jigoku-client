@@ -4,7 +4,7 @@ function AlertPanel({ children, message, noIcon, title, type }) {
     let icon = 'glyphicon';
     let alertClass = 'alert fade in';
 
-    switch (type) {
+    switch(type) {
         case 'warning':
             icon += ' glyphicon-warning-sign';
             alertClass += ' alert-warning';
@@ -24,11 +24,11 @@ function AlertPanel({ children, message, noIcon, title, type }) {
     }
 
     return (
-        <div className={alertClass} role='alert'>
-            {noIcon ? null : <span className={icon} aria-hidden='true' />}
-            {title ? <span className='sr-only'>{title}</span> : null}
-            &nbsp;{message}
-            &nbsp;{children}
+        <div className={ alertClass } role='alert'>
+            { noIcon ? null : <span className={ icon } aria-hidden='true' /> }
+            { title ? <span className='sr-only'>{ title }</span> : null }
+            &nbsp;{ message }
+            &nbsp;{ children }
         </div>
     );
 }

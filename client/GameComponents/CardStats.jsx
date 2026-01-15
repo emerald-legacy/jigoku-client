@@ -5,17 +5,17 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary }
         const amount = groupedModifier.reduce((total, modifier) => total + modifier.amount, 0);
         let sign = '';
         let amountDisplay = '';
-        if (!Number.isNaN(amount)) {
+        if(!Number.isNaN(amount)) {
             sign = amount < 0 ? '-' : '+';
             amountDisplay = amount.toString().replace('-', '');
         } else {
             amountDisplay = '-';
         }
         return (
-            <div className='stat-line' key={groupedModifier[0].name}>
-                <div className='stat-sign'>{sign}</div>
-                <div className='stat-amount'>{amountDisplay}</div>
-                <div className='stat-name'>{groupedModifier[0].name}</div>
+            <div className='stat-line' key={ groupedModifier[0].name }>
+                <div className='stat-sign'>{ sign }</div>
+                <div className='stat-amount'>{ amountDisplay }</div>
+                <div className='stat-name'>{ groupedModifier[0].name }</div>
             </div>
         );
     };
@@ -23,8 +23,8 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary }
     const renderModifiers = (modifiers) => {
         // Group modifiers by name
         const grouped = {};
-        for (const modifier of modifiers) {
-            if (!grouped[modifier.name]) {
+        for(const modifier of modifiers) {
+            if(!grouped[modifier.name]) {
                 grouped[modifier.name] = [];
             }
             grouped[modifier.name].push(modifier);
@@ -35,37 +35,37 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary }
 
     return (
         <div className='panel menu card--stats '>
-            {militarySkillSummary && (
+            { militarySkillSummary && (
                 <div className='stat-container'>
                     <div className='stat-total'>
                         <span className='icon-military stat--type-icon' />
-                        <span className='stat-value'>{militarySkillSummary.stat}</span>
+                        <span className='stat-value'>{ militarySkillSummary.stat }</span>
                     </div>
                     <div className='stat-specifics'>
-                        {renderModifiers(militarySkillSummary.modifiers)}
+                        { renderModifiers(militarySkillSummary.modifiers) }
                     </div>
                 </div>
-            )}
-            {politicalSkillSummary && (
+            ) }
+            { politicalSkillSummary && (
                 <div className='stat-container'>
                     <div className='stat-total'>
                         <span className='icon-political stat--type-icon' />
-                        <span className='stat-value'>{politicalSkillSummary.stat}</span>
+                        <span className='stat-value'>{ politicalSkillSummary.stat }</span>
                     </div>
                     <div className='stat-specifics'>
-                        {renderModifiers(politicalSkillSummary.modifiers)}
+                        { renderModifiers(politicalSkillSummary.modifiers) }
                     </div>
                 </div>
-            )}
-            {glorySummary && (
+            ) }
+            { glorySummary && (
                 <div className='stat-container'>
                     <div className='stat-total'>
                         <img className='icon-glory stat--type-icon' src='/img/glory.png' />
-                        <span className='stat-value'>{glorySummary.stat}</span>
+                        <span className='stat-value'>{ glorySummary.stat }</span>
                     </div>
-                    <div className='stat-specifics'>{renderModifiers(glorySummary.modifiers)}</div>
+                    <div className='stat-specifics'>{ renderModifiers(glorySummary.modifiers) }</div>
                 </div>
-            )}
+            ) }
         </div>
     );
 }

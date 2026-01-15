@@ -26,7 +26,7 @@ export function InnerBlockList({
     }, [loadBlockList, user]);
 
     useEffect(() => {
-        if (blockListAdded || blockListDeleted) {
+        if(blockListAdded || blockListDeleted) {
             const timer = setTimeout(() => {
                 clearBlockListStatus();
             }, 5000);
@@ -50,13 +50,13 @@ export function InnerBlockList({
 
     let successPanel;
 
-    if (blockListAdded) {
+    if(blockListAdded) {
         successPanel = (
             <AlertPanel message='Block list entry added successfully' type='success' />
         );
     }
 
-    if (blockListDeleted) {
+    if(blockListDeleted) {
         successPanel = (
             <AlertPanel message='Block list entry removed successfully' type='success' />
         );
@@ -64,16 +64,16 @@ export function InnerBlockList({
 
     let content;
 
-    if (loading) {
+    if(loading) {
         content = <div>Loading block list from the server...</div>;
-    } else if (apiError) {
-        content = <AlertPanel type='error' message={apiError} />;
+    } else if(apiError) {
+        content = <AlertPanel type='error' message={ apiError } />;
     } else {
         const blockListRows = blockList && blockList.map((blockedUser) => (
-            <tr key={blockedUser}>
-                <td>{blockedUser}</td>
+            <tr key={ blockedUser }>
+                <td>{ blockedUser }</td>
                 <td>
-                    <a href='#' className='btn' onClick={(e) => onRemoveClick(blockedUser, e)}>
+                    <a href='#' className='btn' onClick={ (e) => onRemoveClick(blockedUser, e) }>
                         <span className='glyphicon glyphicon-remove' />
                     </a>
                 </td>
@@ -91,7 +91,7 @@ export function InnerBlockList({
                     </tr>
                 </thead>
                 <tbody>
-                    {blockListRows}
+                    { blockListRows }
                 </tbody>
             </table>
         );
@@ -99,7 +99,7 @@ export function InnerBlockList({
         content = (
             <div className='col-sm-8 col-sm-offset-2 full-height'>
                 <div className='about-container'>
-                    {successPanel}
+                    { successPanel }
 
                     <form className='form form-horizontal'>
                         <div className='panel-title text-center'>
@@ -120,15 +120,15 @@ export function InnerBlockList({
                                     fieldClass='col-sm-4'
                                     placeholder='Enter username to block'
                                     type='text'
-                                    onChange={onUsernameChange}
-                                    value={username}
+                                    onChange={ onUsernameChange }
+                                    value={ username }
                                     noGroup
                                 />
-                                <button className='btn btn-primary col-sm-1' onClick={onAddClick}>Add</button>
+                                <button className='btn btn-primary col-sm-1' onClick={ onAddClick }>Add</button>
                             </div>
 
                             <h3>Users Blocked</h3>
-                            {table}
+                            { table }
                         </div>
                     </form>
                 </div>

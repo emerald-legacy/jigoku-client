@@ -18,11 +18,11 @@ function SquishableCardPanel({
     username
 }) {
     const disableMouseOver = (revealWhenHiddenTo) => {
-        if (spectating && showHand) {
+        if(spectating && showHand) {
             return false;
         }
 
-        if (revealWhenHiddenTo === username) {
+        if(revealWhenHiddenTo === username) {
             return false;
         }
 
@@ -30,7 +30,7 @@ function SquishableCardPanel({
     };
 
     const getCardSizeMultiplier = () => {
-        switch (cardSize) {
+        switch(cardSize) {
             case 'small':
                 return 0.8;
             case 'large':
@@ -70,7 +70,7 @@ function SquishableCardPanel({
         const overflow = requiredWidth - overallDimensions.width;
         const offset = overflow / (handLength - 1);
 
-        if (!isMe) {
+        if(!isMe) {
             cardList = [...cards].sort((a, b) => a.revealWhenHiddenTo - b.revealWhenHiddenTo);
         }
 
@@ -78,7 +78,7 @@ function SquishableCardPanel({
             const left = (cardWidth - offset) * cardIndex++;
 
             let style = {};
-            if (needsSquish) {
+            if(needsSquish) {
                 style = {
                     left: left + 'px'
                 };
@@ -86,15 +86,15 @@ function SquishableCardPanel({
 
             return (
                 <Card
-                    key={card.uuid}
-                    card={card}
-                    disableMouseOver={disableMouseOver(card.revealWhenHiddenTo)}
-                    onClick={onCardClick}
-                    onMouseOver={onMouseOver}
-                    onMouseOut={onMouseOut}
-                    size={cardSize}
-                    style={style}
-                    source={source}
+                    key={ card.uuid }
+                    card={ card }
+                    disableMouseOver={ disableMouseOver(card.revealWhenHiddenTo) }
+                    onClick={ onCardClick }
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    size={ cardSize }
+                    style={ style }
+                    source={ source }
                 />
             );
         });
@@ -117,11 +117,11 @@ function SquishableCardPanel({
     };
 
     return (
-        <div className={panelClassName} style={style}>
-            {title && (
-                <div className='panel-header'>{`${title} (${cardElements.length})`}</div>
-            )}
-            {cardElements}
+        <div className={ panelClassName } style={ style }>
+            { title && (
+                <div className='panel-header'>{ `${title} (${cardElements.length})` }</div>
+            ) }
+            { cardElements }
         </div>
     );
 }

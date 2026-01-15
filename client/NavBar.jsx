@@ -34,7 +34,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
     // Close dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (openDropdown && dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if(openDropdown && dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setOpenDropdown(null);
             }
         };
@@ -44,31 +44,31 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
     }, [openDropdown]);
 
     const renderMenuItem = useCallback((menuItem) => {
-        if (menuItem.childItems) {
+        if(menuItem.childItems) {
             let className = 'dropdown';
             const isOpen = openDropdown === menuItem.name;
 
-            if (menuItem.childItems.some(item => item.path === currentPath)) {
+            if(menuItem.childItems.some(item => item.path === currentPath)) {
                 className += ' active';
             }
 
-            if (isOpen) {
+            if(isOpen) {
                 className += ' open';
             }
 
             const childItems = menuItem.childItems.map(item => (
-                <li key={item.name}><Link href={item.path}>{item.name}</Link></li>
+                <li key={ item.name }><Link href={ item.path }>{ item.name }</Link></li>
             ));
 
             return (
-                <li key={menuItem.name} className={className} ref={dropdownRef}>
-                    <a href='#' className='dropdown-toggle' role='button' aria-haspopup='true' aria-expanded={isOpen}
-                        onClick={(e) => handleDropdownToggle(menuItem.name, e)}>
-                        {menuItem.avatar ? <Avatar emailHash={menuItem.emailHash} forceDefault={menuItem.disableGravatar} /> : null}
-                        {menuItem.name}<span className='caret' />
+                <li key={ menuItem.name } className={ className } ref={ dropdownRef }>
+                    <a href='#' className='dropdown-toggle' role='button' aria-haspopup='true' aria-expanded={ isOpen }
+                        onClick={ (e) => handleDropdownToggle(menuItem.name, e) }>
+                        { menuItem.avatar ? <Avatar emailHash={ menuItem.emailHash } forceDefault={ menuItem.disableGravatar } /> : null }
+                        { menuItem.name }<span className='caret' />
                     </a>
                     <ul className='dropdown-menu'>
-                        {childItems}
+                        { childItems }
                     </ul>
                 </li>
             );
@@ -76,28 +76,28 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
 
         const active = menuItem.path === currentPath ? 'active' : '';
 
-        return <li key={menuItem.name} className={active}><Link href={menuItem.path}>{menuItem.name}</Link></li>;
+        return <li key={ menuItem.name } className={ active }><Link href={ menuItem.path }>{ menuItem.name }</Link></li>;
     }, [currentPath, openDropdown, handleDropdownToggle]);
 
     const leftMenuToRender = leftMenu?.map(renderMenuItem);
     const rightMenuToRender = rightMenu?.map(renderMenuItem);
 
-    const numGamesElement = numGames !== undefined ? <li><span>{numGames + ' Games'}</span></li> : null;
+    const numGamesElement = numGames !== undefined ? <li><span>{ numGames + ' Games' }</span></li> : null;
 
     const contextMenu = context?.map(menuItem => (
-        <li key={menuItem.text}>
+        <li key={ menuItem.text }>
             <a
                 href='javascript:void(0)'
-                onMouseOver={() => onMenuItemMouseOver(menuItem)}
-                onMouseOut={onMenuItemMouseOut}
-                onClick={menuItem.onClick ? (event) => {
+                onMouseOver={ () => onMenuItemMouseOver(menuItem) }
+                onMouseOut={ onMenuItemMouseOut }
+                onClick={ menuItem.onClick ? (event) => {
                     event.preventDefault();
                     menuItem.onClick();
-                } : null}
+                } : null }
             >
-                {menuItem.text}
+                { menuItem.text }
             </a>
-            {showPopup === menuItem ? showPopup.popup : null}
+            { showPopup === menuItem ? showPopup.popup : null }
         </li>
     ));
 
@@ -107,26 +107,26 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
         <nav className='navbar navbar-inverse navbar-fixed-top no-highlight'>
             <div className='container'>
                 <div className='navbar-header'>
-                    <button className={navbarCollapsed ? 'navbar-toggle collapsed' : 'navbar-toggle'}
+                    <button className={ navbarCollapsed ? 'navbar-toggle collapsed' : 'navbar-toggle' }
                         type='button'
-                        aria-expanded={!navbarCollapsed}
+                        aria-expanded={ !navbarCollapsed }
                         aria-controls='navbar'
-                        onClick={handleNavbarToggle}>
+                        onClick={ handleNavbarToggle }>
                         <span className='sr-only'>Toggle Navigation</span>
                         <span className='icon-bar' />
                         <span className='icon-bar' />
                         <span className='icon-bar' />
                     </button>
-                    <Link href='/' className='navbar-brand'>{title}</Link>
+                    <Link href='/' className='navbar-brand'>{ title }</Link>
                 </div>
-                <div id='navbar' className={navbarCollapseClass}>
+                <div id='navbar' className={ navbarCollapseClass }>
                     <ul className='nav navbar-nav'>
-                        {leftMenuToRender}
+                        { leftMenuToRender }
                     </ul>
                     <ul className='nav navbar-nav navbar-right'>
-                        {contextMenu}
-                        {numGamesElement}
-                        {rightMenuToRender}
+                        { contextMenu }
+                        { numGamesElement }
+                        { rightMenuToRender }
                     </ul>
                 </div>
             </div>

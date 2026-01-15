@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 function HonorCounter({ cancel, fade, name, value }) {
     let className = 'honorcounter ' + name;
 
-    if (cancel) {
+    if(cancel) {
         className += ' cancel';
     }
 
-    if (fade) {
+    if(fade) {
         className += ' fade-out';
     }
 
     return (
-        <div key={name} className={className}>
+        <div key={ name } className={ className }>
             <img src='/img/Honor.png' title='Honor' alt='Honor' />
-            <div className='honorcountertext'>{value}</div>
+            <div className='honorcountertext'>{ value }</div>
         </div>
     );
 }

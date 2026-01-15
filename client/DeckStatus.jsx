@@ -12,7 +12,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
     const prevDeckRef = useRef(null);
 
     const getDeckHash = useCallback((deckToHash) => {
-        if (!deckToHash) {
+        if(!deckToHash) {
             return '';
         }
 
@@ -26,10 +26,10 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
             { name: 'c', arr: deckToHash.conflictCards }
         ];
 
-        for (const { name, arr } of arrays) {
-            if (arr && arr.length > 0) {
-                for (const cardEntry of arr) {
-                    if (cardEntry.card) {
+        for(const { name, arr } of arrays) {
+            if(arr && arr.length > 0) {
+                for(const cardEntry of arr) {
+                    if(cardEntry.card) {
                         parts.push(`${name}:${cardEntry.card.id}:${cardEntry.count}`);
                     }
                 }
@@ -42,7 +42,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
     const hasDeckContentChanged = useCallback(
         (oldDeck, newDeck) => {
             // Check if format changed (affects validation rules)
-            if (oldDeck.format !== newDeck.format) {
+            if(oldDeck.format !== newDeck.format) {
                 return true;
             }
 
@@ -58,7 +58,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         async (deckToValidate, forceValidate = false) => {
             const targetDeck = deckToValidate || deck;
             // Only use cached status if not forcing validation
-            if (targetDeck.status && !forceValidate) {
+            if(targetDeck.status && !forceValidate) {
                 setDeckStatus(targetDeck.status);
                 return;
             }
@@ -77,7 +77,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
             setDeckStatus(status);
 
             // Update Redux store with validation result
-            if (updateDeckStatus && targetDeck._id) {
+            if(updateDeckStatus && targetDeck._id) {
                 updateDeckStatus(targetDeck._id, status);
             }
         },
@@ -85,7 +85,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
     );
 
     const clearValidationTimeout = useCallback(() => {
-        if (validationTimeoutRef.current) {
+        if(validationTimeoutRef.current) {
             clearTimeout(validationTimeoutRef.current);
             validationTimeoutRef.current = null;
         }
@@ -106,7 +106,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
 
     // Initial mount - get deck status
     useEffect(() => {
-        if (deck) {
+        if(deck) {
             getDeckStatusAsync(deck);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -114,14 +114,14 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
 
     // Handle deck changes
     useEffect(() => {
-        if (!deck) {
+        if(!deck) {
             return;
         }
 
         const prevDeck = prevDeckRef.current;
 
         // If deck ID changed, validate immediately
-        if (!prevDeck || prevDeck._id !== deck._id) {
+        if(!prevDeck || prevDeck._id !== deck._id) {
             clearValidationTimeout();
             getDeckStatusAsync(deck);
             prevDeckRef.current = deck;
@@ -129,7 +129,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         }
 
         // If deck content changed (same ID but different cards), debounce validation
-        if (hasDeckContentChanged(prevDeck, deck)) {
+        if(hasDeckContentChanged(prevDeck, deck)) {
             scheduleValidation(deck);
         }
 
@@ -146,14 +146,14 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
     let statusName;
     let className = 'deck-status';
 
-    if (propsClassName) {
+    if(propsClassName) {
         className += ' ' + propsClassName;
     }
 
-    if (deckStatus.valid) {
+    if(deckStatus.valid) {
         statusName = 'Valid';
         className += ' valid';
-    } else if (deckStatus.valid === false) {
+    } else if(deckStatus.valid === false) {
         statusName = 'Invalid';
         className += ' invalid';
     } else {
@@ -162,19 +162,19 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
     }
 
     return (
-        <span className={className}>
+        <span className={ className }>
             <StatusPopOver
-                status={statusName}
-                show={deckStatus.extendedStatus && deckStatus.extendedStatus.length !== 0}
+                status={ statusName }
+                show={ deckStatus.extendedStatus && deckStatus.extendedStatus.length !== 0 }
             >
                 <div>
-                    {deckStatus.extendedStatus && deckStatus.extendedStatus.length !== 0 && (
+                    { deckStatus.extendedStatus && deckStatus.extendedStatus.length !== 0 && (
                         <ul className='deck-status-errors'>
-                            {deckStatus.extendedStatus.map((error, index) => (
-                                <li key={index}>{error}</li>
-                            ))}
+                            { deckStatus.extendedStatus.map((error, index) => (
+                                <li key={ index }>{ error }</li>
+                            )) }
                         </ul>
-                    )}
+                    ) }
                 </div>
             </StatusPopOver>
         </span>

@@ -267,8 +267,12 @@ export class InnerGameBoard extends React.Component {
         }
 
         let sortedCards = [...player.cardPiles.cardsInPlay].sort((a, b) => {
-            if(a.type < b.type) return -1;
-            if(a.type > b.type) return 1;
+            if(a.type < b.type) {
+                return -1;
+            }
+            if(a.type > b.type) {
+                return 1;
+            }
             return 0;
         });
 
@@ -682,11 +686,11 @@ export class InnerGameBoard extends React.Component {
         // }
 
         let popup = (
-            <div id='settings-modal' ref={this.modalRef} className={`modal fade ${this.state.showSettingsModal ? 'in' : ''}`} style={{ display: this.state.showSettingsModal ? 'block' : 'none' }} tabIndex='-1' role='dialog'>
+            <div id='settings-modal' ref={ this.modalRef } className={ `modal fade ${this.state.showSettingsModal ? 'in' : ''}` } style={ { display: this.state.showSettingsModal ? 'block' : 'none' } } tabIndex='-1' role='dialog'>
                 <div className='modal-dialog' role='document'>
                     <div className='modal-content settings-popup row'>
                         <div className='modal-header'>
-                            <button type='button' className='close' aria-label='Close' onClick={() => this.setState({ showSettingsModal: false })}><span aria-hidden='true'>×</span></button>
+                            <button type='button' className='close' aria-label='Close' onClick={ () => this.setState({ showSettingsModal: false }) }><span aria-hidden='true'>×</span></button>
                             <h4 className='modal-title'>Game Configuration</h4>
                         </div>
                         <div className='modal-body col-xs-12'>
@@ -699,7 +703,7 @@ export class InnerGameBoard extends React.Component {
                 </div>
             </div>);
 
-        let backdrop = this.state.showSettingsModal ? <div className='modal-backdrop fade in' onClick={() => this.setState({ showSettingsModal: false })} /> : null;
+        let backdrop = this.state.showSettingsModal ? <div className='modal-backdrop fade in' onClick={ () => this.setState({ showSettingsModal: false }) } /> : null;
 
         return (
             <div className='game-board'>

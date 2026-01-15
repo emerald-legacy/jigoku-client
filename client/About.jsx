@@ -30,7 +30,7 @@ function About() {
 
                 <h3>Everyone has a shiny avatar, how do I get one?</h3>
                 <p>
-                    This is handled by the good people at{' '}
+                    This is handled by the good people at{ ' ' }
                     <a href='http://gravatar.com' target='_blank' rel='noopener noreferrer'>
                         Gravatar
                     </a>
@@ -47,7 +47,7 @@ function About() {
                     are made by artists of Emerald Legacy, they also appear on our cards.
                 </p>
                 <p>
-                    The tokens used for Spirit of the River are by{' '}
+                    The tokens used for Spirit of the River are by{ ' ' }
                     <a
                         href='https://www.dojocreativedesign.com/l5r-cardgame'
                         target='_blank'
@@ -55,7 +55,7 @@ function About() {
                     >
                         David Robotham
                     </a>
-                    . He has a selection of L5R related merchandise, check it out{' '}
+                    . He has a selection of L5R related merchandise, check it out{ ' ' }
                     <a
                         href='https://www.dojocreativedesign.com/shop'
                         target='_blank'
@@ -83,7 +83,7 @@ function About() {
                     </a>
                     . Check out the code and instructions on there on how to get started and hack
                     away! See the card implementation status list above to have a look at what
-                    needs to be done. If you want to join the dev Discord, there's a link on the{' '}
+                    needs to be done. If you want to join the dev Discord, there's a link on the{ ' ' }
                     <Link href='/community'>Community</Link> page.
                 </p>
 
@@ -93,10 +93,10 @@ function About() {
                     project, I thought I'd put up a small section about it here.
                 </p>
                 <p>
-                    You can use this link:{' '}
+                    You can use this link:{ ' ' }
                     <a target='_blank' rel='noopener noreferrer' href='https://paypal.me/ringteki'>
                         Paypal
-                    </a>{' '}
+                    </a>{ ' ' }
                     to donate to the project. Note: The account uses my name, but is completely
                     separate from my personal Paypal account.
                 </p>

@@ -20,7 +20,7 @@ if(env !== 'live' && env !== 'playtest') {
     process.exit(1);
 }
 
-if (forceDownload) {
+if(forceDownload) {
     console.log('Force download enabled - will re-download existing images');
 }
 
@@ -31,7 +31,7 @@ const apiUrl =
 
 async function apiRequest(apiPath) {
     const response = await fetch(apiUrl + apiPath);
-    if (!response.ok) {
+    if(!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     return response.json();
@@ -46,7 +46,7 @@ async function downloadFile(url, destPath, timeout = 30000) {
 
     try {
         const response = await fetch(url, { signal: controller.signal });
-        if (!response.ok) {
+        if(!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
 
@@ -63,12 +63,12 @@ async function downloadWithRetry(url, dest, filename, maxRetries = 3) {
     const tempPath = path.join(dest, tempFilename);
     const finalPath = path.join(dest, filename);
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    for(let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             await downloadFile(url, tempPath, 30000);
 
             // Convert PNG to JPG if needed
-            if (isPng) {
+            if(isPng) {
                 await sharp(tempPath)
                     .jpeg({ quality: 90 })
                     .toFile(finalPath);
@@ -80,13 +80,15 @@ async function downloadWithRetry(url, dest, filename, maxRetries = 3) {
             }
 
             return { success: true, converted: false };
-        } catch (error) {
+        } catch(error) {
             // Clean up partial file on error
-            if (fs.existsSync(tempPath)) {
-                try { fs.unlinkSync(tempPath); } catch {}
+            if(fs.existsSync(tempPath)) {
+                try {
+                    fs.unlinkSync(tempPath);
+                } catch{}
             }
 
-            if (attempt === maxRetries) {
+            if(attempt === maxRetries) {
                 return { success: false, error: error.message };
             }
             // Wait before retry
@@ -101,7 +103,7 @@ async function downloadParallel(tasks, concurrency = 10) {
     let index = 0;
 
     async function worker() {
-        while (index < tasks.length) {
+        while(index < tasks.length) {
             const currentIndex = index++;
             const task = tasks[currentIndex];
             const result = await task();
@@ -147,20 +149,20 @@ async function fetchCards() {
         let skippedCount = 0;
         let totalVersions = 0;
 
-        for (let i = 0; i < cards.length; i++) {
+        for(let i = 0; i < cards.length; i++) {
             const card = cards[i];
 
-            if (!card.versions || card.versions.length === 0) {
+            if(!card.versions || card.versions.length === 0) {
                 skippedCount++;
                 continue;
             }
 
             // Download ALL versions of the card
-            for (let versionIndex = 0; versionIndex < card.versions.length; versionIndex++) {
+            for(let versionIndex = 0; versionIndex < card.versions.length; versionIndex++) {
                 const version = card.versions[versionIndex];
                 totalVersions++;
 
-                if (!version.image_url) {
+                if(!version.image_url) {
                     skippedCount++;
                     continue;
                 }
@@ -172,7 +174,7 @@ async function fetchCards() {
 
                 const imagePath = path.join(imageDir, filename);
 
-                if (!forceDownload && fs.existsSync(imagePath)) {
+                if(!forceDownload && fs.existsSync(imagePath)) {
                     skippedCount++;
                     continue;
                 }
@@ -193,14 +195,14 @@ async function fetchCards() {
         const results = await downloadParallel(downloadTasks, 10);
 
         // Process results
-        for (const { card, result, url, filename } of results) {
-            if (result.success) {
+        for(const { card, result, url, filename } of results) {
+            if(result.success) {
                 downloaded++;
-                if (result.converted) {
+                if(result.converted) {
                     converted++;
                     convertedCards.push({ id: card.id, name: card.name, filename: filename, url: url });
                 }
-                if (downloaded % 50 === 0) {
+                if(downloaded % 50 === 0) {
                     console.log(`Downloaded ${downloaded}/${downloadTasks.length} images...`);
                 }
             } else {
@@ -217,25 +219,25 @@ async function fetchCards() {
         console.log(`Skipped (already exist or no image): ${skipped}`);
         console.log(`Failed: ${failed}`);
 
-        if (convertedCards.length > 0) {
+        if(convertedCards.length > 0) {
             console.log('\n=== Converted from PNG ===');
             convertedCards.forEach(c => {
                 console.log(`${c.filename} - ${c.name}`);
             });
         }
 
-        if (failedCards.length > 0) {
+        if(failedCards.length > 0) {
             console.log('\n=== Failed Downloads ===');
             failedCards.slice(0, 20).forEach(c => {
                 console.log(`${c.filename} (${c.name}): ${c.error}`);
             });
-            if (failedCards.length > 20) {
+            if(failedCards.length > 20) {
                 console.log(`... and ${failedCards.length - 20} more`);
             }
         }
 
         return cards;
-    } catch (error) {
+    } catch(error) {
         console.error('Unable to fetch cards:', error.message);
         console.error(error.stack);
     }
@@ -246,7 +248,7 @@ async function fetchPacks() {
         const packs = await apiRequest('packs');
         await cardService.replacePacks(packs);
         console.info(packs.length + ' packs fetched');
-    } catch (error) {
+    } catch(error) {
         console.error('Unable to fetch packs:', error.message);
     }
 }

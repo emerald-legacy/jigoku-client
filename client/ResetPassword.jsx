@@ -17,15 +17,15 @@ export function InnerResetPassword({ id, token, navigate }) {
         const newValidation = { ...validation };
         delete newValidation['password'];
 
-        if (currentPassword.length < 6) {
+        if(currentPassword.length < 6) {
             newValidation['password'] = 'The password you specify must be at least 6 characters long';
         }
 
-        if (isSubmitting && !currentPassword1) {
+        if(isSubmitting && !currentPassword1) {
             newValidation['password'] = 'Please enter your password again';
         }
 
-        if (currentPassword && currentPassword1 && currentPassword !== currentPassword1) {
+        if(currentPassword && currentPassword1 && currentPassword !== currentPassword1) {
             newValidation['password'] = 'The passwords you have specified do not match';
         }
 
@@ -40,18 +40,18 @@ export function InnerResetPassword({ id, token, navigate }) {
 
         // Do synchronous validation
         const newValidation = {};
-        if (password.length < 6) {
+        if(password.length < 6) {
             newValidation['password'] = 'The password you specify must be at least 6 characters long';
         }
-        if (!password1) {
+        if(!password1) {
             newValidation['password'] = 'Please enter your password again';
         }
-        if (password && password1 && password !== password1) {
+        if(password && password1 && password !== password1) {
             newValidation['password'] = 'The passwords you have specified do not match';
         }
         setValidation(newValidation);
 
-        if (Object.values(newValidation).some((message) => message && message !== '')) {
+        if(Object.values(newValidation).some((message) => message && message !== '')) {
             setError('There was an error in one or more fields, please see below, correct the error and try again');
             return;
         }
@@ -63,18 +63,18 @@ export function InnerResetPassword({ id, token, navigate }) {
                 newPassword: password
             });
 
-            if (!response.data.success) {
+            if(!response.data.success) {
                 setError(response.data.message);
                 return;
             }
 
             navigate('/login');
-        } catch {
+        } catch{
             setError('Could not communicate with the server.  Please try again later.');
         }
     }, [id, token, password, password1, navigate]);
 
-    if (!id || !token) {
+    if(!id || !token) {
         return <AlertPanel type='error' message='This page is not intended to be viewed directly.  Please click on the link in your email to reset your password' />;
     }
 
@@ -103,40 +103,40 @@ export function InnerResetPassword({ id, token, navigate }) {
         let className = 'form-group';
         let validationMessage = null;
 
-        if (validation[field.name]) {
+        if(validation[field.name]) {
             className += ' has-error';
-            validationMessage = <span className='help-block'>{validation[field.name]}</span>;
+            validationMessage = <span className='help-block'>{ validation[field.name] }</span>;
         }
 
         return (
-            <div key={field.name} className={className}>
-                <label htmlFor={field.name} className='col-sm-2 control-label'>{field.label}</label>
+            <div key={ field.name } className={ className }>
+                <label htmlFor={ field.name } className='col-sm-2 control-label'>{ field.label }</label>
                 <div className='col-sm-3'>
                     <input
-                        type={field.inputType}
+                        type={ field.inputType }
                         className='form-control'
-                        id={field.name}
-                        placeholder={field.placeholder}
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        onBlur={field.blurCallback}
+                        id={ field.name }
+                        placeholder={ field.placeholder }
+                        value={ field.value }
+                        onChange={ (e) => field.onChange(e.target.value) }
+                        onBlur={ field.blurCallback }
                     />
-                    {validationMessage}
+                    { validationMessage }
                 </div>
             </div>
         );
     });
 
-    const errorBar = error ? <AlertPanel type='error' message={error} /> : null;
+    const errorBar = error ? <AlertPanel type='error' message={ error } /> : null;
 
     return (
         <div>
-            {errorBar}
+            { errorBar }
             <form className='form form-horizontal'>
-                {fieldsToRender}
+                { fieldsToRender }
                 <div className='form-group'>
                     <div className='col-sm-offset-2 col-sm-3'>
-                        <button type='submit' className='btn btn-primary' onClick={onSubmit}>Submit</button>
+                        <button type='submit' className='btn btn-primary' onClick={ onSubmit }>Submit</button>
                     </div>
                 </div>
             </form>

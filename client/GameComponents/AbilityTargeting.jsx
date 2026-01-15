@@ -3,22 +3,22 @@ import PropTypes from 'prop-types';
 
 function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
     const handleMouseOver = useCallback((event, card) => {
-        if (card && !card.facedown && onMouseOver) {
+        if(card && !card.facedown && onMouseOver) {
             onMouseOver(card);
         }
     }, [onMouseOver]);
 
     const handleMouseOut = useCallback((event, card) => {
-        if (card && onMouseOut) {
+        if(card && onMouseOut) {
             onMouseOut(card);
         }
     }, [onMouseOut]);
 
     const getCardImagePath = useCallback((card) => {
-        if (!card.id) {
+        if(!card.id) {
             return '/img/cards/' + (card.isDynasty ? 'dynasty' : card.isConflict ? 'conflict' : 'province') + 'cardback.jpg';
         }
-        if (card.packId) {
+        if(card.packId) {
             return '/img/cards/' + card.id + '-' + card.packId + '.jpg';
         }
         return '/img/cards/' + card.id + '.jpg';
@@ -28,13 +28,13 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
         return (
             <div
                 className='target-card vertical'
-                onMouseOut={(event) => handleMouseOut(event, card)}
-                onMouseOver={(event) => handleMouseOver(event, card)}
+                onMouseOut={ (event) => handleMouseOut(event, card) }
+                onMouseOver={ (event) => handleMouseOver(event, card) }
             >
                 <img
                     className='target-card-image vertical'
-                    alt={card.name}
-                    src={getCardImagePath(card)}
+                    alt={ card.name }
+                    src={ getCardImagePath(card) }
                 />
             </div>
         );
@@ -44,7 +44,7 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
         return (
             <div className='ring-prompt'>
                 <div className='ring no-highlight'>
-                    <div className={'ring icon-element-' + ring.element + ' large'} />
+                    <div className={ 'ring icon-element-' + ring.element + ' large' } />
                 </div>
             </div>
         );
@@ -53,22 +53,22 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
     const renderStringChoice = useCallback((string) => {
         return (
             <div className='target-card vertical'>
-                {string}
+                { string }
             </div>
         );
     }, []);
 
     const targetCards = targets?.map((target, index) => {
-        if (target.type === 'select') {
-            return <span key={index}>{renderStringChoice(target.name)}</span>;
-        } else if (target.type === 'ring') {
-            return <span key={index}>{renderSimpleRing(target)}</span>;
+        if(target.type === 'select') {
+            return <span key={ index }>{ renderStringChoice(target.name) }</span>;
+        } else if(target.type === 'ring') {
+            return <span key={ index }>{ renderSimpleRing(target) }</span>;
         }
-        return <span key={index}>{renderSimpleCard(target)}</span>;
+        return <span key={ index }>{ renderSimpleCard(target) }</span>;
     });
 
     let sourceElement;
-    if (source.type) {
+    if(source.type) {
         sourceElement = source.type === 'ring' ? renderSimpleRing(source) : renderSimpleCard(source);
     } else {
         sourceElement = renderStringChoice(source.name);
@@ -76,9 +76,9 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
 
     return (
         <div className='prompt-control-targeting'>
-            {sourceElement}
-            {targetCards && targetCards.length > 0 ? <span className='glyphicon glyphicon-arrow-right targeting-arrow' /> : null}
-            {targetCards && targetCards.length > 0 ? targetCards : null}
+            { sourceElement }
+            { targetCards && targetCards.length > 0 ? <span className='glyphicon glyphicon-arrow-right targeting-arrow' /> : null }
+            { targetCards && targetCards.length > 0 ? targetCards : null }
         </div>
     );
 }

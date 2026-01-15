@@ -11,7 +11,7 @@ import TextArea from './FormComponents/TextArea.jsx';
 import * as actions from './actions';
 
 function copyDeck(deck, clearStatus = false) {
-    if (!deck) {
+    if(!deck) {
         return { name: 'New Deck' };
     }
 
@@ -51,7 +51,7 @@ export function InnerDeckEditor({
     // Handle Escape key to close modal
     useEffect(() => {
         const handleEscape = (event) => {
-            if (event.key === 'Escape' && showModal) {
+            if(event.key === 'Escape' && showModal) {
                 setShowModal(false);
             }
         };
@@ -60,16 +60,16 @@ export function InnerDeckEditor({
     }, [showModal]);
 
     const getCardListEntry = useCallback((count, card, packId) => {
-        if (!card) {
+        if(!card) {
             return '';
         }
         let packName = '';
-        if (card.versions && card.versions.length) {
+        if(card.versions && card.versions.length) {
             const packData = packId
                 ? card.versions.find(v => v.pack_id === packId) || card.versions[0]
                 : card.versions[0];
             const pack = packs?.find(p => p.id === packData.pack_id);
-            if (pack && pack.name) {
+            if(pack && pack.name) {
                 packName = ' (' + pack.name + ')';
             }
         }
@@ -79,22 +79,22 @@ export function InnerDeckEditor({
     useEffect(() => {
         let updatedDeck = copyDeck(deck);
         let updatedDefaultFields = false;
-        if (!propDeck.faction && factions) {
+        if(!propDeck.faction && factions) {
             updatedDeck.faction = factions['crab'];
             updatedDeck.alliance = { name: '', value: '' };
             updatedDefaultFields = true;
         }
-        if (!propDeck.format && formats) {
+        if(!propDeck.format && formats) {
             updatedDeck.format = formats['emerald'];
             updatedDefaultFields = true;
         }
-        if (updatedDefaultFields) {
+        if(updatedDefaultFields) {
             setDeck(updatedDeck);
             updateDeck(updatedDeck);
         }
 
         let list = '';
-        if (propDeck && (propDeck.stronghold || propDeck.role || propDeck.provinceCards ||
+        if(propDeck && (propDeck.stronghold || propDeck.role || propDeck.provinceCards ||
             propDeck.conflictCards || propDeck.dynastyCards)) {
             propDeck.stronghold?.forEach(card => {
                 list += getCardListEntry(card.count, card.card, card.pack_id);
@@ -124,20 +124,20 @@ export function InnerDeckEditor({
         const dynasty = deckCopy.dynastyCards || [];
 
         let list;
-        if (card.type === 'province') {
+        if(card.type === 'province') {
             list = provinces;
-        } else if (card.side === 'dynasty') {
+        } else if(card.side === 'dynasty') {
             list = dynasty;
-        } else if (card.side === 'conflict') {
+        } else if(card.side === 'conflict') {
             list = conflict;
-        } else if (card.type === 'stronghold') {
+        } else if(card.type === 'stronghold') {
             list = stronghold;
         } else {
             list = role;
         }
 
         const existingEntry = list.find(entry => entry.card.id === card.id && entry.pack_id === packId);
-        if (existingEntry) {
+        if(existingEntry) {
             existingEntry.count += number;
         } else {
             list.push({ count: number, card: card, pack_id: packId });
@@ -179,7 +179,7 @@ export function InnerDeckEditor({
 
     const handleAllianceChange = useCallback((selectedAlliance) => {
         const newDeck = copyDeck(deck, true);
-        if (!selectedAlliance) {
+        if(!selectedAlliance) {
             newDeck.alliance = { name: '', value: '' };
         } else {
             newDeck.alliance = selectedAlliance;
@@ -195,12 +195,12 @@ export function InnerDeckEditor({
     const handleAddCard = useCallback((event) => {
         event.preventDefault();
 
-        if (!cardToAdd || !cardToAdd.name) {
+        if(!cardToAdd || !cardToAdd.name) {
             return;
         }
 
         let defaultPackId;
-        if (cardToAdd.versions && cardToAdd.versions.length > 0) {
+        if(cardToAdd.versions && cardToAdd.versions.length > 0) {
             defaultPackId = cardToAdd.versions[0].pack_id;
         }
 
@@ -229,12 +229,12 @@ export function InnerDeckEditor({
             line = line.trim();
             let index = 2;
 
-            if (isNaN(parseInt(line[0]))) {
+            if(isNaN(parseInt(line[0]))) {
                 return;
             }
 
             const num = parseInt(line[0]);
-            if (line[1] === 'x') {
+            if(line[1] === 'x') {
                 index++;
             }
 
@@ -248,8 +248,8 @@ export function InnerDeckEditor({
 
             const cardsArray = cards ? Object.values(cards) : [];
             const card = cardsArray.find(c => {
-                if (pack && c.versions && c.versions.length) {
-                    if (c.name.toLowerCase() === cardName.toLowerCase()) {
+                if(pack && c.versions && c.versions.length) {
+                    if(c.name.toLowerCase() === cardName.toLowerCase()) {
                         return c.versions.find(packCard => packCard.pack_id === pack.id);
                     }
                     return false;
@@ -257,7 +257,7 @@ export function InnerDeckEditor({
                 return c.name.toLowerCase() === cardName.toLowerCase();
             });
 
-            if (card) {
+            if(card) {
                 const packId = pack ? pack.id : (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
                 currentDeck = addCard(card, num, packId, currentDeck);
             }
@@ -271,7 +271,7 @@ export function InnerDeckEditor({
 
     const handleSaveClick = useCallback((event) => {
         event.preventDefault();
-        if (onDeckSave) {
+        if(onDeckSave) {
             onDeckSave(propDeck);
         }
     }, [onDeckSave, propDeck]);
@@ -281,7 +281,7 @@ export function InnerDeckEditor({
     }, []);
 
     const handleModalClick = useCallback((event) => {
-        if (event.target === event.currentTarget) {
+        if(event.target === event.currentTarget) {
             setShowModal(false);
         }
     }, []);
@@ -294,7 +294,7 @@ export function InnerDeckEditor({
             const response = await axios.get(emeraldUrl);
             const deckResponse = response.data;
 
-            if (!deckResponse) {
+            if(!deckResponse) {
                 return;
             }
 
@@ -306,7 +306,7 @@ export function InnerDeckEditor({
                 : { name: '', value: '' };
 
             let deckFormat = deckResponse.format;
-            if (deckFormat === 'standard') {
+            if(deckFormat === 'standard') {
                 deckFormat = 'stronghold';
             }
             newDeck.format = formats[deckFormat] || formats['emerald'];
@@ -320,18 +320,18 @@ export function InnerDeckEditor({
             let list = '';
             Object.entries(deckResponse.cards || {}).forEach(([id, count]) => {
                 const card = cards[id];
-                if (card) {
+                if(card) {
                     const packId = card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined;
                     list += getCardListEntry(count, card, packId);
 
                     let targetList;
-                    if (card.type === 'province') {
+                    if(card.type === 'province') {
                         targetList = newDeck.provinceCards;
-                    } else if (card.side === 'dynasty') {
+                    } else if(card.side === 'dynasty') {
                         targetList = newDeck.dynastyCards;
-                    } else if (card.side === 'conflict') {
+                    } else if(card.side === 'conflict') {
                         targetList = newDeck.conflictCards;
-                    } else if (card.type === 'stronghold') {
+                    } else if(card.type === 'stronghold') {
                         targetList = newDeck.stronghold;
                     } else {
                         targetList = newDeck.role;
@@ -343,13 +343,13 @@ export function InnerDeckEditor({
             setCardList(list);
             setDeck(newDeck);
             updateDeck(newDeck);
-        } catch (error) {
+        } catch(error) {
             console.error('Failed to import deck:', error);
         }
     }, [importUrl, deck, factions, formats, cards, getCardListEntry, updateDeck]);
 
     const handleImportKeyPress = useCallback((event) => {
-        if (event.key === 'Enter') {
+        if(event.key === 'Enter') {
             event.preventDefault();
             handleImportDeck();
         }
@@ -360,41 +360,41 @@ export function InnerDeckEditor({
     const alliancesArray = useMemo(() => alliances ? Object.values(alliances) : [], [alliances]);
     const cardsArray = useMemo(() => cards ? Object.values(cards) : [], [cards]);
 
-    if (!propDeck || loading) {
+    if(!propDeck || loading) {
         return <div>Waiting for deck...</div>;
     }
 
     const popup = (
         <div
-            className={`modal fade ${showModal ? 'in' : ''}`}
-            style={{ display: showModal ? 'block' : 'none' }}
+            className={ `modal fade ${showModal ? 'in' : ''}` }
+            style={ { display: showModal ? 'block' : 'none' } }
             tabIndex='-1'
             role='dialog'
-            onClick={handleModalClick}
+            onClick={ handleModalClick }
         >
             <div className='modal-dialog' role='document'>
                 <div className='modal-content deck-popup'>
-                    <div className='modal-header' style={{ padding: '10px 15px' }}>
-                        <button type='button' className='close' aria-label='Close' onClick={() => setShowModal(false)} style={{ fontSize: '24px', opacity: 1, color: '#fff', textShadow: 'none', marginTop: '-2px' }}>
+                    <div className='modal-header' style={ { padding: '10px 15px' } }>
+                        <button type='button' className='close' aria-label='Close' onClick={ () => setShowModal(false) } style={ { fontSize: '24px', opacity: 1, color: '#fff', textShadow: 'none', marginTop: '-2px' } }>
                             <span aria-hidden='true'>&times;</span>
                         </button>
-                        <h4 className='modal-title' style={{ margin: 0, fontSize: '16px' }}>Import from EmeraldDB</h4>
+                        <h4 className='modal-title' style={ { margin: 0, fontSize: '16px' } }>Import from EmeraldDB</h4>
                     </div>
-                    <div className='modal-body' style={{ padding: '10px 15px' }}>
-                        <p style={{ margin: '0 0 8px 0', fontSize: '13px' }}>Paste the permalink URL from EmeraldDB:</p>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+                    <div className='modal-body' style={ { padding: '10px 15px' } }>
+                        <p style={ { margin: '0 0 8px 0', fontSize: '13px' } }>Paste the permalink URL from EmeraldDB:</p>
+                        <div style={ { display: 'flex', gap: '8px', alignItems: 'stretch' } }>
                             <input
                                 className='form-control'
                                 name='importUrl'
                                 placeholder='https://www.emeralddb.org/decks/...'
                                 type='text'
-                                value={importUrl}
-                                onChange={(e) => setImportUrl(e.target.value)}
-                                onKeyPress={handleImportKeyPress}
-                                style={{ flex: 1, height: '34px' }}
+                                value={ importUrl }
+                                onChange={ (e) => setImportUrl(e.target.value) }
+                                onKeyPress={ handleImportKeyPress }
+                                style={ { flex: 1, height: '34px' } }
                                 autoFocus
                             />
-                            <button className='btn btn-primary' onClick={handleImportDeck} style={{ height: '34px', padding: '6px 16px' }}>Import</button>
+                            <button className='btn btn-primary' onClick={ handleImportDeck } style={ { height: '34px', padding: '6px 16px' } }>Import</button>
                         </div>
                     </div>
                 </div>
@@ -402,39 +402,39 @@ export function InnerDeckEditor({
         </div>
     );
 
-    const backdrop = showModal ? <div className='modal-backdrop fade in' onClick={() => setShowModal(false)} /> : null;
+    const backdrop = showModal ? <div className='modal-backdrop fade in' onClick={ () => setShowModal(false) } /> : null;
 
     return (
         <div>
-            {popup}
-            {backdrop}
-            <span className='btn btn-primary' onClick={handleImportDeckClick}>Import deck</span>
-            <h4>Either type the cards manually into the box below, add the cards one by one using the card box and autocomplete or for best results, copy the permalink url from <a href='https://www.emeralddb.org' target='_blank'>Emerald DB</a> and paste it into the popup from clicking the "Import Deck" button.</h4>
+            { popup }
+            { backdrop }
+            <span className='btn btn-primary' onClick={ handleImportDeckClick }>Import deck</span>
+            <h4>Either type the cards manually into the box below, add the cards one by one using the card box and autocomplete or for best results, copy the permalink url from <a href='https://www.emeralddb.org' target='_blank' rel='noreferrer'>Emerald DB</a> and paste it into the popup from clicking the "Import Deck" button.</h4>
             <form className='form form-horizontal'>
                 <Input name='deckName' label='Deck Name' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Deck Name'
-                    type='text' onChange={(e) => handleChange('name', e)} value={deck.name} />
-                <Select name='format' label='Format' labelClass='col-sm-3' fieldClass='col-sm-9' options={formatsArray}
-                    onChange={handleFormatChange} value={deck.format ? deck.format.value : 'emerald'} />
-                <Select name='faction' label='Clan' labelClass='col-sm-3' fieldClass='col-sm-9' options={factionsArray}
-                    onChange={handleFactionChange} value={deck.faction ? deck.faction.value : undefined} />
-                <Select name='alliance' label='Alliance' labelClass='col-sm-3' fieldClass='col-sm-9' options={alliancesArray}
-                    onChange={handleAllianceChange} value={deck.alliance ? deck.alliance.value : undefined}
-                    valueKey='value' nameKey='name' blankOption={{ name: '- Select -', value: '' }} />
+                    type='text' onChange={ (e) => handleChange('name', e) } value={ deck.name } />
+                <Select name='format' label='Format' labelClass='col-sm-3' fieldClass='col-sm-9' options={ formatsArray }
+                    onChange={ handleFormatChange } value={ deck.format ? deck.format.value : 'emerald' } />
+                <Select name='faction' label='Clan' labelClass='col-sm-3' fieldClass='col-sm-9' options={ factionsArray }
+                    onChange={ handleFactionChange } value={ deck.faction ? deck.faction.value : undefined } />
+                <Select name='alliance' label='Alliance' labelClass='col-sm-3' fieldClass='col-sm-9' options={ alliancesArray }
+                    onChange={ handleAllianceChange } value={ deck.alliance ? deck.alliance.value : undefined }
+                    valueKey='value' nameKey='name' blankOption={ { name: '- Select -', value: '' } } />
 
-                <Typeahead label='Card' labelClass='col-sm-3' fieldClass='col-sm-4' labelKey='name' options={cardsArray}
-                    onChange={handleAddCardChange}>
+                <Typeahead label='Card' labelClass='col-sm-3' fieldClass='col-sm-4' labelKey='name' options={ cardsArray }
+                    onChange={ handleAddCardChange }>
                     <Input name='numcards' type='text' label='Num' labelClass='col-sm-1' fieldClass='col-sm-2'
-                        value={numberToAdd.toString()} onChange={handleNumberToAddChange}>
+                        value={ numberToAdd.toString() } onChange={ handleNumberToAddChange }>
                         <div className='col-sm-1'>
-                            <button className='btn btn-primary add-card-button' onClick={handleAddCard}>Add</button>
+                            <button className='btn btn-primary add-card-button' onClick={ handleAddCard }>Add</button>
                         </div>
                     </Input>
                 </Typeahead>
-                <TextArea label='Cards' labelClass='col-sm-3' fieldClass='col-sm-9' rows='10' value={cardList}
-                    onChange={handleCardListChange} />
+                <TextArea label='Cards' labelClass='col-sm-3' fieldClass='col-sm-9' rows='10' value={ cardList }
+                    onChange={ handleCardListChange } />
                 <div className='form-group'>
                     <div className='col-sm-offset-3 col-sm-8'>
-                        <button type='submit' className='btn btn-primary' onClick={handleSaveClick}>Save Deck</button>
+                        <button type='submit' className='btn btn-primary' onClick={ handleSaveClick }>Save Deck</button>
                     </div>
                 </div>
             </form>

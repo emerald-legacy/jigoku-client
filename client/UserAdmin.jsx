@@ -27,7 +27,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
     }, [currentUser]);
 
     useEffect(() => {
-        if (userSaved) {
+        if(userSaved) {
             const timer = setTimeout(() => {
                 clearUserStatus();
             }, 5000);
@@ -60,7 +60,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
     let content = null;
     let successPanel = null;
 
-    if (userSaved) {
+    if(userSaved) {
         successPanel = (
             <AlertPanel message='User saved successfully' type='success' />
         );
@@ -70,16 +70,16 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
 
     let renderedUser = null;
 
-    if (currentUser) {
+    if(currentUser) {
         const permissionsElements = permissionsList.map((permission) => (
             <Checkbox
-                key={permission.name}
-                name={'permissions.' + permission.name}
-                label={permission.label}
+                key={ permission.name }
+                name={ 'permissions.' + permission.name }
+                label={ permission.label }
                 fieldClass='col-sm-offset-3 col-sm-4'
                 type='checkbox'
-                onChange={(e) => onPermissionToggle(permission.name, e)}
-                checked={permissions[permission.name]}
+                onChange={ (e) => onPermissionToggle(permission.name, e) }
+                checked={ permissions[permission.name] }
             />
         ));
 
@@ -89,34 +89,34 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
 
                 <form className='form'>
                     <dl>
-                        <dt>Username:</dt><dd>{currentUser.username}</dd>
-                        <dt>Email:</dt><dd>{currentUser.email}</dd>
-                        <dt>Registered:</dt><dd>{currentUser.registered}</dd>
+                        <dt>Username:</dt><dd>{ currentUser.username }</dd>
+                        <dt>Email:</dt><dd>{ currentUser.email }</dd>
+                        <dt>Registered:</dt><dd>{ currentUser.registered }</dd>
                     </dl>
 
                     <h4>Permissions</h4>
-                    {permissionsElements}
-                    <button type='button' className='btn btn-primary' onClick={onSaveClick}>Save</button>
+                    { permissionsElements }
+                    <button type='button' className='btn btn-primary' onClick={ onSaveClick }>Save</button>
                 </form>
             </div>
         );
     }
 
-    if (loading) {
+    if(loading) {
         content = <div>Searching for user...</div>;
-    } else if (apiError && apiStatus !== 404) {
-        content = <AlertPanel type='error' message={apiError} />;
+    } else if(apiError && apiStatus !== 404) {
+        content = <AlertPanel type='error' message={ apiError } />;
     } else {
         content = (
             <div>
-                {notFoundMessage}
-                {successPanel}
+                { notFoundMessage }
+                { successPanel }
                 <form className='form'>
-                    <Input name='username' label='Search for a user' value={username} onChange={onUsernameChange} placeholder='Enter username' />
-                    <button type='submit' className='btn btn-primary' onClick={onFindClick}>Find</button>
+                    <Input name='username' label='Search for a user' value={ username } onChange={ onUsernameChange } placeholder='Enter username' />
+                    <button type='submit' className='btn btn-primary' onClick={ onFindClick }>Find</button>
                 </form>
 
-                {renderedUser}
+                { renderedUser }
             </div>
         );
     }

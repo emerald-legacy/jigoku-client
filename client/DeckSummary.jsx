@@ -19,15 +19,15 @@ function DeckSummary({ cards, deck }) {
     };
 
     const getCardImagePath = (card, packId) => {
-        if (!card) {
+        if(!card) {
             return '';
         }
         // All images are stored as {id}-{packId}.jpg
-        if (packId) {
+        if(packId) {
             return '/img/cards/' + card.id + '-' + packId + '.jpg';
         }
         // Fallback: use first version's pack_id if available
-        if (card.versions && card.versions.length > 0) {
+        if(card.versions && card.versions.length > 0) {
             return '/img/cards/' + card.id + '-' + card.versions[0].pack_id + '.jpg';
         }
         return '/img/cards/' + card.id + '.jpg';
@@ -50,13 +50,13 @@ function DeckSummary({ cards, deck }) {
             .filter((card) => card && card.card);
 
         // Group cards by type
-        for (const card of combinedCards) {
+        for(const card of combinedCards) {
             let type = card.card.type;
 
-            if (type === 'character' || type === 'event') {
+            if(type === 'character' || type === 'event') {
                 type = card.card.side + ` ${type}`;
             }
-            if (!groupedCards[type]) {
+            if(!groupedCards[type]) {
                 groupedCards[type] = [card];
             } else {
                 groupedCards[type].push(card);
@@ -64,25 +64,25 @@ function DeckSummary({ cards, deck }) {
         }
 
         // Render each group
-        for (const [key, cardList] of Object.entries(groupedCards)) {
+        for(const [key, cardList] of Object.entries(groupedCards)) {
             const cardElements = [];
             let count = 0;
 
-            for (const card of cardList) {
+            for(const card of cardList) {
                 const cardKey = card.pack_id
                     ? card.card.id + '-' + card.pack_id
                     : card.card.id;
                 cardElements.push(
-                    <div key={cardKey}>
-                        <span>{card.count + 'x '}</span>
+                    <div key={ cardKey }>
+                        <span>{ card.count + 'x ' }</span>
                         <span
                             className='card-link'
-                            onMouseOver={(event) =>
+                            onMouseOver={ (event) =>
                                 onCardMouseOver(event, card.card.id, card.pack_id)
                             }
-                            onMouseOut={onCardMouseOut}
+                            onMouseOut={ onCardMouseOut }
                         >
-                            {card.card.name}
+                            { card.card.name }
                         </span>
                     </div>
                 );
@@ -90,9 +90,9 @@ function DeckSummary({ cards, deck }) {
             }
 
             cardsToRender.push(
-                <div className='cards-no-break' key={key}>
-                    <div className='card-group-title'>{key + ' (' + count.toString() + ')'}</div>
-                    <div className='card-group'>{cardElements}</div>
+                <div className='cards-no-break' key={ key }>
+                    <div className='card-group-title'>{ key + ' (' + count.toString() + ')' }</div>
+                    <div className='card-group'>{ cardElements }</div>
                 </div>
             );
         }
@@ -102,15 +102,15 @@ function DeckSummary({ cards, deck }) {
 
     const getDeckCount = (deckCards) => {
         let count = 0;
-        if (deckCards) {
-            for (const card of deckCards) {
+        if(deckCards) {
+            for(const card of deckCards) {
                 count += card.count;
             }
         }
         return count;
     };
 
-    if (!deck) {
+    if(!deck) {
         return <div>Waiting for selected deck...</div>;
     }
 
@@ -121,70 +121,70 @@ function DeckSummary({ cards, deck }) {
 
     return (
         <div className='deck-summary col-xs-12'>
-            {cardToShow ? (
+            { cardToShow ? (
                 <img
                     className='hover-image'
-                    src={getCardImagePath(cardToShow, packIdToShow)}
+                    src={ getCardImagePath(cardToShow, packIdToShow) }
                 />
-            ) : null}
+            ) : null }
             <div className='decklist'>
                 <div className='col-xs-2 col-sm-3 no-x-padding'>
-                    {deck.faction ? (
+                    { deck.faction ? (
                         <img
                             className='deck-mon img-responsive'
-                            src={'/img/mons/' + deck.faction.value + '.png'}
+                            src={ '/img/mons/' + deck.faction.value + '.png' }
                         />
-                    ) : null}
+                    ) : null }
                 </div>
                 <div className='col-xs-8 col-sm-6'>
                     <div className='info-row row'>
                         <span>Clan:</span>
-                        {deck.faction ? (
-                            <span className={'pull-right'}>{deck.faction.name}</span>
-                        ) : null}
+                        { deck.faction ? (
+                            <span className={ 'pull-right' }>{ deck.faction.name }</span>
+                        ) : null }
                     </div>
                     <div className='info-row row'>
                         <span>Alliance:</span>
-                        {deck.alliance && deck.alliance.name ? (
-                            <span className='pull-right'>{deck.alliance.name}</span>
+                        { deck.alliance && deck.alliance.name ? (
+                            <span className='pull-right'>{ deck.alliance.name }</span>
                         ) : (
                             <span> None </span>
-                        )}
+                        ) }
                     </div>
                     <div className='info-row row'>
                         <span>Format:</span>
                         <span className='pull-right'>
-                            {deck.format ? deck.format.name : 'Emerald'}
+                            { deck.format ? deck.format.name : 'Emerald' }
                         </span>
                     </div>
                     <div className='info-row row'>
                         <span>Province deck:</span>
-                        <span className='pull-right'>{provinceCount} cards</span>
+                        <span className='pull-right'>{ provinceCount } cards</span>
                     </div>
                     <div className='info-row row'>
                         <span>Dynasty Deck:</span>
-                        <span className='pull-right'>{dynastyCount} cards</span>
+                        <span className='pull-right'>{ dynastyCount } cards</span>
                     </div>
                     <div className='info-row row'>
                         <span>Conflict Deck:</span>
-                        <span className='pull-right'>{conflictCount} cards</span>
+                        <span className='pull-right'>{ conflictCount } cards</span>
                     </div>
                     <div className='info-row row'>
                         <span>Validity:</span>
-                        <DeckStatus className='pull-right' deck={deck} />
+                        <DeckStatus className='pull-right' deck={ deck } />
                     </div>
                 </div>
                 <div className='col-xs-2 col-sm-3 no-x-padding'>
-                    {deck.alliance && deck.alliance.value !== 'none' ? (
+                    { deck.alliance && deck.alliance.value !== 'none' ? (
                         <img
                             className='deck-alliance-mon img-responsive'
-                            src={'/img/mons/' + deck.alliance.value + '.png'}
+                            src={ '/img/mons/' + deck.alliance.value + '.png' }
                         />
-                    ) : null}
+                    ) : null }
                 </div>
             </div>
             <div className='col-xs-12 no-x-padding'>
-                <div className='cards'>{cardsToRender}</div>
+                <div className='cards'>{ cardsToRender }</div>
             </div>
         </div>
     );

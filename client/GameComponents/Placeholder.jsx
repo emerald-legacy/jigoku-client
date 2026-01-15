@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 function Placeholder({ className: propsClassName, orientation = 'vertical', size }) {
     let className = `panel placeholder ${propsClassName || ''}`;
 
-    if (orientation === 'horizontal') {
+    if(orientation === 'horizontal') {
         className += ' horizontal';
     } else {
         className += ' vertical';
     }
 
-    if (size !== 'normal') {
+    if(size !== 'normal') {
         className += ` ${size}`;
     }
 
     return (
-        <div className={className}>
+        <div className={ className }>
             <div className='card-placeholder' />
         </div>
     );

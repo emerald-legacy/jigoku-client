@@ -18,7 +18,7 @@ export function InnerForgotPassword() {
         const newValidation = { ...validation };
         delete newValidation['username'];
 
-        if (!username || username === '') {
+        if(!username || username === '') {
             newValidation['username'] = 'Please enter your username';
         }
 
@@ -34,12 +34,12 @@ export function InnerForgotPassword() {
 
                 // Do synchronous validation to avoid stale state
                 const newValidation = {};
-                if (!username || username === '') {
+                if(!username || username === '') {
                     newValidation['username'] = 'Please enter your username';
                 }
                 setValidation(newValidation);
 
-                if (Object.values(newValidation).some((message) => message && message !== '')) {
+                if(Object.values(newValidation).some((message) => message && message !== '')) {
                     setError('Please complete the fields and try again');
                     return;
                 }
@@ -54,13 +54,13 @@ export function InnerForgotPassword() {
 
                     setSubmitting(false);
 
-                    if (!response.data.success) {
+                    if(!response.data.success) {
                         setError(response.data.message);
                         return;
                     }
 
                     setSuccess('Your request was submitted, if you have an account, an email will have been sent to the address you used to register with more instructions. This request could end up in your Spam folder, so make sure to check there if you do not see it.');
-                } catch {
+                } catch{
                     setSubmitting(false);
                     setError('Could not communicate with the server.  Please try again later.');
                 }
@@ -82,39 +82,39 @@ export function InnerForgotPassword() {
         let className = 'form-group';
         let validationMessage = null;
 
-        if (validation[field.name]) {
+        if(validation[field.name]) {
             className += ' has-error';
-            validationMessage = <span className='help-block'>{validation[field.name]}</span>;
+            validationMessage = <span className='help-block'>{ validation[field.name] }</span>;
         }
 
         return (
-            <div key={field.name} className={className}>
-                <label htmlFor={field.name} className='col-sm-2 control-label'>{field.label}</label>
+            <div key={ field.name } className={ className }>
+                <label htmlFor={ field.name } className='col-sm-2 control-label'>{ field.label }</label>
                 <div className='col-sm-6'>
                     <input
-                        type={field.inputType}
+                        type={ field.inputType }
                         className='form-control'
-                        id={field.name}
-                        placeholder={field.placeholder}
-                        value={field.name === 'username' ? username : ''}
-                        onChange={(e) => setUsername(e.target.value)}
-                        onBlur={field.blurCallback}
+                        id={ field.name }
+                        placeholder={ field.placeholder }
+                        value={ field.name === 'username' ? username : '' }
+                        onChange={ (e) => setUsername(e.target.value) }
+                        onBlur={ field.blurCallback }
                     />
-                    {validationMessage}
+                    { validationMessage }
                 </div>
             </div>
         );
     });
 
-    if (success) {
-        return <div><div className='alert alert-success' role='alert'>{success}</div></div>;
+    if(success) {
+        return <div><div className='alert alert-success' role='alert'>{ success }</div></div>;
     }
 
-    const errorBar = error ? <div className='alert alert-danger' role='alert'>{error}</div> : null;
+    const errorBar = error ? <div className='alert alert-danger' role='alert'>{ error }</div> : null;
 
     return (
         <div>
-            {errorBar}
+            { errorBar }
             <AlertPanel type='info' message='To start the password recovery process, please enter your username and click the submit button.' />
             <div className='col-sm-6 col-sm-offset-3'>
                 <div className='panel-title'>
@@ -122,14 +122,14 @@ export function InnerForgotPassword() {
                 </div>
                 <div className='panel'>
                     <form className='form form-horizontal'>
-                        {fieldsToRender}
+                        { fieldsToRender }
                         <div className='form-group'>
                             <div className='col-sm-offset-2 col-sm-3'>
-                                {submitting ? (
+                                { submitting ? (
                                     <button type='submit' className='btn btn-primary' disabled>Submitting...</button>
                                 ) : (
-                                    <button type='submit' className='btn btn-primary' onClick={onSubmit}>Submit</button>
-                                )}
+                                    <button type='submit' className='btn btn-primary' onClick={ onSubmit }>Submit</button>
+                                ) }
                             </div>
                         </div>
                     </form>

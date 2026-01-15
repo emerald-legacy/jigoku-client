@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 function Counter({ cancel, fade, name, shortName, value }) {
     let className = 'counter ' + name;
 
-    if (cancel) {
+    if(cancel) {
         className += ' cancel';
     }
 
-    if (fade) {
+    if(fade) {
         className += ' fade-out';
     }
 
     return (
-        <div key={name} className={className}>
-            {shortName ? <span>{shortName}</span> : null}
-            <span>{value}</span>
+        <div key={ name } className={ className }>
+            { shortName ? <span>{ shortName }</span> : null }
+            <span>{ value }</span>
         </div>
     );
 }

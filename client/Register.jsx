@@ -19,24 +19,24 @@ export function InnerRegister({ navigate, register, socket }) {
             const newValidation = { ...validation };
             delete newValidation['username'];
 
-            if (currentUsername.length < 3 || currentUsername.length > 15) {
+            if(currentUsername.length < 3 || currentUsername.length > 15) {
                 newValidation['username'] =
                     'Username must be between 3 and 15 characters long';
             }
 
-            if (!/^[A-Z0-9_-]+$/i.test(currentUsername)) {
+            if(!/^[A-Z0-9_-]+$/i.test(currentUsername)) {
                 newValidation['username'] =
                     'Usernames must only use the characters a-z, 0-9, _ and -';
             }
 
-            if (isSubmitting) {
+            if(isSubmitting) {
                 return newValidation;
             }
 
             axios
                 .post('/api/account/check-username', { username: currentUsername })
                 .then((response) => {
-                    if (response.data.message) {
+                    if(response.data.message) {
                         newValidation['username'] = response.data.message;
                     }
                 })
@@ -54,7 +54,7 @@ export function InnerRegister({ navigate, register, socket }) {
             const newValidation = { ...validation };
             delete newValidation['email'];
 
-            if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(currentEmail)) {
+            if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(currentEmail)) {
                 newValidation['email'] = 'Please enter a valid email address';
             }
 
@@ -68,16 +68,16 @@ export function InnerRegister({ navigate, register, socket }) {
             const newValidation = { ...validation };
             delete newValidation['password'];
 
-            if (currentPassword.length < 6) {
+            if(currentPassword.length < 6) {
                 newValidation['password'] =
                     'The password you specify must be at least 6 characters long';
             }
 
-            if (isSubmitting && !currentPassword1) {
+            if(isSubmitting && !currentPassword1) {
                 newValidation['password'] = 'Please enter your password again';
             }
 
-            if (
+            if(
                 currentPassword &&
                 currentPassword1 &&
                 currentPassword !== currentPassword1
@@ -115,29 +115,29 @@ export function InnerRegister({ navigate, register, socket }) {
         let combinedValidation = {};
 
         // Check email
-        if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+        if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
             combinedValidation['email'] = 'Please enter a valid email address';
         }
 
         // Check password
-        if (password.length < 6) {
+        if(password.length < 6) {
             combinedValidation['password'] =
                 'The password you specify must be at least 6 characters long';
         }
-        if (!password1) {
+        if(!password1) {
             combinedValidation['password'] = 'Please enter your password again';
         }
-        if (password && password1 && password !== password1) {
+        if(password && password1 && password !== password1) {
             combinedValidation['password'] =
                 'The passwords you have specified do not match';
         }
 
         // Check username
-        if (username.length < 3 || username.length > 15) {
+        if(username.length < 3 || username.length > 15) {
             combinedValidation['username'] =
                 'Username must be between 3 and 15 characters long';
         }
-        if (!/^[A-Z0-9_-]+$/i.test(username)) {
+        if(!/^[A-Z0-9_-]+$/i.test(username)) {
             combinedValidation['username'] =
                 'Usernames must only use the characters a-z, 0-9, _ and -';
         }
@@ -149,7 +149,7 @@ export function InnerRegister({ navigate, register, socket }) {
             (message) => message && message !== ''
         );
 
-        if (hasErrors) {
+        if(hasErrors) {
             setError(
                 'There was an error in one or more fields, please see below, correct the error and try again'
             );
@@ -160,7 +160,7 @@ export function InnerRegister({ navigate, register, socket }) {
             .post('/api/account/register', { username, password, email })
             .then((response) => {
                 const data = response.data;
-                if (!data.success) {
+                if(!data.success) {
                     setError(data.message);
                     return;
                 }
@@ -217,49 +217,49 @@ export function InnerRegister({ navigate, register, socket }) {
         let className = 'form-group';
         let validationElement = null;
 
-        if (validation[field.name]) {
+        if(validation[field.name]) {
             className += ' has-error';
             validationElement = (
-                <span className='help-block'>{validation[field.name]}</span>
+                <span className='help-block'>{ validation[field.name] }</span>
             );
         }
 
         return (
-            <div key={field.name} className={className}>
-                <label htmlFor={field.name} className='col-sm-4 control-label'>
-                    {field.label}
+            <div key={ field.name } className={ className }>
+                <label htmlFor={ field.name } className='col-sm-4 control-label'>
+                    { field.label }
                 </label>
                 <div className='col-sm-7'>
                     <input
-                        type={field.inputType}
+                        type={ field.inputType }
                         className='form-control'
-                        id={field.name}
-                        placeholder={field.placeholder}
-                        value={field.value}
-                        onChange={field.onChange}
-                        onBlur={field.blurCallback}
+                        id={ field.name }
+                        placeholder={ field.placeholder }
+                        value={ field.value }
+                        onChange={ field.onChange }
+                        onBlur={ field.blurCallback }
                     />
-                    {validationElement}
+                    { validationElement }
                 </div>
             </div>
         );
     });
 
-    const errorBar = error ? <AlertPanel type='error' message={error} /> : null;
+    const errorBar = error ? <AlertPanel type='error' message={ error } /> : null;
 
     return (
         <div className='col-sm-6 col-sm-offset-3'>
-            {errorBar}
+            { errorBar }
             <div className='panel-title'>Register an account</div>
             <div className='panel'>
                 <form className='form form-horizontal'>
-                    {fieldsToRender}
+                    { fieldsToRender }
                     <div className='form-group'>
                         <div className='col-sm-offset-4 col-sm-3'>
                             <button
                                 type='submit'
                                 className='btn btn-primary'
-                                onClick={onRegister}
+                                onClick={ onRegister }
                             >
                                 Register
                             </button>

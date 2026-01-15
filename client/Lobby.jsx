@@ -22,7 +22,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
     }, [loadNews]);
 
     const sendMessage = useCallback(() => {
-        if (message === '') {
+        if(message === '') {
             return;
         }
 
@@ -31,7 +31,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
     }, [message, socket]);
 
     const handleKeyPress = useCallback((event) => {
-        if (event.key === 'Enter') {
+        if(event.key === 'Enter') {
             sendMessage();
             event.preventDefault();
         }
@@ -51,7 +51,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
     }, []);
 
     const renderedMessages = useMemo(() => {
-        if (!messages) {
+        if(!messages) {
             return [];
         }
 
@@ -62,19 +62,19 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
         let lastUser;
         let currentGroup = 0;
 
-        for (const msg of messages) {
-            if (!msg.user) {
+        for(const msg of messages) {
+            if(!msg.user) {
                 continue;
             }
 
             const formattedTime = moment(msg.time).format('YYYYMMDDHHmm');
-            if (lastUser && msg.user && lastUser !== msg.user.username) {
+            if(lastUser && msg.user && lastUser !== msg.user.username) {
                 currentGroup++;
             }
 
             const key = msg.user.username + formattedTime + currentGroup;
 
-            if (!groupedMessages[key]) {
+            if(!groupedMessages[key]) {
                 groupedMessages[key] = [];
             }
 
@@ -85,74 +85,74 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
         return Object.values(groupedMessages).map((msgGroup) => {
             const firstMessage = msgGroup[0];
 
-            if (!firstMessage.user) {
+            if(!firstMessage.user) {
                 return null;
             }
 
             let timestamp = '';
-            if (today.isSame(firstMessage.time, 'd')) {
+            if(today.isSame(firstMessage.time, 'd')) {
                 timestamp = moment(firstMessage.time).format('H:mm');
-            } else if (yesterday.isSame(firstMessage.time, 'd')) {
+            } else if(yesterday.isSame(firstMessage.time, 'd')) {
                 timestamp = 'yesterday ' + moment(firstMessage.time).format('H:mm');
             } else {
                 timestamp = moment(firstMessage.time).format('MMM Do H:mm');
             }
 
             const renderedMsgs = msgGroup.map((msg, msgIndex) => {
-                if (!msg.user) {
+                if(!msg.user) {
                     return null;
                 }
-                return <div key={msgIndex} className='lobby-message'>{emoji.replace_colons(msg.message)}</div>;
+                return <div key={ msgIndex } className='lobby-message'>{ emoji.replace_colons(msg.message) }</div>;
             });
 
             return (
-                <div key={timestamp + firstMessage.user.username + (index++).toString()}>
-                    <Avatar emailHash={firstMessage.user.emailHash} float forceDefault={firstMessage.user.noAvatar} />
-                    <span className='username'>{firstMessage.user.username}</span><span>{timestamp}</span>
-                    {renderedMsgs}
+                <div key={ timestamp + firstMessage.user.username + (index++).toString() }>
+                    <Avatar emailHash={ firstMessage.user.emailHash } float forceDefault={ firstMessage.user.noAvatar } />
+                    <span className='username'>{ firstMessage.user.username }</span><span>{ timestamp }</span>
+                    { renderedMsgs }
                 </div>
             );
         });
     }, [messages]);
 
     const userList = useMemo(() => {
-        if (!users) {
+        if(!users) {
             return [];
         }
         return users.map(user => (
-            <div className='user-row' key={user.name}>
-                <Avatar emailHash={user.emailHash} forceDefault={user.noAvatar} />
-                <span>{user.name}</span>
+            <div className='user-row' key={ user.name }>
+                <Avatar emailHash={ user.emailHash } forceDefault={ user.noAvatar } />
+                <span>{ user.name }</span>
             </div>
         ));
     }, [users]);
 
     return (
         <div className='flex-container'>
-            <div className={'sidebar' + (showUsers ? ' expanded' : '')}>
-                {showUsers ? (
+            <div className={ 'sidebar' + (showUsers ? ' expanded' : '') }>
+                { showUsers ? (
                     <div>
-                        <a href='#' className='btn pull-right' onClick={handleBurgerClick}>
+                        <a href='#' className='btn pull-right' onClick={ handleBurgerClick }>
                             <span className='glyphicon glyphicon-remove' />
                         </a>
                         <div className='userlist'>Online Users
-                            {userList}
+                            { userList }
                         </div>
                     </div>
                 ) : (
                     <div>
-                        <a href='#' className='btn' onClick={handleBurgerClick}>
+                        <a href='#' className='btn' onClick={ handleBurgerClick }>
                             <span className='glyphicon glyphicon-menu-hamburger' />
                         </a>
                     </div>
-                )}
+                ) }
             </div>
             <div className='col-sm-offset-1 col-sm-10'>
                 <div className='main-header'>
                     <span className='text-center'><h1>Legend of the Five Rings LCG</h1></span>
                 </div>
             </div>
-            {bannerNotice ? <AlertPanel message={bannerNotice} type='error' /> : null}
+            { bannerNotice ? <AlertPanel message={ bannerNotice } type='error' /> : null }
             <div className='col-sm-offset-1 col-sm-10'>
                 <div className='panel-title text-center'>Getting Started</div>
                 <div className='panel panel-darker'>
@@ -166,8 +166,8 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
                     Latest site news
                 </div>
                 <div className='panel panel-darker'>
-                    {loading ? <div>News loading...</div> : null}
-                    <News news={news} />
+                    { loading ? <div>News loading...</div> : null }
+                    <News news={ news } />
                 </div>
             </div>
 
@@ -180,7 +180,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
                                 <img src='/img/community_discord_icon.gif' className='discord-server-icon' />
                                 <h3>L5R Community Discord Server</h3>
                             </div>
-                            <p><a href='https://discord.gg/zPvBePb' target='_blank'>Invite Link</a></p>
+                            <p><a href='https://discord.gg/zPvBePb' target='_blank' rel='noreferrer'>Invite Link</a></p>
                             <p>Are you interested in the L5R LCG?  Come and chat on our Discord server!</p>
                             <p>The server was created by members of the L5R community, and is maintained by the community, so come and talk any thing L5R related.</p>
                         </div>
@@ -189,7 +189,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
                                 <img src='/img/event_discord_icon.webp' className='discord-server-icon' />
                                 <h3>L5R Event Discord Server</h3>
                             </div>
-                            <p><a href='https://discord.gg/mfpZTqxxah' target='_blank'>Invite Link</a></p>
+                            <p><a href='https://discord.gg/mfpZTqxxah' target='_blank' rel='noreferrer'>Invite Link</a></p>
                             <p>This Discord server is used by the community to coordinate community run events.</p>
                             <p>Whether you want to play in a sanctioned Emerald Legacy tournament, join the monthly Discord League, or find fellow beginners in the Beginner's League, this server has something for everyone, not just competitive players.</p>
                         </div>
@@ -197,11 +197,11 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
 
                     <div className='emerald-legacy-panel'>
                         <img className='emerald-legacy-logo' src='/img/emerald-legacy-logo.png' />
-                        <h3><a href='https://emeraldlegacy.org/' target='_blank'>Emerald Legacy</a></h3>
+                        <h3><a href='https://emeraldlegacy.org/' target='_blank' rel='noreferrer'>Emerald Legacy</a></h3>
                         <p>The Emerald Legacy project is a fan-run nonprofit volunteer collective. Its mission is to provide a living and thriving continuation of the LCG after the end of official support for the game.
                         Emerald Legacy is responsible for creating and releasing new cards, organizing tournaments, and maintaining the rules and balance of the game.</p>
                         <br />
-                        <p>Emerald Legacy provides the <a href='https://www.emeralddb.org/' target='_blank'>EmeraldDB</a> service, which is an online collection of all cards and rules for the LCG.
+                        <p>Emerald Legacy provides the <a href='https://www.emeralddb.org/' target='_blank' rel='noreferrer'>EmeraldDB</a> service, which is an online collection of all cards and rules for the LCG.
                         EmeraldDB includes a deck builder for the LCG, as well as lists that have been made public by other players.  Deck lists that you create are able to be directly imported into the Deckbuilder here!</p>
                     </div>
                 </div>

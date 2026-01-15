@@ -8,22 +8,22 @@ function StatusPopOver({ children, show, status }) {
     const content = ReactDOMServer.renderToString(children);
 
     // If show is false, just render the status text without popover
-    if (!show) {
-        return <span>{status}</span>;
+    if(!show) {
+        return <span>{ status }</span>;
     }
 
     return (
         <span
             className='status-popover-container'
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            style={{ position: 'relative', cursor: 'pointer' }}
+            onMouseEnter={ () => setIsHovered(true) }
+            onMouseLeave={ () => setIsHovered(false) }
+            style={ { position: 'relative', cursor: 'pointer' } }
         >
-            {status}
-            {isHovered && (
+            { status }
+            { isHovered && (
                 <div
                     className='popover bottom in'
-                    style={{
+                    style={ {
                         display: 'block',
                         position: 'absolute',
                         top: '100%',
@@ -32,15 +32,15 @@ function StatusPopOver({ children, show, status }) {
                         zIndex: 1060,
                         minWidth: '200px',
                         maxWidth: '300px'
-                    }}
+                    } }
                 >
-                    <div className='arrow' style={{ left: '50%' }} />
+                    <div className='arrow' style={ { left: '50%' } } />
                     <div
                         className='popover-content'
-                        dangerouslySetInnerHTML={{ __html: content }}
+                        dangerouslySetInnerHTML={ { __html: content } }
                     />
                 </div>
-            )}
+            ) }
         </span>
     );
 }

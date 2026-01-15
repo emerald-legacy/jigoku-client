@@ -11,7 +11,7 @@ function CardNameLookup({ cards, onCardSelected }) {
     };
 
     const onDoneClick = () => {
-        if (onCardSelected) {
+        if(onCardSelected) {
             onCardSelected(cardName);
         }
     };
@@ -20,11 +20,11 @@ function CardNameLookup({ cards, onCardSelected }) {
 
     return (
         <div>
-            <Typeahead labelKey='label' options={cardOptions} dropup onChange={onCardNameChange} />
+            <Typeahead labelKey='label' options={ cardOptions } dropup onChange={ onCardNameChange } />
             <button
                 type='button'
-                disabled={!cardName}
-                onClick={onDoneClick}
+                disabled={ !cardName }
+                onClick={ onDoneClick }
                 className='btn btn-primary'
             >
                 Done

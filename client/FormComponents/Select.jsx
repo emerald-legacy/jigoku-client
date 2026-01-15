@@ -24,23 +24,23 @@ function Select({
 
     const optionElements = [];
 
-    if (blankOption) {
+    if(blankOption) {
         const blankValue = blankOption[valueKey];
         const blankName = blankOption[nameKey];
         optionElements.push(
-            <option key='default' value={blankValue}>
-                {blankName}
+            <option key='default' value={ blankValue }>
+                { blankName }
             </option>
         );
     }
 
-    if (options) {
+    if(options) {
         options.forEach((option) => {
             const optionValue = option[valueKey];
             const optionName = option[nameKey];
             optionElements.push(
-                <option key={optionValue} value={optionValue}>
-                    {optionName}
+                <option key={ optionValue } value={ optionValue }>
+                    { optionName }
                 </option>
             );
         });
@@ -52,28 +52,28 @@ function Select({
 
     return (
         <div className='form-group'>
-            <label htmlFor={name} className={(labelClass || '') + ' control-label'}>
-                {label}
+            <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
+                { label }
             </label>
-            <div className={fieldClass}>
+            <div className={ fieldClass }>
                 <select
-                    style={selectStyle}
+                    style={ selectStyle }
                     className='form-control'
-                    id={name}
-                    value={value}
-                    onChange={handleChange}
-                    onBlur={onBlur}
+                    id={ name }
+                    value={ value }
+                    onChange={ handleChange }
+                    onBlur={ onBlur }
                 >
-                    {optionElements}
+                    { optionElements }
                 </select>
-                {validationMessage ? (
-                    <span className='help-block'>{validationMessage} </span>
-                ) : null}
-                {button ? (
-                    <button className='btn btn-default select-button' onClick={button.onClick}>
-                        {button.text}
+                { validationMessage ? (
+                    <span className='help-block'>{ validationMessage } </span>
+                ) : null }
+                { button ? (
+                    <button className='btn btn-default select-button' onClick={ button.onClick }>
+                        { button.text }
                     </button>
-                ) : null}
+                ) : null }
             </div>
         </div>
     );

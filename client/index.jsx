@@ -17,7 +17,7 @@ window.onpopstate = function(e) {
     store.dispatch(navigate(e.target.location.pathname));
 };
 
-if (typeof user !== 'undefined') {
+if(typeof user !== 'undefined') {
     store.dispatch(login(user, authToken, user.admin));
 }
 
@@ -26,16 +26,16 @@ const root = createRoot(container);
 
 const render = () => {
     root.render(
-        <Provider store={store}>
+        <Provider store={ store }>
             <div className='body'>
                 <ReduxToastr
-                    timeOut={4000}
+                    timeOut={ 4000 }
                     newestOnTop
                     preventDuplicates
                     position='top-right'
                     transitionIn='fadeIn'
                     transitionOut='fadeOut' />
-                <ErrorBoundary message={'We\'re sorry, a critical error has occurred in the client and we\'re unable to show you anything. Please try refreshing your browser after filling out a report.'}>
+                <ErrorBoundary message={ 'We\'re sorry, a critical error has occurred in the client and we\'re unable to show you anything. Please try refreshing your browser after filling out a report.' }>
                     <Application />
                 </ErrorBoundary>
             </div>
@@ -44,7 +44,7 @@ const render = () => {
 };
 
 // Hot module replacement for development
-if (process.env.NODE_ENV !== 'production' && module.hot) {
+if(process.env.NODE_ENV !== 'production' && module.hot) {
     module.hot.accept('./Application.jsx', () => {
         setTimeout(render);
     });

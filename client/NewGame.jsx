@@ -108,19 +108,19 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                     </div>
                     <div className='col-sm-10'>
                         <label className='radio-inline'>
-                            <input type='radio' onChange={() => handleClockRadioChange('timer')} checked={isClockTypeSelected('timer')} />
+                            <input type='radio' onChange={ () => handleClockRadioChange('timer') } checked={ isClockTypeSelected('timer') } />
                             Timer
                         </label>
                         <label className='radio-inline'>
-                            <input type='radio' onChange={() => handleClockRadioChange('chess')} checked={isClockTypeSelected('chess')} />
+                            <input type='radio' onChange={ () => handleClockRadioChange('chess') } checked={ isClockTypeSelected('chess') } />
                             Chess
                         </label>
                         <label className='radio-inline'>
-                            <input type='radio' onChange={() => handleClockRadioChange('hourglass')} checked={isClockTypeSelected('hourglass')} />
+                            <input type='radio' onChange={ () => handleClockRadioChange('hourglass') } checked={ isClockTypeSelected('hourglass') } />
                             Hourglass
                         </label>
                         <label className='radio-inline'>
-                            <input type='radio' onChange={() => handleClockRadioChange('byoyomi')} checked={isClockTypeSelected('byoyomi')} />
+                            <input type='radio' onChange={ () => handleClockRadioChange('byoyomi') } checked={ isClockTypeSelected('byoyomi') } />
                             Byoyomi
                         </label>
                     </div>
@@ -128,26 +128,26 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                 <div className='row'>
                     <div className='col-sm-8'>
                         <label>Main Time (Minutes)</label>
-                        <input className='form-control' value={clockTimer} onChange={(event) => setClockTimer(event.target.value.replace(/\D/, ''))} />
+                        <input className='form-control' value={ clockTimer } onChange={ (event) => setClockTimer(event.target.value.replace(/\D/, '')) } />
                     </div>
                 </div>
-                {selectedClockType === 'byoyomi' && (
+                { selectedClockType === 'byoyomi' && (
                     <div className='row'>
                         <div className='col-sm-8'>
                             <label>Number of Byoyomi Periods</label>
-                            <input className='form-control' value={byoyomiPeriods} onChange={(event) => setByoyomiPeriods(event.target.value.replace(/\D/, ''))} />
+                            <input className='form-control' value={ byoyomiPeriods } onChange={ (event) => setByoyomiPeriods(event.target.value.replace(/\D/, '')) } />
                             <label>Byoyomi Time Period (Seconds)</label>
-                            <input className='form-control' value={byoyomiTimePeriod} onChange={(event) => setByoyomiTimePeriod(event.target.value.replace(/\D/, ''))} />
+                            <input className='form-control' value={ byoyomiTimePeriod } onChange={ (event) => setByoyomiTimePeriod(event.target.value.replace(/\D/, '')) } />
                         </div>
                     </div>
-                )}
+                ) }
             </div>
         );
     };
 
     const charsLeft = 140 - gameName.length;
 
-    if (!socket) {
+    if(!socket) {
         return (
             <div>
                 Connecting to the server, please wait...
@@ -165,26 +165,26 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                     <div className='row'>
                         <div className='col-sm-8'>
                             <label htmlFor='gameName'>Name</label>
-                            <label className='game-name-char-limit'>{charsLeft >= 0 ? charsLeft : 0}</label>
-                            <input className='form-control' placeholder='Game Name' type='text' onChange={handleNameChange} value={gameName} />
+                            <label className='game-name-char-limit'>{ charsLeft >= 0 ? charsLeft : 0 }</label>
+                            <input className='form-control' placeholder='Game Name' type='text' onChange={ handleNameChange } value={ gameName } />
                         </div>
                     </div>
                     <div className='row'>
                         <div className='checkbox col-sm-8'>
                             <label>
-                                <input type='checkbox' onChange={handleSpectatorsClick} checked={spectators} />
+                                <input type='checkbox' onChange={ handleSpectatorsClick } checked={ spectators } />
                                 Allow spectators
                             </label>
                         </div>
                         <div className='checkbox col-sm-8'>
                             <label>
-                                <input type='checkbox' onChange={handleSpectatorSquelchClick} checked={spectatorSquelch} />
+                                <input type='checkbox' onChange={ handleSpectatorSquelchClick } checked={ spectatorSquelch } />
                                 Don't allow spectators to chat
                             </label>
                         </div>
                         <div className='checkbox col-sm-8'>
                             <label>
-                                <input type='checkbox' onChange={handleClockClick} checked={clocks} />
+                                <input type='checkbox' onChange={ handleClockClick } checked={ clocks } />
                                 Timed game
                             </label>
                         </div>
@@ -195,23 +195,23 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                         </div>
                         <div className='col-sm-10'>
                             <label className='radio-inline'>
-                                <input type='radio' onChange={() => handleRulesRadioChange(GameModes.Emerald)} checked={isGameModeSelected(GameModes.Emerald)} />
+                                <input type='radio' onChange={ () => handleRulesRadioChange(GameModes.Emerald) } checked={ isGameModeSelected(GameModes.Emerald) } />
                                 Emerald
                             </label>
                             <label className='radio-inline'>
-                                <input type='radio' onChange={() => handleRulesRadioChange(GameModes.Sanctuary)} checked={isGameModeSelected(GameModes.Sanctuary)} />
+                                <input type='radio' onChange={ () => handleRulesRadioChange(GameModes.Sanctuary) } checked={ isGameModeSelected(GameModes.Sanctuary) } />
                                 Sanctuary
                             </label>
                             <label className='radio-inline'>
-                                <input type='radio' onChange={() => handleRulesRadioChange(GameModes.Stronghold)} checked={isGameModeSelected(GameModes.Stronghold)} />
+                                <input type='radio' onChange={ () => handleRulesRadioChange(GameModes.Stronghold) } checked={ isGameModeSelected(GameModes.Stronghold) } />
                                 Imperial
                             </label>
                             <label className='radio-inline'>
-                                <input type='radio' onChange={() => handleRulesRadioChange(GameModes.Skirmish)} checked={isGameModeSelected(GameModes.Skirmish)} />
+                                <input type='radio' onChange={ () => handleRulesRadioChange(GameModes.Skirmish) } checked={ isGameModeSelected(GameModes.Skirmish) } />
                                 Skirmish
                             </label>
                             <label className='radio-inline'>
-                                <input type='radio' onChange={() => handleRulesRadioChange(GameModes.Obsidian)} checked={isGameModeSelected(GameModes.Obsidian)} />
+                                <input type='radio' onChange={ () => handleRulesRadioChange(GameModes.Obsidian) } checked={ isGameModeSelected(GameModes.Obsidian) } />
                                 Obsidian
                             </label>
                         </div>
@@ -222,29 +222,29 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
                         </div>
                         <div className='col-sm-10'>
                             <label className='radio-inline'>
-                                <input type='radio' onChange={() => handleRadioChange('beginner')} checked={isGameTypeSelected('beginner')} />
+                                <input type='radio' onChange={ () => handleRadioChange('beginner') } checked={ isGameTypeSelected('beginner') } />
                                 Beginner
                             </label>
                             <label className='radio-inline'>
-                                <input type='radio' onChange={() => handleRadioChange('casual')} checked={isGameTypeSelected('casual')} />
+                                <input type='radio' onChange={ () => handleRadioChange('casual') } checked={ isGameTypeSelected('casual') } />
                                 Casual
                             </label>
                             <label className='radio-inline'>
-                                <input type='radio' onChange={() => handleRadioChange('competitive')} checked={isGameTypeSelected('competitive')} />
+                                <input type='radio' onChange={ () => handleRadioChange('competitive') } checked={ isGameTypeSelected('competitive') } />
                                 Competitive
                             </label>
                         </div>
                     </div>
-                    {clocks ? getClockInput() : null}
+                    { clocks ? getClockInput() : null }
                     <div className='row game-password'>
                         <div className='col-sm-8'>
                             <label>Password</label>
-                            <input className='form-control' type='password' onChange={handlePasswordChange} value={password} />
+                            <input className='form-control' type='password' onChange={ handlePasswordChange } value={ password } />
                         </div>
                     </div>
                     <div className='button-row'>
-                        <button className='btn btn-primary' onClick={handleSubmitClick}>Submit</button>
-                        <button className='btn btn-primary' onClick={handleCancelClick}>Cancel</button>
+                        <button className='btn btn-primary' onClick={ handleSubmitClick }>Submit</button>
+                        <button className='btn btn-primary' onClick={ handleCancelClick }>Cancel</button>
                     </div>
                 </form>
             </div>

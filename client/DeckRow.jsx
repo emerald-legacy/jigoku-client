@@ -3,12 +3,12 @@ import moment from 'moment';
 
 function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showCheckbox }) {
     const getStatusName = (status) => {
-        if (!status) {
+        if(!status) {
             return 'Validating';
         }
-        if (status.valid) {
+        if(status.valid) {
             return 'Valid';
-        } else if (status.valid === false) {
+        } else if(status.valid === false) {
             return 'Invalid';
         }
         return 'Validating';
@@ -17,21 +17,21 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
     const deckStatus = getStatusName(deck.status);
 
     return (
-        <div className={active ? 'deck-row active' : 'deck-row'} key={deck.name}>
-            {showCheckbox && (
-                <div className='col-xs-1' onClick={(e) => e.stopPropagation()}>
+        <div className={ active ? 'deck-row active' : 'deck-row' } key={ deck.name }>
+            { showCheckbox && (
+                <div className='col-xs-1' onClick={ (e) => e.stopPropagation() }>
                     <input
                         type='checkbox'
-                        checked={isSelected}
-                        onChange={() => onCheckboxChange(deck._id)}
+                        checked={ isSelected }
+                        onChange={ () => onCheckboxChange(deck._id) }
                     />
                 </div>
-            )}
+            ) }
             <div
-                className={showCheckbox ? 'col-xs-1 deck-image' : 'col-xs-1 deck-image'}
-                onClick={onClick}
+                className={ showCheckbox ? 'col-xs-1 deck-image' : 'col-xs-1 deck-image' }
+                onClick={ onClick }
             >
-                <img className='deck-sm-mon' src={'/img/mons/' + deck.faction.value + '.png'} />
+                <img className='deck-sm-mon' src={ '/img/mons/' + deck.faction.value + '.png' } />
             </div>
             <span
                 className={
@@ -39,25 +39,25 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
                         ? 'col-xs-7 col-md-6 col-lg-8 deck-name'
                         : 'col-xs-8 col-md-7 col-lg-9 deck-name'
                 }
-                onClick={onClick}
+                onClick={ onClick }
             >
-                {deck.name}
+                { deck.name }
             </span>
             <span
                 className='col-xs-2 col-md-3 col-lg-2 deck-status-label text-right pull-right'
-                onClick={onClick}
+                onClick={ onClick }
             >
-                {deckStatus}
+                { deckStatus }
             </span>
-            <div className='row small' onClick={onClick}>
+            <div className='row small' onClick={ onClick }>
                 <span className='col-md-7 deck-factionalliance'>
-                    {deck.faction.name}
-                    {deck.alliance && deck.alliance.name ? (
-                        <span>/{deck.alliance.name}</span>
-                    ) : null}
+                    { deck.faction.name }
+                    { deck.alliance && deck.alliance.name ? (
+                        <span>/{ deck.alliance.name }</span>
+                    ) : null }
                 </span>
                 <span className='col-xs-4 col-md-3 deck-date text-right pull-right'>
-                    {moment(deck.lastUpdated).format('Do MMM YYYY')}
+                    { moment(deck.lastUpdated).format('Do MMM YYYY') }
                 </span>
             </div>
         </div>

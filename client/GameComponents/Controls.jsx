@@ -13,25 +13,25 @@ function Controls({
     return (
         <div className='controls panel'>
             <button
-                className={'btn btn-transparent' + (showChatAlert ? ' with-alert' : '')}
-                onClick={onToggleChatClick}
+                className={ 'btn btn-transparent' + (showChatAlert ? ' with-alert' : '') }
+                onClick={ onToggleChatClick }
             >
                 <span className='glyphicon glyphicon-menu-hamburger' />
-                {laptopSize ? '' : ' Toggle Chat'}
+                { laptopSize ? '' : ' Toggle Chat' }
                 <i className='glyphicon glyphicon-exclamation-sign' />
             </button>
-            {showManualMode && (
+            { showManualMode && (
                 <button
-                    className={'btn btn-transparent ' + (manualModeEnabled ? 'manual' : 'auto')}
-                    onClick={onManualModeClick}
+                    className={ 'btn btn-transparent ' + (manualModeEnabled ? 'manual' : 'auto') }
+                    onClick={ onManualModeClick }
                 >
                     <span className='glyphicon glyphicon-wrench' />
-                    {laptopSize ? '' : ' Manual Mode ' + (manualModeEnabled ? ' Enabled' : 'Disabled')}
+                    { laptopSize ? '' : ' Manual Mode ' + (manualModeEnabled ? ' Enabled' : 'Disabled') }
                 </button>
-            )}
-            <button className='btn btn-transparent' onClick={onSettingsClick}>
+            ) }
+            <button className='btn btn-transparent' onClick={ onSettingsClick }>
                 <span className='glyphicon glyphicon-cog' />
-                {laptopSize ? '' : ' Settings'}
+                { laptopSize ? '' : ' Settings' }
             </button>
         </div>
     );

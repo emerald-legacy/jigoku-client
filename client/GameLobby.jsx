@@ -14,13 +14,13 @@ export function InnerGameLobby({ bannerNotice, currentGame, games, newGame, pass
     const [errorMessage, setErrorMessage] = useState(undefined);
 
     useEffect(() => {
-        if (!currentGame) {
+        if(!currentGame) {
             setContextMenu([]);
         }
     }, [currentGame, setContextMenu]);
 
     useEffect(() => {
-        if (username) {
+        if(username) {
             setErrorMessage(undefined);
         }
     }, [username]);
@@ -28,7 +28,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, games, newGame, pass
     const onNewGameClick = useCallback((event) => {
         event.preventDefault();
 
-        if (!username) {
+        if(!username) {
             setErrorMessage('Please login before trying to start a new game');
             return;
         }
@@ -38,29 +38,29 @@ export function InnerGameLobby({ bannerNotice, currentGame, games, newGame, pass
 
     let rightside = null;
 
-    if (passwordGame) {
+    if(passwordGame) {
         rightside = <PasswordGame />;
-    } else if (currentGame) {
+    } else if(currentGame) {
         rightside = <PendingGame />;
     }
 
     return (
         <div className='full-height'>
-            {bannerNotice ? <AlertPanel type='error' message={bannerNotice} /> : null}
-            {errorMessage ? <AlertPanel type='error' message={errorMessage} /> : null}
+            { bannerNotice ? <AlertPanel type='error' message={ bannerNotice } /> : null }
+            { errorMessage ? <AlertPanel type='error' message={ errorMessage } /> : null }
 
             <div className='col-sm-7 full-height'>
                 <div className='panel-title text-center'>
                     Current Games
                 </div>
                 <div className='panel game-list-container'>
-                    <button className='btn btn-primary' onClick={onNewGameClick} disabled={!!currentGame}>New Game</button>
-                    {games.length === 0 ? <h4>No games are currently in progress</h4> : <GameList games={games} />}
+                    <button className='btn btn-primary' onClick={ onNewGameClick } disabled={ !!currentGame }>New Game</button>
+                    { games.length === 0 ? <h4>No games are currently in progress</h4> : <GameList games={ games } /> }
                 </div>
             </div>
             <div className='col-sm-5'>
-                {(!currentGame && newGame) ? <NewGame defaultGameName={username + '\'s game'} /> : null}
-                {rightside}
+                { (!currentGame && newGame) ? <NewGame defaultGameName={ username + '\'s game' } /> : null }
+                { rightside }
             </div>
         </div>
     );

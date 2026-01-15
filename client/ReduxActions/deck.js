@@ -13,14 +13,14 @@ export function loadDecks(format = null) {
             const url = format ? `/api/decks?format=${format}` : '/api/decks';
             const response = await axios.get(url);
 
-            if (response.data.decks && response.data.decks.length > 0) {
+            if(response.data.decks && response.data.decks.length > 0) {
                 const validationPromises = response.data.decks.map(async (deck) => {
                     const gameMode = deck.format && deck.format.value ? deck.format.value : 'stronghold';
                     try {
                         const status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
                         deck.status = status;
                         return deck;
-                    } catch (error) {
+                    } catch(error) {
                         deck.status = {
                             valid: undefined,
                             extendedStatus: ['Error Validating']
@@ -46,12 +46,12 @@ export function loadDeck(deckId) {
         callAPI: async () => {
             const response = await axios.get('/api/decks/' + deckId);
 
-            if (response.data.deck) {
+            if(response.data.deck) {
                 const gameMode = response.data.deck.format && response.data.deck.format.value ? response.data.deck.format.value : 'stronghold';
                 try {
                     const status = await validateDeck(response.data.deck, { includeExtendedStatus: true, gameMode });
                     response.data.deck.status = status;
-                } catch (error) {
+                } catch(error) {
                     response.data.deck.status = {
                         valid: undefined,
                         extendedStatus: ['Error Validating']
@@ -150,10 +150,10 @@ export function loadDecksWithLazyValidation() {
                 decks: response.data.decks
             });
 
-            if (response.data.decks && response.data.decks.length > 0) {
+            if(response.data.decks && response.data.decks.length > 0) {
                 validateDecksInBatches(response.data.decks, dispatch);
             }
-        } catch (error) {
+        } catch(error) {
             dispatch({
                 type: 'RECEIVE_DECKS',
                 success: false,
@@ -164,7 +164,7 @@ export function loadDecksWithLazyValidation() {
 }
 
 async function validateDecksInBatches(decks, dispatch, batchSize = 10) {
-    for (let i = 0; i < decks.length; i += batchSize) {
+    for(let i = 0; i < decks.length; i += batchSize) {
         const batch = decks.slice(i, i + batchSize);
 
         const validationPromises = batch.map(async (deck) => {
@@ -172,7 +172,7 @@ async function validateDecksInBatches(decks, dispatch, batchSize = 10) {
             try {
                 const status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
                 return { deckId: deck._id, status };
-            } catch (error) {
+            } catch(error) {
                 return {
                     deckId: deck._id,
                     status: { valid: undefined, extendedStatus: ['Error Validating'] }
