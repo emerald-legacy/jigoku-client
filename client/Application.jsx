@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import $ from 'jquery';
 import _ from 'underscore';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators } from '@reduxjs/toolkit';
 import { connect } from 'react-redux';
 import { io } from 'socket.io-client';
 

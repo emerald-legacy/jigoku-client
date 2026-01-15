@@ -1,4 +1,4 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from '@reduxjs/toolkit';
 import navigation from './navigation';
 import auth from './auth';
 import cards from './cards';

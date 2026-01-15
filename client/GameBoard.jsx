@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import _ from 'underscore';
 import $ from 'jquery';
 import { toastr } from 'react-redux-toastr';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators } from '@reduxjs/toolkit';
 import Draggable from 'react-draggable';
 
 import PlayerStatsBox from './GameComponents/PlayerStatsBox.jsx';
