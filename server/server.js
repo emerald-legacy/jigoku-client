@@ -19,7 +19,7 @@ const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 const webpack = require('webpack');
 const webpackConfig = require('../webpack.config.js');
-const monk = require('monk');
+const monk = require('monk').default;
 const _ = require('underscore');
 
 const UserService = require('./services/UserService.js');

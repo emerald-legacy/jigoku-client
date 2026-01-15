@@ -1,4 +1,4 @@
-const monk = require('monk');
+const monk = require('monk').default;
 const config = require('config');
 const CardService = require('../services/CardService.js');
 
