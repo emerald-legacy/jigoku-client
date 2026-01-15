@@ -18,8 +18,7 @@ RUN node --version && npm --version
 COPY package*.json ./
 
 # Install dependencies
-# --legacy-peer-deps: needed for monk/mongodb version mismatch
-RUN npm install --legacy-peer-deps
+RUN npm ci
 
 COPY . .
 
