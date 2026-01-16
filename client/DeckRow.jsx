@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showCheckbox }) {
     const getStatusName = (status) => {
@@ -57,7 +57,7 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
                     ) : null }
                 </span>
                 <span className='col-xs-4 col-md-3 deck-date text-right pull-right'>
-                    { moment(deck.lastUpdated).format('Do MMM YYYY') }
+                    { format(new Date(deck.lastUpdated), 'do MMM yyyy') }
                 </span>
             </div>
         </div>

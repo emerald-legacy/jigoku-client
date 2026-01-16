@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import EmojiConvertor from 'emoji-js';
-import moment from 'moment';
+import { format, isToday, isYesterday } from 'date-fns';
 
 import * as actions from './actions';
 import Avatar from './Avatar.jsx';
@@ -57,8 +57,6 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
 
         const groupedMessages = {};
         let index = 0;
-        const today = moment();
-        const yesterday = moment().add(-1, 'days');
         let lastUser;
         let currentGroup = 0;
 
@@ -67,7 +65,8 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
                 continue;
             }
 
-            const formattedTime = moment(msg.time).format('YYYYMMDDHHmm');
+            const msgDate = new Date(msg.time);
+            const formattedTime = format(msgDate, 'yyyyMMddHHmm');
             if(lastUser && msg.user && lastUser !== msg.user.username) {
                 currentGroup++;
             }
@@ -89,13 +88,14 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
                 return null;
             }
 
+            const msgDate = new Date(firstMessage.time);
             let timestamp = '';
-            if(today.isSame(firstMessage.time, 'd')) {
-                timestamp = moment(firstMessage.time).format('H:mm');
-            } else if(yesterday.isSame(firstMessage.time, 'd')) {
-                timestamp = 'yesterday ' + moment(firstMessage.time).format('H:mm');
+            if(isToday(msgDate)) {
+                timestamp = format(msgDate, 'H:mm');
+            } else if(isYesterday(msgDate)) {
+                timestamp = 'yesterday ' + format(msgDate, 'H:mm');
             } else {
-                timestamp = moment(firstMessage.time).format('MMM Do H:mm');
+                timestamp = format(msgDate, 'MMM do H:mm');
             }
 
             const renderedMsgs = msgGroup.map((msg, msgIndex) => {

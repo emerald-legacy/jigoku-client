@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 function NewsItem({ icon, date, text }) {
     return (
         <div className={ `${icon}-container` }>
             <span className={ `icon-${icon}` } />
-            &nbsp;{ moment(date).format('YYYY-MM-DD') + ' - ' + text }
+            &nbsp;{ format(new Date(date), 'yyyy-MM-dd') + ' - ' + text }
         </div>
     );
 }

@@ -5,7 +5,7 @@ const config = require('config');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-const moment = require('moment');
+const { addHours, format } = require('date-fns');
 const db = require('../db.js');
 const UserService = require('../services/UserService.js');
 const Settings = require('../settings.js');
@@ -167,8 +167,8 @@ module.exports.init = function (server) {
                 return res.send({ success: false, message: 'An error occured resetting your password, check the url you have entered and try again' });
             }
 
-            const now = moment();
-            if(user.tokenExpires < now) {
+            const now = new Date();
+            if(new Date(user.tokenExpires) < now) {
                 logger.error('Token expired', user.username);
                 return res.send({ success: false, message: 'The reset token you have provided has expired' });
             }
@@ -220,8 +220,8 @@ module.exports.init = function (server) {
                 return;
             }
 
-            const expiration = moment().add(4, 'hours');
-            const formattedExpiration = expiration.format('YYYYMMDD-HH:mm:ss');
+            const expiration = addHours(new Date(), 4);
+            const formattedExpiration = format(expiration, 'yyyyMMdd-HH:mm:ss');
             const hmac = crypto.createHmac('sha512', config.hmacSecret);
             const resetToken = hmac.update('RESET ' + user.username + ' ' + formattedExpiration).digest('hex');
 

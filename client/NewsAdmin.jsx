@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import moment from 'moment';
+import { format } from 'date-fns';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 import TextArea from './FormComponents/TextArea.jsx';
@@ -39,7 +39,7 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
 
     const renderedNews = news?.map((newsItem, index) => (
         <tr key={ index }>
-            <td>{ moment(newsItem.datePublished).format('YYYY-MM-DD') }</td>
+            <td>{ format(new Date(newsItem.datePublished), 'yyyy-MM-dd') }</td>
             <td>{ newsItem.poster }</td>
             <td>{ newsItem.text }</td>
         </tr>
