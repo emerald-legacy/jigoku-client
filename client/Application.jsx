@@ -29,7 +29,7 @@ import Unauthorised from './Unauthorised.jsx';
 import UserAdmin from './UserAdmin.jsx';
 import BlockList from './BlockList.jsx';
 
-import { toastr } from 'react-redux-toastr';
+import { toast } from 'sonner';
 
 import version from '../version.js';
 
@@ -99,11 +99,11 @@ class App extends React.Component {
         });
 
         socket.on('disconnect', () => {
-            toastr.error('Connection lost', 'You have been disconnected from the lobby server, attempting reconnect..');
+            toast.error('You have been disconnected from the lobby server, attempting reconnect..', { description: 'Connection lost' });
         });
 
         socket.on('reconnect', () => {
-            toastr.success('Reconnected', 'The reconnection to the lobby has been successful');
+            toast.success('The reconnection to the lobby has been successful', { description: 'Reconnected' });
             this.props.socketConnected(socket);
         });
 
@@ -165,30 +165,30 @@ class App extends React.Component {
             });
 
             gameSocket.on('connect_error', (err) => {
-                toastr.error('Connect Error', 'There was an error connecting to the game server: ' + err.message + '(' + err.description + ')');
+                toast.error('There was an error connecting to the game server: ' + err.message + '(' + err.description + ')', { description: 'Connect Error' });
             });
 
             gameSocket.on('disconnect', () => {
                 if(!gameSocket.gameClosing) {
-                    toastr.error('Connection lost', 'You have been disconnected from the game server');
+                    toast.error('You have been disconnected from the game server', { description: 'Connection lost' });
                 }
 
                 this.props.gameSocketDisconnect();
             });
 
             gameSocket.io.on('reconnect_attempt', (attemptNumber) => {
-                toastr.info('Reconnecting', 'Attempt number ' + attemptNumber + ' to reconnect..');
+                toast.info('Attempt number ' + attemptNumber + ' to reconnect..', { description: 'Reconnecting' });
 
                 this.props.gameSocketReconnecting(attemptNumber);
             });
 
             gameSocket.on('reconnect', () => {
-                toastr.success('Reconnected', 'The reconnection has been successful');
+                toast.success('The reconnection has been successful', { description: 'Reconnected' });
                 this.props.gameSocketConnected(gameSocket);
             });
 
             gameSocket.on('reconnect_failed', () => {
-                toastr.error('Reconnect failed', 'Given up trying to connect to the server');
+                toast.error('Given up trying to connect to the server', { description: 'Reconnect failed' });
                 this.props.sendGameSocketConnectFailed();
             });
 

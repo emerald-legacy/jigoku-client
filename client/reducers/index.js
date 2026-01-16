@@ -9,10 +9,9 @@ import news from './news';
 import api from './api';
 import admin from './admin';
 import user from './user';
-import {reducer as toastrReducer} from 'react-redux-toastr';
 
 const rootReducer = combineReducers({
-    navigation, auth, cards, games, socket, chat, news, toastr: toastrReducer, api, admin, user
+    navigation, auth, cards, games, socket, chat, news, api, admin, user
 });
 
 export default rootReducer;

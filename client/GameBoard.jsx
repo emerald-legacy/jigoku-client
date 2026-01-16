@@ -1,7 +1,6 @@
 import React, { createRef } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { toastr } from 'react-redux-toastr';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import Draggable from 'react-draggable';
 
@@ -180,12 +179,10 @@ export class InnerGameBoard extends React.Component {
 
     onLeaveClick() {
         if(!this.state.spectating && this.isGameActive()) {
-            toastr.confirm('Your game is not finished, are you sure you want to leave?', {
-                onOk: () => {
-                    this.props.sendGameMessage('leavegame');
-                    this.props.closeGameSocket();
-                }
-            });
+            if(window.confirm('Your game is not finished, are you sure you want to leave?')) {
+                this.props.sendGameMessage('leavegame');
+                this.props.closeGameSocket();
+            }
 
             return;
         }

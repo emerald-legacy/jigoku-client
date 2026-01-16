@@ -61,7 +61,7 @@ function Card(props) {
         onMenuItemClick,
         onMouseOut,
         onMouseOver,
-        orientation,
+        orientation = 'vertical',
         player,
         popupLocation,
         showStats,
@@ -69,7 +69,7 @@ function Card(props) {
         source,
         style,
         title,
-        wrapped
+        wrapped = true
     } = props;
 
     const [showPopup, setShowPopup] = useState(false);
@@ -712,9 +712,4 @@ Card.propTypes = {
     title: PropTypes.string,
     wrapped: PropTypes.bool
 };
-Card.defaultProps = {
-    orientation: 'vertical',
-    wrapped: true
-};
-
 export default Card;

@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { toastr } from 'react-redux-toastr';
+import { toast } from 'sonner';
 import GameModes from './GameModes';
 
 import Avatar from './Avatar.jsx';
@@ -12,7 +12,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         event.preventDefault();
 
         if(!username) {
-            toastr.error('Please login before trying to join a game');
+            toast.error('Please login before trying to join a game');
             return;
         }
 
@@ -31,7 +31,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         event.preventDefault();
 
         if(!username) {
-            toastr.error('Please login before trying to watch a game');
+            toast.error('Please login before trying to watch a game');
             return;
         }
 

@@ -1,12 +1,11 @@
 /*global user, authToken */
-import 'react-redux-toastr/src/styles/index.scss';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
+import { Toaster } from 'sonner';
 import configureStore from './configureStore';
 import { navigate, login } from './actions';
 import Application from './Application.jsx';
-import ReduxToastr from 'react-redux-toastr';
 import ErrorBoundary from './SiteComponents/ErrorBoundary.jsx';
 
 const store = configureStore();
@@ -28,13 +27,11 @@ const render = () => {
     root.render(
         <Provider store={ store }>
             <div className='body'>
-                <ReduxToastr
-                    timeOut={ 4000 }
-                    newestOnTop
-                    preventDuplicates
+                <Toaster
                     position='top-right'
-                    transitionIn='fadeIn'
-                    transitionOut='fadeOut' />
+                    duration={ 4000 }
+                    richColors
+                />
                 <ErrorBoundary message={ 'We\'re sorry, a critical error has occurred in the client and we\'re unable to show you anything. Please try refreshing your browser after filling out a report.' }>
                     <Application />
                 </ErrorBoundary>
