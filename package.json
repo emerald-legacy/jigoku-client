@@ -29,6 +29,9 @@
     "url": "https://github.com/ringteki/ringteki-client/issues"
   },
   "homepage": "https://github.com/ringteki/ringteki-client#readme",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
     "already": "^2.2.1",
