@@ -73,3 +73,15 @@ jobs:
             docker compose -f docker-compose.prod.yml pull lobby
             docker compose -f docker-compose.prod.yml up -d lobby
             docker image prune -f
+
+  cleanup:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete old container images
+        uses: actions/delete-package-versions@v5
+        with:
+          package-name: jigoku-client
+          package-type: container
+          min-versions-to-keep: 3
+          delete-only-untagged-versions: false
