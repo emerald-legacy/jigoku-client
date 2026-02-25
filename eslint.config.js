@@ -1,3 +1,4 @@
+const path = require('path');
 const js = require('@eslint/js');
 const react = require('eslint-plugin-react');
 const reactHooks = require('eslint-plugin-react-hooks');
@@ -25,7 +26,7 @@ module.exports = [
                 },
                 requireConfigFile: true,
                 babelOptions: {
-                    configFile: './babel.config.json'
+                    configFile: path.resolve(__dirname, 'babel.config.json')
                 }
             },
             globals: {
