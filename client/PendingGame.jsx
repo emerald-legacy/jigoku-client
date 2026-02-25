@@ -218,18 +218,18 @@ export function InnerPendingGame({
         return <div>You have no decks for this format, please add one</div>;
     }, [loading, apiError, filteredDecks, selectDeck]);
 
-    if(currentGame && currentGame.started) {
-        return <div>Loading game in progress, please wait...</div>;
-    }
-
-    const game = currentGame;
-
     const handleModalClick = useCallback((event) => {
         // Close modal when clicking the overlay (outside the modal-dialog)
         if(event.target === event.currentTarget) {
             setShowModal(false);
         }
     }, []);
+
+    if(currentGame && currentGame.started) {
+        return <div>Loading game in progress, please wait...</div>;
+    }
+
+    const game = currentGame;
 
     const popup = (
         <div

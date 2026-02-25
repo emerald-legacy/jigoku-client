@@ -10,7 +10,7 @@ function isEqual(a, b) {
     if(a === b) {
         return true;
     }
-    if(a == null || b == null) {
+    if(a === null || a === undefined || b === null || b === undefined) {
         return false;
     }
     if(typeof a !== 'object' || typeof b !== 'object') {

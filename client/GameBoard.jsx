@@ -518,8 +518,8 @@ export class InnerGameBoard extends React.Component {
                 <img className='ring-attachments__ring-symbol' src={ '/img/military-' + element + '.png' } />
                 {
                     attachments.map((card, index) => {
-                        return (<div className={ index !== 0 ? 'ring-attachment--stacked' : 'ring-attachment' } style={ {marginLeft: (-1 * (index * attachmentOffset)) + 'px', zIndex: (cardLayer - index)} }>
-                            <Card key={ card.uuid } source='play area' card={ card } disableMouseOver={ card.facedown && !card.code }
+                        return (<div key={ card.uuid } className={ index !== 0 ? 'ring-attachment--stacked' : 'ring-attachment' } style={ {marginLeft: (-1 * (index * attachmentOffset)) + 'px', zIndex: (cardLayer - index)} }>
+                            <Card source='play area' card={ card } disableMouseOver={ card.facedown && !card.code }
                                 onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
                                 showStats={ false }
                                 onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ this.props.user.settings.cardSize } isMe={ amController }
@@ -708,8 +708,8 @@ export class InnerGameBoard extends React.Component {
                 { backdrop }
                 { this.getPrompt(thisPlayer) }
                 { this.getPlayerHand(thisPlayer) }
-                {
-                    false && !thisPlayer.optionSettings.showStatusInSidebar &&
+                { /* Disabled: status in sidebar
+                    !thisPlayer.optionSettings.showStatusInSidebar &&
                     <div className='player-stats-row'>
                         <PlayerStatsRow
                             clockState={ otherPlayer ? otherPlayer.clock : null }
@@ -720,7 +720,7 @@ export class InnerGameBoard extends React.Component {
                             handSize={ otherPlayer && otherPlayer.cardPiles.hand ? otherPlayer.cardPiles.hand.length : 0 }
                         />
                     </div>
-                }
+                */ }
                 <div className={ 'main-window ' + this.props.user.settings.cardSize }>
                     { this.renderSidebar(thisPlayer, otherPlayer) }
                     <div className={ 'play-area' + (this.props.user.settings.cardSize ? (' ' + this.props.user.settings.cardSize) : '') }>
@@ -846,8 +846,8 @@ export class InnerGameBoard extends React.Component {
                         />
                     </div>
                 </div>
-                {
-                    false && !thisPlayer.optionSettings.showStatusInSidebar &&
+                { /* Disabled: status in sidebar
+                    !thisPlayer.optionSettings.showStatusInSidebar &&
                     <div className='player-stats-row our-side'>
                         <PlayerStatsRow
                             { ...bindActionCreators(actions, this.props.dispatch) }
@@ -860,7 +860,7 @@ export class InnerGameBoard extends React.Component {
                             spectating={ this.state.spectating }
                             handSize={ thisPlayer.cardPiles.hand ? thisPlayer.cardPiles.hand.length : 0 } />
                     </div>
-                }
+                */ }
             </div>);
     }
 }

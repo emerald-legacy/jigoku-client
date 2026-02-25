@@ -87,7 +87,7 @@ async function downloadWithRetry(url, dest, filename, maxRetries = 3) {
             if(fs.existsSync(tempPath)) {
                 try {
                     fs.unlinkSync(tempPath);
-                } catch{}
+                } catch{ /* ignore cleanup errors */ }
             }
 
             if(attempt === maxRetries) {

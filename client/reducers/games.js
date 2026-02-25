@@ -81,12 +81,13 @@ function games(state = {
                 passwordError: undefined,
                 passwordJoinType: undefined
             });
-        case 'CLEAR_GAMESTATE':
+        case 'CLEAR_GAMESTATE': {
             // eslint-disable-next-line no-unused-vars
             const { currentGame, ...stateWithoutGame } = state;
             retState = stateWithoutGame;
             retState.newGame = false;
             return retState;
+        }
         case 'HANDOFF_RECEIVED':
             return Object.assign({}, state, {
                 gameId: action.details.gameId

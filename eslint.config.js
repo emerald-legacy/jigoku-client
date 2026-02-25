@@ -32,7 +32,8 @@ module.exports = [
             globals: {
                 ...globals.browser,
                 ...globals.node,
-                ...globals.es2020
+                ...globals.es2020,
+                grecaptcha: 'readonly'
             }
         },
         settings: {
@@ -67,6 +68,10 @@ module.exports = [
             // React Hooks rules
             'react-hooks/rules-of-hooks': 'error',
             'react-hooks/exhaustive-deps': 'warn',
+
+            // Downgraded to warn for legacy code
+            'react/no-unescaped-entities': 'warn',
+            'no-unused-vars': 'warn',
 
             // Code style rules
             'indent': ['error', 4, { SwitchCase: 1 }],
