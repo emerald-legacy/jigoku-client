@@ -65,7 +65,8 @@ class Server {
                         imgSrc: ['\'self\'', 'data:', 'https:'],
                         connectSrc: ['\'self\'', 'wss:', 'ws:', 'https://www.emeralddb.org', 'https://emeralddb.org'].concat(config.cspConnectSources || []),
                         fontSrc: ['\'self\'', 'data:'],
-                        objectSrc: ['\'none\'']
+                        objectSrc: ['\'none\''],
+                        upgradeInsecureRequests: process.env.HTTPS === 'false' ? null : []
                     }
                 },
                 crossOriginEmbedderPolicy: false // Needed for Socket.io compatibility
