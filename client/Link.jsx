@@ -1,37 +1,32 @@
-import React from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import * as actions from './actions';
+
+function InnerLink({ children, className, href, navigate }) {
+    const onClick = (event) => {
+        event.preventDefault();
+        navigate(href);
+    };
+
+    return (
+        <a className={ className } href={ href } onClick={ onClick }>
+            { children }
+        </a>
+    );
+}
+
+InnerLink.displayName = 'Link';
+InnerLink.propTypes = {
+    children: PropTypes.node,
+    className: PropTypes.string,
+    href: PropTypes.string,
+    navigate: PropTypes.func
+};
 
 const mapStateToProps = (state, ownProps) => {
     return {
         href: ownProps.href
     };
-};
-
-class InnerLink extends React.Component {
-    constructor() {
-        super();
-
-        this.onClick = this.onClick.bind(this);
-    }
-
-    onClick(event) {
-        event.preventDefault();
-        this.props.navigate(this.props.href);
-    }
-
-    render() {
-        return (<a className={ this.props.className } href={ this.props.href } onClick={ this.onClick }>{ this.props.children }</a>);
-    }
-}
-
-InnerLink.displayName = 'Link';
-InnerLink.propTypes = {
-    children: PropTypes.string,
-    className: PropTypes.string,
-    href: PropTypes.string,
-    navigate: PropTypes.func
 };
 
 const Link = connect(mapStateToProps, actions)(InnerLink);

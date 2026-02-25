@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import $ from 'jquery';
-import _ from 'underscore';
-import { bindActionCreators } from 'redux';
+import axios from 'axios';
+import { bindActionCreators } from '@reduxjs/toolkit';
 import { connect } from 'react-redux';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 import Login from './Login.jsx';
 import Logout from './Logout.jsx';
@@ -30,7 +29,7 @@ import Unauthorised from './Unauthorised.jsx';
 import UserAdmin from './UserAdmin.jsx';
 import BlockList from './BlockList.jsx';
 
-import { toastr } from 'react-redux-toastr';
+import { toast } from 'sonner';
 
 import version from '../version.js';
 
@@ -61,41 +60,50 @@ class App extends React.Component {
         };
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.props.loadCards();
         this.props.loadPacks();
         this.props.loadFactions();
         this.props.loadFormats();
 
-        $(document).ajaxError((event, xhr) => {
-            if(xhr.status === 401) {
-                this.props.navigate('/login');
-            } else if(xhr.status === 403) {
-                this.props.navigate('/unauth');
+        // Set up axios interceptor for global error handling (replaces jQuery ajaxError)
+        this.axiosInterceptor = axios.interceptors.response.use(
+            response => response,
+            error => {
+                if(error.response) {
+                    if(error.response.status === 401) {
+                        this.props.navigate('/login');
+                    } else if(error.response.status === 403) {
+                        this.props.navigate('/unauth');
+                    }
+                }
+                return Promise.reject(error);
             }
-        });
+        );
 
-        let queryString = this.props.token ? 'token=' + this.props.token + '&' : '';
-        queryString += 'version=' + version;
-
-        let socket = io.connect(window.location.origin, {
+        let socket = io(window.location.origin, {
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
             reconnectionAttempts: Infinity,
-            query: queryString
+            auth: {
+                token: this.props.token,
+                version: version
+            }
         });
+
+        this.lobbySocket = socket;
 
         socket.on('connect', () => {
             this.props.socketConnected(socket);
         });
 
         socket.on('disconnect', () => {
-            toastr.error('Connection lost', 'You have been disconnected from the lobby server, attempting reconnect..');
+            toast.error('You have been disconnected from the lobby server, attempting reconnect..', { description: 'Connection lost' });
         });
 
         socket.on('reconnect', () => {
-            toastr.success('Reconnected', 'The reconnection to the lobby has been successful');
+            toast.success('The reconnection to the lobby has been successful', { description: 'Reconnected' });
             this.props.socketConnected(socket);
         });
 
@@ -132,7 +140,7 @@ class App extends React.Component {
         });
 
         socket.on('handoff', server => {
-            let url = 'https://' + server.address;
+            let url = (server.protocol || 'https') + '://' + server.address;
             if(server.port && server.port !== 80 && server.port !== 443) {
                 url += ':' + server.port;
             }
@@ -145,40 +153,42 @@ class App extends React.Component {
 
             this.props.gameSocketConnecting(url + '/' + server.name);
 
-            let gameSocket = io.connect(url, {
+            let gameSocket = io(url, {
                 path: '/' + server.name + '/socket.io',
                 reconnection: true,
                 reconnectionDelay: 1000,
                 reconnectionDelayMax: 5000,
                 reconnectionAttempts: 5,
-                query: this.props.token ? 'token=' + this.props.token : undefined
+                auth: {
+                    token: this.props.token
+                }
             });
 
             gameSocket.on('connect_error', (err) => {
-                toastr.error('Connect Error', 'There was an error connecting to the game server: ' + err.message + '(' + err.description + ')');
+                toast.error('There was an error connecting to the game server: ' + err.message + '(' + err.description + ')', { description: 'Connect Error' });
             });
 
             gameSocket.on('disconnect', () => {
                 if(!gameSocket.gameClosing) {
-                    toastr.error('Connection lost', 'You have been disconnected from the game server');
+                    toast.error('You have been disconnected from the game server', { description: 'Connection lost' });
                 }
 
                 this.props.gameSocketDisconnect();
             });
 
-            gameSocket.on('reconnecting', (attemptNumber) => {
-                toastr.info('Reconnecting', 'Attempt number ' + attemptNumber + ' to reconnect..');
+            gameSocket.io.on('reconnect_attempt', (attemptNumber) => {
+                toast.info('Attempt number ' + attemptNumber + ' to reconnect..', { description: 'Reconnecting' });
 
                 this.props.gameSocketReconnecting(attemptNumber);
             });
 
             gameSocket.on('reconnect', () => {
-                toastr.success('Reconnected', 'The reconnection has been successful');
+                toast.success('The reconnection has been successful', { description: 'Reconnected' });
                 this.props.gameSocketConnected(gameSocket);
             });
 
             gameSocket.on('reconnect_failed', () => {
-                toastr.error('Reconnect failed', 'Given up trying to connect to the server');
+                toast.error('Given up trying to connect to the server', { description: 'Reconnect failed' });
                 this.props.sendGameSocketConnectFailed();
             });
 
@@ -204,6 +214,17 @@ class App extends React.Component {
         this.props.receiveLobbyMessage({});
         if(!this.props.currentGame) {
             this.props.setContextMenu([]);
+        }
+    }
+
+    componentWillUnmount() {
+        if(this.lobbySocket) {
+            this.lobbySocket.removeAllListeners();
+            this.lobbySocket.disconnect();
+        }
+        // Clean up axios interceptor
+        if(this.axiosInterceptor !== undefined) {
+            axios.interceptors.response.eject(this.axiosInterceptor);
         }
     }
 
@@ -267,7 +288,7 @@ class App extends React.Component {
             }
         }
 
-        if(_.size(adminMenuItems) > 0) {
+        if(adminMenuItems.length > 0) {
             leftMenu.push({ name: 'Admin', childItems: adminMenuItems });
         }
 

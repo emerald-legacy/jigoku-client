@@ -1,12 +1,10 @@
-const monk = require('monk');
-const config = require('config');
+const db = require('../db.js');
 const DeckService = require('../services/DeckService.js');
-const {wrapAsync} = require('../util.js');
-
-let db = monk(config.dbPath);
-let deckService = new DeckService(db);
+const { wrapAsync } = require('../util.js');
 
 module.exports.init = function(server) {
+    const deckService = new DeckService(db.getDb());
+
     server.get('/api/decks/:id', wrapAsync(async function(req, res) {
         if(!req.user) {
             return res.status(401).send({ message: 'Unauthorized' });
@@ -16,7 +14,7 @@ module.exports.init = function(server) {
             return res.status(404).send({ message: 'No such deck' });
         }
 
-        let deck = await deckService.getById(req.params.id);
+        const deck = await deckService.getById(req.params.id);
 
         if(!deck) {
             return res.status(404).send({ message: 'No such deck' });
@@ -34,12 +32,12 @@ module.exports.init = function(server) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        let options = {};
+        const options = {};
         if(req.query.format) {
             options.format = req.query.format;
         }
 
-        let decks = await deckService.findByUserName(req.user.username, options);
+        const decks = await deckService.findByUserName(req.user.username, options);
         res.send({ success: true, decks: decks });
     }));
 
@@ -48,7 +46,7 @@ module.exports.init = function(server) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        let deck = await deckService.getById(req.params.id);
+        const deck = await deckService.getById(req.params.id);
 
         if(!deck) {
             return res.status(404).send({ message: 'No such deck' });
@@ -58,9 +56,8 @@ module.exports.init = function(server) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        let data = Object.assign({ id: req.params.id }, JSON.parse(req.body.data));
-
-        deckService.update(data);
+        const data = { id: req.params.id, ...JSON.parse(req.body.data) };
+        await deckService.update(data);
 
         res.send({ success: true, message: 'Saved' });
     }));
@@ -78,7 +75,7 @@ module.exports.init = function(server) {
             });
         }
 
-        let deck = Object.assign(JSON.parse(req.body.data), { username: req.user.username });
+        const deck = { ...JSON.parse(req.body.data), username: req.user.username };
         await deckService.create(deck);
         res.send({ success: true });
     }));
@@ -88,9 +85,8 @@ module.exports.init = function(server) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
 
-        let id = req.params.id;
-
-        let deck = await deckService.getById(id);
+        const id = req.params.id;
+        const deck = await deckService.getById(id);
 
         if(!deck) {
             return res.status(404).send({ success: false, message: 'No such deck' });
@@ -116,7 +112,7 @@ module.exports.init = function(server) {
 
         const decks = await Promise.all(deckIds.map(id => deckService.getById(id)));
 
-        for(let deck of decks) {
+        for(const deck of decks) {
             if(!deck) {
                 return res.status(404).send({ success: false, message: 'One or more decks not found' });
             }

@@ -1,19 +1,15 @@
-var webpack = require('webpack');
-var path = require('path');
-var precss = require('precss');
-var autoprefixer = require('autoprefixer');
+const webpack = require('webpack');
+const path = require('path');
 
-var BUILD_DIR = path.resolve(__dirname, 'public');
-var APP_DIR = path.resolve(__dirname, 'client');
-var LESS_DIR = path.resolve(__dirname, 'less');
+const BUILD_DIR = path.resolve(__dirname, 'public');
+const APP_DIR = path.resolve(__dirname, 'client');
+const LESS_DIR = path.resolve(__dirname, 'less');
 
-var config = {
+const config = {
+    mode: 'development',
     devtool: 'inline-source-map',
     entry: [
-        'babel-polyfill',
-        'react-hot-loader/patch',
         'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000',
-        'webpack/hot/only-dev-server',
         path.join(__dirname, 'client/index.jsx'),
         LESS_DIR + '/site.less'
     ],
@@ -24,13 +20,10 @@ var config = {
     },
     devServer: {
         hot: true,
-        contentBase: BUILD_DIR,
-        publicPath: '/'
+        static: BUILD_DIR
     },
     plugins: [
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NamedModulesPlugin(),
-        new webpack.NoEmitOnErrorsPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('development'),
             '__DEV__': JSON.stringify('true')
@@ -41,35 +34,71 @@ var config = {
         })
     ],
     module: {
-        loaders: [
+        rules: [
             {
-                test: /\.jsx?/,
-                exclude: /(node_modules|bower_components)/,
-                loader: 'babel-loader'
+                test: /\.jsx?$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader'
+                }
             },
             {
                 test: /\.less$/,
                 use: [
                     'style-loader',
-                    'css-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            url: {
+                                filter: (url) => !url.startsWith('/')
+                            }
+                        }
+                    },
                     'less-loader'
                 ]
-            },
-            {
-                test: /\.json?/,
-                loader: 'json-loader'
             },
             {
                 test: /\.scss$/,
                 use: [
                     'style-loader',
-                    'css-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            url: {
+                                filter: (url) => !url.startsWith('/')
+                            }
+                        }
+                    },
                     'sass-loader'
                 ]
-            }, {
-                test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/,
-                loader: 'url-loader?limit=100000'
-            }]
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            url: {
+                                filter: (url) => !url.startsWith('/')
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                test: /\.(png|woff|woff2|eot|ttf|svg)(\?.*)?$/,
+                type: 'asset',
+                parser: {
+                    dataUrlCondition: {
+                        maxSize: 100 * 1024
+                    }
+                }
+            }
+        ]
+    },
+    resolve: {
+        extensions: ['.js', '.jsx', '.json']
     }
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import GameModes from './GameModes';
@@ -12,111 +12,94 @@ const defaultTime = {
     byoyomi: '0'
 };
 
-class InnerNewGame extends React.Component {
-    constructor() {
-        super();
+export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket }) {
+    const [spectators, setSpectators] = useState(true);
+    const [spectatorSquelch, setSpectatorSquelch] = useState(false);
+    const [selectedGameMode, setSelectedGameMode] = useState(GameModes.Emerald);
+    const [clocks, setClocks] = useState(false);
+    const [selectedClockType, setSelectedClockType] = useState('timer');
+    const [clockTimer, setClockTimer] = useState(60);
+    const [byoyomiPeriods, setByoyomiPeriods] = useState(5);
+    const [byoyomiTimePeriod, setByoyomiTimePeriod] = useState(30);
+    const [selectedGameType, setSelectedGameType] = useState('casual');
+    const [password, setPassword] = useState('');
+    const [gameName, setGameName] = useState(defaultGameName || '');
 
-        this.onCancelClick = this.onCancelClick.bind(this);
-        this.onSubmitClick = this.onSubmitClick.bind(this);
-        this.onNameChange = this.onNameChange.bind(this);
-        this.onClockClick = this.onClockClick.bind(this);
-        this.onSpectatorsClick = this.onSpectatorsClick.bind(this);
-        this.onSpectatorSquelchClick = this.onSpectatorSquelchClick.bind(this);
-        this.onPasswordChange = this.onPasswordChange.bind(this);
+    const handleCancelClick = useCallback((event) => {
+        event.preventDefault();
+        cancelNewGame();
+    }, [cancelNewGame]);
 
-        this.state = {
-            spectators: true,
-            spectatorSquelch: false,
-            selectedGameMode: GameModes.Emerald,
-            clocks: false,
-            selectedClockType: 'timer',
-            clockTimer: 60,
-            byoyomiPeriods: 5,
-            byoyomiTimePeriod: 30,
-            selectedGameType: 'casual',
-            password: ''
-        };
-    }
+    const handleNameChange = useCallback((event) => {
+        setGameName(event.target.value.substr(0, 140));
+    }, []);
 
-    componentWillMount() {
-        this.setState({ gameName: this.props.defaultGameName });
-    }
+    const handlePasswordChange = useCallback((event) => {
+        setPassword(event.target.value);
+    }, []);
 
-    onCancelClick(event) {
+    const handleSpectatorsClick = useCallback((event) => {
+        setSpectators(event.target.checked);
+    }, []);
+
+    const handleSpectatorSquelchClick = useCallback((event) => {
+        setSpectatorSquelch(event.target.checked);
+    }, []);
+
+    const handleClockClick = useCallback((event) => {
+        setClocks(event.target.checked);
+    }, []);
+
+    const handleSubmitClick = useCallback((event) => {
         event.preventDefault();
 
-        this.props.cancelNewGame();
-    }
-
-    onNameChange(event) {
-        this.setState({ gameName: event.target.value.substr(0, 140) });
-    }
-
-    onPasswordChange(event) {
-        this.setState({ password: event.target.value });
-    }
-
-    onSpectatorsClick(event) {
-        this.setState({ spectators: event.target.checked });
-    }
-
-    onSpectatorSquelchClick(event) {
-        this.setState({ spectatorSquelch: event.target.checked });
-    }
-
-    onClockClick(event) {
-        this.setState({ clocks: event.target.checked });
-    }
-
-    onSubmitClick(event) {
-        event.preventDefault();
-
-        let clocks = {
-            type: this.state.clocks ? this.state.selectedClockType : 'none',
-            time: this.state.clocks ? this.state.clockTimer : 0,
-            periods: this.state.clocks ? this.state.byoyomiPeriods : 0,
-            timePeriod: this.state.clocks ? this.state.byoyomiTimePeriod : 0
+        const clockConfig = {
+            type: clocks ? selectedClockType : 'none',
+            time: clocks ? clockTimer : 0,
+            periods: clocks ? byoyomiPeriods : 0,
+            timePeriod: clocks ? byoyomiTimePeriod : 0
         };
 
-        this.props.socket.emit('newgame', {
-            name: this.state.gameName,
-            spectators: this.state.spectators,
-            spectatorSquelch: this.state.spectatorSquelch,
-            gameType: this.state.selectedGameType,
-            skirmishMode: this.state.selectedGameMode === GameModes.Skirmish, //TODO: Legacy support, remove in a bit
-            gameMode: this.state.selectedGameMode,
-            clocks: clocks,
-            password: this.state.password
+        socket.emit('newgame', {
+            name: gameName,
+            spectators: spectators,
+            spectatorSquelch: spectatorSquelch,
+            gameType: selectedGameType,
+            skirmishMode: selectedGameMode === GameModes.Skirmish, //TODO: Legacy support, remove in a bit
+            gameMode: selectedGameMode,
+            clocks: clockConfig,
+            password: password
         });
 
-        this.props.loadDecks(this.state.selectedGameMode);
-    }
+        loadDecks(selectedGameMode);
+    }, [socket, gameName, spectators, spectatorSquelch, selectedGameType, selectedGameMode, clocks, selectedClockType, clockTimer, byoyomiPeriods, byoyomiTimePeriod, password, loadDecks]);
 
-    onRadioChange(gameType) {
-        this.setState({ selectedGameType: gameType });
-    }
+    const handleRadioChange = useCallback((gameType) => {
+        setSelectedGameType(gameType);
+    }, []);
 
-    onRulesRadioChange(gameMode) {
-        this.setState({ selectedGameMode: gameMode });
-    }
+    const handleRulesRadioChange = useCallback((gameMode) => {
+        setSelectedGameMode(gameMode);
+    }, []);
 
-    onClockRadioChange(clockType) {
-        this.setState({ selectedClockType: clockType, clockTimer: defaultTime[clockType] });
-    }
+    const handleClockRadioChange = useCallback((clockType) => {
+        setSelectedClockType(clockType);
+        setClockTimer(defaultTime[clockType]);
+    }, []);
 
-    isGameTypeSelected(gameType) {
-        return this.state.selectedGameType === gameType;
-    }
+    const isGameTypeSelected = useCallback((gameType) => {
+        return selectedGameType === gameType;
+    }, [selectedGameType]);
 
-    isGameModeSelected(gameMode) {
-        return this.state.selectedGameMode === gameMode;
-    }
+    const isGameModeSelected = useCallback((gameMode) => {
+        return selectedGameMode === gameMode;
+    }, [selectedGameMode]);
 
-    isClockTypeSelected(clockType) {
-        return this.state.selectedClockType === clockType;
-    }
+    const isClockTypeSelected = useCallback((clockType) => {
+        return selectedClockType === clockType;
+    }, [selectedClockType]);
 
-    getClockInput() {
+    const getClockInput = () => {
         return (
             <div>
                 <div className='row game-password'>
@@ -125,19 +108,19 @@ class InnerNewGame extends React.Component {
                     </div>
                     <div className='col-sm-10'>
                         <label className='radio-inline'>
-                            <input type='radio' onChange={ this.onClockRadioChange.bind(this, 'timer') } checked={ this.isClockTypeSelected('timer') } />
+                            <input type='radio' onChange={ () => handleClockRadioChange('timer') } checked={ isClockTypeSelected('timer') } />
                             Timer
                         </label>
                         <label className='radio-inline'>
-                            <input type='radio' onChange={ this.onClockRadioChange.bind(this, 'chess') } checked={ this.isClockTypeSelected('chess') } />
+                            <input type='radio' onChange={ () => handleClockRadioChange('chess') } checked={ isClockTypeSelected('chess') } />
                             Chess
                         </label>
                         <label className='radio-inline'>
-                            <input type='radio' onChange={ this.onClockRadioChange.bind(this, 'hourglass') } checked={ this.isClockTypeSelected('hourglass') } />
+                            <input type='radio' onChange={ () => handleClockRadioChange('hourglass') } checked={ isClockTypeSelected('hourglass') } />
                             Hourglass
                         </label>
                         <label className='radio-inline'>
-                            <input type='radio' onChange={ this.onClockRadioChange.bind(this, 'byoyomi') } checked={ this.isClockTypeSelected('byoyomi') } />
+                            <input type='radio' onChange={ () => handleClockRadioChange('byoyomi') } checked={ isClockTypeSelected('byoyomi') } />
                             Byoyomi
                         </label>
                     </div>
@@ -145,124 +128,128 @@ class InnerNewGame extends React.Component {
                 <div className='row'>
                     <div className='col-sm-8'>
                         <label>Main Time (Minutes)</label>
-                        <input className='form-control' value={ this.state.clockTimer } onChange={ event => this.setState({ clockTimer: event.target.value.replace(/\D/,'') }) }/>
+                        <input className='form-control' value={ clockTimer } onChange={ (event) => setClockTimer(event.target.value.replace(/\D/, '')) } />
                     </div>
                 </div>
-                { this.state.selectedClockType === 'byoyomi' &&
+                { selectedClockType === 'byoyomi' && (
                     <div className='row'>
                         <div className='col-sm-8'>
                             <label>Number of Byoyomi Periods</label>
-                            <input className='form-control' value={ this.state.byoyomiPeriods } onChange={ event => this.setState({ byoyomiPeriods: event.target.value.replace(/\D/, '') }) }/>
+                            <input className='form-control' value={ byoyomiPeriods } onChange={ (event) => setByoyomiPeriods(event.target.value.replace(/\D/, '')) } />
                             <label>Byoyomi Time Period (Seconds)</label>
-                            <input className='form-control' value={ this.state.byoyomiTimePeriod } onChange={ event => this.setState({ byoyomiTimePeriod: event.target.value.replace(/\D/, '') }) }/>
+                            <input className='form-control' value={ byoyomiTimePeriod } onChange={ (event) => setByoyomiTimePeriod(event.target.value.replace(/\D/, '')) } />
                         </div>
                     </div>
-                }
+                ) }
+            </div>
+        );
+    };
+
+    const charsLeft = 140 - gameName.length;
+
+    if(!socket) {
+        return (
+            <div>
+                Connecting to the server, please wait...
             </div>
         );
     }
 
-    render() {
-        let charsLeft = 140 - this.state.gameName.length;
-        return this.props.socket ? (
-            <div>
-                <div className='panel-title text-center'>
-                    New game
-                </div>
-                <div className='panel'>
-                    <form className='form'>
-                        <div className='row'>
-                            <div className='col-sm-8'>
-                                <label htmlFor='gameName'>Name</label>
-                                <label className='game-name-char-limit'>{ charsLeft >= 0 ? charsLeft : 0 }</label>
-                                <input className='form-control' placeholder='Game Name' type='text' onChange={ this.onNameChange } value={ this.state.gameName } />
-                            </div>
-                        </div>
-                        <div className='row'>
-                            <div className='checkbox col-sm-8'>
-                                <label>
-                                    <input type='checkbox' onChange={ this.onSpectatorsClick } checked={ this.state.spectators } />
-                                    Allow spectators
-                                </label>
-                            </div>
-                            <div className='checkbox col-sm-8'>
-                                <label>
-                                    <input type='checkbox' onChange={ this.onSpectatorSquelchClick } checked={ this.state.spectatorSquelch } />
-                                    Don't allow spectators to chat
-                                </label>
-                            </div>
-                            <div className='checkbox col-sm-8'>
-                                <label>
-                                    <input type='checkbox' onChange={ this.onClockClick } checked={ this.state.clocks } />
-                                    Timed game
-                                </label>
-                            </div>
-                        </div>
-                        <div className='row'>
-                            <div className='col-sm-12'>
-                                <b>Format</b>
-                            </div>
-                            <div className='col-sm-10'>
-                                <label className='radio-inline'>
-                                    <input name type='radio' onChange={ this.onRulesRadioChange.bind(this, GameModes.Emerald) } checked={ this.isGameModeSelected(GameModes.Emerald) } />
-                                    Emerald
-                                </label>
-                                <label className='radio-inline'>
-                                    <input name type='radio' onChange={ this.onRulesRadioChange.bind(this, GameModes.Sanctuary) } checked={ this.isGameModeSelected(GameModes.Sanctuary) } />
-                                    Sanctuary
-                                </label>
-                                <label className='radio-inline'>
-                                    <input name type='radio' onChange={ this.onRulesRadioChange.bind(this, GameModes.Stronghold) } checked={ this.isGameModeSelected(GameModes.Stronghold) } />
-                                    Imperial
-                                </label>
-                                <label className='radio-inline'>
-                                    <input type='radio' onChange={ this.onRulesRadioChange.bind(this, GameModes.Skirmish) } checked={ this.isGameModeSelected(GameModes.Skirmish) } />
-                                    Skirmish
-                                </label>
-                                <label className='radio-inline'>
-                                    <input type='radio' onChange={ this.onRulesRadioChange.bind(this, GameModes.Obsidian) } checked={ this.isGameModeSelected(GameModes.Obsidian) } />
-                                    Obsidian
-                                </label>
-                            </div>
-                        </div>
-                        <div className='row game-password'>
-                            <div className='col-sm-12'>
-                                <b>Game Type</b>
-                            </div>
-                            <div className='col-sm-10'>
-                                <label className='radio-inline'>
-                                    <input type='radio' onChange={ this.onRadioChange.bind(this, 'beginner') } checked={ this.isGameTypeSelected('beginner') } />
-                                    Beginner
-                                </label>
-                                <label className='radio-inline'>
-                                    <input type='radio' onChange={ this.onRadioChange.bind(this, 'casual') } checked={ this.isGameTypeSelected('casual') } />
-                                    Casual
-                                </label>
-                                <label className='radio-inline'>
-                                    <input type='radio' onChange={ this.onRadioChange.bind(this, 'competitive') } checked={ this.isGameTypeSelected('competitive') } />
-                                    Competitive
-                                </label>
-                            </div>
-                        </div>
-                        { this.state.clocks ? this.getClockInput() : null }
-                        <div className='row game-password'>
-                            <div className='col-sm-8'>
-                                <label>Password</label>
-                                <input className='form-control' type='password' onChange={ this.onPasswordChange } value={ this.state.password } />
-                            </div>
-                        </div>
-                        <div className='button-row'>
-                            <button className='btn btn-primary' onClick={ this.onSubmitClick }>Submit</button>
-                            <button className='btn btn-primary' onClick={ this.onCancelClick }>Cancel</button>
-                        </div>
-                    </form>
-                </div>
-            </div>) : (
-            <div>
-                    Connecting to the server, please wait...
+    return (
+        <div>
+            <div className='panel-title text-center'>
+                New game
             </div>
-        );
-    }
+            <div className='panel'>
+                <form className='form'>
+                    <div className='row'>
+                        <div className='col-sm-8'>
+                            <label htmlFor='gameName'>Name</label>
+                            <label className='game-name-char-limit'>{ charsLeft >= 0 ? charsLeft : 0 }</label>
+                            <input className='form-control' placeholder='Game Name' type='text' onChange={ handleNameChange } value={ gameName } />
+                        </div>
+                    </div>
+                    <div className='row'>
+                        <div className='checkbox col-sm-8'>
+                            <label>
+                                <input type='checkbox' onChange={ handleSpectatorsClick } checked={ spectators } />
+                                Allow spectators
+                            </label>
+                        </div>
+                        <div className='checkbox col-sm-8'>
+                            <label>
+                                <input type='checkbox' onChange={ handleSpectatorSquelchClick } checked={ spectatorSquelch } />
+                                Don't allow spectators to chat
+                            </label>
+                        </div>
+                        <div className='checkbox col-sm-8'>
+                            <label>
+                                <input type='checkbox' onChange={ handleClockClick } checked={ clocks } />
+                                Timed game
+                            </label>
+                        </div>
+                    </div>
+                    <div className='row'>
+                        <div className='col-sm-12'>
+                            <b>Format</b>
+                        </div>
+                        <div className='col-sm-10'>
+                            <label className='radio-inline'>
+                                <input type='radio' onChange={ () => handleRulesRadioChange(GameModes.Emerald) } checked={ isGameModeSelected(GameModes.Emerald) } />
+                                Emerald
+                            </label>
+                            <label className='radio-inline'>
+                                <input type='radio' onChange={ () => handleRulesRadioChange(GameModes.Sanctuary) } checked={ isGameModeSelected(GameModes.Sanctuary) } />
+                                Sanctuary
+                            </label>
+                            <label className='radio-inline'>
+                                <input type='radio' onChange={ () => handleRulesRadioChange(GameModes.Stronghold) } checked={ isGameModeSelected(GameModes.Stronghold) } />
+                                Imperial
+                            </label>
+                            <label className='radio-inline'>
+                                <input type='radio' onChange={ () => handleRulesRadioChange(GameModes.Skirmish) } checked={ isGameModeSelected(GameModes.Skirmish) } />
+                                Skirmish
+                            </label>
+                            <label className='radio-inline'>
+                                <input type='radio' onChange={ () => handleRulesRadioChange(GameModes.Obsidian) } checked={ isGameModeSelected(GameModes.Obsidian) } />
+                                Obsidian
+                            </label>
+                        </div>
+                    </div>
+                    <div className='row game-password'>
+                        <div className='col-sm-12'>
+                            <b>Game Type</b>
+                        </div>
+                        <div className='col-sm-10'>
+                            <label className='radio-inline'>
+                                <input type='radio' onChange={ () => handleRadioChange('beginner') } checked={ isGameTypeSelected('beginner') } />
+                                Beginner
+                            </label>
+                            <label className='radio-inline'>
+                                <input type='radio' onChange={ () => handleRadioChange('casual') } checked={ isGameTypeSelected('casual') } />
+                                Casual
+                            </label>
+                            <label className='radio-inline'>
+                                <input type='radio' onChange={ () => handleRadioChange('competitive') } checked={ isGameTypeSelected('competitive') } />
+                                Competitive
+                            </label>
+                        </div>
+                    </div>
+                    { clocks ? getClockInput() : null }
+                    <div className='row game-password'>
+                        <div className='col-sm-8'>
+                            <label>Password</label>
+                            <input className='form-control' type='password' onChange={ handlePasswordChange } value={ password } />
+                        </div>
+                    </div>
+                    <div className='button-row'>
+                        <button className='btn btn-primary' onClick={ handleSubmitClick }>Submit</button>
+                        <button className='btn btn-primary' onClick={ handleCancelClick }>Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 }
 
 InnerNewGame.displayName = 'NewGame';

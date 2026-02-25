@@ -1,247 +1,291 @@
-import React from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'underscore';
-import $ from 'jquery';
+import Draggable from 'react-draggable';
 
 import Card from './Card.jsx';
 import { tryParseJSON } from '../util.js';
-import Draggable from 'react-draggable';
 
-class CardPile extends React.Component {
-    constructor() {
-        super();
+function CardPile({
+    cardCount,
+    cards,
+    className: propsClassName,
+    closeOnClick,
+    disableMenu,
+    disableMouseOver,
+    hiddenTopCard,
+    isMe = true,
+    menu,
+    onCardClick,
+    onCloseClick,
+    onDragDrop,
+    onMenuItemClick,
+    onMouseOut,
+    onMouseOver,
+    onTouchMove,
+    orientation = 'vertical',
+    popupLocation,
+    popupMenu,
+    size,
+    source,
+    title,
+    topCard: propsTopCard
+}) {
+    const [showPopup, setShowPopup] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
 
-        this.onCollectionClick = this.onCollectionClick.bind(this);
-        this.onDragDrop = this.onDragDrop.bind(this);
-        this.onTopCardClick = this.onTopCardClick.bind(this);
-
-        this.state = {
-            showPopup: false,
-            showMenu: false
-        };
-    }
-
-    onCollectionClick(event) {
+    const onCollectionClick = (event) => {
         event.preventDefault();
 
-        if(this.props.disableMenu) {
+        if(disableMenu) {
             return;
         }
 
-        if(this.props.menu) {
-            this.setState({ showMenu: !this.state.showMenu });
+        if(menu) {
+            setShowMenu(!showMenu);
             return;
         }
 
-        this.setState({ showPopup: !this.state.showPopup });
-    }
+        setShowPopup(!showPopup);
+    };
 
-    onMenuItemClick(menuItem) {
+    const handleMenuItemClick = (menuItem) => {
         if(menuItem.showPopup) {
-            this.setState({ showPopup: !this.state.showPopup });
+            setShowPopup(!showPopup);
         }
 
         menuItem.handler();
-    }
+    };
 
-    onCloseClick(event) {
+    const handleCloseClick = (event) => {
         event.preventDefault();
         event.stopPropagation();
 
-        this.setState({ showPopup: !this.state.showPopup });
+        setShowPopup(!showPopup);
 
-        if(this.props.onCloseClick) {
-            this.props.onCloseClick();
+        if(onCloseClick) {
+            onCloseClick();
         }
-    }
+    };
 
-    onPopupMenuItemClick(menuItem) {
+    const onPopupMenuItemClick = (menuItem) => {
         menuItem.handler();
+        setShowPopup(!showPopup);
+    };
 
-        this.setState({ showPopup: !this.state.showPopup });
-    }
-
-    onTopCardClick() {
-        if(this.props.menu && !this.props.disableMenu) {
-            this.setState({ showMenu: !this.state.showMenu });
+    const onTopCardClick = () => {
+        if(menu && !disableMenu) {
+            setShowMenu(!showMenu);
             return;
         }
 
-        if(this.props.disableMenu) {
-            if(this.props.onCardClick) {
-                this.props.onCardClick(this.props.topCard);
+        if(disableMenu) {
+            if(onCardClick) {
+                onCardClick(topCard);
             }
 
             return;
         }
 
-        this.setState({ showPopup: !this.state.showPopup });
-    }
+        setShowPopup(!showPopup);
+    };
 
-    onDragOver(event) {
-        $(event.target).addClass('highlight-panel');
-
+    const onDragOver = (event) => {
+        event.target.classList.add('highlight-panel');
         event.preventDefault();
-    }
+    };
 
-    onDragLeave(event) {
-        $(event.target).removeClass('highlight-panel');
-    }
+    const onDragLeave = (event) => {
+        event.target.classList.remove('highlight-panel');
+    };
 
-    onDragDrop(event, target) {
+    const handleDragDrop = (event, target) => {
         event.stopPropagation();
         event.preventDefault();
 
-        $(event.target).removeClass('highlight-panel');
+        event.target.classList.remove('highlight-panel');
 
-        let card = event.dataTransfer.getData('Text');
+        const card = event.dataTransfer.getData('Text');
 
         if(!card) {
             return;
         }
 
-        let dragData = tryParseJSON(card);
+        const dragData = tryParseJSON(card);
 
         if(!dragData) {
             return;
         }
 
-        if(this.props.onDragDrop) {
-            this.props.onDragDrop(dragData.card, dragData.source, target);
+        if(onDragDrop) {
+            onDragDrop(dragData.card, dragData.source, target);
         }
-    }
+    };
 
-    onCardClick(card) {
-        if(this.props.closeOnClick) {
-            this.setState({ showPopup: false });
+    const handleCardClick = (card) => {
+        if(closeOnClick) {
+            setShowPopup(false);
         }
 
-        if(this.props.onCardClick) {
-            this.props.onCardClick(card);
+        if(onCardClick) {
+            onCardClick(card);
         }
-    }
+    };
 
-    getPopup() {
-        let popup = null;
+    const getPopup = () => {
         let cardIndex = 0;
 
-        let cardList = _.map(this.props.cards, card => {
-            let cardKey = card.uuid || cardIndex++;
-            return (<Card key={ cardKey } card={ card } source={ this.props.source }
-                disableMouseOver={ this.props.disableMouseOver }
-                onMouseOver={ this.props.onMouseOver }
-                onMouseOut={ this.props.onMouseOut }
-                onTouchMove={ this.props.onTouchMove }
-                onClick={ this.onCardClick.bind(this, card) }
-                onDragDrop={ this.props.onDragDrop }
-                orientation={ this.props.orientation === 'bowed' ? 'vertical' : this.props.orientation }
-                size={ this.props.size } />);
+        const cardList = cards?.map((card) => {
+            const cardKey = card.uuid || cardIndex++;
+            return (
+                <Card
+                    key={ cardKey }
+                    card={ card }
+                    source={ source }
+                    disableMouseOver={ disableMouseOver }
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    onTouchMove={ onTouchMove }
+                    onClick={ () => handleCardClick(card) }
+                    onDragDrop={ onDragDrop }
+                    orientation={ orientation === 'bowed' ? 'vertical' : orientation }
+                    size={ size }
+                />
+            );
         });
 
-        if(!this.state.showPopup) {
+        if(!showPopup) {
             return null;
         }
 
         let popupClass = 'panel';
         let arrowClass = 'arrow lg';
 
-        if(this.props.popupLocation === 'top') {
+        if(popupLocation === 'top') {
             popupClass += ' our-side';
             arrowClass += ' down';
         } else {
             arrowClass += ' up';
         }
 
-        if(this.props.orientation === 'horizontal') {
+        if(orientation === 'horizontal') {
             arrowClass = 'arrow lg left';
         }
 
         let linkIndex = 0;
 
-        let popupMenu = this.props.popupMenu ? (<div>{ _.map(this.props.popupMenu, menuItem => {
-            return <a className='btn btn-default' key={ linkIndex++ } onClick={ () => this.onPopupMenuItemClick(menuItem) }>{ menuItem.text }</a>;
-        }) }</div>) : null;
+        const popupMenuElement = popupMenu ? (
+            <div>
+                { popupMenu.map((menuItem) => {
+                    return (
+                        <a
+                            className='btn btn-default'
+                            key={ linkIndex++ }
+                            onClick={ () => onPopupMenuItemClick(menuItem) }
+                        >
+                            { menuItem.text }
+                        </a>
+                    );
+                }) }
+            </div>
+        ) : null;
 
-        popup = (
+        return (
             <Draggable handle='grip'>
-                <div className={ `popup ${this.props.isMe ? '' : 'opponent'}` }>
+                <div className={ `popup ${isMe ? '' : 'opponent'}` }>
                     <grip>
-                        <div className='panel-title' onClick={ event => event.stopPropagation() }>
-                            <span className='text-center'>{ this.props.title }</span>
+                        <div
+                            className='panel-title'
+                            onClick={ (event) => event.stopPropagation() }
+                        >
+                            <span className='text-center'>{ title }</span>
                             <span className='pull-right'>
-                                <a className='close-button glyphicon glyphicon-remove' onClick={ this.onCloseClick.bind(this) } />
+                                <a
+                                    className='close-button glyphicon glyphicon-remove'
+                                    onClick={ handleCloseClick }
+                                />
                             </span>
                         </div>
                     </grip>
-                    <div className={ popupClass } onClick={ event => event.stopPropagation() }>
-                        { popupMenu }
-                        <div className='inner'>
-                            { cardList }
-                        </div>
+                    <div
+                        className={ popupClass }
+                        onClick={ (event) => event.stopPropagation() }
+                    >
+                        { popupMenuElement }
+                        <div className='inner'>{ cardList }</div>
                         <div className={ arrowClass } />
                     </div>
                 </div>
-            </Draggable>);
+            </Draggable>
+        );
+    };
 
-        return popup;
-    }
-
-    getMenu() {
+    const getMenu = () => {
         let menuIndex = 0;
 
-        let menu = _.map(this.props.menu, item => {
-            return <div key={ (menuIndex++).toString() } onClick={ this.onMenuItemClick.bind(this, item) }>{ item.text }</div>;
+        const menuElements = menu?.map((item) => {
+            return (
+                <div key={ (menuIndex++).toString() } onClick={ () => handleMenuItemClick(item) }>
+                    { item.text }
+                </div>
+            );
         });
 
-        return (
-            <div className='panel menu'>
-                { menu }
-            </div>);
+        return <div className='panel menu'>{ menuElements }</div>;
+    };
+
+    let className = 'card-pile ' + (propsClassName || '');
+    if(size !== 'normal') {
+        className += ' ' + size;
     }
 
-    render() {
-        let className = 'card-pile ' + this.props.className;
-        if(this.props.size !== 'normal') {
-            className += ' ' + this.props.size;
-        }
+    const displayCardCount = cardCount || (cards ? cards.length : 0);
+    if(displayCardCount === 0) {
+        className += ' panel';
+    }
+    const headerText = title ? title + ' (' + displayCardCount + ')' : '';
+    const topCard = propsTopCard || (cards && cards[0]);
+    const cardOrientation =
+        orientation === 'horizontal' && topCard && topCard.facedown
+            ? 'bowed'
+            : orientation;
 
-        let cardCount = this.props.cardCount || (this.props.cards ? this.props.cards.length : 0);
-        if(cardCount === 0) {
-            className += ' panel';
-        }
-        let headerText = this.props.title ? this.props.title + ' (' + (cardCount) + ')' : '';
-        let topCard = this.props.topCard || _.first(this.props.cards);
-        let cardOrientation = this.props.orientation === 'horizontal' && topCard && topCard.facedown ? 'bowed' : this.props.orientation;
+    const displayTopCard = hiddenTopCard && !propsTopCard ? { facedown: true } : topCard;
 
-        if(this.props.hiddenTopCard && !this.props.topCard) {
-            topCard = { facedown: true };
-        }
+    if(orientation === 'horizontal' || orientation === 'bowed') {
+        className += ' horizontal';
+    } else {
+        className += ' vertical';
+    }
 
-        if(this.props.orientation === 'horizontal' || this.props.orientation === 'bowed') {
-            className += ' horizontal';
-        } else {
-            className += ' vertical';
-        }
-
-        return (
-            <div className={ className } onDragLeave={ this.onDragLeave } onDragOver={ this.onDragOver } onDrop={ event => this.onDragDrop(event, this.props.source) }
-                onClick={ this.onCollectionClick }>
-                <div className='panel-header'>
-                    { headerText }
-                </div>
-                { topCard ? <Card card={ topCard } source={ this.props.source }
-                    onMouseOver={ this.props.onMouseOver }
-                    onMouseOut={ this.props.onMouseOut }
-                    disableMouseOver={ this.props.hiddenTopCard }
-                    onClick={ this.onTopCardClick }
-                    onMenuItemClick={ this.props.onMenuItemClick }
-                    onDragDrop={ this.props.onDragDrop }
+    return (
+        <div
+            className={ className }
+            onDragLeave={ onDragLeave }
+            onDragOver={ onDragOver }
+            onDrop={ (event) => handleDragDrop(event, source) }
+            onClick={ onCollectionClick }
+        >
+            <div className='panel-header'>{ headerText }</div>
+            { displayTopCard ? (
+                <Card
+                    card={ displayTopCard }
+                    source={ source }
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    disableMouseOver={ hiddenTopCard }
+                    onClick={ onTopCardClick }
+                    onMenuItemClick={ onMenuItemClick }
+                    onDragDrop={ onDragDrop }
                     orientation={ cardOrientation }
-                    size={ this.props.size } /> : <div className='card-placeholder' /> }
-                { this.state.showMenu ? this.getMenu() : null }
-                { this.getPopup() }
-            </div>);
-    }
+                    size={ size }
+                />
+            ) : (
+                <div className='card-placeholder' />
+            ) }
+            { showMenu ? getMenu() : null }
+            { getPopup() }
+        </div>
+    );
 }
 
 CardPile.displayName = 'CardPile';
@@ -266,13 +310,27 @@ CardPile.propTypes = {
     popupLocation: PropTypes.string,
     popupMenu: PropTypes.array,
     size: PropTypes.string,
-    source: PropTypes.oneOf(['none', 'hand', 'conflict discard pile', 'dynasty discard pile', 'play area', 'conflict deck', 'dynasty deck', 'province deck', 'attachment', 'faction', 'stronghold province', 'role card', 'province 1', 'province 2', 'province 3', 'province 4', 'additional']).isRequired,
+    source: PropTypes.oneOf([
+        'none',
+        'hand',
+        'conflict discard pile',
+        'dynasty discard pile',
+        'play area',
+        'conflict deck',
+        'dynasty deck',
+        'province deck',
+        'attachment',
+        'faction',
+        'stronghold province',
+        'role card',
+        'province 1',
+        'province 2',
+        'province 3',
+        'province 4',
+        'additional'
+    ]).isRequired,
     title: PropTypes.string,
     topCard: PropTypes.object
-};
-CardPile.defaultProps = {
-    orientation: 'vertical',
-    isMe: true
 };
 
 export default CardPile;

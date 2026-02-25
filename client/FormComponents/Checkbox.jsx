@@ -1,30 +1,35 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
-class Checkbox extends React.Component {
-    render() {
-        var checkBox = (<div className={ 'checkbox ' + this.props.fieldClass }>
-            <label htmlFor={ this.props.name } className={ this.props.labelClass }>
-                <input type='checkbox'
-                    ref={ this.props.name }
-                    id={ this.props.name }
-                    checked={ this.props.checked }
-                    onChange={ this.props.onChange } />
-                { this.props.label }
+function Checkbox({
+    checked,
+    children,
+    fieldClass,
+    label,
+    labelClass,
+    name,
+    noGroup,
+    onChange
+}) {
+    const checkBox = (
+        <div className={ 'checkbox ' + (fieldClass || '') }>
+            <label htmlFor={ name } className={ labelClass }>
+                <input
+                    type='checkbox'
+                    id={ name }
+                    checked={ checked }
+                    onChange={ onChange }
+                />
+                { label }
             </label>
-            { this.props.children }
-        </div>);
+            { children }
+        </div>
+    );
 
-        if(this.props.noGroup) {
-            return checkBox;
-        }
-
-        return (
-            <div className='form-group'>
-                { checkBox }
-            </div>
-        );
+    if(noGroup) {
+        return checkBox;
     }
+
+    return <div className='form-group'>{ checkBox }</div>;
 }
 
 Checkbox.displayName = 'Checkbox';

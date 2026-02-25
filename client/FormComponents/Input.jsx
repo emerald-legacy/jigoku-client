@@ -1,36 +1,47 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
-class Input extends React.Component {
-    render() {
-        let inputControl = (
-            <div>
-                <label htmlFor={ this.props.name } className={ this.props.labelClass + ' control-label' }>{ this.props.label }</label>
-                <div className={ this.props.fieldClass }>
-                    <input type={ this.props.type }
-                        ref={ this.props.name }
-                        className='form-control'
-                        id={ this.props.name }
-                        placeholder={ this.props.placeholder }
-                        value={ this.props.value }
-                        onChange={ this.props.onChange }
-                        onBlur={ this.props.onBlur } />
-                    { this.props.validationMessage ? <span className='help-block'>{ this.props.validationMessage } </span> : null }
-                </div>
-                { this.props.children }
+function Input({
+    children,
+    fieldClass,
+    label,
+    labelClass,
+    name,
+    noGroup,
+    onBlur,
+    onChange,
+    placeholder,
+    type,
+    validationMessage,
+    value
+}) {
+    const inputControl = (
+        <div>
+            <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
+                { label }
+            </label>
+            <div className={ fieldClass }>
+                <input
+                    type={ type }
+                    className='form-control'
+                    id={ name }
+                    placeholder={ placeholder }
+                    value={ value }
+                    onChange={ onChange }
+                    onBlur={ onBlur }
+                />
+                { validationMessage ? (
+                    <span className='help-block'>{ validationMessage } </span>
+                ) : null }
             </div>
-        );
+            { children }
+        </div>
+    );
 
-        if(this.props.noGroup) {
-            return inputControl;
-        }
-
-        return (
-            <div className='form-group'>
-                { inputControl }
-            </div>
-        );
+    if(noGroup) {
+        return inputControl;
     }
+
+    return <div className='form-group'>{ inputControl }</div>;
 }
 
 Input.displayName = 'Input';

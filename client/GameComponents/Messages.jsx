@@ -1,190 +1,230 @@
-import React from 'react';
+import { useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'underscore';
 import EmojiConvertor from 'emoji-js';
-import uuid from 'uuid';
+import { v4 as uuid } from 'uuid';
 
 import Avatar from '../Avatar.jsx';
 import * as actions from '../actions';
 
-class InnerMessages extends React.Component {
-    constructor() {
-        super();
+const iconsConflict = ['military', 'political'];
 
-        this.state = {
-            message: ''
-        };
+const iconsElement = ['air', 'earth', 'fire', 'water', 'void'];
 
-        this.iconsConflict = [
-            'military',
-            'political'
-        ];
+const iconsClan = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
 
-        this.iconsElement = [
-            'air',
-            'earth',
-            'fire',
-            'water',
-            'void'
-        ];
+const otherIcons = {
+    fate: { className: 'icon-fate', imageSrc: '/img/Fate.png' },
+    honor: { className: 'icon-honor', imageSrc: '/img/Honor.png' },
+    card: { className: 'icon-card', imageSrc: '/img/cards/conflictcardback.png' },
+    cards: { className: 'icon-card', imageSrc: '/img/cards/conflictcardback.png' }
+};
 
-        this.iconsClan = [
-            'crab',
-            'crane',
-            'dragon',
-            'lion',
-            'phoenix',
-            'scorpion',
-            'unicorn'
-        ];
+const emoji = new EmojiConvertor();
 
-        this.otherIcons = {
-            fate: { className: 'icon-fate', imageSrc: '/img/Fate.png' },
-            honor: { className: 'icon-honor', imageSrc: '/img/Honor.png' },
-            card: { className: 'icon-card', imageSrc: '/img/cards/conflictcardback.png' },
-            cards: { className: 'icon-card', imageSrc: '/img/cards/conflictcardback.png' }
-        };
+function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
+    const highlightedCardIdRef = useRef(null);
 
-        this.formatMessageText = this.formatMessageText.bind(this);
-
-        this.emoji = new EmojiConvertor();
-        this.highlightedCardId = null;
-    }
-
-    getMessage() {
-        var messages = _.map(this.props.messages, message => {
-            return <div key={ 'message' + uuid() } className='message'>{ this.formatMessageText(message.message) }</div>;
-        });
-
-        return messages;
-    }
-
-    formatMessageText(message) {
-        var index = 0;
-        return _.map(message, (fragment, key) => {
-            if(_.isNull(fragment) || _.isUndefined(fragment)) {
-                return '';
+    const handleMouseOver = useCallback(
+        (fragment) => {
+            const highlightedElement = document.getElementById(highlightedCardIdRef.current);
+            if(highlightedCardIdRef.current && highlightedElement) {
+                highlightedElement.classList.remove('highlight');
             }
 
-            if(key === 'alert') {
-                let message = this.formatMessageText(fragment.message);
+            const element = document.getElementById(fragment.uuid);
 
-                switch(fragment.type) {
-                    case 'endofround':
-                        return (
-                            <div className='separator'>
-                                <hr />
-                                { message }
-                                <hr />
-                            </div>
-                        );
-                    case 'success':
-                        return (<div className='alert alert-success'>
-                            <span className='glyphicon glyphicon-ok-sign' />&nbsp;
-                            { message }
-                        </div>);
-                    case 'info':
-                        return (<div className='alert alert-info'>
-                            <span className='glyphicon glyphicon-info-sign' />&nbsp;
-                            { message }
-                        </div>);
-                    case 'danger':
-                        return (<div className='alert alert-danger'>
-                            <span className='glyphicon glyphicon-exclamation-sign' />&nbsp;
-                            { message }
-                        </div>);
-                    case 'warning':
-                        return (<div className='alert alert-warning'>
-                            <span className='glyphicon glyphicon-warning-sign' />&nbsp;
-                            { message }
-                        </div>);
+            if(element) {
+                element.classList.add('highlight');
+                highlightedCardIdRef.current = fragment.uuid;
+            }
+
+            if(onCardMouseOver) {
+                onCardMouseOver(fragment);
+            }
+        },
+        [onCardMouseOver]
+    );
+
+    const handleMouseOut = useCallback(
+        (fragment) => {
+            const element = document.getElementById(fragment.uuid);
+
+            if(element) {
+                element.classList.remove('highlight');
+            }
+
+            if(onCardMouseOut) {
+                onCardMouseOut(fragment);
+            }
+        },
+        [onCardMouseOut]
+    );
+
+    const formatMessageText = useCallback(
+        (message) => {
+            // Handle non-array messages (strings, numbers, etc.)
+            if(!Array.isArray(message)) {
+                if(message === null || message === undefined) {
+                    return '';
                 }
-                return message;
-            } else if(fragment.message) {
-                return this.formatMessageText(fragment.message);
-            } else if(fragment.emailHash) {
-                return (
-                    <div key={ index++ }>
-                        <Avatar emailHash={ fragment.emailHash } forceDefault={ fragment.noAvatar } float />
-                        <span key={ index++ }>
-                            <b>{ fragment.name }</b>
+                if(typeof message === 'string') {
+                    return emoji.replace_colons(message);
+                }
+                if(typeof message === 'number') {
+                    return message;
+                }
+                // Wrap single object in array to process it
+                message = [message];
+            }
+
+            let index = 0;
+            return message.map((fragment, key) => {
+                if(fragment === null || fragment === undefined) {
+                    return '';
+                }
+
+                if(fragment.alert) {
+                    const alertMessage = formatMessageText(fragment.alert.message);
+
+                    switch(fragment.alert.type) {
+                        case 'endofround':
+                            return (
+                                <div className='separator' key={ index++ }>
+                                    <hr />
+                                    { alertMessage }
+                                    <hr />
+                                </div>
+                            );
+                        case 'success':
+                            return (
+                                <div className='alert alert-success' key={ index++ }>
+                                    <span className='glyphicon glyphicon-ok-sign' />
+                                    &nbsp;
+                                    { alertMessage }
+                                </div>
+                            );
+                        case 'info':
+                            return (
+                                <div className='alert alert-info' key={ index++ }>
+                                    <span className='glyphicon glyphicon-info-sign' />
+                                    &nbsp;
+                                    { alertMessage }
+                                </div>
+                            );
+                        case 'danger':
+                            return (
+                                <div className='alert alert-danger' key={ index++ }>
+                                    <span className='glyphicon glyphicon-exclamation-sign' />
+                                    &nbsp;
+                                    { alertMessage }
+                                </div>
+                            );
+                        case 'warning':
+                            return (
+                                <div className='alert alert-warning' key={ index++ }>
+                                    <span className='glyphicon glyphicon-warning-sign' />
+                                    &nbsp;
+                                    { alertMessage }
+                                </div>
+                            );
+                    }
+                    return alertMessage;
+                } else if(fragment.message) {
+                    return formatMessageText(fragment.message);
+                } else if(fragment.emailHash) {
+                    return (
+                        <div key={ index++ }>
+                            <Avatar
+                                emailHash={ fragment.emailHash }
+                                forceDefault={ fragment.noAvatar }
+                                float
+                            />
+                            <span key={ index++ }>
+                                <b>{ fragment.name }</b>
+                            </span>
+                        </div>
+                    );
+                } else if(fragment.id) {
+                    if(fragment.type === 'ring') {
+                        return formatMessageText(['the ', fragment.element, ' ring']);
+                    } else if(fragment.type === 'player') {
+                        return fragment.name;
+                    }
+                    if(fragment.type === '') {
+                        return fragment.label;
+                    }
+                    return (
+                        <span
+                            key={ index++ }
+                            className='card-link'
+                            onMouseOver={ () => handleMouseOver(fragment) }
+                            onMouseOut={ () => handleMouseOut(fragment) }
+                        >
+                            { fragment.name }
                         </span>
-                    </div>
-                );
-            } else if(fragment.id) {
-                if(fragment.type === 'ring') {
-                    return this.formatMessageText(['the ', fragment.element, ' ring']);
-                } else if(fragment.type === 'player') {
+                    );
+                } else if(iconsConflict.includes(fragment)) {
+                    return (
+                        <span className={ 'icon-' + fragment } key={ index++ }>
+                            <span className='hide-text'>{ fragment }</span>
+                        </span>
+                    );
+                } else if(iconsElement.includes(fragment)) {
+                    return (
+                        <span className={ 'icon-element-' + fragment } key={ index++ }>
+                            <span className='hide-text'>{ fragment }</span>
+                        </span>
+                    );
+                } else if(iconsClan.includes(fragment)) {
+                    return (
+                        <span className={ 'icon-clan-' + fragment } key={ index++ }>
+                            <span className='hide-text'>{ fragment }</span>
+                        </span>
+                    );
+                } else if(otherIcons[fragment]) {
+                    return (
+                        <img
+                            className={ otherIcons[fragment].className }
+                            key={ index++ }
+                            title={ fragment }
+                            src={ otherIcons[fragment].imageSrc }
+                        />
+                    );
+                } else if(typeof fragment === 'string') {
+                    return emoji.replace_colons(fragment);
+                } else if(fragment.isReactComponent) {
+                    return fragment;
+                } else if(typeof fragment === 'number') {
+                    return fragment;
+                } else if(Array.isArray(fragment)) {
+                    // Handle nested arrays
+                    return formatMessageText(fragment);
+                } else if(typeof fragment === 'object' && fragment.name) {
+                    // Handle objects with a name property (players, cards without id, etc.)
                     return fragment.name;
+                } else if(typeof fragment === 'object') {
+                    // Last resort: try to stringify the object for debugging
+                    console.warn('Unhandled message fragment:', fragment);
+                    return JSON.stringify(fragment);
                 }
-                if(fragment.type === '') {
-                    return fragment.label;
-                }
-                return (
-                    <span key={ index++ }
-                        className='card-link'
-                        onMouseOver={ () => this.handleMouseOver(fragment) }
-                        onMouseOut={ () => this.handleMouseOut(fragment) }>
-                        { fragment.name }
-                    </span>
-                );
-            } else if(_.contains(this.iconsConflict, fragment)) {
-                return (
-                    <span className={ 'icon-' + fragment } key={ index++ } ><span className='hide-text'>{ fragment }</span></span>
-                );
-            } else if(_.contains(this.iconsElement, fragment)) {
-                return (
-                    <span className={ 'icon-element-' + fragment } key={ index++ } ><span className='hide-text'>{ fragment }</span></span>
-                );
-            } else if(_.contains(this.iconsClan, fragment)) {
-                return (
-                    <span className={ 'icon-clan-' + fragment } key={ index++ } ><span className='hide-text'>{ fragment }</span></span>
-                );
-            } else if(this.otherIcons[fragment]) {
-                return (
-                    <img className={ this.otherIcons[fragment].className } key={ index++ } title={ fragment } src={ this.otherIcons[fragment].imageSrc }/>
-                );
-            } else if(_.isString(fragment)) {
-                return this.emoji.replace_colons(fragment);
-            } else if(fragment.isReactComponent) {
-                return fragment;
-            } else if(typeof(fragment) === 'number') {
-                return fragment;
-            }
-            return '[ERROR: Non-Component in message!]';
+                return '';
+            });
+        },
+        [handleMouseOver, handleMouseOut]
+    );
+
+    const getMessage = () => {
+        return messages?.map((message) => {
+            return (
+                <div key={ 'message' + uuid() } className='message'>
+                    { formatMessageText(message.message) }
+                </div>
+            );
         });
-    }
+    };
 
-    handleMouseOver(fragment) {
-        const highlightedElement = document.getElementById(this.highlightedCardId);
-        if(this.highlightedCardId && highlightedElement) {
-            highlightedElement.classList.remove('highlight');
-        }
-
-        const element = document.getElementById(fragment.uuid);
-
-        if(element) {
-            element.classList.add('highlight');
-            this.highlightedCardId = fragment.uuid;
-        }
-
-        this.props.onCardMouseOver.bind(this, fragment)();
-    }
-
-    handleMouseOut(fragment) {
-        const element = document.getElementById(fragment.uuid);
-
-        if(element) {
-            element.classList.remove('highlight');
-        }
-
-        this.props.onCardMouseOut.bind(this, fragment)();
-    }
-
-    render() {
-        return <div>{ this.getMessage() }</div>;
-    }
+    return <div>{ getMessage() }</div>;
 }
 
 InnerMessages.displayName = 'Messages';
@@ -205,4 +245,3 @@ const Messages = connect(mapStateToProps, actions)(InnerMessages);
 
 export default Messages;
 export { InnerMessages };
-

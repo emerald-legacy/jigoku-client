@@ -1,280 +1,359 @@
-/* eslint-disable no-unused-vars */
-/* global xdescribe, describe, it, expect, beforeEach, jasmine, document */
-/* eslint camelcase: 0, no-invalid-this: 0 */
-
-import GameBoard, { InnerGameBoard } from '../../client/GameBoard.jsx';
-import PlayerStatsRow from '../../client/GameComponents/PlayerStatsRow.jsx';
-import PlayerStatsBox from '../../client/GameComponents/PlayerStatsBox.jsx';
-import Card from '../../client/GameComponents/Card.jsx';
-import CardCollection from '../../client/GameComponents/CardPile.jsx';
-import GameConfiguration from '../../client/GameComponents/GameConfiguration.jsx';
-import { Provider } from 'react-redux';
-import ReactDOM from 'react-dom';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen } from '@testing-library/react';
 import React from 'react';
-import TestUtils from 'react-dom/test-utils';
-import stubComponent from './test-setup.jsx';
 
-let state = { cards: {}, games: { state: {}, currentGame: { players: {} } }, socket: {}, auth: {} };
+// Mock jQuery and its plugins
+vi.mock('jquery', () => {
+    const mockJQuery = vi.fn((selector) => ({
+        addClass: vi.fn(),
+        removeClass: vi.fn(),
+        modal: vi.fn(),
+        offset: vi.fn(() => ({ left: 0, top: 0 })),
+        scrollTop: vi.fn()
+    }));
+    mockJQuery.fn = { jquery: '3.6.0' };
+    return { default: mockJQuery };
+});
 
-const store = {
-    subscribe: () => { },
-    dispatch: () => { },
-    getState: () => {
-        return state;
+// Mock react-redux-toastr
+vi.mock('react-redux-toastr', () => ({
+    toastr: {
+        confirm: vi.fn()
     }
-};
+}));
 
-xdescribe('the <GameBoard /> component', function() {
-    var node, component;
+// Mock react-draggable
+vi.mock('react-draggable', () => ({
+    default: ({ children }) => <div data-testid="draggable">{children}</div>
+}));
 
-    stubComponent(PlayerStatsRow);
-    stubComponent(PlayerStatsBox);
-    stubComponent(Card);
-    stubComponent(CardCollection);
-    stubComponent(GameConfiguration);
+// Mock all the child components
+vi.mock('../../client/GameComponents/PlayerStatsBox.jsx', () => ({
+    default: () => <div data-testid="player-stats-box">PlayerStatsBox</div>
+}));
 
-    beforeEach(function() {
-        node = document.createElement('div');
+vi.mock('../../client/GameComponents/PlayerStatsRow.jsx', () => ({
+    default: () => <div data-testid="player-stats-row">PlayerStatsRow</div>
+}));
 
-        component = ReactDOM.render(<InnerGameBoard />, node);
+vi.mock('../../client/GameComponents/PlayerHand.jsx', () => ({
+    default: ({ cards }) => <div data-testid="player-hand">{cards?.length || 0} cards in hand</div>
+}));
 
-        state.games.currentGame.players['1'] = { id: 1, name: '1', timerSettings: {} };
-        state.games.currentGame.players['2'] = { id: 2, name: '2', timerSettings: {} };
-        state.socket.socket = jasmine.createSpyObj('socket', ['emit']);
-        state.auth.username = '1';
-        state.socket.username = '1';
-        state.games.state = state.games.currentGame;
+vi.mock('../../client/GameComponents/DynastyRow.jsx', () => ({
+    default: () => <div data-testid="dynasty-row">DynastyRow</div>
+}));
+
+vi.mock('../../client/GameComponents/StrongholdRow.jsx', () => ({
+    default: () => <div data-testid="stronghold-row">StrongholdRow</div>
+}));
+
+vi.mock('../../client/GameComponents/Ring.jsx', () => ({
+    default: ({ ring }) => <div data-testid={`ring-${ring.element}`}>{ring.element}</div>
+}));
+
+vi.mock('../../client/GameComponents/HonorFan.jsx', () => ({
+    default: ({ value }) => <div data-testid="honor-fan">{value}</div>
+}));
+
+vi.mock('../../client/GameComponents/ActivePlayerPrompt.jsx', () => ({
+    default: ({ title }) => <div data-testid="active-player-prompt">{title}</div>
+}));
+
+vi.mock('../../client/Avatar.jsx', () => ({
+    default: () => <div data-testid="avatar">Avatar</div>
+}));
+
+vi.mock('../../client/GameComponents/CardZoom.jsx', () => ({
+    default: () => <div data-testid="card-zoom">CardZoom</div>
+}));
+
+vi.mock('../../client/GameComponents/Card.jsx', () => ({
+    default: ({ card }) => <div data-testid="card">{card?.name || 'Card'}</div>
+}));
+
+vi.mock('../../client/GameComponents/Chat.jsx', () => ({
+    default: () => <div data-testid="chat">Chat</div>
+}));
+
+vi.mock('../../client/GameComponents/Controls.jsx', () => ({
+    default: () => <div data-testid="controls">Controls</div>
+}));
+
+vi.mock('../../client/GameComponents/CardPile.jsx', () => ({
+    default: () => <div data-testid="card-pile">CardPile</div>
+}));
+
+vi.mock('../../client/GameComponents/GameConfiguration.jsx', () => ({
+    default: () => <div data-testid="game-configuration">GameConfiguration</div>
+}));
+
+import { InnerGameBoard } from '../../client/GameBoard.jsx';
+
+describe('the <GameBoard /> component', () => {
+    let defaultProps;
+    let mockPlayer;
+    let mockRings;
+    let mockConflict;
+
+    beforeEach(() => {
+        mockRings = {
+            air: { element: 'air', removedFromGame: false, attachments: [] },
+            earth: { element: 'earth', removedFromGame: false, attachments: [] },
+            fire: { element: 'fire', removedFromGame: false, attachments: [] },
+            void: { element: 'void', removedFromGame: false, attachments: [] },
+            water: { element: 'water', removedFromGame: false, attachments: [] }
+        };
+
+        mockConflict = {
+            attackingPlayerId: null,
+            defendingPlayerId: null
+        };
+
+        mockPlayer = {
+            id: 'player1',
+            name: 'TestPlayer',
+            user: {
+                username: 'TestPlayer',
+                emailHash: 'abc123'
+            },
+            cardPiles: {
+                hand: [{ uuid: '1', name: 'Card 1' }, { uuid: '2', name: 'Card 2' }],
+                cardsInPlay: [],
+                conflictDiscardPile: [],
+                conflictDeck: [],
+                dynastyDiscardPile: [],
+                dynastyDeck: [],
+                provinceDeck: [],
+                removedFromGame: []
+            },
+            provinces: {
+                one: [],
+                two: [],
+                three: [],
+                four: []
+            },
+            strongholdProvince: [],
+            role: null,
+            stats: { fate: 5, honor: 10 },
+            clock: { mode: 'off' },
+            buttons: [],
+            promptedActionWindows: {},
+            timerSettings: {},
+            optionSettings: { showStatusInSidebar: true }
+        };
+
+        defaultProps = {
+            currentGame: {
+                players: {
+                    TestPlayer: mockPlayer
+                },
+                spectators: [],
+                messages: [],
+                rings: mockRings,
+                conflict: mockConflict,
+                manualMode: false,
+                started: true
+            },
+            username: 'TestPlayer',
+            user: {
+                settings: {
+                    cardSize: 'normal',
+                    optionSettings: { disableCardStats: false }
+                }
+            },
+            cards: {},
+            cardToZoom: null,
+            socket: {},
+            dispatch: vi.fn(),
+            sendGameMessage: vi.fn(),
+            closeGameSocket: vi.fn(),
+            setContextMenu: vi.fn(),
+            zoomCard: vi.fn(),
+            clearZoom: vi.fn()
+        };
     });
 
-    describe('when initially rendered', function() {
-        var divs = undefined;
-
-        beforeEach(function() {
-            divs = TestUtils.scryRenderedDOMComponentsWithTag(component, 'div');
-        });
-
-        it('should render a waiting div', function() {
-            expect(divs[0].innerText).toBe('Waiting for server...');
-        });
-    });
-
-    describe('when player has cards in play', function() {
-        describe('that include locations followed by characters', function() {
-            beforeEach(function() {
-                state.games.currentGame.players['1'].cardsInPlay = [
-                    { uuid: '1', code: '00001', type: 'location', label: 'Test Location' },
-                    { uuid: '2', code: '00002', type: 'character', label: 'Test Character' }
-                ];
-
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
-            });
-
-            it('should render locations on the bottom and characters on the top', function() {
-                var cards = TestUtils.scryRenderedComponentsWithType(component, Card);
-
-                expect(cards[0].props.card.code).toBe('00002');
-                expect(cards[1].props.card.code).toBe('00001');
-            });
-        });
-
-        describe('that include characters followed by locations', function() {
-            beforeEach(function() {
-                state.games.currentGame.players['1'].cardsInPlay = [
-                    { uuid: '1', code: '00002', type: 'character', label: 'Test Character' },
-                    { uuid: '2', code: '00001', type: 'location', label: 'Test Location' }
-                ];
-
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
-            });
-
-            it('should render locations on the bottom and characters on the top', function() {
-                var cards = TestUtils.scryRenderedComponentsWithType(component, Card);
-
-                expect(cards[0].props.card.code).toBe('00002');
-                expect(cards[1].props.card.code).toBe('00001');
-            });
-        });
-
-        describe('that include characters mixed with locations', function() {
-            beforeEach(function() {
-                state.games.currentGame.players['1'].cardsInPlay = [
-                    { uuid: '2', code: '00002', type: 'character', label: 'Test Character' },
-                    { uuid: '1', code: '00001', type: 'location', label: 'Test Location' },
-                    { uuid: '3', code: '00003', type: 'character', label: 'Test Character2' }
-                ];
-
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
-            });
-
-            it('should render locations on the bottom and characters on the top', function() {
-                var cards = TestUtils.scryRenderedComponentsWithType(component, Card);
-
-                expect(cards[0].props.card.code).toBe('00002');
-                expect(cards[1].props.card.code).toBe('00003');
-                expect(cards[2].props.card.code).toBe('00001');
-            });
-        });
-    });
-
-    describe('when other player has cards in play', function() {
-        describe('that include locations followed by characters', function() {
-            beforeEach(function() {
-                state.games.currentGame.players['1'].cardsInPlay = [
-                    { uuid: '1', code: '00001', type: 'location', label: 'Test Location' },
-                    { uuid: '2', code: '00002', type: 'character', label: 'Test Character' }
-                ];
-                state.games.currentGame.players['2'].cardsInPlay = [
-                    { uuid: '3', code: '00001', type: 'location', label: 'Test Location' },
-                    { uuid: '4', code: '00002', type: 'character', label: 'Test Character' }
-                ];
-
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
-            });
-
-            it('should render locations on the top and characters on the bottom', function() {
-                var cards = TestUtils.scryRenderedComponentsWithType(component, Card);
-
-                expect(cards[0].props.card.code).toBe('00001');
-                expect(cards[1].props.card.code).toBe('00002');
-            });
-        });
-
-        describe('that include characters followed by locations', function() {
-            beforeEach(function() {
-                state.games.currentGame.players['1'].cardsInPlay = [
-                    { uuid: '2', code: '00002', type: 'character', label: 'Test Character' },
-                    { uuid: '1', code: '00001', type: 'location', label: 'Test Location' }
-                ];
-                state.games.currentGame.players['2'].cardsInPlay = [
-                    { uuid: '4', code: '00002', type: 'character', label: 'Test Character' },
-                    { uuid: '3', code: '00001', type: 'location', label: 'Test Location' }
-                ];
-
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
-            });
-
-            it('should render locations on the top and characters on the bottom', function() {
-                var cards = TestUtils.scryRenderedComponentsWithType(component, Card);
-
-                expect(cards[0].props.card.code).toBe('00001');
-                expect(cards[1].props.card.code).toBe('00002');
-            });
-        });
-
-        describe('that include characters mixed with locations', function() {
-            beforeEach(function() {
-                state.games.currentGame.players['1'].cardsInPlay = [
-                    { uuid: '2', code: '00002', type: 'character', label: 'Test Character' },
-                    { uuid: '1', code: '00001', type: 'location', label: 'Test Location' },
-                    { uuid: '3', code: '00003', type: 'character', label: 'Test Character2' }
-                ];
-                state.games.currentGame.players['2'].cardsInPlay = [
-                    { uuid: '5', code: '00002', type: 'character', label: 'Test Character' },
-                    { uuid: '4', code: '00001', type: 'location', label: 'Test Location' },
-                    { uuid: '6', code: '00003', type: 'character', label: 'Test Character2' }
-                ];
-
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
-            });
-
-            it('should render locations on the top and characters on the bottom', function() {
-                var cards = TestUtils.scryRenderedComponentsWithType(component, Card);
-
-                expect(cards[0].props.card.code).toBe('00001');
-                expect(cards[1].props.card.code).toBe('00003');
-                expect(cards[2].props.card.code).toBe('00002');
-            });
-        });
-
-        describe('when the control is re-rendered', function() {
-            beforeEach(function() {
-                state.games.currentGame.players['1'].cardsInPlay = [
-                    { uuid: '1', code: '00001', type: 'location', label: 'Test Location' },
-                    { uuid: '2', code: '00002', type: 'character', label: 'Test Character' }
-                ];
-                state.games.currentGame.players['2'].cardsInPlay = [
-                    { uuid: '3', code: '00001', type: 'location', label: 'Test Location' },
-                    { uuid: '4', code: '00002', type: 'character', label: 'Test Character' }
-                ];
-
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
-            });
-
-            it('should still render the locations on top and characters on bottom', function() {
-                var cards = TestUtils.scryRenderedComponentsWithType(component, Card);
-
-                expect(cards[0].props.card.code).toBe('00001');
-                expect(cards[1].props.card.code).toBe('00002');
-            });
+    describe('when currentGame is not provided', () => {
+        it('should display waiting message', () => {
+            render(<InnerGameBoard {...defaultProps} currentGame={null} />);
+            expect(screen.getByText('Waiting for server...')).toBeInTheDocument();
         });
     });
 
-    xdescribe('card menus', function() {
-        describe('when there is no menu and the plot is clicked', function() {
-            it('should show the used plot popup', function() {
-                state.games.state.players['1'].activePlot = { code: '00001' };
-                state.games.state.players['1'].plotDiscard = [];
+    describe('when there are no players', () => {
+        it('should display waiting for players message', () => {
+            render(<InnerGameBoard {...defaultProps} currentGame={{ ...defaultProps.currentGame, players: {} }} />);
+            expect(screen.getByText('Waiting for game to have players or close...')).toBeInTheDocument();
+        });
+    });
 
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
-
-                var usedPlots = component.refs.thisPlayerUsedPlot;
-
-                TestUtils.Simulate.click(usedPlots);
-
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
-
-                var popup = TestUtils.scryRenderedDOMComponentsWithClass(component, 'plot-popup');
-
-                expect(popup.length).toBe(1);
-            });
+    describe('when rendered with a valid game', () => {
+        beforeEach(() => {
+            render(<InnerGameBoard {...defaultProps} />);
         });
 
-        xdescribe('when there is a menu and the plot is clicked', function() {
-            beforeEach(function() {
-                state.games.state.players['1'].activePlot = { code: '00001', menu: [{ text: 'Test', command: 'plot', method: 'testMethod', arg: 'test' }] };
-                state.games.state.players['1'].plotDiscard = [];
+        it('should render the game board', () => {
+            expect(document.querySelector('.game-board')).toBeInTheDocument();
+        });
 
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
+        it('should render the active player prompt', () => {
+            expect(screen.getByTestId('active-player-prompt')).toBeInTheDocument();
+        });
 
-                var usedPlots = component.refs.thisPlayerUsedPlot;
+        it('should render the chat component', () => {
+            expect(screen.getByTestId('chat')).toBeInTheDocument();
+        });
 
-                TestUtils.Simulate.click(usedPlots);
+        it('should render the controls component', () => {
+            expect(screen.getByTestId('controls')).toBeInTheDocument();
+        });
 
-                component = ReactDOM.render(<Provider store={ store }><GameBoard /></Provider>, node);
-                component = TestUtils.findRenderedComponentWithType(component, GameBoard).getWrappedInstance();
+        it('should render the card zoom component', () => {
+            expect(screen.getByTestId('card-zoom')).toBeInTheDocument();
+        });
 
-                this.popup = TestUtils.scryRenderedDOMComponentsWithClass(component, 'plot-popup');
-                this.menu = TestUtils.scryRenderedDOMComponentsWithClass(component, 'menu');
-            });
+        it('should render the rings', () => {
+            // Rings are rendered in the center bar
+            expect(screen.getAllByTestId('ring-air').length).toBeGreaterThanOrEqual(1);
+            expect(screen.getAllByTestId('ring-earth').length).toBeGreaterThanOrEqual(1);
+            expect(screen.getAllByTestId('ring-fire').length).toBeGreaterThanOrEqual(1);
+            expect(screen.getAllByTestId('ring-void').length).toBeGreaterThanOrEqual(1);
+            expect(screen.getAllByTestId('ring-water').length).toBeGreaterThanOrEqual(1);
+        });
+    });
 
-            describe('and then the menu option is clicked', function() {
-                it('should send a plot message with the right method and argument', function() {
-                    TestUtils.Simulate.click(this.menu[0].children[1]);
+    describe('when user is a spectator', () => {
+        beforeEach(() => {
+            render(<InnerGameBoard {...defaultProps} username="SpectatorUser" />);
+        });
 
-                    expect(state.socket.socket.emit).toHaveBeenCalledWith('plot', 'test', 'testMethod');
-                });
-            });
+        it('should render the game board', () => {
+            expect(document.querySelector('.game-board')).toBeInTheDocument();
+        });
+    });
 
-            it('should not show the plot deck popup', function() {
-                expect(this.popup.length).toBe(0);
-            });
+    describe('when there are two players', () => {
+        beforeEach(() => {
+            const otherPlayer = {
+                ...mockPlayer,
+                id: 'player2',
+                name: 'OtherPlayer',
+                user: {
+                    username: 'OtherPlayer',
+                    emailHash: 'def456'
+                }
+            };
 
-            it('should show the plot menu', function() {
-                expect(this.menu.length).toBe(1);
-                expect(this.menu[0].children[0].innerText).toBe('Show');
-                expect(this.menu[0].children[1].innerText).toBe('Test');
-            });
+            render(
+                <InnerGameBoard
+                    {...defaultProps}
+                    currentGame={{
+                        ...defaultProps.currentGame,
+                        players: {
+                            TestPlayer: mockPlayer,
+                            OtherPlayer: otherPlayer
+                        }
+                    }}
+                />
+            );
+        });
+
+        it('should render the game board', () => {
+            expect(document.querySelector('.game-board')).toBeInTheDocument();
+        });
+
+        it('should render dynasty rows for both players', () => {
+            const dynastyRows = screen.getAllByTestId('dynasty-row');
+            expect(dynastyRows.length).toBe(2);
+        });
+
+        it('should render stronghold rows for both players', () => {
+            const strongholdRows = screen.getAllByTestId('stronghold-row');
+            expect(strongholdRows.length).toBe(2);
+        });
+    });
+
+    describe('when a ring is removed from game', () => {
+        beforeEach(() => {
+            const ringsWithRemoved = {
+                ...mockRings,
+                air: { element: 'air', removedFromGame: true, attachments: [] }
+            };
+
+            render(
+                <InnerGameBoard
+                    {...defaultProps}
+                    currentGame={{
+                        ...defaultProps.currentGame,
+                        rings: ringsWithRemoved
+                    }}
+                />
+            );
+        });
+
+        it('should show the removed rings section', () => {
+            // The air ring should be in the removed section
+            const removedRingsSection = document.querySelector('.removed-rings');
+            expect(removedRingsSection).toBeInTheDocument();
+        });
+    });
+
+    describe('when in manual mode', () => {
+        beforeEach(() => {
+            render(
+                <InnerGameBoard
+                    {...defaultProps}
+                    currentGame={{
+                        ...defaultProps.currentGame,
+                        manualMode: true
+                    }}
+                />
+            );
+        });
+
+        it('should render the game board', () => {
+            expect(document.querySelector('.game-board')).toBeInTheDocument();
+        });
+    });
+
+    describe('when there is an active conflict', () => {
+        beforeEach(() => {
+            const activeConflict = {
+                attackingPlayerId: 'player1',
+                defendingPlayerId: 'player2',
+                attackerSkill: 5,
+                defenderSkill: 3,
+                type: 'military',
+                elements: ['fire']
+            };
+
+            render(
+                <InnerGameBoard
+                    {...defaultProps}
+                    currentGame={{
+                        ...defaultProps.currentGame,
+                        conflict: activeConflict
+                    }}
+                />
+            );
+        });
+
+        it('should render the conflict panel', () => {
+            const conflictPanel = document.querySelector('.conflict-panel');
+            expect(conflictPanel).toBeInTheDocument();
+        });
+
+        it('should display skill values', () => {
+            expect(screen.getByText('5')).toBeInTheDocument();
+        });
+    });
+
+    describe('player hand', () => {
+        it('should render player hand for the current player', () => {
+            render(<InnerGameBoard {...defaultProps} />);
+            expect(screen.getByTestId('player-hand')).toBeInTheDocument();
+            expect(screen.getByText('2 cards in hand')).toBeInTheDocument();
         });
     });
 });

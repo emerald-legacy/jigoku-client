@@ -1,61 +1,55 @@
 const escapeRegex = require('../util.js').escapeRegex;
 const logger = require('../log.js');
+const { toObjectId } = require('../db.js');
 
 class UserService {
     constructor(db) {
-        this.users = db.get('users');
+        this.users = db.collection('users');
     }
 
-    getUserByUsername(username) {
-        return this.users.find({ username: {'$regex': new RegExp('^' + escapeRegex(username.toLowerCase()) + '$', 'i') }})
-            .then(users => {
-                return users[0];
-            })
-            .catch(err => {
-                logger.error('Error fetching users', err);
-
-                throw new Error('Error occured fetching users');
+    async getUserByUsername(username) {
+        try {
+            return await this.users.findOne({
+                username: { $regex: new RegExp('^' + escapeRegex(username.toLowerCase()) + '$', 'i') }
             });
+        } catch(err) {
+            logger.error('Error fetching users', err);
+            throw new Error('Error occurred fetching users');
+        }
     }
 
-    getUserByEmail(email) {
-        return this.users.find({ email: {'$regex': new RegExp('^' + escapeRegex(email.toLowerCase()) + '$', 'i') }})
-            .then(users => {
-                return users[0];
-            })
-            .catch(err => {
-                logger.error('Error fetching users', err);
-
-                throw new Error('Error occured fetching users');
+    async getUserByEmail(email) {
+        try {
+            return await this.users.findOne({
+                email: { $regex: new RegExp('^' + escapeRegex(email.toLowerCase()) + '$', 'i') }
             });
+        } catch(err) {
+            logger.error('Error fetching users', err);
+            throw new Error('Error occurred fetching users');
+        }
     }
 
-    getUserById(id) {
-        return this.users.find({ _id: id })
-            .then(users => {
-                return users[0];
-            })
-            .catch(err => {
-                logger.error('Error fetching users', err);
-
-                throw new Error('Error occured fetching users');
-            });
+    async getUserById(id) {
+        try {
+            return await this.users.findOne({ _id: toObjectId(id) });
+        } catch(err) {
+            logger.error('Error fetching users', err);
+            throw new Error('Error occurred fetching users');
+        }
     }
 
-    addUser(user) {
-        return this.users.insert(user)
-            .then(() => {
-                return user;
-            })
-            .catch(err => {
-                logger.error('Error adding user', err, user);
-
-                throw new Error('Error occured adding user');
-            });
+    async addUser(user) {
+        try {
+            await this.users.insertOne(user);
+            return user;
+        } catch(err) {
+            logger.error('Error adding user', err, user);
+            throw new Error('Error occurred adding user');
+        }
     }
 
-    update(user) {
-        var toSet = {
+    async update(user) {
+        const toSet = {
             email: user.email,
             settings: user.settings,
             promptedActionWindows: user.promptedActionWindows,
@@ -66,48 +60,60 @@ class UserService {
             toSet.password = user.password;
         }
 
-        return this.users.update({ username: user.username }, { '$set': toSet }).catch(err => {
+        try {
+            return await this.users.updateOne({ username: user.username }, { $set: toSet });
+        } catch(err) {
             logger.error(err);
-
             throw new Error('Error setting user details');
-        });
+        }
     }
 
-    updateBlockList(user) {
-        return this.users.update({ username: user.username }, { '$set': {
-            blockList: user.blockList
-        } }).catch(err => {
+    async updateBlockList(user) {
+        try {
+            return await this.users.updateOne(
+                { username: user.username },
+                { $set: { blockList: user.blockList } }
+            );
+        } catch(err) {
             logger.error(err);
-
             throw new Error('Error setting user details');
-        });
+        }
     }
 
-    setResetToken(user, token, tokenExpiration) {
-        return this.users.update({ username: user.username }, { '$set': { resetToken: token, tokenExpires: tokenExpiration } })
-            .catch(err => {
-                logger.error(err);
-
-                throw new Error('Error setting reset token');
-            });
+    async setResetToken(user, token, tokenExpiration) {
+        try {
+            return await this.users.updateOne(
+                { username: user.username },
+                { $set: { resetToken: token, tokenExpires: tokenExpiration } }
+            );
+        } catch(err) {
+            logger.error(err);
+            throw new Error('Error setting reset token');
+        }
     }
 
-    setPassword(user, password) {
-        return this.users.update({ username: user.username }, { '$set': { password: password } })
-            .catch(err => {
-                logger.error(err);
-
-                throw new Error('Error setting password');
-            });
+    async setPassword(user, password) {
+        try {
+            return await this.users.updateOne(
+                { username: user.username },
+                { $set: { password: password } }
+            );
+        } catch(err) {
+            logger.error(err);
+            throw new Error('Error setting password');
+        }
     }
 
-    clearResetToken(user) {
-        return this.users.update({ username: user.username }, { '$set': { resetToken: undefined, tokenExpires: undefined } })
-            .catch(err => {
-                logger.error(err);
-
-                throw new Error('Error clearing reset token');
-            });
+    async clearResetToken(user) {
+        try {
+            return await this.users.updateOne(
+                { username: user.username },
+                { $unset: { resetToken: '', tokenExpires: '' } }
+            );
+        } catch(err) {
+            logger.error(err);
+            throw new Error('Error clearing reset token');
+        }
     }
 }
 

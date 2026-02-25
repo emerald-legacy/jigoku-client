@@ -1,27 +1,40 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
-class TextArea extends React.Component {
-    render() {
-        return (
-            <div className='form-group'>
-                <label htmlFor={ this.props.name } className={ this.props.labelClass + ' control-label' }>{ this.props.label }</label>
-                <div className={ this.props.fieldClass }>
-                    <textarea
-                        ref={ this.props.name }
-                        rows={ this.props.rows }
-                        className='form-control'
-                        id={ this.props.name }
-                        placeholder={ this.props.placeholder }
-                        value={ this.props.value }
-                        onChange={ this.props.onChange }
-                        onBlur={ this.props.onBlur } />
-                    { this.props.validationMessage ? <span className='help-block'>{ this.props.validationMessage } </span> : null }
-                </div>
-                { this.props.children }
+function TextArea({
+    children,
+    fieldClass,
+    label,
+    labelClass,
+    name,
+    onBlur,
+    onChange,
+    placeholder,
+    rows,
+    validationMessage,
+    value
+}) {
+    return (
+        <div className='form-group'>
+            <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
+                { label }
+            </label>
+            <div className={ fieldClass }>
+                <textarea
+                    rows={ rows }
+                    className='form-control'
+                    id={ name }
+                    placeholder={ placeholder }
+                    value={ value }
+                    onChange={ onChange }
+                    onBlur={ onBlur }
+                />
+                { validationMessage ? (
+                    <span className='help-block'>{ validationMessage } </span>
+                ) : null }
             </div>
-        );
-    }
+            { children }
+        </div>
+    );
 }
 
 TextArea.displayName = 'TextArea';

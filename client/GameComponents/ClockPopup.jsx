@@ -1,19 +1,16 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
-class ClockPopup extends React.Component {
-    render() {
-        return (
-            <div className='clock--popup'>
-                <div>{ this.props.clockName }</div>
-                <ul>
-                    { this.props.mainTime ? <li>Main Time (Minutes): { this.props.mainTime / 60 }</li> : '' }
-                    { this.props.periods ? <li>Number of Byoyomi Periods: { this.props.periods }</li> : '' }
-                    { this.props.timePeriod ? <li>Byoyomi Time Period (seconds): { this.props.timePeriod }</li> : '' }
-                </ul>
-            </div>
-        );
-    }
+function ClockPopup({ clockName, mainTime, periods, timePeriod }) {
+    return (
+        <div className='clock--popup'>
+            <div>{ clockName }</div>
+            <ul>
+                { mainTime ? <li>Main Time (Minutes): { mainTime / 60 }</li> : null }
+                { periods ? <li>Number of Byoyomi Periods: { periods }</li> : null }
+                { timePeriod ? <li>Byoyomi Time Period (seconds): { timePeriod }</li> : null }
+            </ul>
+        </div>
+    );
 }
 
 ClockPopup.displayName = 'ClockPopup';

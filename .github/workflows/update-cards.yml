@@ -1,0 +1,26 @@
+name: Update Card Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      force_images:
+        description: 'Re-download all images (even existing ones)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  update-cards:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update card data on Lightsail
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.LIGHTSAIL_HOST }}
+          username: ${{ secrets.LIGHTSAIL_USER }}
+          key: ${{ secrets.LIGHTSAIL_SSH_KEY }}
+          script: |
+            cd /opt/jigoku
+            FORCE_FLAG=${{ inputs.force_images == true && '--force' || '' }}
+            docker compose -f docker-compose.prod.yml exec -T lobby \
+              node server/scripts/fetchdata.js live $FORCE_FLAG

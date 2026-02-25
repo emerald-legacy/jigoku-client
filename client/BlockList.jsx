@@ -1,75 +1,88 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import _ from 'underscore';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 import Input from './FormComponents/Input.jsx';
 
 import * as actions from './actions';
 
-class InnerBlockList extends React.Component {
-    constructor(props) {
-        super(props);
+export function InnerBlockList({
+    addBlockListEntry,
+    apiError,
+    blockList,
+    blockListAdded,
+    blockListDeleted,
+    clearBlockListStatus,
+    loadBlockList,
+    loading,
+    removeBlockListEntry,
+    user
+}) {
+    const [username, setUsername] = useState('');
 
-        this.state = {
-            username: ''
-        };
-    }
+    useEffect(() => {
+        loadBlockList(user);
+    }, [loadBlockList, user]);
 
-    componentDidMount() {
-        this.props.loadBlockList(this.props.user);
-    }
-
-    onUsernameChange(event) {
-        this.setState({ username: event.target.value });
-    }
-
-    onAddClick(event) {
-        event.preventDefault();
-
-        this.props.addBlockListEntry(this.props.user, this.state.username);
-    }
-
-    onRemoveClick(username, event) {
-        event.preventDefault();
-
-        this.props.removeBlockListEntry(this.props.user, username);
-    }
-
-    render() {
-        let successPanel;
-
-        if(this.props.blockListAdded) {
-            setTimeout(() => {
-                this.props.clearBlockListStatus();
+    useEffect(() => {
+        if(blockListAdded || blockListDeleted) {
+            const timer = setTimeout(() => {
+                clearBlockListStatus();
             }, 5000);
-            successPanel = (
-                <AlertPanel message='Block list entry added successfully' type={ 'success' } />
-            );
+            return () => clearTimeout(timer);
         }
+    }, [blockListAdded, blockListDeleted, clearBlockListStatus]);
 
-        if(this.props.blockListDeleted) {
-            setTimeout(() => {
-                this.props.clearBlockListStatus();
-            }, 5000);
-            successPanel = (
-                <AlertPanel message='Block list entry removed successfully' type={ 'success' } />
-            );
+    const onUsernameChange = (event) => {
+        setUsername(event.target.value);
+    };
 
-        }
+    const onAddClick = (event) => {
+        event.preventDefault();
+        addBlockListEntry(user, username);
+    };
 
-        let content;
-        let blockList = _.map(this.props.blockList, user => {
-            return (
-                <tr key={ user }>
-                    <td>{ user }</td>
-                    <td><a href='#' className='btn' onClick={ this.onRemoveClick.bind(this, user) }><span className='glyphicon glyphicon-remove' /></a></td>
-                </tr>
-            );
-        });
+    const onRemoveClick = (usernameToRemove, event) => {
+        event.preventDefault();
+        removeBlockListEntry(user, usernameToRemove);
+    };
 
-        let table = (this.props.blockList && this.props.blockList.length === 0) ? <div>No users currently blocked</div> : (
+    let successPanel;
+
+    if(blockListAdded) {
+        successPanel = (
+            <AlertPanel message='Block list entry added successfully' type='success' />
+        );
+    }
+
+    if(blockListDeleted) {
+        successPanel = (
+            <AlertPanel message='Block list entry removed successfully' type='success' />
+        );
+    }
+
+    let content;
+
+    if(loading) {
+        content = <div>Loading block list from the server...</div>;
+    } else if(apiError) {
+        content = <AlertPanel type='error' message={ apiError } />;
+    } else {
+        const blockListRows = blockList && blockList.map((blockedUser) => (
+            <tr key={ blockedUser }>
+                <td>{ blockedUser }</td>
+                <td>
+                    <a href='#' className='btn' onClick={ (e) => onRemoveClick(blockedUser, e) }>
+                        <span className='glyphicon glyphicon-remove' />
+                    </a>
+                </td>
+            </tr>
+        ));
+
+        const table = (!blockList || blockList.length === 0) ? (
+            <div>No users currently blocked</div>
+        ) : (
             <table className='table table-striped blocklist'>
                 <thead>
                     <tr>
@@ -78,49 +91,52 @@ class InnerBlockList extends React.Component {
                     </tr>
                 </thead>
                 <tbody>
-                    { blockList }
+                    { blockListRows }
                 </tbody>
             </table>
         );
 
-        if(this.props.loading) {
-            content = <div>Loading block list from the server...</div>;
-        } else if(this.props.apiError) {
-            content = <AlertPanel type='error' message={ this.props.apiError } />;
-        } else {
-            content = (
-                <div className='col-sm-8 col-sm-offset-2 full-height'>
-                    <div className='about-container'>
-                        { successPanel }
+        content = (
+            <div className='col-sm-8 col-sm-offset-2 full-height'>
+                <div className='about-container'>
+                    { successPanel }
 
-                        { this.state.errorMessage ? <AlertPanel type='error' message={ this.state.errorMessage } /> : null }
-                        { this.state.successMessage ? <AlertPanel type='success' message={ this.state.successMessage } /> : null }
-
-                        <form className='form form-horizontal'>
-                            <div className='panel-title text-center'>
+                    <form className='form form-horizontal'>
+                        <div className='panel-title text-center'>
                             Block list
+                        </div>
+                        <div className='panel'>
+                            <p>
+                                It can sometimes become necessary to prevent someone joining your games,
+                                or stop seeing their messages, or both. Users on this list will not be
+                                able to join your games, and you will not see their chat messages or their games.
+                            </p>
+
+                            <div className='form-group'>
+                                <Input
+                                    name='blockee'
+                                    label='Username'
+                                    labelClass='col-sm-4'
+                                    fieldClass='col-sm-4'
+                                    placeholder='Enter username to block'
+                                    type='text'
+                                    onChange={ onUsernameChange }
+                                    value={ username }
+                                    noGroup
+                                />
+                                <button className='btn btn-primary col-sm-1' onClick={ onAddClick }>Add</button>
                             </div>
-                            <div className='panel'>
-                                <p>It can sometimes become necessary to prevent someone joining your games, or stop seeing their messages, or both.
-                                Users on this list will not be able to join your games, and you will not see their chat messages or their games.
-                                </p>
 
-                                <div className='form-group'>
-                                    <Input name='blockee' label='Username' labelClass='col-sm-4' fieldClass='col-sm-4' placeholder='Enter username to block'
-                                        type='text' onChange={ this.onUsernameChange.bind(this) } value={ this.state.username } noGroup />
-                                    <button className='btn btn-primary col-sm-1' onClick={ this.onAddClick.bind(this) }>Add</button>
-                                </div>
-
-                                <h3>Users Blocked</h3>
-                                { table }
-                            </div>
-                        </form>
-                    </div>
-                </div>);
-        }
-
-        return content;
+                            <h3>Users Blocked</h3>
+                            { table }
+                        </div>
+                    </form>
+                </div>
+            </div>
+        );
     }
+
+    return content;
 }
 
 InnerBlockList.displayName = 'BlockList';

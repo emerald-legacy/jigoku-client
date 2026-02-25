@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 function games(state = {
     games: []
 }, action) {
@@ -18,7 +16,7 @@ function games(state = {
                 games: action.games
             });
 
-            if(state.currentGame && !_.find(action.games, game => {
+            if(state.currentGame && !action.games.find(game => {
                 return game.id === state.currentGame.id;
             })) {
                 ret.currentGame = undefined;
@@ -42,7 +40,7 @@ function games(state = {
                 return retState;
             }
 
-            if(currentState && _.any(currentState.spectators, spectator => {
+            if(currentState && currentState.spectators.some(spectator => {
                 return spectator.name === action.username;
             })) {
                 return retState;
@@ -84,7 +82,9 @@ function games(state = {
                 passwordJoinType: undefined
             });
         case 'CLEAR_GAMESTATE':
-            retState = _.omit(state, 'currentGame');
+            // eslint-disable-next-line no-unused-vars
+            const { currentGame, ...stateWithoutGame } = state;
+            retState = stateWithoutGame;
             retState.newGame = false;
             return retState;
         case 'HANDOFF_RECEIVED':

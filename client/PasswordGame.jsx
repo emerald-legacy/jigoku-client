@@ -1,66 +1,58 @@
-import React from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 import * as actions from './actions';
 
-class InnerPasswordGame extends React.Component {
-    constructor() {
-        super();
+export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordGame, passwordJoinType, socket }) {
+    const [password, setPassword] = useState('');
 
-        this.state = {
-            password: ''
-        };
-    }
-
-    onJoinClick(event) {
+    const onJoinClick = (event) => {
         event.preventDefault();
 
-        if(this.props.passwordJoinType === 'Join') {
-            this.props.socket.emit('joingame', this.props.passwordGame.id, this.state.password);
-        } else if(this.props.passwordJoinType === 'Watch') {
-            this.props.socket.emit('watchgame', this.props.passwordGame.id, this.state.password);
+        if(passwordJoinType === 'Join') {
+            socket.emit('joingame', passwordGame.id, password);
+        } else if(passwordJoinType === 'Watch') {
+            socket.emit('watchgame', passwordGame.id, password);
         }
-    }
+    };
 
-    onCancelClick(event) {
-        this.props.cancelPasswordJoin();
-
+    const onCancelClick = (event) => {
         event.preventDefault();
+        cancelPasswordJoin();
+    };
+
+    const onPasswordChange = (event) => {
+        setPassword(event.target.value);
+    };
+
+    if(!passwordGame) {
+        return null;
     }
 
-    onPasswordChange(event) {
-        this.setState({ password: event.target.value });
-    }
-
-    render() {
-        if(!this.props.passwordGame) {
-            return null;
-        }
-
-        return (
-            <div>
-                <div className='col-sm-12'>
-                    <h3>Enter the password for { this.props.passwordGame.name }</h3>
+    return (
+        <div>
+            <div className='col-sm-12'>
+                <h3>Enter the password for { passwordGame.name }</h3>
+            </div>
+            <div className='col-sm-5 game-password'>
+                <input className='form-control' type='password' onChange={ onPasswordChange } value={ password } />
+            </div>
+            <div className='row' />
+            { passwordError ? (
+                <div className='col-sm-6'>
+                    <AlertPanel type='error' message={ passwordError } />
                 </div>
-                <div className='col-sm-5 game-password'>
-                    <input className='form-control' type='password' onChange={ this.onPasswordChange.bind(this) } value={ this.state.password }/>
+            ) : null }
+            <div className='col-sm-12'>
+                <div className='btn-group'>
+                    <button className='btn btn-primary' onClick={ onJoinClick }>{ passwordJoinType }</button>
+                    <button className='btn btn-primary' onClick={ onCancelClick }>Cancel</button>
                 </div>
-                <div className='row' />
-                { this.props.passwordError ?
-                    <div className='col-sm-6'>
-                        <AlertPanel type='error' message={ this.props.passwordError } />
-                    </div>
-                    : null }
-                <div className='col-sm-12'>
-                    <div className='btn-group'>
-                        <button className='btn btn-primary' onClick={ this.onJoinClick.bind(this) }>{ this.props.passwordJoinType }</button>
-                        <button className='btn btn-primary' onClick={ this.onCancelClick.bind(this) }>Cancel</button>
-                    </div>
-                </div>
-            </div>);
-    }
+            </div>
+        </div>
+    );
 }
 
 InnerPasswordGame.displayName = 'PasswordGame';
@@ -84,4 +76,3 @@ function mapStateToProps(state) {
 const PasswordGame = connect(mapStateToProps, actions)(InnerPasswordGame);
 
 export default PasswordGame;
-

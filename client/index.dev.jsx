@@ -1,13 +1,10 @@
 /*global user, authToken */
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
+import { Toaster } from 'sonner';
 import configureStore from './configureStore';
 import { navigate, login } from './actions';
-import DevTools from './DevTools';
-import 'bootstrap/dist/js/bootstrap';
-import ReduxToastr from 'react-redux-toastr';
-import { AppContainer } from 'react-hot-loader';
 
 const store = configureStore();
 
@@ -21,23 +18,23 @@ if(typeof user !== 'undefined') {
     store.dispatch(login(user, authToken, user.admin));
 }
 
+const container = document.getElementById('component');
+const root = createRoot(container);
+
 const render = () => {
     const Application = require('./Application.jsx').default;
-    ReactDOM.render(<AppContainer>
+    root.render(
         <Provider store={ store }>
             <div className='body'>
-                <ReduxToastr
-                    timeOut={ 4000 }
-                    newestOnTop
-                    preventDuplicates
+                <Toaster
                     position='top-right'
-                    transitionIn='fadeIn'
-                    transitionOut='fadeOut' />
+                    duration={ 4000 }
+                    richColors
+                />
                 <Application />
-                <DevTools />
             </div>
         </Provider>
-    </AppContainer>, document.getElementById('component'));
+    );
 };
 
 if(module.hot) {

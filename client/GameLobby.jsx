@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -10,68 +10,60 @@ import AlertPanel from './SiteComponents/AlertPanel.jsx';
 
 import * as actions from './actions';
 
-class InnerGameLobby extends React.Component {
-    constructor() {
-        super();
+export function InnerGameLobby({ bannerNotice, currentGame, games, newGame, passwordGame, setContextMenu, startNewGame, username }) {
+    const [errorMessage, setErrorMessage] = useState(undefined);
 
-        this.onNewGameClick = this.onNewGameClick.bind(this);
-
-        this.state = {
-            newGame: false
-        };
-    }
-
-    componentWillReceiveProps(props) {
-        if(!props.currentGame) {
-            this.props.setContextMenu([]);
+    useEffect(() => {
+        if(!currentGame) {
+            setContextMenu([]);
         }
+    }, [currentGame, setContextMenu]);
 
-        if(props.username) {
-            this.setState({ errorMessage: undefined });
+    useEffect(() => {
+        if(username) {
+            setErrorMessage(undefined);
         }
-    }
+    }, [username]);
 
-    onNewGameClick(event) {
+    const onNewGameClick = useCallback((event) => {
         event.preventDefault();
 
-        if(!this.props.username) {
-            this.setState({ errorMessage: 'Please login before trying to start a new game' });
-
+        if(!username) {
+            setErrorMessage('Please login before trying to start a new game');
             return;
         }
 
-        this.props.startNewGame();
+        startNewGame();
+    }, [username, startNewGame]);
+
+    let rightside = null;
+
+    if(passwordGame) {
+        rightside = <PasswordGame />;
+    } else if(currentGame) {
+        rightside = <PendingGame />;
     }
 
-    render() {
-        var rightside = null;
+    return (
+        <div className='full-height'>
+            { bannerNotice ? <AlertPanel type='error' message={ bannerNotice } /> : null }
+            { errorMessage ? <AlertPanel type='error' message={ errorMessage } /> : null }
 
-        if(this.props.passwordGame) {
-            rightside = <PasswordGame />;
-        } else if(this.props.currentGame) {
-            rightside = <PendingGame />;
-        }
-
-        return (
-            <div className='full-height'>
-                { this.props.bannerNotice ? <AlertPanel type='error' message={ this.props.bannerNotice } /> : null }
-                { this.state.errorMessage ? <AlertPanel type='error' message={ this.state.errorMessage } /> : null }
-
-                <div className='col-sm-7 full-height'>
-                    <div className='panel-title text-center'>
-                        Current Games
-                    </div>
-                    <div className='panel game-list-container'>
-                        <button className='btn btn-primary' onClick={ this.onNewGameClick } disabled={ !!this.props.currentGame }>New Game</button>
-                        { this.props.games.length === 0 ? <h4>No games are currently in progress</h4> : <GameList games={ this.props.games } /> }
-                    </div>
+            <div className='col-sm-7 full-height'>
+                <div className='panel-title text-center'>
+                    Current Games
                 </div>
-                <div className='col-sm-5'>
-                    { (!this.props.currentGame && this.props.newGame) ? <NewGame defaultGameName={ this.props.username + '\'s game' } /> : null }
-                    { rightside }
+                <div className='panel game-list-container'>
+                    <button className='btn btn-primary' onClick={ onNewGameClick } disabled={ !!currentGame }>New Game</button>
+                    { games.length === 0 ? <h4>No games are currently in progress</h4> : <GameList games={ games } /> }
                 </div>
-            </div>);
-    }
+            </div>
+            <div className='col-sm-5'>
+                { (!currentGame && newGame) ? <NewGame defaultGameName={ username + '\'s game' } /> : null }
+                { rightside }
+            </div>
+        </div>
+    );
 }
 
 InnerGameLobby.displayName = 'GameLobby';

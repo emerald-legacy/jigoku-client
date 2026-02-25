@@ -1,5 +1,3 @@
-const $ = require('jquery'); // eslint-disable-line no-unused-vars
-const _ = require('underscore');
 const axios = require('axios').default;
 const GameModes = require('./GameModes');
 
@@ -9,7 +7,7 @@ class ValidatorCache {
     }
 
     updateCache(key, value) {
-        if (typeof window === "undefined") {
+        if(typeof window === 'undefined') {
             return;
         }
 
@@ -22,21 +20,21 @@ class ValidatorCache {
     }
 
     getCache(key) {
-        if (typeof window === "undefined") {
+        if(typeof window === 'undefined') {
             return null;
         }
 
         const cachedValue = localStorage.getItem(key);
-        if (!cachedValue) {
+        if(!cachedValue) {
             return null;
         }
 
         const parsed = JSON.parse(cachedValue);
-        if (!parsed.expiryTime) {
+        if(!parsed.expiryTime) {
             localStorage.removeItem(key);
             return null;
         }
-        if (parsed.expiryTime < Date.now()) {
+        if(parsed.expiryTime < Date.now()) {
             localStorage.removeItem(key);
             return null;
         }
@@ -53,17 +51,17 @@ class DeckValidator {
     }
 
     async validateDeck(deck) {
-        let allCards = deck.provinceCards.concat(deck.dynastyCards).concat(deck.conflictCards).concat(deck.role).concat(deck.stronghold);
+        let allCards = (deck.provinceCards || []).concat(deck.dynastyCards || []).concat(deck.conflictCards || []).concat(deck.role || []).concat(deck.stronghold || []);
         let cardCountByName = {};
-        _.each(allCards, cardQuantity => {
-            if (cardQuantity.card) {
+        allCards.forEach(cardQuantity => {
+            if(cardQuantity.card) {
                 cardCountByName[cardQuantity.card.id] = 0;
                 cardCountByName[cardQuantity.card.id] += cardQuantity.count;
             }
         });
 
         let mode = this.gameMode;
-        if (mode === GameModes.Stronghold) {
+        if(mode === GameModes.Stronghold) {
             mode = 'standard';
         }
 
@@ -73,10 +71,11 @@ class DeckValidator {
         };
 
         const json = JSON.stringify(body);
-        const key = Buffer.from(json).toString('base64');
+        // Use btoa for browser compatibility (Buffer is Node.js only)
+        const key = btoa(unescape(encodeURIComponent(json)));
         const cachedValue = this.cache.getCache(key);
 
-        if (cachedValue) {
+        if(cachedValue) {
             return cachedValue;
         }
 
@@ -90,7 +89,7 @@ class DeckValidator {
             this.cache.updateCache(key, resultObj);
             // validatorCache.set(hash, resultObj, 600);
             return resultObj;
-        } catch (e) {
+        } catch(e) {
             return {
                 valid: undefined,
                 extendedStatus: ['Error Validating']
@@ -105,8 +104,10 @@ module.exports = async function validateDeck(deck, options) {
     let validator = new DeckValidator(options.packs, options.gameMode);
     let result = await validator.validateDeck(deck);
 
-    if (!options.includeExtendedStatus) {
-        return _.omit(result, 'extendedStatus');
+    if(!options.includeExtendedStatus) {
+        // eslint-disable-next-line no-unused-vars
+        const { extendedStatus, ...resultWithoutExtendedStatus } = result;
+        return resultWithoutExtendedStatus;
     }
 
     return result;

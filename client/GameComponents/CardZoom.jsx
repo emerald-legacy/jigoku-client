@@ -1,24 +1,22 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
-class CardZoom extends React.Component {
-    render() {
-        var zoomClass = 'card-large';
+function CardZoom({ cardName, imageUrl, orientation, show }) {
+    let zoomClass = 'card-large';
 
-        if(this.props.orientation === 'horizontal') {
-            zoomClass += '-horizontal';
-        }
-
-        return (
-            <div className={ zoomClass }>
-                { this.props.show && this.props.cardName !== undefined ?
-                    <div className='card-zoomed shadow no-highlight'>
-                        <span className='card-name'>{ this.props.cardName }</span>
-                        <img src={ this.props.imageUrl } />
-                    </div>
-                    : null }
-            </div>);
+    if(orientation === 'horizontal') {
+        zoomClass += '-horizontal';
     }
+
+    return (
+        <div className={ zoomClass }>
+            { show && cardName !== undefined ? (
+                <div className='card-zoomed shadow no-highlight'>
+                    <span className='card-name'>{ cardName }</span>
+                    <img src={ imageUrl } />
+                </div>
+            ) : null }
+        </div>
+    );
 }
 
 CardZoom.displayName = 'CardZoom';

@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Raven from 'raven-js';
 
 class ErrorBoundary extends React.Component {
     constructor(props) {
@@ -14,16 +13,15 @@ class ErrorBoundary extends React.Component {
         this.onReturnClick = this.onReturnClick.bind(this);
     }
 
-    componentWillReceiveProps(props) {
-        if(props.errorPath !== this.state.errorPath) {
-            this.setState({ error: null, errorPath: props.errorPath });
+    componentDidUpdate(prevProps) {
+        if(this.props.errorPath !== prevProps.errorPath) {
+            this.setState({ error: null, errorPath: this.props.errorPath });
         }
     }
 
     componentDidCatch(error, info) {
         this.setState({ error });
-
-        Raven.captureException(error, { extra: info });
+        console.error('React Error Boundary caught an error:', error, info);
     }
 
     onReturnClick(event) {
@@ -36,15 +34,15 @@ class ErrorBoundary extends React.Component {
 
     render() {
         if(this.state.error) {
-            return (<div
-                className='alert alert-danger'
-                onClick={ () => Raven.lastEventId() && Raven.showReportDialog() }>
-                <p>{ this.props.message }</p>
-                <p>There error has been logged, please click anywhere in this red box to fill out a more detailed report.</p>
+            return (
+                <div className='alert alert-danger'>
+                    <p>{ this.props.message }</p>
+                    <p>An error has been logged. Please try refreshing the page.</p>
 
-                { this.props.navigate &&
-                    <p>Click <a href='#' onClick={ this.onReturnClick }>here</a> to clear the error and return to the home page</p> }
-            </div>);
+                    { this.props.navigate &&
+                        <p>Click <a href='#' onClick={ this.onReturnClick }>here</a> to clear the error and return to the home page</p> }
+                </div>
+            );
         }
 
         return this.props.children;

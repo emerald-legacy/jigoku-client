@@ -3,10 +3,9 @@ import React from 'react';
 import { render } from 'react-dom';
 import Application from './Application.jsx';
 import { Provider } from 'react-redux';
+import { Toaster } from 'sonner';
 import configureStore from './configureStore';
 import { navigate, login } from './actions';
-import 'bootstrap/dist/js/bootstrap';
-import ReduxToastr from 'react-redux-toastr';
 import Raven from 'raven-js';
 
 import version from '../version.js';
@@ -74,13 +73,11 @@ if(typeof user !== 'undefined') {
 render(
     <Provider store={ store }>
         <div className='body'>
-            <ReduxToastr
-                timeOut={ 4000 }
-                newestOnTop
-                preventDuplicates
+            <Toaster
                 position='top-right'
-                transitionIn='fadeIn'
-                transitionOut='fadeOut' />
+                duration={ 4000 }
+                richColors
+            />
             <ErrorBoundary message={ 'We\'re sorry, a critical error has occured in the client and we\'re unable to show you anything.  Please try refreshing your browser after filling out a report.' }>
                 <Application />
             </ErrorBoundary>

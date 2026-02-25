@@ -1,25 +1,21 @@
-const monk = require('monk');
+const db = require('../db.js');
 const NewsService = require('../services/NewsService.js');
 const logger = require('../log.js');
-const config = require('config');
-
-let db = monk(config.dbPath);
-let newsService = new NewsService(db);
 
 module.exports.init = function(server) {
-    server.get('/api/news', function(req, res) {
-        newsService.getRecentNewsItems({ limit: req.query.limit })
-            .then(news => {
-                res.send({ success: true, news: news });
-            })
-            .catch(err => {
-                logger.error(err);
+    const newsService = new NewsService(db.getDb());
 
-                res.send({ success: false, message: 'Error loading news' });
-            });
+    server.get('/api/news', async function(req, res) {
+        try {
+            const news = await newsService.getRecentNewsItems({ limit: req.query.limit });
+            res.send({ success: true, news: news });
+        } catch(err) {
+            logger.error(err);
+            res.send({ success: false, message: 'Error loading news' });
+        }
     });
 
-    server.put('/api/news', function(req, res) {
+    server.put('/api/news', async function(req, res) {
         if(!req.user) {
             return res.status(401).send({ message: 'Unauthorized' });
         }
@@ -28,14 +24,16 @@ module.exports.init = function(server) {
             return res.status(403).send({ message: 'Forbidden' });
         }
 
-        newsService.addNews({ poster: req.user.username, text: req.body.text, datePublished: new Date() })
-            .then(() => {
-                res.send({ success: true });
-            })
-            .catch(err => {
-                logger.error(err);
-
-                res.send({ success: false, message: 'Error saving news item' });
+        try {
+            await newsService.addNews({
+                poster: req.user.username,
+                text: req.body.text,
+                datePublished: new Date()
             });
+            res.send({ success: true });
+        } catch(err) {
+            logger.error(err);
+            res.send({ success: false, message: 'Error saving news item' });
+        }
     });
 };

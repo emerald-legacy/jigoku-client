@@ -1,212 +1,274 @@
-import React from 'react';
+import { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import $ from 'jquery';
-import _ from 'underscore';
-import {connect} from 'react-redux';
+import axios from 'axios';
+import { connect } from 'react-redux';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 import * as actions from './actions';
 
-export class InnerRegister extends React.Component {
-    constructor() {
-        super();
+export function InnerRegister({ navigate, register, socket }) {
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [password1, setPassword1] = useState('');
+    const [validation, setValidation] = useState({});
+    const [error, setError] = useState('');
 
-        this.onRegister = this.onRegister.bind(this);
-        this.onChange = this.onChange.bind(this);
-        this.verifyUsername = this.verifyUsername.bind(this);
-        this.verifyEmail = this.verifyEmail.bind(this);
-        this.verifyPassword = this.verifyPassword.bind(this);
+    const verifyUsername = useCallback(
+        (isSubmitting, currentUsername = username) => {
+            const newValidation = { ...validation };
+            delete newValidation['username'];
 
-        this.state = {
-            username: '',
-            email: '',
-            password: '',
-            password1: '',
-            validation: {}
-        };
-    }
+            if(currentUsername.length < 3 || currentUsername.length > 15) {
+                newValidation['username'] =
+                    'Username must be between 3 and 15 characters long';
+            }
 
-    verifyUsername(event, isSubmitting) {
-        var validation = this.state.validation;
+            if(!/^[A-Z0-9_-]+$/i.test(currentUsername)) {
+                newValidation['username'] =
+                    'Usernames must only use the characters a-z, 0-9, _ and -';
+            }
 
-        delete validation['username'];
+            if(isSubmitting) {
+                return newValidation;
+            }
 
-        if(this.state.username.length < 3 || this.state.username.length > 15) {
-            validation['username'] = 'Username must be between 3 and 15 characters long';
-        }
+            axios
+                .post('/api/account/check-username', { username: currentUsername })
+                .then((response) => {
+                    if(response.data.message) {
+                        newValidation['username'] = response.data.message;
+                    }
+                })
+                .finally(() => {
+                    setValidation({ ...newValidation });
+                });
 
-        if(!/^[A-Z0-9_-]+$/i.test(this.state.username)) {
-            validation['username'] = 'Usernames must only use the characters a-z, 0-9, _ and -';
-        }
+            return newValidation;
+        },
+        [username, validation]
+    );
 
-        if(isSubmitting) {
-            this.setState({ validation: validation });
-            return;
-        }
+    const verifyEmail = useCallback(
+        (currentEmail = email) => {
+            const newValidation = { ...validation };
+            delete newValidation['email'];
 
-        $.post('/api/account/check-username', { username: this.state.username })
-            .done((data) => {
-                if(data.message) {
-                    validation['username'] = data.message;
-                }
-            })
-            .always(() => {
-                this.setState({ validation: validation });
-            });
-    }
+            if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(currentEmail)) {
+                newValidation['email'] = 'Please enter a valid email address';
+            }
 
-    verifyEmail() {
-        var validation = this.state.validation;
+            return newValidation;
+        },
+        [email, validation]
+    );
 
-        delete validation['email'];
+    const verifyPassword = useCallback(
+        (isSubmitting, currentPassword = password, currentPassword1 = password1) => {
+            const newValidation = { ...validation };
+            delete newValidation['password'];
 
-        if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(this.state.email)) {
-            validation['email'] = 'Please enter a valid email address';
-        }
+            if(currentPassword.length < 6) {
+                newValidation['password'] =
+                    'The password you specify must be at least 6 characters long';
+            }
 
-        this.setState({ validation: validation });
-    }
+            if(isSubmitting && !currentPassword1) {
+                newValidation['password'] = 'Please enter your password again';
+            }
 
-    verifyPassword(event, isSubmitting) {
-        var validation = this.state.validation;
+            if(
+                currentPassword &&
+                currentPassword1 &&
+                currentPassword !== currentPassword1
+            ) {
+                newValidation['password'] =
+                    'The passwords you have specified do not match';
+            }
 
-        delete validation['password'];
+            return newValidation;
+        },
+        [password, password1, validation]
+    );
 
-        if(this.state.password.length < 6) {
-            validation['password'] = 'The password you specify must be at least 6 characters long';
-        }
+    const handleUsernameBlur = () => {
+        const newValidation = verifyUsername(false, username);
+        setValidation(newValidation);
+    };
 
-        if(isSubmitting && !this.state.password1) {
-            validation['password'] = 'Please enter your password again';
-        }
+    const handleEmailBlur = () => {
+        const newValidation = verifyEmail(email);
+        setValidation(newValidation);
+    };
 
-        if(this.state.password && this.state.password1 && this.state.password !== this.state.password1) {
-            validation['password'] = 'The passwords you have specified do not match';
-        }
+    const handlePasswordBlur = () => {
+        const newValidation = verifyPassword(false, password, password1);
+        setValidation(newValidation);
+    };
 
-        this.setState({ validation: validation });
-    }
-
-    onChange(field, event) {
-        var newState = {};
-
-        newState[field] = event.target.value;
-        this.setState(newState);
-    }
-
-    onRegister(event) {
+    const onRegister = (event) => {
         event.preventDefault();
 
-        this.setState({ error: '' });
+        setError('');
 
-        this.verifyEmail();
-        this.verifyPassword({}, true);
-        this.verifyUsername({}, true);
+        // Validate all fields synchronously
+        let combinedValidation = {};
 
-        if(_.any(this.state.validation, function(message) {
-            return message && message !== '';
-        })) {
-            this.setState({ error: 'There was an error in one or more fields, please see below, correct the error and try again' });
+        // Check email
+        if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
+            combinedValidation['email'] = 'Please enter a valid email address';
+        }
+
+        // Check password
+        if(password.length < 6) {
+            combinedValidation['password'] =
+                'The password you specify must be at least 6 characters long';
+        }
+        if(!password1) {
+            combinedValidation['password'] = 'Please enter your password again';
+        }
+        if(password && password1 && password !== password1) {
+            combinedValidation['password'] =
+                'The passwords you have specified do not match';
+        }
+
+        // Check username
+        if(username.length < 3 || username.length > 15) {
+            combinedValidation['username'] =
+                'Username must be between 3 and 15 characters long';
+        }
+        if(!/^[A-Z0-9_-]+$/i.test(username)) {
+            combinedValidation['username'] =
+                'Usernames must only use the characters a-z, 0-9, _ and -';
+        }
+
+        setValidation(combinedValidation);
+
+        // Check if any validation errors exist
+        const hasErrors = Object.values(combinedValidation).some(
+            (message) => message && message !== ''
+        );
+
+        if(hasErrors) {
+            setError(
+                'There was an error in one or more fields, please see below, correct the error and try again'
+            );
             return;
         }
 
-        $.ajax({
-            url: '/api/account/register',
-            type: 'POST',
-            data: JSON.stringify({ username: this.state.username, password: this.state.password, email: this.state.email }),
-            contentType: 'application/json'
-        }).done((data) => {
-            if(!data.success) {
-                this.setState({ error: data.message });
-                return;
-            }
+        axios
+            .post('/api/account/register', { username, password, email })
+            .then((response) => {
+                const data = response.data;
+                if(!data.success) {
+                    setError(data.message);
+                    return;
+                }
 
-            this.props.register(data.user, data.token);
-            this.props.socket.emit('authenticate', data.token);
-            this.props.navigate('/');
-        }).fail(() => {
-            this.setState({ error: 'Could not communicate with the server.  Please try again later.' });
-        });
-    }
+                register(data.user, data.token);
+                socket.emit('authenticate', data.token);
+                navigate('/');
+            })
+            .catch(() => {
+                setError('Could not communicate with the server.  Please try again later.');
+            });
+    };
 
-    render() {
-        var fields = [
-            {
-                name: 'username',
-                label: 'Username',
-                placeholder: 'Username',
-                inputType: 'text',
-                blurCallback: (event) => this.verifyUsername(event, false)
-            },
-            {
-                name: 'email',
-                label: 'email Address',
-                placeholder: 'email Address',
-                inputType: 'email',
-                blurCallback: this.verifyEmail
-            },
-            {
-                name: 'password',
-                label: 'Password',
-                placeholder: 'Password',
-                inputType: 'password',
-                blurCallback: this.verifyPassword
-            },
-            {
-                name: 'password1',
-                label: 'Password (again)',
-                placeholder: 'Password (again)',
-                inputType: 'password',
-                blurCallback: this.verifyPassword
-            }
-        ];
-        var fieldsToRender = [];
-        var errorBar = this.state.error ? <AlertPanel type='error' message={ this.state.error } /> : null;
+    const fields = [
+        {
+            name: 'username',
+            label: 'Username',
+            placeholder: 'Username',
+            inputType: 'text',
+            blurCallback: handleUsernameBlur,
+            value: username,
+            onChange: (e) => setUsername(e.target.value)
+        },
+        {
+            name: 'email',
+            label: 'email Address',
+            placeholder: 'email Address',
+            inputType: 'email',
+            blurCallback: handleEmailBlur,
+            value: email,
+            onChange: (e) => setEmail(e.target.value)
+        },
+        {
+            name: 'password',
+            label: 'Password',
+            placeholder: 'Password',
+            inputType: 'password',
+            blurCallback: handlePasswordBlur,
+            value: password,
+            onChange: (e) => setPassword(e.target.value)
+        },
+        {
+            name: 'password1',
+            label: 'Password (again)',
+            placeholder: 'Password (again)',
+            inputType: 'password',
+            blurCallback: handlePasswordBlur,
+            value: password1,
+            onChange: (e) => setPassword1(e.target.value)
+        }
+    ];
 
-        _.each(fields, (field) => {
-            var className = 'form-group';
-            var validation = null;
+    const fieldsToRender = fields.map((field) => {
+        let className = 'form-group';
+        let validationElement = null;
 
-            if(this.state.validation[field.name]) {
-                className += ' has-error';
-                validation = <span className='help-block'>{ this.state.validation[field.name] }</span>;
-            }
-
-            fieldsToRender.push(
-                <div key={ field.name } className={ className }>
-                    <label htmlFor={ field.name } className='col-sm-4 control-label'>{ field.label }</label>
-                    <div className='col-sm-7'>
-                        <input type={ field.inputType }
-                            ref={ field.name }
-                            className='form-control'
-                            id={ field.name }
-                            placeholder={ field.placeholder }
-                            value={ this.state[field.name] }
-                            onChange={ this.onChange.bind(this, field.name) }
-                            onBlur={ field.blurCallback } />
-                        { validation }
-                    </div>
-                </div>);
-        });
+        if(validation[field.name]) {
+            className += ' has-error';
+            validationElement = (
+                <span className='help-block'>{ validation[field.name] }</span>
+            );
+        }
 
         return (
-            <div className='col-sm-6 col-sm-offset-3'>
-                { errorBar }
-                <div className='panel-title'>
-                    Register an account
+            <div key={ field.name } className={ className }>
+                <label htmlFor={ field.name } className='col-sm-4 control-label'>
+                    { field.label }
+                </label>
+                <div className='col-sm-7'>
+                    <input
+                        type={ field.inputType }
+                        className='form-control'
+                        id={ field.name }
+                        placeholder={ field.placeholder }
+                        value={ field.value }
+                        onChange={ field.onChange }
+                        onBlur={ field.blurCallback }
+                    />
+                    { validationElement }
                 </div>
-                <div className='panel'>
-                    <form className='form form-horizontal'>
-                        { fieldsToRender }
-                        <div className='form-group'>
-                            <div className='col-sm-offset-4 col-sm-3'>
-                                <button ref='submit' type='submit' className='btn btn-primary' onClick={ this.onRegister }>Register</button>
-                            </div>
+            </div>
+        );
+    });
+
+    const errorBar = error ? <AlertPanel type='error' message={ error } /> : null;
+
+    return (
+        <div className='col-sm-6 col-sm-offset-3'>
+            { errorBar }
+            <div className='panel-title'>Register an account</div>
+            <div className='panel'>
+                <form className='form form-horizontal'>
+                    { fieldsToRender }
+                    <div className='form-group'>
+                        <div className='col-sm-offset-4 col-sm-3'>
+                            <button
+                                type='submit'
+                                className='btn btn-primary'
+                                onClick={ onRegister }
+                            >
+                                Register
+                            </button>
                         </div>
-                    </form>
-                </div>
-            </div>);
-    }
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 }
 
 InnerRegister.displayName = 'Register';

@@ -1,49 +1,77 @@
-import React from 'react';
+import { useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'underscore';
-import $ from 'jquery';
 
 import Card from './Card.jsx';
 import { tryParseJSON } from '../util.js';
 
-class PlayerHand extends React.Component {
-    onDragOver(event) {
-        $(event.target).addClass('highlight-panel');
+function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut, onMouseOver }) {
+    const handleDragOver = useCallback((event) => {
+        event.target.classList.add('highlight-panel');
         event.preventDefault();
-    }
+    }, []);
 
-    onDragLeave(event) {
-        $(event.target).removeClass('highlight-panel');
-    }
+    const handleDragLeave = useCallback((event) => {
+        event.target.classList.remove('highlight-panel');
+    }, []);
 
-    onDragDrop(event, target) {
+    const handleDragDrop = useCallback((event, target) => {
         event.stopPropagation();
         event.preventDefault();
 
-        $(event.target).removeClass('highlight-panel');
+        event.target.classList.remove('highlight-panel');
 
-        let card = event.dataTransfer.getData('Text');
+        const cardData = event.dataTransfer.getData('Text');
 
-        if(!card) {
+        if(!cardData) {
             return;
         }
 
-        let dragData = tryParseJSON(card);
+        const dragData = tryParseJSON(cardData);
         if(!dragData) {
             return;
         }
 
-        if(this.props.onDragDrop) {
-            this.props.onDragDrop(dragData.card, dragData.source, target);
+        if(onDragDrop) {
+            onDragDrop(dragData.card, dragData.source, target);
         }
-    }
+    }, [onDragDrop]);
 
-    getCards(needsSquish) {
-        let handLength = this.props.cards ? this.props.cards.length : 0;
+    const getCardWidth = useCallback(() => {
+        switch(cardSize) {
+            case 'small':
+                return 65 * 0.8;
+            case 'large':
+                return 65 * 1.4;
+            case 'x-large':
+                return 65 * 2;
+            case 'normal':
+            default:
+                return 65;
+        }
+    }, [cardSize]);
+
+    const cardWidth = getCardWidth();
+
+    const maxWidth = useMemo(() => {
+        switch(cardSize) {
+            case 'small':
+            case 'large':
+            case 'x-large':
+            case 'xxl':
+                return cardWidth * 7.5;
+            default:
+                return 480;
+        }
+    }, [cardSize, cardWidth]);
+
+    const needsSquish = cards && cards.length * cardWidth > maxWidth;
+
+    const handCards = useMemo(() => {
+        const handLength = cards ? cards.length : 0;
         let cardIndex = 1;
-        let cardWidth = this.getCardWidth();
         let attachmentOffset = 13;
-        switch(this.props.cardSize) {
+
+        switch(cardSize) {
             case 'large':
                 attachmentOffset *= 1.4;
                 break;
@@ -55,8 +83,7 @@ class PlayerHand extends React.Component {
                 break;
         }
 
-        let hand = _.map(this.props.cards, card => {
-            let style = {};
+        return cards?.map((card) => {
             let className = '';
             if(needsSquish) {
                 className += ' squish';
@@ -68,91 +95,63 @@ class PlayerHand extends React.Component {
                 }
             }
 
-            return (<Card key={ card.uuid } card={ card } className={ className } style={ style } disableMouseOver={ !this.props.isMe } source='hand'
-                onMouseOver={ this.props.onMouseOver }
-                onMouseOut={ this.props.onMouseOut }
-                onClick={ this.props.onCardClick }
-                onDragDrop={ this.props.onDragDrop }
-                size={ this.props.cardSize } />);
-        });
+            return (
+                <Card
+                    key={ card.uuid }
+                    card={ card }
+                    className={ className }
+                    style={ {} }
+                    disableMouseOver={ !isMe }
+                    source='hand'
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    onClick={ onCardClick }
+                    onDragDrop={ onDragDrop }
+                    size={ cardSize }
+                />
+            );
+        }) || [];
+    }, [cards, cardSize, needsSquish, cardWidth, isMe, onMouseOver, onMouseOut, onCardClick, onDragDrop]);
 
-        return hand;
+    let className = 'panel hand';
+    let titleBarClassName = 'hand-title-bar no-highlight';
+
+    if(cardSize !== 'normal') {
+        className += ' ' + cardSize;
+        titleBarClassName += ' ' + cardSize;
     }
 
-    getCardWidth() {
-        switch(this.props.cardSize) {
-            case 'small':
-                return 65 * 0.8;
-            case 'large':
-                return 65 * 1.4;
-            case 'x-large':
-                return 65 * 2;
-            case 'normal':
-            default:
-                return 65;
-        }
+    // Calculate dynamic width based on number of cards
+    let handWidth = maxWidth;
+    if(cards && !needsSquish) {
+        handWidth = Math.max(cardWidth * cards.length, cardWidth);
     }
 
-    render() {
-        let className = 'panel hand';
-        let titleBarClassName = 'hand-title-bar no-highlight';
+    if(needsSquish) {
+        className += ' squish';
+    }
 
-        if(this.props.cardSize !== 'normal') {
-            className += ' ' + this.props.cardSize;
-            titleBarClassName += ' ' + this.props.cardSize;
-        }
+    const handStyle = { width: handWidth + 'px' };
+    const titleBarStyle = { width: handWidth + 'px' };
 
-        let cardWidth = this.getCardWidth();
-        let maxWidth = 480;
-
-        // Calculate width based on card size
-        switch(this.props.cardSize) {
-            case 'small':
-                maxWidth = cardWidth * 7.5;
-                break;
-            case 'large':
-                maxWidth = cardWidth * 7.5;
-                break;
-            case 'x-large':
-                maxWidth = cardWidth * 7.5;
-                break;
-            case 'xxl':
-                maxWidth = cardWidth * 7.5;
-                break;
-        }
-
-        let needsSquish = this.props.cards && this.props.cards.length * cardWidth > maxWidth;
-
-        // Calculate dynamic width based on number of cards
-        let handWidth = maxWidth;
-        if(this.props.cards && !needsSquish) {
-            handWidth = Math.max(cardWidth * this.props.cards.length, cardWidth);
-        }
-
-        if(needsSquish) {
-            className += ' squish';
-        }
-
-        let cards = this.getCards(needsSquish);
-
-        let handStyle = { width: handWidth + 'px' };
-        let titleBarStyle = { width: handWidth + 'px' };
-
-        return (<div>
+    return (
+        <div>
             <grip>
-                <div className={ titleBarClassName } style={ titleBarStyle } >
-                    { 'Hand (' + cards.length + ')' }
+                <div className={ titleBarClassName } style={ titleBarStyle }>
+                    { 'Hand (' + handCards.length + ')' }
                 </div>
             </grip>
-            <div className={ className }
+            <div
+                className={ className }
                 style={ handStyle }
-                onDragLeave={ this.onDragLeave }
-                onDragOver={ this.onDragOver }
-                onDrop={ event => this.onDragDrop(event, 'hand') }>
-                { cards }
+                onDragLeave={ handleDragLeave }
+                onDragOver={ handleDragOver }
+                onDrop={ (event) => handleDragDrop(event, 'hand') }
+            >
+                { handCards }
             </div>
-        </div>);
-    }
+        </div>
+    );
 }
 
 PlayerHand.displayName = 'PlayerHand';

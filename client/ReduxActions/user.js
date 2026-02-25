@@ -1,4 +1,4 @@
-import $ from 'jquery';
+import axios from 'axios';
 
 export function refreshUser(user, token) {
     return {
@@ -13,7 +13,7 @@ export function loadBlockList(user) {
         types: ['REQUEST_BLOCKLIST', 'RECEIVE_BLOCKLIST'],
         shouldCallAPI: () => true,
         callAPI: () => {
-            return $.ajax(`/api/account/${user.username}/blocklist`);
+            return axios.get(`/api/account/${user.username}/blocklist`).then(response => response.data);
         }
     };
 }
@@ -22,11 +22,9 @@ export function addBlockListEntry(user, username) {
     return {
         types: ['ADD_BLOCKLIST', 'BLOCKLIST_ADDED'],
         shouldCallAPI: () => true,
-        callAPI: () => $.ajax({
-            url: `/api/account/${user.username}/blocklist`,
-            type: 'POST',
-            data: { username: username }
-        })
+        callAPI: () => axios.post(`/api/account/${user.username}/blocklist`, {
+            username: username
+        }).then(response => response.data)
     };
 }
 
@@ -34,10 +32,8 @@ export function removeBlockListEntry(user, username) {
     return {
         types: ['DELETE_BLOCKLIST', 'BLOCKLIST_DELETED'],
         shouldCallAPI: () => true,
-        callAPI: () => $.ajax({
-            url: `/api/account/${user.username}/blocklist/${username}`,
-            type: 'DELETE'
-        })
+        callAPI: () => axios.delete(`/api/account/${user.username}/blocklist/${username}`)
+            .then(response => response.data)
     };
 }
 

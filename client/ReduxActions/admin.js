@@ -1,10 +1,10 @@
-import $ from 'jquery';
+import axios from 'axios';
 
 export function findUser(username) {
     return {
         types: ['REQUEST_FINDUSER', 'RECEIVE_FINDUSER'],
         shouldCallAPI: () => true,
-        callAPI: () => $.ajax('/api/user/' + username, { cache: false })
+        callAPI: () => axios.get('/api/user/' + username).then(response => response.data)
     };
 }
 
@@ -12,11 +12,9 @@ export function saveUser(user) {
     return {
         types: ['SAVE_USER', 'USER_SAVED'],
         shouldCallAPI: () => true,
-        callAPI: () => $.ajax('/api/user/' + user.username, {
-            cache: false,
-            type: 'PUT',
-            data: { data: JSON.stringify(user) }
-        })
+        callAPI: () => axios.put('/api/user/' + user.username, {
+            data: JSON.stringify(user)
+        }).then(response => response.data)
     };
 }
 

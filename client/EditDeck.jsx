@@ -1,4 +1,4 @@
-import React from 'react';
+import { useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
@@ -8,68 +8,58 @@ import AlertPanel from './SiteComponents/AlertPanel.jsx';
 
 import * as actions from './actions';
 
-class InnerEditDeck extends React.Component {
-    constructor() {
-        super();
-
-        this.onEditDeck = this.onEditDeck.bind(this);
-    }
-
-    componentWillMount() {
-        if(this.props.deckId) {
-            return this.props.loadDeck(this.props.deckId);
-        } else if(this.props.deck) {
-            this.props.setUrl('/decks/edit/' + this.props.deck._id);
-
-            return this.props.loadDeck(this.props.deck._id);
+export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDeck, loading, navigate, saveDeck, setUrl }) {
+    useEffect(() => {
+        if(deckId) {
+            loadDeck(deckId);
+        } else if(deck) {
+            setUrl('/decks/edit/' + deck._id);
+            loadDeck(deck._id);
         }
-    }
+    }, [deckId, deck, loadDeck, setUrl]);
 
-    componentWillUpdate() {
-        if(this.props.deckSaved) {
-            this.props.navigate('/decks');
-
-            return;
+    useEffect(() => {
+        if(deckSaved) {
+            navigate('/decks');
         }
-    }
+    }, [deckSaved, navigate]);
 
-    onEditDeck(deck) {
-        this.props.saveDeck(deck);
-    }
+    const handleEditDeck = useCallback((deckData) => {
+        saveDeck(deckData);
+    }, [saveDeck]);
 
-    render() {
-        let content;
+    let content;
 
-        if(this.props.loading) {
-            content = <div>Loading decks from the server...</div>;
-        } else if(this.props.apiError) {
-            content = <AlertPanel type='error' message={ this.props.apiError } />;
-        } else if(!this.props.deck) {
-            content = <AlertPanel message='The specified deck was not found' type='error' />;
-        } else {
-            content = (
-                <div>
-                    <div className='col-sm-6'>
-                        <div className='panel-title text-center'>
-                            Deck Editor
-                        </div>
-                        <div className='panel'>
-                            <DeckEditor mode='Save' onDeckSave={ this.onEditDeck } />
-                        </div>
+    if(loading) {
+        content = <div>Loading decks from the server...</div>;
+    } else if(apiError) {
+        content = <AlertPanel type='error' message={ apiError } />;
+    } else if(!deck) {
+        content = <AlertPanel message='The specified deck was not found' type='error' />;
+    } else {
+        content = (
+            <div>
+                <div className='col-sm-6'>
+                    <div className='panel-title text-center'>
+                        Deck Editor
                     </div>
-                    <div className='col-sm-6'>
-                        <div className='panel-title text-center col-xs-12'>
-                            { this.props.deck.name }
-                        </div>
-                        <div className='panel col-xs-12'>
-                            <DeckSummary cards={ this.props.cards } deck={ this.props.deck } />
-                        </div>
+                    <div className='panel'>
+                        <DeckEditor mode='Save' onDeckSave={ handleEditDeck } />
                     </div>
-                </div>);
-        }
-
-        return content;
+                </div>
+                <div className='col-sm-6'>
+                    <div className='panel-title text-center col-xs-12'>
+                        { deck.name }
+                    </div>
+                    <div className='panel col-xs-12'>
+                        <DeckSummary cards={ cards } deck={ deck } />
+                    </div>
+                </div>
+            </div>
+        );
     }
+
+    return content;
 }
 
 InnerEditDeck.displayName = 'InnerEditDeck';

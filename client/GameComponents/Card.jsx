@@ -1,213 +1,265 @@
-import React from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
-import _ from 'underscore';
-import $ from 'jquery';
-import 'jquery-migrate';
-import 'jquery-nearest';
 
 import CardMenu from './CardMenu.jsx';
 import CardStats from './CardStats.jsx';
 import CardCounters from './CardCounters.jsx';
 import CardPile from './CardPile.jsx';
 
-class Card extends React.Component {
-    constructor() {
-        super();
+const shortNames = {
+    honor: 'H',
+    stand: 'T',
+    poison: 'O',
+    gold: 'G',
+    valarmorghulis: 'V',
+    betrayal: 'B',
+    vengeance: 'N'
+};
 
-        this.onMouseOver = this.onMouseOver.bind(this);
-        this.onMouseOut = this.onMouseOut.bind(this);
-        this.onMenuItemClick = this.onMenuItemClick.bind(this);
+// Native implementation of finding nearest element matching selector
+function findNearestElement(element, selector) {
+    const rect = element.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
 
-        this.state = {
-            showPopup: false,
-            showMenu: false
-        };
+    const candidates = document.querySelectorAll(selector);
+    let nearest = null;
+    let minDistance = Infinity;
 
-        this.shortNames = {
-            honor: 'H',
-            stand: 'T',
-            poison: 'O',
-            gold: 'G',
-            valarmorghulis: 'V',
-            betrayal: 'B',
-            vengeance: 'N'
-        };
-    }
-
-    onMouseOver(card) {
-        if(this.props.onMouseOver) {
-            this.props.onMouseOver(card);
+    candidates.forEach(candidate => {
+        if(candidate === element || candidate.contains(element)) {
+            return;
         }
-    }
-
-    onMouseOut() {
-        if(this.props.onMouseOut) {
-            this.props.onMouseOut();
+        const candidateRect = candidate.getBoundingClientRect();
+        const candidateCenterX = candidateRect.left + candidateRect.width / 2;
+        const candidateCenterY = candidateRect.top + candidateRect.height / 2;
+        const distance = Math.sqrt(
+            Math.pow(centerX - candidateCenterX, 2) +
+            Math.pow(centerY - candidateCenterY, 2)
+        );
+        if(distance < minDistance) {
+            minDistance = distance;
+            nearest = candidate;
         }
-    }
+    });
 
-    onCardDragStart(event, card, source) {
-        var dragData = { card: card, source: source };
+    return nearest;
+}
 
+function Card(props) {
+    const {
+        card,
+        className,
+        declaring,
+        disableMouseOver,
+        id,
+        isInPopup,
+        isMe,
+        onClick,
+        onCloseClick,
+        onDragDrop,
+        onMenuItemClick,
+        onMouseOut,
+        onMouseOver,
+        orientation = 'vertical',
+        player,
+        popupLocation,
+        showStats,
+        size,
+        source,
+        style,
+        title,
+        wrapped = true
+    } = props;
+
+    const [showPopup, setShowPopup] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
+    const [touchStart, setTouchStart] = useState(null);
+    const cardRef = useRef(null);
+
+    const handleMouseOver = useCallback((cardData) => {
+        if(onMouseOver) {
+            onMouseOver(cardData);
+        }
+    }, [onMouseOver]);
+
+    const handleMouseOut = useCallback(() => {
+        if(onMouseOut) {
+            onMouseOut();
+        }
+    }, [onMouseOut]);
+
+    const onCardDragStart = useCallback((event, cardData, sourceArea) => {
+        const dragData = { card: cardData, source: sourceArea };
         event.dataTransfer.setData('Text', JSON.stringify(dragData));
-    }
+    }, []);
 
-    onTouchMove(event) {
+    const onTouchMove = useCallback((event) => {
         event.preventDefault();
-        var touch = event.targetTouches[0];
-
+        const touch = event.targetTouches[0];
         event.currentTarget.style.left = touch.screenX - 32 + 'px';
         event.currentTarget.style.top = touch.screenY - 42 + 'px';
         event.currentTarget.style.position = 'fixed';
-    }
+    }, []);
 
-    getReactComponentFromDOMNode(dom) {
-        for(var key in dom) {
+    const getReactComponentFromDOMNode = useCallback((dom) => {
+        for(const key in dom) {
             if(key.indexOf('__reactInternalInstance$') === 0) {
-                var compInternals = dom[key]._currentElement;
-                var compWrapper = compInternals._owner;
-                var comp = compWrapper._instance;
+                const compInternals = dom[key]._currentElement;
+                const compWrapper = compInternals._owner;
+                const comp = compWrapper._instance;
                 return comp;
             }
         }
-
         return null;
-    }
+    }, []);
 
-    onTouchStart(event) {
-        this.setState({ touchStart: $(event.currentTarget).offset() });
-    }
+    const onTouchStart = useCallback((event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        setTouchStart({ left: rect.left, top: rect.top });
+    }, []);
 
-    onTouchEnd(event) {
-        var target = $(event.currentTarget);
-        var nearestPile = target.nearest('.card-pile, .hand, .player-board');
+    const onTouchEnd = useCallback((event) => {
+        const target = event.currentTarget;
+        const targetRect = target.getBoundingClientRect();
+        const nearestPile = findNearestElement(target, '.card-pile, .hand, .player-board');
 
-        var pilePosition = nearestPile.offset();
-        var cardPosition = target.offset();
-
-        if(cardPosition.left === this.state.touchStart.left && cardPosition.top === this.state.touchStart.top) {
+        if(!nearestPile) {
             return;
         }
 
-        if(cardPosition.left + target.width() > pilePosition.left - 10 && cardPosition.left < pilePosition.left + nearestPile.width() + 10) {
-            var dropTarget = '';
+        const pileRect = nearestPile.getBoundingClientRect();
 
-            if(_.includes(nearestPile.attr('class'), 'hand')) {
+        if(touchStart && targetRect.left === touchStart.left && targetRect.top === touchStart.top) {
+            return;
+        }
+
+        if(targetRect.left + targetRect.width > pileRect.left - 10 && targetRect.left < pileRect.left + pileRect.width + 10) {
+            let dropTarget = '';
+            const pileClasses = nearestPile.className || '';
+
+            if(pileClasses.includes('hand')) {
                 dropTarget = 'hand';
-            } else if(_.includes(nearestPile.attr('class'), 'player-board')) {
+            } else if(pileClasses.includes('player-board')) {
                 dropTarget = 'play area';
-            } else if(nearestPile.length > 0) {
-                var component = this.getReactComponentFromDOMNode(nearestPile[0]);
-                dropTarget = component.props.source;
+            } else {
+                const component = getReactComponentFromDOMNode(nearestPile);
+                if(component) {
+                    dropTarget = component.props.source;
+                }
             }
 
-            if(dropTarget && this.props.onDragDrop) {
-                this.props.onDragDrop(this.props.card, this.props.source, dropTarget);
+            if(dropTarget && onDragDrop) {
+                onDragDrop(card, source, dropTarget);
             }
         }
 
-        target.css({ left: this.state.touchStart.left + 'px', top: this.state.touchStart.top + 'px' });
+        if(touchStart) {
+            target.style.left = touchStart.left + 'px';
+            target.style.top = touchStart.top + 'px';
+        }
         event.currentTarget.style.position = 'initial';
-    }
+    }, [touchStart, card, source, onDragDrop, getReactComponentFromDOMNode]);
 
-    isAllowedMenuSource() {
-        return this.props.source === 'play area';
-    }
-
-    onClick(event, card) {
+    const handleClick = useCallback((event, cardData) => {
         event.preventDefault();
         event.stopPropagation();
 
-        if(!_.isEmpty(this.props.card.menu)) {
-            this.setState({ showMenu: !this.state.showMenu });
-
+        if(card.menu && card.menu.length > 0) {
+            setShowMenu(prev => !prev);
             return;
         }
 
-        if(this.props.card.showPopup) {
-            this.setState({ showPopup: !this.state.showPopup });
+        if(card.showPopup) {
+            setShowPopup(prev => !prev);
             return;
         }
 
-        if(this.props.onClick) {
-            this.props.onClick(card);
+        if(onClick) {
+            onClick(cardData);
         }
-    }
+    }, [card, onClick]);
 
-    onMenuItemClick(menuItem) {
-        if(this.props.onMenuItemClick) {
-            this.props.onMenuItemClick(this.props.card, menuItem);
-            this.setState({ showMenu: !this.state.showMenu });
+    const handleMenuItemClick = useCallback((menuItem) => {
+        if(onMenuItemClick) {
+            onMenuItemClick(card, menuItem);
+            setShowMenu(prev => !prev);
         }
-    }
+    }, [card, onMenuItemClick]);
 
-    getCountersForCard(card) {
-        var counters = {};
+    const getCountersForCard = useCallback((cardData) => {
+        const counters = {};
         let statusFlag = 1;
-        if(card.isHonored) {
+        if(cardData.isHonored) {
             statusFlag *= 2;
         }
-        if(card.isDishonored) {
+        if(cardData.isDishonored) {
             statusFlag *= 3;
         }
-        if(card.isTainted) {
+        if(cardData.isTainted) {
             statusFlag *= 5;
         }
 
-        counters['card-fate'] = card.fate ? { count: card.fate, fade: card.type === 'attachment', shortName: 'F' } : undefined;
-        counters['card-honor'] = card.honor ? { count: card.honor, fade: card.type === 'attachment', shortName: 'H' } : undefined;
+        counters['card-fate'] = cardData.fate ? { count: cardData.fate, fade: cardData.type === 'attachment', shortName: 'F' } : undefined;
+        counters['card-honor'] = cardData.honor ? { count: cardData.honor, fade: cardData.type === 'attachment', shortName: 'H' } : undefined;
         if(statusFlag > 1) {
-            counters['card-status'] = { count: statusFlag, fade: card.type === 'attachment', shortName: 'Hd' };
+            counters['card-status'] = { count: statusFlag, fade: cardData.type === 'attachment', shortName: 'Hd' };
         } else {
             counters['card-status'] = undefined;
         }
 
-        _.each(card.tokens, (token, key) => {
-            counters[key] = { count: token, fade: card.type === 'attachment', shortName: this.shortNames[key] };
-        });
+        if(cardData.tokens) {
+            Object.entries(cardData.tokens).forEach(([key, token]) => {
+                counters[key] = { count: token, fade: cardData.type === 'attachment', shortName: shortNames[key] };
+            });
+        }
 
-        _.each(card.attachments, attachment => {
-            _.extend(counters, this.getCountersForCard(attachment));
-        });
+        if(cardData.attachments) {
+            cardData.attachments.forEach(attachment => {
+                Object.assign(counters, getCountersForCard(attachment));
+            });
+        }
 
-        var filteredCounters = _.omit(counters, counter => {
-            return _.isUndefined(counter) || _.isNull(counter) || counter < 0;
+        // Filter out undefined, null, or negative counters
+        const filteredCounters = {};
+        Object.entries(counters).forEach(([key, counter]) => {
+            if(counter !== undefined && counter !== null && !(typeof counter === 'number' && counter < 0)) {
+                filteredCounters[key] = counter;
+            }
         });
 
         return filteredCounters;
-    }
+    }, []);
 
-    getWrapper() {
+    const getWrapper = useCallback(() => {
         let wrapperClassName = '';
-        if(this.props.source === 'play area') {
+        if(source === 'play area') {
             wrapperClassName += ' at-home';
         }
-        if(this.props.card.inConflict) {
+        if(card.inConflict) {
             wrapperClassName += ' conflict';
-            if(!this.props.declaring) {
+            if(!declaring) {
                 wrapperClassName += ' activeCombatant';
             }
         }
-        if(this.props.size !== 'normal') {
-            wrapperClassName += ' ' + this.props.size;
+        if(size !== 'normal') {
+            wrapperClassName += ' ' + size;
         }
-        if(this.props.isMe) {
+        if(isMe) {
             wrapperClassName += ' is-mine';
         }
 
         return wrapperClassName;
-    }
+    }, [source, card, declaring, size, isMe]);
 
-    getWrapperStyle() {
+    const getWrapperStyle = useCallback(() => {
         let wrapperStyle = {};
         let attachmentOffset = 13;
         let cardHeight = 84;
 
-        const card = this.props.card;
-        const player = this.props.player;
         const cardPile = player && card && player.cardPiles[card.uuid];
 
-        switch(this.props.size) {
+        switch(size) {
             case 'large':
                 attachmentOffset *= 1.4;
                 cardHeight *= 1.4;
@@ -222,61 +274,60 @@ class Card extends React.Component {
                 break;
         }
 
-        let attachmentCount = this.props.source === 'play area' ? _.size(this.props.card.attachments) : 0;
-        let attachments = this.props.card.attachments;
+        const attachmentCount = source === 'play area' && card.attachments ? card.attachments.length : 0;
+        const attachments = card.attachments || [];
         let totalTiers = 0;
-        _.forEach(attachments, attachment => {
+        attachments.forEach(attachment => {
             if(attachment.bowed) {
                 totalTiers += 1;
             }
         });
 
         if(attachmentCount > 0) {
-            wrapperStyle = { marginLeft:(4 + attachmentCount * attachmentOffset) + 'px', minHeight: (cardHeight + totalTiers * attachmentOffset) + 'px', marginTop: cardPile ? '25px' : '0px' };
-        } else if(this.props.source === 'play area') {
-            wrapperStyle = {marginLeft: '4px', marginRight: '4px', marginTop: cardPile ? '25px' : '0px'};
+            wrapperStyle = { marginLeft: (4 + attachmentCount * attachmentOffset) + 'px', minHeight: (cardHeight + totalTiers * attachmentOffset) + 'px', marginTop: cardPile ? '25px' : '0px' };
+        } else if(source === 'play area') {
+            wrapperStyle = { marginLeft: '4px', marginRight: '4px', marginTop: cardPile ? '25px' : '0px' };
         }
 
-
         return wrapperStyle;
-    }
+    }, [card, player, size, source]);
 
-    getCardPile() {
-        const card = this.props.card;
-        const player = this.props.player;
+    const getCardPileElement = useCallback(() => {
         const cardPile = player && card && player.cardPiles[card.uuid];
         if(!cardPile || !cardPile.length) {
             return null;
         }
 
-        return (<CardPile
-            source='none'
-            title={ `${card.name}` }
-            className={ 'underneath' }
-            cards={ cardPile }
-            onMouseOver={ this.props.onMouseOver }
-            onMouseOut={ this.props.onMouseOut }
-            onCardClick={ this.props.onClick }
-            popupLocation='top'
-            showPopup
-            popupLocation={ 'top' }
-            onDragDrop={ this.props.onDragDrop }
-            topCard={ cardPile[0] }
-            hiddenTopCard
-            cardCount={ cardPile.length }
-            size={ this.props.size } />);
-    }
+        return (
+            <CardPile
+                source='none'
+                title={ `${card.name}` }
+                className={ 'underneath' }
+                cards={ cardPile }
+                onMouseOver={ onMouseOver }
+                onMouseOut={ onMouseOut }
+                onCardClick={ onClick }
+                popupLocation='top'
+                showPopup
+                onDragDrop={ onDragDrop }
+                topCard={ cardPile[0] }
+                hiddenTopCard
+                cardCount={ cardPile.length }
+                size={ size }
+            />
+        );
+    }, [card, player, onMouseOver, onMouseOut, onClick, onDragDrop, size]);
 
-    getAttachments() {
+    const getAttachments = useCallback(() => {
         const provinces = ['province 1', 'province 2', 'province 3', 'province 4', 'stronghold province'];
-        if(this.props.source !== 'play area' && !provinces.includes(this.props.source)) {
+        if(source !== 'play area' && !provinces.includes(source)) {
             return null;
         }
 
         let attachmentOffset = 13;
         let cardHeight = 84;
         let cardLayer = 45;
-        switch(this.props.size) {
+        switch(size) {
             case 'large':
                 attachmentOffset *= 1.4;
                 cardHeight *= 1.4;
@@ -290,36 +341,41 @@ class Card extends React.Component {
                 cardHeight *= 2;
                 break;
         }
-        var index = 1;
-        var attachments = _.map(this.props.card.attachments, attachment => {
-            var returnedAttachment = (<Card id={ attachment.uuid } key={ attachment.uuid } source={ this.props.source } card={ attachment }
-                className={ 'attachment' } wrapped={ false } style={ {marginLeft: (-1 * (index * attachmentOffset)) + 'px', marginTop:(-1 * cardHeight - attachmentOffset * (attachment.bowed ? 1 : 0)) + 'px', zIndex: (cardLayer - index)} }
-                onMouseOver={ this.props.disableMouseOver ? null : this.onMouseOver.bind(this, attachment) }
-                onMouseOut={ this.props.disableMouseOver ? null : this.onMouseOut }
-                onClick={ this.props.onClick }
-                onMenuItemClick={ this.props.onMenuItemClick }
-                onDragStart={ ev => this.onCardDragStart(ev, attachment, this.props.source) }
-                size={ this.props.size } />);
+
+        if(!card.attachments) {
+            return null;
+        }
+
+        let index = 1;
+        const attachmentElements = card.attachments.map(attachment => {
+            const returnedAttachment = (
+                <Card
+                    key={ attachment.uuid }
+                    id={ attachment.uuid }
+                    source={ source }
+                    card={ attachment }
+                    className={ 'attachment' }
+                    wrapped={ false }
+                    style={ { marginLeft: (-1 * (index * attachmentOffset)) + 'px', marginTop: (-1 * cardHeight - attachmentOffset * (attachment.bowed ? 1 : 0)) + 'px', zIndex: (cardLayer - index) } }
+                    onMouseOver={ disableMouseOver ? null : () => handleMouseOver(attachment) }
+                    onMouseOut={ disableMouseOver ? null : handleMouseOut }
+                    onClick={ onClick }
+                    onMenuItemClick={ onMenuItemClick }
+                    onDragStart={ ev => onCardDragStart(ev, attachment, source) }
+                    size={ size }
+                />
+            );
 
             index += 1;
-
             return returnedAttachment;
         });
 
-        return attachments;
-    }
+        return attachmentElements;
+    }, [card, source, size, disableMouseOver, handleMouseOver, handleMouseOut, onClick, onMenuItemClick, onCardDragStart]);
 
-    renderUnderneathCards() {
-        // TODO: Right now it is assumed that all cards in the childCards array
-        // are being placed underneath the current card. In the future there may
-        // be other types of cards in this array and it should be filtered.
-        let underneathCards = this.props.card.childCards;
+    const renderUnderneathCards = useCallback(() => {
+        const underneathCards = card.childCards;
         if(!underneathCards || underneathCards.length === 0) {
-            return;
-        }
-
-        const cardPile = underneathCards;
-        if(!cardPile || !cardPile.length) {
             return null;
         }
 
@@ -328,242 +384,128 @@ class Card extends React.Component {
                 source='none'
                 title={ 'Underneath' }
                 className={ 'beside' }
-                cards={ cardPile }
-                onMouseOver={ this.props.onMouseOver }
-                onMouseOut={ this.props.onMouseOut }
-                onCardClick={ this.props.onClick }
+                cards={ underneathCards }
+                onMouseOver={ onMouseOver }
+                onMouseOut={ onMouseOut }
+                onCardClick={ onClick }
                 popupLocation='top'
                 showPopup
-                isMe={ this.props.isMe }
-                popupLocation={ 'top' }
-                onDragDrop={ this.props.onDragDrop }
-                topCard={ cardPile[0] }
+                isMe={ isMe }
+                onDragDrop={ onDragDrop }
+                topCard={ underneathCards[0] }
                 hiddenTopCard
-                cardCount={ cardPile.length }
-                size={ this.props.size }
-            />);
-    }
+                cardCount={ underneathCards.length }
+                size={ size }
+            />
+        );
+    }, [card, onMouseOver, onMouseOut, onClick, isMe, onDragDrop, size]);
 
-    getCardOrder() {
-        if(!this.props.card.order) {
+    const getCardOrder = useCallback(() => {
+        if(!card.order) {
             return null;
         }
+        return (<div className='card-order'>{ card.order }</div>);
+    }, [card]);
 
-        return (<div className='card-order'>{ this.props.card.order }</div>);
-    }
-
-    showMenu() {
-        /*
-        if(!this.isAllowedMenuSource()) {
-            return false;
-        }*/
-
-        if(!this.props.card.menu || !this.state.showMenu) {
+    const shouldShowMenu = useCallback(() => {
+        if(!card.menu || !showMenu) {
             return false;
         }
-
         return true;
-    }
+    }, [card, showMenu]);
 
-    isFacedown() {
-        return this.props.card.facedown || !this.props.card.id;
-    }
+    const isFacedown = useCallback(() => {
+        return card.facedown || !card.id;
+    }, [card]);
 
-    isInPopup() {
-        if(this.props.isInPopup) {
-            return true;
+    const getCardImagePath = useCallback(() => {
+        if(card.packId) {
+            return '/img/cards/' + card.id + '-' + card.packId + '.jpg';
         }
-        return this.props.card.facedown || !this.props.card.id;
-    }
+        return '/img/cards/' + card.id + '.jpg';
+    }, [card]);
 
-    getCard() {
-        var cardClass = 'card';
-        var imageClass = 'card-image';
-        var cardBack = 'cardback.png';
-
-        if(!this.props.card) {
-            return <div />;
-        }
-
-        if(this.props.size !== 'normal') {
-            cardClass += ' ' + this.props.size;
-            imageClass += ' ' + this.props.size;
-        }
-
-        /* No custom cards currently
-        if(this.props.card.code && this.props.card.code.startsWith('custom')) {
-            cardClass += ' custom-card';
-        }
-        */
-
-        cardClass += ' card-type-' + this.props.card.type;
-
-        if(this.props.orientation === 'bowed' || this.props.card.bowed) {
-            cardClass += ' horizontal';
-            imageClass += ' vertical bowed';
-        } else if(this.props.card.isBroken) {
-            cardClass += ' vertical';
-            imageClass += ' vertical broken';
-        } else {
-            cardClass += ' vertical';
-            imageClass += ' vertical';
-        }
-
-        if(this.props.card.unselectable) {
-            cardClass += ' unselectable';
-        }
-
-        if(this.props.card.selected) {
-            cardClass += ' selected';
-        } else if(this.props.card.selectable) {
-            cardClass += ' selectable';
-        } else if(this.props.card.inDanger) {
-            cardClass += ' in-danger';
-        } else if(this.props.card.saved) {
-            cardClass += ' saved';
-        } else if(this.props.card.inConflict) {
-            cardClass += ' conflict';
-        } else if(this.props.card.covert) {
-            cardClass += ' covert';
-        } else if(this.props.card.controlled) {
-            cardClass += ' controlled';
-        } else if(this.props.card.new) {
-            cardClass += ' new';
-        }
-
-        if(this.props.className) {
-            cardClass += ' ' + this.props.className;
-        }
-
-        if(this.props.card.isConflict || this.props.source === 'conflict deck') {
-            cardBack = 'conflictcardback.png';
-        } else if(this.props.card.isDynasty || this.props.source === 'dynasty deck') {
-            cardBack = 'dynastycardback.png';
-        } else if(this.props.card.isProvince || this.props.source === 'province deck') {
-            cardBack = 'provincecardback.png';
-        } else {
-            cardBack = 'cardback.png';
-        }
-
-        const card = this.props.card;
-        const player = this.props.player;
-        const cardPile = player && card && player.cardPiles[card.uuid];
-
-        let className = 'card-frame';
-        if(cardPile) {
-            className += ' card-pile-frame';
-        }
-
-        return (
-            <div className={ className } ref='cardFrame'
-                onTouchMove={ ev => this.onTouchMove(ev) }
-                onTouchEnd={ ev => this.onTouchEnd(ev) }
-                onTouchStart={ ev => this.onTouchStart(ev) }>
-                { this.getCardOrder() }
-                <div className={ cardClass } // this renders borders in cardClass
-                    style={ this.props.wrapped ? {} : this.props.style }
-                    id={ this.props.id }
-                    onMouseOver={ this.props.disableMouseOver ? null : this.onMouseOver.bind(this, this.props.card) }
-                    onMouseOut={ this.props.disableMouseOver ? null : this.onMouseOut }
-                    onClick={ ev => this.onClick(ev, this.props.card) }
-                    onDragStart={ ev => this.onCardDragStart(ev, this.props.card, this.props.source) }
-                    draggable>
-                    <div>
-                        <span className='card-name'>{ this.props.card.name }</span>
-                        <img className={ imageClass } src={ '/img/cards/' + (!this.isFacedown() && !this.props.card.isToken ? (this.props.card.id + '.jpg') : cardBack) } />
-                    </div>
-                    <CardCounters counters={ this.getCountersForCard(this.props.card) } />
-                </div>
-                { this.showMenu() ? <CardMenu menu={ this.props.card.menu } onMenuItemClick={ this.onMenuItemClick } /> : null }
-                { !this.showMenu() && this.props.showStats ?
-                    <CardStats
-                        text={ this.props.card.name }
-                        militarySkillSummary={ this.props.card.militarySkillSummary }
-                        politicalSkillSummary={ this.props.card.politicalSkillSummary }
-                        glorySummary={ this.props.card.glorySummary }
-                    /> : null
-                }
-                { this.getPopup() }
-            </div>);
-    }
-
-    onCloseClick(event) {
+    const onCloseClickHandler = useCallback((event) => {
         event.preventDefault();
         event.stopPropagation();
 
-        this.setState({ showPopup: !this.state.showPopup });
+        setShowPopup(prev => !prev);
 
-        if(this.props.onCloseClick) {
-            this.props.onCloseClick();
+        if(onCloseClick) {
+            onCloseClick();
         }
-    }
+    }, [onCloseClick]);
 
-    onPopupCardClick(card) {
-        this.setState({ showPopup: false });
+    const onPopupCardClick = useCallback((cardData) => {
+        setShowPopup(false);
 
-        if(this.props.onClick) {
-            this.props.onClick(card);
+        if(onClick) {
+            onClick(cardData);
         }
-    }
+    }, [onClick]);
 
-    onPopupMenuItemClick() {
-        this.setState({ showPopup: false });
+    const onPopupMenuItemClick = useCallback(() => {
+        setShowPopup(false);
 
-        if(this.props.onClick) {
-            this.props.onClick(this.props.card);
+        if(onClick) {
+            onClick(card);
         }
-    }
+    }, [onClick, card]);
 
-    getPopup() {
-        let popup = null;
+    const getPopup = useCallback(() => {
         let cardIndex = 0;
 
-        let cardList = _.map(this.props.card.attachments, card => {
+        const cardList = (card.attachments || []).map(attachmentCard => {
             let cardKey = cardIndex++;
-            if(!this.props.isMe) {
-                card = { facedown: true, isDynasty: card.isDynasty, isConflict: card.isConflict };
+            let displayCard = attachmentCard;
+            if(!isMe) {
+                displayCard = { facedown: true, isDynasty: attachmentCard.isDynasty, isConflict: attachmentCard.isConflict };
             } else {
-                cardKey = card.uuid;
+                cardKey = attachmentCard.uuid;
             }
-            return (<Card key={ cardKey } card={ card } source={ this.props.source }
-                disableMouseOver={ this.props.disableMouseOver || !this.props.isMe }
-                onMouseOver={ this.props.onMouseOver }
-                onMouseOut={ this.props.onMouseOut }
-                onTouchMove={ this.props.onTouchMove }
-                onClick={ this.onPopupCardClick.bind(this, card) }
-                onDragDrop={ this.props.onDragDrop }
-                orientation={ this.props.orientation === 'bowed' ? 'vertical' : this.props.orientation }
-                size={ this.props.size } />);
+            return (
+                <Card
+                    key={ cardKey }
+                    card={ displayCard }
+                    source={ source }
+                    disableMouseOver={ disableMouseOver || !isMe }
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    onClick={ () => onPopupCardClick(displayCard) }
+                    onDragDrop={ onDragDrop }
+                    orientation={ orientation === 'bowed' ? 'vertical' : orientation }
+                    size={ size }
+                />
+            );
         });
 
-        if(!this.props.card.showPopup || !this.state.showPopup) {
+        if(!card.showPopup || !showPopup) {
             return null;
         }
 
         let popupClass = 'panel';
         let arrowClass = 'arrow lg';
 
-        if(this.props.popupLocation === 'top') {
+        if(popupLocation === 'top') {
             popupClass += ' our-side';
             arrowClass += ' down';
         } else {
             arrowClass += ' up';
         }
 
-        if(this.props.orientation === 'horizontal') {
+        if(orientation === 'horizontal') {
             arrowClass = 'arrow lg left';
         }
 
         let linkIndex = 0;
+        const popupMenu = (<div>{ [<a className='btn btn-default' key={ linkIndex++ } onClick={ () => onPopupMenuItemClick() }>Select Card</a>] }</div>);
 
-        let popupMenu = (<div>{ [<a className='btn btn-default' key={ linkIndex++ } onClick={ () => this.onPopupMenuItemClick() }>Select Card</a>] }</div>);
-
-        popup = (
+        return (
             <div className='popup'>
                 <div className='panel-title' onClick={ event => event.stopPropagation() }>
-                    <span className='text-center'>{ this.props.title }</span>
+                    <span className='text-center'>{ title }</span>
                     <span className='pull-right'>
-                        <a className='close-button glyphicon glyphicon-remove' onClick={ this.onCloseClick.bind(this) } />
+                        <a className='close-button glyphicon glyphicon-remove' onClick={ onCloseClickHandler } />
                     </span>
                 </div>
                 <div className={ popupClass } onClick={ event => event.stopPropagation() }>
@@ -573,24 +515,131 @@ class Card extends React.Component {
                     </div>
                     <div className={ arrowClass } />
                 </div>
-            </div>);
+            </div>
+        );
+    }, [card, source, disableMouseOver, isMe, onMouseOver, onMouseOut, onDragDrop, orientation, size, showPopup, popupLocation, title, onCloseClickHandler, onPopupCardClick, onPopupMenuItemClick]);
 
-        return popup;
-    }
+    const getCardElement = useCallback(() => {
+        let cardClass = 'card';
+        let imageClass = 'card-image';
+        let cardBack = 'cardback.png';
 
-    render() {
-        if(this.props.wrapped) {
-            return (
-                <div className={ 'card-wrapper ' + this.getWrapper() } style={ Object.assign({}, this.props.style ? this.props.style : {}, this.getWrapperStyle()) }>
-                    { this.getCard() }
-                    { this.getCardPile() }
-                    { this.getAttachments() }
-                    { this.renderUnderneathCards() }
-                </div>);
+        if(!card) {
+            return <div />;
         }
 
-        return this.getCard();
+        if(size !== 'normal') {
+            cardClass += ' ' + size;
+            imageClass += ' ' + size;
+        }
+
+        cardClass += ' card-type-' + card.type;
+
+        if(orientation === 'bowed' || card.bowed) {
+            cardClass += ' horizontal';
+            imageClass += ' vertical bowed';
+        } else if(card.isBroken) {
+            cardClass += ' vertical';
+            imageClass += ' vertical broken';
+        } else {
+            cardClass += ' vertical';
+            imageClass += ' vertical';
+        }
+
+        if(card.unselectable) {
+            cardClass += ' unselectable';
+        }
+
+        if(card.selected) {
+            cardClass += ' selected';
+        } else if(card.selectable) {
+            cardClass += ' selectable';
+        } else if(card.inDanger) {
+            cardClass += ' in-danger';
+        } else if(card.saved) {
+            cardClass += ' saved';
+        } else if(card.inConflict) {
+            cardClass += ' conflict';
+        } else if(card.covert) {
+            cardClass += ' covert';
+        } else if(card.controlled) {
+            cardClass += ' controlled';
+        } else if(card.new) {
+            cardClass += ' new';
+        }
+
+        if(className) {
+            cardClass += ' ' + className;
+        }
+
+        if(card.isConflict || source === 'conflict deck') {
+            cardBack = 'conflictcardback.png';
+        } else if(card.isDynasty || source === 'dynasty deck') {
+            cardBack = 'dynastycardback.png';
+        } else if(card.isProvince || source === 'province deck') {
+            cardBack = 'provincecardback.png';
+        } else {
+            cardBack = 'cardback.png';
+        }
+
+        const cardPile = player && card && player.cardPiles[card.uuid];
+
+        let frameClassName = 'card-frame';
+        if(cardPile) {
+            frameClassName += ' card-pile-frame';
+        }
+
+        return (
+            <div
+                className={ frameClassName }
+                ref={ cardRef }
+                onTouchMove={ ev => onTouchMove(ev) }
+                onTouchEnd={ ev => onTouchEnd(ev) }
+                onTouchStart={ ev => onTouchStart(ev) }
+            >
+                { getCardOrder() }
+                <div
+                    className={ cardClass }
+                    style={ wrapped ? {} : style }
+                    id={ id }
+                    onMouseOver={ disableMouseOver ? null : () => handleMouseOver(card) }
+                    onMouseOut={ disableMouseOver ? null : handleMouseOut }
+                    onClick={ ev => handleClick(ev, card) }
+                    onDragStart={ ev => onCardDragStart(ev, card, source) }
+                    draggable
+                >
+                    <div>
+                        <span className='card-name'>{ card.name }</span>
+                        <img className={ imageClass } src={ !isFacedown() && !card.isToken ? getCardImagePath() : ('/img/cards/' + cardBack) } />
+                    </div>
+                    <CardCounters counters={ getCountersForCard(card) } />
+                </div>
+                { shouldShowMenu() ? <CardMenu menu={ card.menu } onMenuItemClick={ handleMenuItemClick } /> : null }
+                { !shouldShowMenu() && showStats ?
+                    <CardStats
+                        text={ card.name }
+                        militarySkillSummary={ card.militarySkillSummary }
+                        politicalSkillSummary={ card.politicalSkillSummary }
+                        glorySummary={ card.glorySummary }
+                    /> : null
+                }
+                { getPopup() }
+            </div>
+        );
+    }, [card, size, orientation, className, source, player, wrapped, style, id, disableMouseOver, showStats, handleMouseOver, handleMouseOut, handleClick, onCardDragStart, onTouchMove, onTouchEnd, onTouchStart, getCardOrder, isFacedown, getCardImagePath, getCountersForCard, shouldShowMenu, handleMenuItemClick, getPopup]);
+
+    if(wrapped) {
+        return (
+            <div className={ 'card-wrapper ' + getWrapper() } style={ Object.assign({}, style ? style : {}, getWrapperStyle()) }>
+                { getCardElement() }
+                { getCardPileElement() }
+                { getAttachments() }
+                { renderUnderneathCards() }
+            </div>
+        );
     }
+
+    return getCardElement();
 }
 
 Card.displayName = 'Card';
@@ -663,9 +712,4 @@ Card.propTypes = {
     title: PropTypes.string,
     wrapped: PropTypes.bool
 };
-Card.defaultProps = {
-    orientation: 'vertical',
-    wrapped: true
-};
-
 export default Card;

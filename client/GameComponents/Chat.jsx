@@ -1,77 +1,68 @@
-import React from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Messages from './Messages.jsx';
-import $ from 'jquery';
 
-class Chat extends React.Component {
-    constructor () {
-        super();
+function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
+    const messagePanelRef = useRef(null);
+    const [canScroll, setCanScroll] = useState(true);
+    const [message, setMessage] = useState('');
 
-        this.onChange = this.onChange.bind(this);
-        this.onKeyPress = this.onKeyPress.bind(this);
-        this.onScroll = this.onScroll.bind(this);
-
-        this.state = {
-            canScroll: true,
-            message: ''
-        };
-    }
-
-    componentDidUpdate() {
-        if(this.state.canScroll) {
-            $(this.refs.messagePanel).scrollTop(999999);
+    useEffect(() => {
+        if(canScroll && messagePanelRef.current) {
+            messagePanelRef.current.scrollTop = 999999;
         }
-    }
+    });
 
-    onChange(event) {
-        this.setState({ message: event.target.value });
-    }
+    const handleChange = useCallback((event) => {
+        setMessage(event.target.value);
+    }, []);
 
-    onKeyPress(event) {
+    const handleKeyPress = useCallback((event) => {
         if(event.key === 'Enter') {
-            this.props.sendMessage(this.state.message);
-            this.setState({ message: '' });
+            sendMessage(message);
+            setMessage('');
 
             event.preventDefault();
         }
-    }
+    }, [message, sendMessage]);
 
-    onScroll() {
-        let messages = this.refs.messagePanel;
+    const handleScroll = useCallback(() => {
+        const messagesEl = messagePanelRef.current;
+        if(!messagesEl) {
+            return;
+        }
 
         setTimeout(() => {
-            if(messages.scrollTop >= messages.scrollHeight - messages.offsetHeight - 20) {
-                this.setState({ canScroll: true });
+            if(messagesEl.scrollTop >= messagesEl.scrollHeight - messagesEl.offsetHeight - 20) {
+                setCanScroll(true);
             } else {
-                this.setState({ canScroll: false });
+                setCanScroll(false);
             }
         }, 500);
-    }
+    }, []);
 
-    render() {
-        let classes = 'chat' + (this.props.visible ? '' : ' collapsed');
+    const classes = 'chat' + (visible ? '' : ' collapsed');
 
-        return (
-            <div className={ classes }>
-                <div className='messages panel' ref='messagePanel' onScroll={ this.onScroll }>
-                    <Messages
-                        messages={ this.props.messages }
-                        onCardMouseOver={ this.props.onMouseOver }
-                        onCardMouseOut={ this.props.onMouseOut }
-                    />
-                </div>
-                <form>
-                    <input
-                        className='form-control'
-                        placeholder='Chat...'
-                        onKeyPress={ this.onKeyPress }
-                        onChange={ this.onChange }
-                        value={ this.state.message }
-                    />
-                </form>
+    return (
+        <div className={ classes }>
+            <div className='messages panel' ref={ messagePanelRef } onScroll={ handleScroll }>
+                <Messages
+                    messages={ messages }
+                    onCardMouseOver={ onMouseOver }
+                    onCardMouseOut={ onMouseOut }
+                />
             </div>
-        );
-    }
+            <form>
+                <input
+                    className='form-control'
+                    placeholder='Chat...'
+                    onKeyPress={ handleKeyPress }
+                    onChange={ handleChange }
+                    value={ message }
+                />
+            </form>
+        </div>
+    );
 }
 
 Chat.displayName = 'Chat';

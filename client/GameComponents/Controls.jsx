@@ -1,37 +1,40 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 
-class Controls extends React.Component {
-    render() {
-        const laptopSize = window.innerWidth <= 1366;
+function Controls({
+    manualModeEnabled,
+    onManualModeClick,
+    onSettingsClick,
+    onToggleChatClick,
+    showChatAlert,
+    showManualMode
+}) {
+    const laptopSize = window.innerWidth <= 1366;
 
-        return (
-            <div className='controls panel'>
+    return (
+        <div className='controls panel'>
+            <button
+                className={ 'btn btn-transparent' + (showChatAlert ? ' with-alert' : '') }
+                onClick={ onToggleChatClick }
+            >
+                <span className='glyphicon glyphicon-menu-hamburger' />
+                { laptopSize ? '' : ' Toggle Chat' }
+                <i className='glyphicon glyphicon-exclamation-sign' />
+            </button>
+            { showManualMode && (
                 <button
-                    className={ 'btn btn-transparent' + (this.props.showChatAlert ? ' with-alert' : '') }
-                    onClick={ this.props.onToggleChatClick }
+                    className={ 'btn btn-transparent ' + (manualModeEnabled ? 'manual' : 'auto') }
+                    onClick={ onManualModeClick }
                 >
-                    <span className='glyphicon glyphicon-menu-hamburger' />
-                    { laptopSize ? '' : ' Toggle Chat' }
-                    <i className='glyphicon glyphicon-exclamation-sign'/>
+                    <span className='glyphicon glyphicon-wrench' />
+                    { laptopSize ? '' : ' Manual Mode ' + (manualModeEnabled ? ' Enabled' : 'Disabled') }
                 </button>
-                {
-                    this.props.showManualMode &&
-                    <button
-                        className={ 'btn btn-transparent ' + (this.props.manualModeEnabled ? 'manual' : 'auto') }
-                        onClick={ this.props.onManualModeClick }
-                    >
-                        <span className='glyphicon glyphicon-wrench' />
-                        { laptopSize ? '' : ' Manual Mode ' + (this.props.manualModeEnabled ? ' Enabled' : 'Disabled') }
-                    </button>
-                }
-                <button className='btn btn-transparent' onClick={ this.props.onSettingsClick }>
-                    <span className='glyphicon glyphicon-cog' />
-                    { laptopSize ? '' : ' Settings' }
-                </button>
-            </div>
-        );
-    }
+            ) }
+            <button className='btn btn-transparent' onClick={ onSettingsClick }>
+                <span className='glyphicon glyphicon-cog' />
+                { laptopSize ? '' : ' Settings' }
+            </button>
+        </div>
+    );
 }
 
 Controls.displayName = 'Controls';

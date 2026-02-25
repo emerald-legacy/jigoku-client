@@ -1,86 +1,193 @@
-/* global describe, it, expect */
-
-import DeckSummary from '../../client/DeckSummary.jsx';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
-import TestUtils from 'react-dom/test-utils';
+import DeckSummary from '../../client/DeckSummary.jsx';
 
-xdescribe('the <DeckSummary /> component', function() {
-    var component;
+// Mock DeckStatus component
+vi.mock('../../client/DeckStatus.jsx', () => ({
+    default: ({ deck }) => <span data-testid="deck-status">{deck?.valid ? 'Valid' : 'Invalid'}</span>
+}));
 
-    describe('when initially rendered', function() {
-        it('should show the component elements with defaults set', function() {
-            component = TestUtils.renderIntoDocument(<DeckSummary deck={ { faction: { name: 'House Stark', value: 'stark' }, name: 'Test Deck', validation: {} } } />);
+describe('the <DeckSummary /> component', () => {
+    const createMockDeck = (overrides = {}) => ({
+        name: 'Test Deck',
+        faction: { name: 'Crane', value: 'crane' },
+        alliance: { name: 'Dragon', value: 'dragon' },
+        format: { name: 'Emerald' },
+        stronghold: [],
+        role: [],
+        provinceCards: [
+            { card: { id: 'province-1', name: 'Test Province', type: 'province' }, count: 1 }
+        ],
+        dynastyCards: [
+            { card: { id: 'dynasty-1', name: 'Dynasty Character', type: 'character', side: 'dynasty' }, count: 3 },
+            { card: { id: 'dynasty-2', name: 'Dynasty Holding', type: 'holding' }, count: 2 }
+        ],
+        conflictCards: [
+            { card: { id: 'conflict-1', name: 'Conflict Character', type: 'character', side: 'conflict' }, count: 3 },
+            { card: { id: 'conflict-2', name: 'Conflict Event', type: 'event', side: 'conflict' }, count: 2 }
+        ],
+        ...overrides
+    });
 
-            var nameHeader = TestUtils.findRenderedDOMComponentWithTag(component, 'h3');
+    const mockCards = {
+        'province-1': { id: 'province-1', name: 'Test Province', type: 'province' },
+        'dynasty-1': { id: 'dynasty-1', name: 'Dynasty Character', type: 'character', side: 'dynasty' },
+        'dynasty-2': { id: 'dynasty-2', name: 'Dynasty Holding', type: 'holding' },
+        'conflict-1': { id: 'conflict-1', name: 'Conflict Character', type: 'character', side: 'conflict' },
+        'conflict-2': { id: 'conflict-2', name: 'Conflict Event', type: 'event', side: 'conflict' }
+    };
 
-            expect(nameHeader.innerText).toBe('Test Deck');
+    describe('when deck is not provided', () => {
+        beforeEach(() => {
+            render(<DeckSummary cards={mockCards} deck={null} />);
+        });
+
+        it('should display waiting message', () => {
+            expect(screen.getByText(/Waiting for selected deck/)).toBeInTheDocument();
         });
     });
 
-    describe('when no agenda specified', function() {
-        it('should render "none" and no agenda image', function() {
-            component = TestUtils.renderIntoDocument(<DeckSummary deck={ { faction: { name: 'House Stark', value: 'stark' }, name: 'Test Deck', validation: {} } } />);
+    describe('when deck is provided', () => {
+        let deck;
 
-            var agendaImages = TestUtils.scryRenderedDOMComponentsWithClass(component, 'pull-right');
-            var cardNames = TestUtils.scryRenderedDOMComponentsWithClass(component, 'card-name');
+        beforeEach(() => {
+            deck = createMockDeck();
+            render(<DeckSummary cards={mockCards} deck={deck} />);
+        });
 
-            expect(agendaImages.length).toBe(0);
-            expect(cardNames.length).toBe(0);
-            expect(component.refs.agenda.innerText).toBe('Agenda: None');
+        it('should display the clan name', () => {
+            expect(screen.getByText('Crane')).toBeInTheDocument();
+        });
+
+        it('should display the alliance name', () => {
+            expect(screen.getByText('Dragon')).toBeInTheDocument();
+        });
+
+        it('should display the format', () => {
+            expect(screen.getByText('Emerald')).toBeInTheDocument();
+        });
+
+        it('should display the province count', () => {
+            expect(screen.getByText('1 cards')).toBeInTheDocument();
+        });
+
+        it('should display the dynasty deck count', () => {
+            // Dynasty deck has 5 cards total (3+2)
+            const cardCounts = screen.getAllByText('5 cards');
+            expect(cardCounts.length).toBeGreaterThanOrEqual(1);
+        });
+
+        it('should display the conflict deck count', () => {
+            // Looking for the specific card count text
+            const cardCounts = screen.getAllByText(/\d+ cards/);
+            expect(cardCounts.length).toBeGreaterThanOrEqual(3);
+        });
+
+        it('should display the deck status', () => {
+            expect(screen.getByTestId('deck-status')).toBeInTheDocument();
+        });
+
+        it('should display the faction mon image', () => {
+            const monImage = document.querySelector('.deck-mon');
+            expect(monImage).toBeInTheDocument();
+            expect(monImage.src).toContain('/img/mons/crane.png');
         });
     });
 
-    describe('when agenda specified', function() {
-        it('should render the agenda name and image', function() {
-            component = TestUtils.renderIntoDocument(<DeckSummary deck={ { faction: { name: 'House Stark', value: 'stark' }, name: 'Test Deck',
-                agenda:{ code: 'TestCode', label: 'Test Label' }, validation: {} } } />);
+    describe('when alliance is none', () => {
+        beforeEach(() => {
+            const deck = createMockDeck({ alliance: { name: '', value: 'none' } });
+            render(<DeckSummary cards={mockCards} deck={deck} />);
+        });
 
-            var agendaImages = TestUtils.scryRenderedDOMComponentsWithClass(component, 'pull-right');
-            var cardNames = TestUtils.scryRenderedDOMComponentsWithClass(component, 'card-link');
-
-            expect(agendaImages.length).toBe(1);
-            expect(agendaImages[0].src.indexOf('/img/cards/TestCode.png')).not.toBe(-1);
-            expect(cardNames.length).toBe(1);
-            expect(component.refs.agenda.innerText).toBe('Agenda: Test Label');
+        it('should display "None" for alliance', () => {
+            expect(screen.getByText('None')).toBeInTheDocument();
         });
     });
 
-    describe('card counts', function() {
-        describe('when no plot cards', function() {
-            it('should render zero plots count', function() {
-                component = TestUtils.renderIntoDocument(<DeckSummary deck={ { faction: { name: 'House Stark', value: 'stark' }, plotCards: [], validation: { plotCount: 0 } } } />);
-
-                expect(component.refs.plotCount.innerText).toBe('Plot deck: 0 cards');
-            });
+    describe('when format is not specified', () => {
+        beforeEach(() => {
+            const deck = createMockDeck({ format: null });
+            render(<DeckSummary cards={mockCards} deck={deck} />);
         });
 
-        describe('when there are plot cards', function() {
-            it('should render the plot count', function() {
-                var plotCards = require('./decks/plotValid.json');
+        it('should default to Emerald format', () => {
+            expect(screen.getByText('Emerald')).toBeInTheDocument();
+        });
+    });
 
-                component = TestUtils.renderIntoDocument(<DeckSummary deck={ { faction: { name: 'House Stark', value: 'stark' }, plotCards: plotCards, validation: { drawCount: 0, plotCount: 7 } } } />);
-
-                expect(component.refs.plotCount.innerText).toBe('Plot deck: 7 cards');
-                expect(component.refs.drawCount.innerText).toBe('Draw deck: 0 cards');
-            });
+    describe('card list rendering', () => {
+        beforeEach(() => {
+            const deck = createMockDeck();
+            render(<DeckSummary cards={mockCards} deck={deck} />);
         });
 
-        describe('when no draw cards', function() {
-            it('should render zero draw cards', function() {
-                component = TestUtils.renderIntoDocument(<DeckSummary deck={ { faction: { name: 'House Stark', value: 'stark' }, drawCards: [], validation: { drawCount: 0 } } } />);
-
-                expect(component.refs.drawCount.innerText).toBe('Draw deck: 0 cards');
-            });
+        it('should display card names', () => {
+            expect(screen.getByText('Dynasty Character')).toBeInTheDocument();
+            expect(screen.getByText('Dynasty Holding')).toBeInTheDocument();
+            expect(screen.getByText('Conflict Character')).toBeInTheDocument();
+            expect(screen.getByText('Conflict Event')).toBeInTheDocument();
         });
 
-        describe('when there are draw cards', function() {
-            it('should render the draw count', function() {
-                var drawCards = require('./decks/drawValid.json');
-                component = TestUtils.renderIntoDocument(<DeckSummary deck={ { faction: { name: 'House Stark', value: 'stark' }, drawCards: drawCards, validation: { drawCount: 61, plotCount: 0 } } } />);
+        it('should display card counts', () => {
+            // Multiple cards have count 3x and 2x
+            const threeX = screen.getAllByText(/3x/);
+            const twoX = screen.getAllByText(/2x/);
+            expect(threeX.length).toBeGreaterThanOrEqual(1);
+            expect(twoX.length).toBeGreaterThanOrEqual(1);
+        });
+    });
 
-                expect(component.refs.drawCount.innerText).toBe('Draw deck: 61 cards');
-                expect(component.refs.plotCount.innerText).toBe('Plot deck: 0 cards');
+    describe('card hover functionality', () => {
+        beforeEach(() => {
+            const deck = createMockDeck();
+            render(<DeckSummary cards={mockCards} deck={deck} />);
+        });
+
+        it('should show hover image when mousing over a card', () => {
+            const cardLink = screen.getByText('Dynasty Character');
+            fireEvent.mouseOver(cardLink);
+
+            const hoverImage = document.querySelector('.hover-image');
+            expect(hoverImage).toBeInTheDocument();
+        });
+
+        it('should hide hover image when mousing out', () => {
+            const cardLink = screen.getByText('Dynasty Character');
+            fireEvent.mouseOver(cardLink);
+            fireEvent.mouseOut(cardLink);
+
+            const hoverImage = document.querySelector('.hover-image');
+            expect(hoverImage).not.toBeInTheDocument();
+        });
+    });
+
+    describe('deck counts calculation', () => {
+        it('should correctly sum province cards', () => {
+            const deck = createMockDeck({
+                provinceCards: [
+                    { card: { id: 'p1', name: 'Province 1', type: 'province' }, count: 1 },
+                    { card: { id: 'p2', name: 'Province 2', type: 'province' }, count: 1 },
+                    { card: { id: 'p3', name: 'Province 3', type: 'province' }, count: 1 }
+                ]
             });
+            render(<DeckSummary cards={mockCards} deck={deck} />);
+
+            // Should show "3 cards" for provinces
+            expect(screen.getByText('3 cards')).toBeInTheDocument();
+        });
+
+        it('should correctly sum dynasty cards', () => {
+            const deck = createMockDeck({
+                dynastyCards: [
+                    { card: { id: 'd1', name: 'Card 1', type: 'character', side: 'dynasty' }, count: 10 },
+                    { card: { id: 'd2', name: 'Card 2', type: 'holding' }, count: 5 }
+                ]
+            });
+            render(<DeckSummary cards={mockCards} deck={deck} />);
+
+            expect(screen.getByText('15 cards')).toBeInTheDocument();
         });
     });
 });

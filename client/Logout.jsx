@@ -1,34 +1,22 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import $ from 'jquery';
-import {connect} from 'react-redux';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { useAppDispatch } from './hooks';
 import * as actions from './actions';
 
-class InnerLogout extends React.Component {
-    componentWillMount() {
-        $.ajax({
-            url: '/api/account/logout',
-            type: 'POST',
-            contentType: 'application/json'
-        }).always(() => {
-            this.props.logout();
-            this.props.navigate('/');
-        });
-    }
+function Logout() {
+    const dispatch = useAppDispatch();
 
-    render() {
-        return (<div>Logging out, please wait while you are redirected</div>);
-    }
+    useEffect(() => {
+        axios.post('/api/account/logout')
+            .finally(() => {
+                dispatch(actions.logout());
+                dispatch(actions.navigate('/'));
+            });
+    }, [dispatch]);
+
+    return <div>Logging out, please wait while you are redirected</div>;
 }
 
-InnerLogout.displayName = 'Logout';
-InnerLogout.propTypes = {
-    logout: PropTypes.func,
-    navigate: PropTypes.func
-};
-
-const Logout = connect(function() {
-    return { };
-}, actions)(InnerLogout);
+Logout.displayName = 'Logout';
 
 export default Logout;

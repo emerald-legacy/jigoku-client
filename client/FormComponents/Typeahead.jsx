@@ -1,32 +1,74 @@
 import { Typeahead } from 'react-bootstrap-typeahead';
-import React from 'react';
+import { useRef, useImperativeHandle, forwardRef } from 'react';
 import PropTypes from 'prop-types';
 
-class Input extends React.Component {
-    clear() {
-        this.refs.typeahead.getInstance().clear();
-    }
+const TypeaheadInput = forwardRef(function TypeaheadInput(
+    {
+        autoFocus,
+        children,
+        dropup,
+        emptyLabel,
+        fieldClass,
+        label,
+        labelClass,
+        labelKey,
+        minLength,
+        name,
+        onChange,
+        onInputChange,
+        onKeyDown,
+        options,
+        placeholder,
+        submitFormOnEnter,
+        validationMessage
+    },
+    ref
+) {
+    const typeaheadRef = useRef(null);
 
-    render() {
-        let label = this.props.label ? <label htmlFor={ this.props.name } className={ this.props.labelClass + ' control-label' }>{ this.props.label }</label> : null;
-        return (
-            <div className='form-group'>
-                { label }
-                <div className={ this.props.fieldClass }>
-                    <Typeahead ref='typeahead' options={ this.props.options } labelKey={ this.props.labelKey } emptyLabel={ this.props.emptyLabel }
-                        onChange={ this.props.onChange } placeholder={ this.props.placeholder } autoFocus={ this.props.autoFocus } dropup={ this.props.dropup }
-                        minLength={ this.props.minLength } onInputChange={ this.props.onInputChange }
-                        submitFormOnEnter={ this.props.submitFormOnEnter } onKeyDown={ this.props.onKeyDown } />
-                    { this.props.validationMessage ? <span className='help-block'>{ this.props.validationMessage } </span> : null }
-                </div>
-                { this.props.children }
+    useImperativeHandle(ref, () => ({
+        clear: () => {
+            if(typeaheadRef.current) {
+                typeaheadRef.current.clear();
+            }
+        }
+    }));
+
+    const labelElement = label ? (
+        <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
+            { label }
+        </label>
+    ) : null;
+
+    return (
+        <div className='form-group'>
+            { labelElement }
+            <div className={ fieldClass }>
+                <Typeahead
+                    ref={ typeaheadRef }
+                    options={ options }
+                    labelKey={ labelKey }
+                    emptyLabel={ emptyLabel }
+                    onChange={ onChange }
+                    placeholder={ placeholder }
+                    autoFocus={ autoFocus }
+                    dropup={ dropup }
+                    minLength={ minLength }
+                    onInputChange={ onInputChange }
+                    submitFormOnEnter={ submitFormOnEnter }
+                    onKeyDown={ onKeyDown }
+                />
+                { validationMessage ? (
+                    <span className='help-block'>{ validationMessage } </span>
+                ) : null }
             </div>
-        );
-    }
-}
+            { children }
+        </div>
+    );
+});
 
-Input.displayName = 'TypeAhead';
-Input.propTypes = {
+TypeaheadInput.displayName = 'TypeAhead';
+TypeaheadInput.propTypes = {
     autoFocus: PropTypes.bool,
     children: PropTypes.object,
     dropup: PropTypes.bool,
@@ -47,4 +89,4 @@ Input.propTypes = {
     value: PropTypes.string
 };
 
-export default Input;
+export default TypeaheadInput;
