@@ -147,6 +147,14 @@ class GameRouter extends EventEmitter {
         logger.info('received message', message.command, message.arg);
 
         switch(message.command) {
+            case 'HEARTBEAT':
+                // Game node sends periodic heartbeats. If we don't know this node
+                // (e.g. lobby restarted), ask it to re-register.
+                if(!worker) {
+                    logger.info('Unknown node %s sent heartbeat, requesting registration', identityStr);
+                    this.sendCommand(identityStr, 'REGISTER');
+                }
+                return;
             case 'HELLO':
                 this.emit('onWorkerStarted', identityStr);
                 this.workers[identityStr] = {
