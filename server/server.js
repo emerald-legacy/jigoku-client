@@ -85,7 +85,7 @@ class Server {
             secret: config.secret,
             cookie: {
                 maxAge: config.cookieLifetime,
-                secure: config.https,
+                secure: config.https === true || config.https === 'true',
                 httpOnly: true, // SECURITY FIX: Prevent XSS access to cookies
                 sameSite: 'lax',
                 // Omit domain for IP addresses — browsers handle IP cookies
