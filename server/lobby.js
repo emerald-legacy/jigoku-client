@@ -630,7 +630,8 @@ class Lobby {
     }
 
     onWorkerStarted(nodeName) {
-        this.router.sendCommand(nodeName, 'CARDDATA', { titleCardData: this.titleCardData, shortCardData: this.shortCardData });
+        const shortCardData = this.shortCardData ? Object.values(this.shortCardData) : [];
+        this.router.sendCommand(nodeName, 'CARDDATA', { titleCardData: this.titleCardData, shortCardData });
     }
 
     onNodeReconnected(nodeName, games) {
