@@ -190,9 +190,9 @@ function CardPile({
         ) : null;
 
         return (
-            <Draggable handle='grip'>
+            <Draggable handle='.grip'>
                 <div className={ `popup ${isMe ? '' : 'opponent'}` }>
-                    <grip>
+                    <div className='grip'>
                         <div
                             className='panel-title'
                             onClick={ (event) => event.stopPropagation() }
@@ -205,7 +205,7 @@ function CardPile({
                                 />
                             </span>
                         </div>
-                    </grip>
+                    </div>
                     <div
                         className={ popupClass }
                         onClick={ (event) => event.stopPropagation() }

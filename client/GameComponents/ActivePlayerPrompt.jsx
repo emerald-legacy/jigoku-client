@@ -275,14 +275,14 @@ function ActivePlayerPrompt({
     }
 
     return (
-        <Draggable handle='grip' bounds={ activePromptBounds } defaultPosition={ getDefaultPosition() }>
+        <Draggable handle='.grip' bounds={ activePromptBounds } defaultPosition={ getDefaultPosition() }>
             <div className='no-highlight'>
                 { timer }
-                <grip>
+                <div className='grip'>
                     <div className={ 'phase-indicator ' + phase } onClick={ onTitleClick }>
                         { phase } phase
                     </div>
-                </grip>
+                </div>
                 { promptTitleElement }
                 <div className='menu-pane'>
                     <div className='panel'>
