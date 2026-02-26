@@ -1,7 +1,7 @@
 const winston = require('winston');
 require('winston-daily-rotate-file');
 
-const { combine, timestamp, printf } = winston.format;
+const { combine, timestamp, printf, splat } = winston.format;
 
 const logFormat = printf(({ level, message, timestamp }) => {
     return `${timestamp} [${level}]: ${message}`;
@@ -17,6 +17,7 @@ const rotate = new winston.transports.DailyRotateFile({
 
 const logger = winston.createLogger({
     format: combine(
+        splat(),
         timestamp(),
         logFormat
     ),
