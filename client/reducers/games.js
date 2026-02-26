@@ -16,7 +16,7 @@ function games(state = {
                 games: action.games
             });
 
-            if(state.currentGame && !action.games.find(game => {
+            if(state.currentGame && !state.currentGame.started && !action.games.find(game => {
                 return game.id === state.currentGame.id;
             })) {
                 ret.currentGame = undefined;
