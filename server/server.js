@@ -65,6 +65,7 @@ class Server {
                         imgSrc: ['\'self\'', 'data:', 'https:'],
                         connectSrc: ['\'self\'', 'wss:', 'ws:', 'https://www.emeralddb.org', 'https://emeralddb.org'].concat(config.cspConnectSources || []),
                         fontSrc: ['\'self\'', 'data:'],
+                        frameSrc: ['\'self\'', 'https://www.google.com', 'https://www.gstatic.com'],
                         objectSrc: ['\'none\''],
                         upgradeInsecureRequests: process.env.HTTPS === 'false' ? null : []
                     }
