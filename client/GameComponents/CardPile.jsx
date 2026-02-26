@@ -327,7 +327,8 @@ CardPile.propTypes = {
         'province 2',
         'province 3',
         'province 4',
-        'additional'
+        'additional',
+        'removed from game'
     ]).isRequired,
     title: PropTypes.string,
     topCard: PropTypes.object
