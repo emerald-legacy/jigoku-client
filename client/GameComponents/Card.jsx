@@ -652,7 +652,7 @@ Card.propTypes = {
         bowed: PropTypes.bool,
         childCards: PropTypes.array,
         controlled: PropTypes.bool,
-        controller: PropTypes.string,
+        controller: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
         covert: PropTypes.bool,
         facedown: PropTypes.bool,
         glorySummary: PropTypes.object,
@@ -702,7 +702,7 @@ Card.propTypes = {
     onTouchMove: PropTypes.func,
     orientation: PropTypes.oneOf(['horizontal', 'bowed', 'vertical']),
     player: PropTypes.shape({
-        cardPiles: PropTypes.array
+        cardPiles: PropTypes.object
     }),
     popupLocation: PropTypes.string,
     showStats: PropTypes.bool,
