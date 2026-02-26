@@ -6,5 +6,12 @@
     gameNode: {
         socketioPort: 80,
         origin: 'http://www.jigoku.online:* https://www.jigoku.online:* '
-    }
+    },
+
+    cspConnectSources: [
+        'http://98.87.47.192:9501',
+        'http://98.87.47.192:9502',
+        'ws://98.87.47.192:9501',
+        'ws://98.87.47.192:9502'
+    ]
 }
