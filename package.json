@@ -35,7 +35,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
     "already": "^2.2.1",
-    "axios": "^1.7.9",
+    "axios": "^1.13.5",
     "bcrypt": "^6.0.0",
     "bootstrap": "^3.3.7",
     "config": "^3.3.9",
