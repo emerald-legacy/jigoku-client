@@ -87,7 +87,9 @@ class Server {
                 secure: config.https,
                 httpOnly: true, // SECURITY FIX: Prevent XSS access to cookies
                 sameSite: 'lax',
-                domain: config.domain
+                // Omit domain for IP addresses — browsers handle IP cookies
+                // correctly only when no domain attribute is set
+                ...(config.domain && !/^\d+\.\d+\.\d+\.\d+$/.test(config.domain) ? { domain: config.domain } : {})
             },
             name: 'sessionId'
         }));
