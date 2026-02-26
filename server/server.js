@@ -60,7 +60,7 @@ class Server {
                 contentSecurityPolicy: {
                     directives: {
                         defaultSrc: ['\'self\''],
-                        scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
+                        scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\'', 'https://www.google.com', 'https://www.gstatic.com'],
                         styleSrc: ['\'self\'', '\'unsafe-inline\''],
                         imgSrc: ['\'self\'', 'data:', 'https:'],
                         connectSrc: ['\'self\'', 'wss:', 'ws:', 'https://www.emeralddb.org', 'https://emeralddb.org'].concat(config.cspConnectSources || []),
