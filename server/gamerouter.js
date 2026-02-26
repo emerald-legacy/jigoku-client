@@ -86,7 +86,7 @@ class GameRouter extends EventEmitter {
 
     getNodeStatus() {
         return Object.values(this.workers).map(worker => {
-            return { name: worker.identity, numGames: worker.numGames, status: worker.disabled ? 'disabled' : 'active' };
+            return { name: worker.identity, numGames: worker.numGames, status: worker.disabled ? 'disabled' : 'active', version: worker.version };
         });
     }
 
@@ -155,7 +155,8 @@ class GameRouter extends EventEmitter {
                     numGames: 0,
                     address: message.arg.address,
                     port: message.arg.port,
-                    protocol: message.arg.protocol
+                    protocol: message.arg.protocol,
+                    version: message.arg.version || 'unknown'
                 };
                 worker = this.workers[identityStr];
 

@@ -26,7 +26,8 @@ const config = {
         new webpack.HotModuleReplacementPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('development'),
-            '__DEV__': JSON.stringify('true')
+            '__DEV__': JSON.stringify('true'),
+            '__BUILD_VERSION__': JSON.stringify('LOCAL')
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',

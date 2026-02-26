@@ -42,7 +42,8 @@ const config = {
     },
     plugins: [
         new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify('production')
+            'process.env.NODE_ENV': JSON.stringify('production'),
+            '__BUILD_VERSION__': JSON.stringify(process.env.BUILD_VERSION || 'LOCAL')
         }),
         new webpack.ProvidePlugin({
             $: 'jquery',

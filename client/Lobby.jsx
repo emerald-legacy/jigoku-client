@@ -1,3 +1,4 @@
+/* global __BUILD_VERSION__ */
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -16,10 +17,18 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
     const [canScroll, setCanScroll] = useState(true);
     const [message, setMessage] = useState('');
     const [showUsers, setShowUsers] = useState(false);
+    const [serverVersions, setServerVersions] = useState([]);
 
     useEffect(() => {
         loadNews({ limit: 3 });
     }, [loadNews]);
+
+    useEffect(() => {
+        fetch('/api/server-version')
+            .then(res => res.json())
+            .then(data => setServerVersions(data.nodes || []))
+            .catch(() => setServerVersions([]));
+    }, []);
 
     const sendMessage = useCallback(() => {
         if(message === '') {
@@ -205,6 +214,12 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
                         EmeraldDB includes a deck builder for the LCG, as well as lists that have been made public by other players.  Deck lists that you create are able to be directly imported into the Deckbuilder here!</p>
                     </div>
                 </div>
+            </div>
+            <div className='col-sm-offset-1 col-sm-10 text-center'>
+                <span className='lobby-version'>Client: { __BUILD_VERSION__ }</span>
+                { serverVersions.map(node => (
+                    <span key={ node.name } className='lobby-version'> | { node.name }: { node.version }</span>
+                )) }
             </div>
         </div>
     );

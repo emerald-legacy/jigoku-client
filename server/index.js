@@ -10,8 +10,17 @@ async function runServer() {
 
     const server = new Server(process.env.NODE_ENV !== 'production');
     await server.initDb();
+
+    let lobby;
+    server.app.get('/api/server-version', (req, res) => {
+        if(!lobby) {
+            return res.status(503).json({ nodes: [] });
+        }
+        res.json({ nodes: lobby.getStatus() });
+    });
+
     const httpServer = server.init();
-    const lobby = new Lobby(httpServer, { config: config, db: database });
+    lobby = new Lobby(httpServer, { config: config, db: database });
 
     pmx.action('status', reply => {
         const status = lobby.getStatus();

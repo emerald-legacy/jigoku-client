@@ -22,6 +22,9 @@ RUN npm ci
 
 COPY . .
 
+ARG BUILD_VERSION=LOCAL
+ENV BUILD_VERSION=$BUILD_VERSION
+
 RUN mkdir -p server/logs public/img/cards && npm run build
 
 RUN chmod +x docker-entrypoint.sh

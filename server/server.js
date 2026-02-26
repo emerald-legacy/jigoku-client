@@ -43,6 +43,7 @@ const authLimiter = rateLimit({
 class Server {
     constructor(isDeveloping) {
         this.isDeveloping = isDeveloping;
+        this.app = app;
         // @ts-ignore
         this.server = http.Server(app);
     }
