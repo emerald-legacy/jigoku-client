@@ -9,9 +9,13 @@
     },
 
     cspConnectSources: [
-        'http://98.87.47.192:9501',
-        'http://98.87.47.192:9502',
-        'ws://98.87.47.192:9501',
-        'ws://98.87.47.192:9502'
+        'https://jigoku.online:9501',
+        'https://jigoku.online:9502',
+        'wss://jigoku.online:9501',
+        'wss://jigoku.online:9502',
+        'http://jigoku.online:9501',
+        'http://jigoku.online:9502',
+        'ws://jigoku.online:9501',
+        'ws://jigoku.online:9502'
     ]
 }
