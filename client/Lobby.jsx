@@ -158,15 +158,17 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
             </div>
             <div className='col-sm-offset-1 col-sm-10'>
                 <div className='main-header'>
-                    <span className='text-center'><h1>Legend of the Five Rings LCG</h1></span>
+                    <span className='text-center'>
+                        <h1>Emerald Legacy LCG</h1>
+                        <span className='lobby-version'>Client: { __BUILD_VERSION__ }{ serverVersions.map(node => ` | ${node.name}: ${node.version}`).join('') }</span>
+                    </span>
                 </div>
             </div>
             { bannerNotice ? <AlertPanel message={ bannerNotice } type='error' /> : null }
             <div className='col-sm-offset-1 col-sm-10'>
                 <div className='panel-title text-center'>Getting Started</div>
                 <div className='panel panel-darker'>
-                    <p>This site allows you to play the Legend of the Five Rings LCG in your browser.</p>
-                    <p>If you're new, head on over to the <Link href='/how-to-play'>How To Play guide</Link> for a thorough explanation on how to use the site!</p>
+                    <p>This site allows you to play the Emerald Legacy LCG in your browser. If you're new, head on over to the <Link href='/how-to-play'>How To Play guide</Link> for a thorough explanation on how to use the site!</p>
                 </div>
             </div>
 
@@ -214,12 +216,6 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
                         EmeraldDB includes a deck builder for the LCG, as well as lists that have been made public by other players.  Deck lists that you create are able to be directly imported into the Deckbuilder here!</p>
                     </div>
                 </div>
-            </div>
-            <div className='col-sm-offset-1 col-sm-10 text-center'>
-                <span className='lobby-version'>Client: { __BUILD_VERSION__ }</span>
-                { serverVersions.map(node => (
-                    <span key={ node.name } className='lobby-version'> | { node.name }: { node.version }</span>
-                )) }
             </div>
         </div>
     );
