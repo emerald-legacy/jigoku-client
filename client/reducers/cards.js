@@ -124,6 +124,9 @@ export default function(state = {}, action) {
                 zoomCard: undefined
             });
         case 'RECEIVE_DECKS':
+            if(!action.response || !action.response.decks) {
+                return state;
+            }
             processDecks(action.response.decks, state);
             newState = Object.assign({}, state, {
                 singleDeck: false,
