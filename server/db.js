@@ -33,7 +33,7 @@ async function connect(url) {
             return db;
         } catch(err) {
             connectPromise = null;
-            logger.error('MongoDB connection error:', err);
+            logger.error(`MongoDB connection error: ${err}`);
             throw err;
         }
     })();

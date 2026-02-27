@@ -49,14 +49,14 @@ class Socket extends EventEmitter {
         try {
             callback(this, ...args);
         } catch(err) {
-            logger.error('Socket event error:', err);
+            logger.error(`Socket event error: ${err}`);
         }
     }
 
     onAuthenticate(token) {
         jwt.verify(token, this.config.secret, (err, user) => {
             if(err) {
-                logger.info(err);
+                logger.info(`JWT auth failed: ${err.message}`);
                 return;
             }
 
@@ -71,7 +71,7 @@ class Socket extends EventEmitter {
     }
 
     onError(err) {
-        logger.info('Socket.IO error', err, '. Socket ID ', this.socket.id);
+        logger.info(`Socket.IO error: ${err}. Socket ID ${this.socket.id}`);
     }
 }
 

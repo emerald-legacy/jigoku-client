@@ -23,7 +23,7 @@ module.exports.init = function(server) {
 
             res.send({ success: true, user: user });
         } catch(err) {
-            logger.error(err);
+            logger.error(`Error fetching user ${req.params.username}: ${err}`);
             res.status(500).send({ success: false, message: 'Error fetching user' });
         }
     });
@@ -50,7 +50,7 @@ module.exports.init = function(server) {
 
             res.send({ success: true });
         } catch(err) {
-            logger.error(err);
+            logger.error(`Error saving user ${req.params.username}: ${err}`);
             res.send({ success: false, message: 'An error occurred saving the user' });
         }
     });

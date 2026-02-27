@@ -36,7 +36,7 @@ class CardService {
 
             return cards;
         } catch(err) {
-            logger.info(err);
+            logger.error(`Error fetching cards: ${err}`);
         }
     }
 
@@ -44,7 +44,7 @@ class CardService {
         try {
             return await this.packs.find({}).toArray();
         } catch(err) {
-            logger.info(err);
+            logger.error(`Error fetching packs: ${err}`);
         }
     }
 }

@@ -91,7 +91,7 @@ class PendingGame {
         if(password) {
             bcrypt.hash(password, 10, (err, hash) => {
                 if(err) {
-                    logger.info(err);
+                    logger.error(`Error hashing game password: ${err}`);
 
                     callback(err);
 

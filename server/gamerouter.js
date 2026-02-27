@@ -24,7 +24,7 @@ class GameRouter extends EventEmitter {
             this.running = true;
             this.receiveMessages();
         } catch(err) {
-            logger.error('Failed to bind GameRouter:', err);
+            logger.error(`Failed to bind GameRouter: ${err}`);
         }
     }
 
@@ -35,7 +35,7 @@ class GameRouter extends EventEmitter {
                 this.onMessage(identity, msg);
             } catch(err) {
                 if(this.running) {
-                    logger.error('Error receiving message:', err);
+                    logger.error(`Error receiving message: ${err}`);
                 }
             }
         }
@@ -140,7 +140,7 @@ class GameRouter extends EventEmitter {
         try {
             message = JSON.parse(msg.toString());
         } catch(err) {
-            logger.info(err);
+            logger.error(`Failed to parse ZMQ message from ${identityStr}: ${err}`);
             return;
         }
 
@@ -212,7 +212,7 @@ class GameRouter extends EventEmitter {
     sendCommand(identity, command, arg) {
         logger.info(`sending ${command} to ${identity}`);
         this.router.send([identity, '', JSON.stringify({ command: command, arg: arg })]).catch(err => {
-            logger.error('Error sending command:', err);
+            logger.error(`Error sending command: ${err}`);
         });
     }
 

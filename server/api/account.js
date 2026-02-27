@@ -117,7 +117,7 @@ module.exports.init = function (server) {
 
             res.send({ success: true, user: Settings.getUserWithDefaultsSet(req.body), token: jwt.sign(req.user, config.secret) });
         } catch(err) {
-            logger.error('Registration error:', err);
+            logger.error(`Registration error: ${err}`);
             res.send({ success: false, message: 'An error occured registering your account' });
         }
     }));
@@ -139,7 +139,7 @@ module.exports.init = function (server) {
     server.post('/api/account/logout', function (req, res) {
         req.logout(function(err) {
             if(err) {
-                logger.error('Logout error:', err);
+                logger.error(`Logout error: ${err}`);
                 return res.send({ success: false, message: 'Error during logout' });
             }
             res.send({ success: true });
@@ -163,13 +163,13 @@ module.exports.init = function (server) {
             }
 
             if(!user.resetToken) {
-                logger.error('Got unexpected reset request for user', user.username);
+                logger.error(`Got unexpected reset request for user ${user.username}`);
                 return res.send({ success: false, message: 'An error occured resetting your password, check the url you have entered and try again' });
             }
 
             const now = new Date();
             if(new Date(user.tokenExpires) < now) {
-                logger.error('Token expired', user.username);
+                logger.error(`Token expired for ${user.username}`);
                 return res.send({ success: false, message: 'The reset token you have provided has expired' });
             }
 
@@ -177,7 +177,7 @@ module.exports.init = function (server) {
             const expectedToken = hmac.update('RESET ' + user.username + ' ' + user.tokenExpires).digest('hex');
 
             if(expectedToken !== req.body.token) {
-                logger.error('Invalid reset token', user.username, req.body.token);
+                logger.error(`Invalid reset token for ${user.username}`);
                 return res.send({ success: false, message: 'An error occured resetting your password, check the url you have entered and try again' });
             }
 
@@ -187,7 +187,7 @@ module.exports.init = function (server) {
 
             res.send({ success: true });
         } catch(err) {
-            logger.error('Password reset error:', err);
+            logger.error(`Password reset error: ${err}`);
             res.send({ success: false, message: 'An error occured resetting your password, check the url you have entered and try again' });
         }
     }));
@@ -216,7 +216,7 @@ module.exports.init = function (server) {
             // Continue processing in background
             const user = await userService.getUserByUsername(req.body.username);
             if(!user) {
-                logger.error('Username not found for password reset', req.body.username);
+                logger.error(`Username not found for password reset: ${req.body.username}`);
                 return;
             }
 
@@ -235,7 +235,7 @@ module.exports.init = function (server) {
 
             await sendEmail(user.email, emailText);
         } catch(err) {
-            logger.error('Password reset error:', err);
+            logger.error(`Password reset error: ${err}`);
             // Only send error if we haven't already sent success
             if(!res.headersSent) {
                 return res.send({ success: false, message: 'There was a problem verifying the captcha, please try again' });

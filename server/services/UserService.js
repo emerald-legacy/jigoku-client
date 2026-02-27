@@ -13,7 +13,7 @@ class UserService {
                 username: { $regex: new RegExp('^' + escapeRegex(username.toLowerCase()) + '$', 'i') }
             });
         } catch(err) {
-            logger.error('Error fetching users', err);
+            logger.error(`Error fetching user by username: ${err}`);
             throw new Error('Error occurred fetching users');
         }
     }
@@ -24,7 +24,7 @@ class UserService {
                 email: { $regex: new RegExp('^' + escapeRegex(email.toLowerCase()) + '$', 'i') }
             });
         } catch(err) {
-            logger.error('Error fetching users', err);
+            logger.error(`Error fetching user by email: ${err}`);
             throw new Error('Error occurred fetching users');
         }
     }
@@ -33,7 +33,7 @@ class UserService {
         try {
             return await this.users.findOne({ _id: toObjectId(id) });
         } catch(err) {
-            logger.error('Error fetching users', err);
+            logger.error(`Error fetching user by id: ${err}`);
             throw new Error('Error occurred fetching users');
         }
     }
@@ -43,7 +43,7 @@ class UserService {
             await this.users.insertOne(user);
             return user;
         } catch(err) {
-            logger.error('Error adding user', err, user);
+            logger.error(`Error adding user ${user.username}: ${err}`);
             throw new Error('Error occurred adding user');
         }
     }
@@ -63,7 +63,7 @@ class UserService {
         try {
             return await this.users.updateOne({ username: user.username }, { $set: toSet });
         } catch(err) {
-            logger.error(err);
+            logger.error(`Error updating user: ${err}`);
             throw new Error('Error setting user details');
         }
     }
@@ -75,7 +75,7 @@ class UserService {
                 { $set: { blockList: user.blockList } }
             );
         } catch(err) {
-            logger.error(err);
+            logger.error(`Error updating block list: ${err}`);
             throw new Error('Error setting user details');
         }
     }
@@ -87,7 +87,7 @@ class UserService {
                 { $set: { resetToken: token, tokenExpires: tokenExpiration } }
             );
         } catch(err) {
-            logger.error(err);
+            logger.error(`Error setting reset token: ${err}`);
             throw new Error('Error setting reset token');
         }
     }
@@ -99,7 +99,7 @@ class UserService {
                 { $set: { password: password } }
             );
         } catch(err) {
-            logger.error(err);
+            logger.error(`Error setting password: ${err}`);
             throw new Error('Error setting password');
         }
     }
@@ -111,7 +111,7 @@ class UserService {
                 { $unset: { resetToken: '', tokenExpires: '' } }
             );
         } catch(err) {
-            logger.error(err);
+            logger.error(`Error clearing reset token: ${err}`);
             throw new Error('Error clearing reset token');
         }
     }

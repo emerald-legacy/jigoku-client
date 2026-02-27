@@ -148,7 +148,7 @@ class Lobby {
         if(token && token !== 'undefined') {
             jwt.verify(token, this.config.secret, function(err, user) {
                 if(err) {
-                    logger.info(err);
+                    logger.info(`Lobby JWT verification failed: ${err.message}`);
                     return;
                 }
 
@@ -561,7 +561,7 @@ class Lobby {
                 this.sendGameState(game);
             })
             .catch(err => {
-                logger.info(err);
+                logger.info(`Error loading deck: ${err}`);
 
                 return;
             });

@@ -160,7 +160,7 @@ class Server {
 
         // Define error middleware last
         app.use(function(err, req, res, next) { // eslint-disable-line no-unused-vars
-            logger.error(err);
+            logger.error(`Unhandled error on ${req.method} ${req.url}: ${err}`);
             if(res.headersSent) {
                 return next(err);
             }
@@ -175,7 +175,7 @@ class Server {
 
         this.server.listen(port, '0.0.0.0', function onStart(err) {
             if(err) {
-                logger.error(err);
+                logger.error(`Server listen error: ${err}`);
             }
 
             logger.info('==> ?? Listening on port %s. Open up http://0.0.0.0:%s/ in your browser.', port, port);
@@ -212,7 +212,7 @@ class Server {
 
             return done(null, userObj);
         } catch(err) {
-            logger.error('Authentication error:', err);
+            logger.error(`Authentication error: ${err}`);
             return done(err);
         }
     }

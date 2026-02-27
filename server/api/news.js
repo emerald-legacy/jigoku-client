@@ -10,7 +10,7 @@ module.exports.init = function(server) {
             const news = await newsService.getRecentNewsItems({ limit: req.query.limit });
             res.send({ success: true, news: news });
         } catch(err) {
-            logger.error(err);
+            logger.error(`Error loading news: ${err}`);
             res.send({ success: false, message: 'Error loading news' });
         }
     });
@@ -32,7 +32,7 @@ module.exports.init = function(server) {
             });
             res.send({ success: true });
         } catch(err) {
-            logger.error(err);
+            logger.error(`Error saving news item: ${err}`);
             res.send({ success: false, message: 'Error saving news item' });
         }
     });
