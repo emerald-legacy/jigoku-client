@@ -144,10 +144,9 @@ class GameRouter extends EventEmitter {
             return;
         }
 
-        logger.info(`received ${message.command} from ${identityStr}`);
-
         switch(message.command) {
             case 'HEARTBEAT':
+                logger.debug(`received HEARTBEAT from ${identityStr}`);
                 // Game node sends periodic heartbeats. If we don't know this node
                 // (e.g. lobby restarted), ask it to re-register.
                 if(!worker) {
@@ -155,7 +154,16 @@ class GameRouter extends EventEmitter {
                     this.sendCommand(identityStr, 'REGISTER');
                 }
                 return;
+            case 'PONG':
+                logger.debug(`received PONG from ${identityStr}`);
+                if(worker) {
+                    worker.pingSent = undefined;
+                } else {
+                    logger.error('PONG received for unknown worker');
+                }
+                break;
             case 'HELLO':
+                logger.info(`received HELLO from ${identityStr}`);
                 this.emit('onWorkerStarted', identityStr);
                 this.workers[identityStr] = {
                     identity: identityStr,
@@ -173,17 +181,12 @@ class GameRouter extends EventEmitter {
                 worker.numGames = Object.keys(message.arg.games).length;
 
                 break;
-            case 'PONG':
-                if(worker) {
-                    worker.pingSent = undefined;
-                } else {
-                    logger.error('PONG received for unknown worker');
-                }
-                break;
             case 'GAMEWIN':
+                logger.info(`received GAMEWIN from ${identityStr}`);
                 this.gameService.update(message.arg.game);
                 break;
             case 'GAMECLOSED':
+                logger.info(`received GAMECLOSED from ${identityStr}`);
                 if(worker) {
                     worker.numGames--;
                 } else {
@@ -194,6 +197,7 @@ class GameRouter extends EventEmitter {
 
                 break;
             case 'PLAYERLEFT':
+                logger.info(`received PLAYERLEFT from ${identityStr}`);
                 if(!message.arg.spectator) {
                     this.gameService.update(message.arg.game);
                 }
@@ -210,7 +214,8 @@ class GameRouter extends EventEmitter {
 
     // Internal methods
     sendCommand(identity, command, arg) {
-        logger.info(`sending ${command} to ${identity}`);
+        const logLevel = (command === 'PING') ? 'debug' : 'info';
+        logger[logLevel](`sending ${command} to ${identity}`);
         this.router.send([identity, '', JSON.stringify({ command: command, arg: arg })]).catch(err => {
             logger.error(`Error sending command: ${err}`);
         });

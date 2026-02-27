@@ -15,7 +15,10 @@ const rotate = new winston.transports.DailyRotateFile({
     maxFiles: '14d'
 });
 
+const logLevel = process.env.LOG_LEVEL || (process.env.NODE_ENV === 'production' ? 'info' : 'debug');
+
 const logger = winston.createLogger({
+    level: logLevel,
     format: combine(
         splat(),
         timestamp(),
