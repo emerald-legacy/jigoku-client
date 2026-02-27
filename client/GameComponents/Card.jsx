@@ -272,6 +272,10 @@ function Card(props) {
                 attachmentOffset *= 2;
                 cardHeight *= 2;
                 break;
+            case 'xxl':
+                attachmentOffset *= 2.5;
+                cardHeight *= 2.5;
+                break;
         }
 
         const attachmentCount = source === 'play area' && card.attachments ? card.attachments.length : 0;
@@ -339,6 +343,10 @@ function Card(props) {
             case 'x-large':
                 attachmentOffset *= 2;
                 cardHeight *= 2;
+                break;
+            case 'xxl':
+                attachmentOffset *= 2.5;
+                cardHeight *= 2.5;
                 break;
         }
 
