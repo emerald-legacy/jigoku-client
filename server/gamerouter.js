@@ -10,7 +10,7 @@ class GameRouter extends EventEmitter {
 
         this.workers = {};
         this.gameService = new GameService(db.getDb());
-        this.router = new Router({ routerHandover: true });
+        this.router = new Router({ handover: true });
         this.running = false;
 
         this.init(config.mqUrl);
