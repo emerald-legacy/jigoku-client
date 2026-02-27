@@ -20,7 +20,7 @@ class GameRouter extends EventEmitter {
     async init(url) {
         try {
             await this.router.bind(url);
-            logger.info('GameRouter bound to', url);
+            logger.info(`GameRouter bound to ${url}`);
             this.running = true;
             this.receiveMessages();
         } catch(err) {
@@ -49,7 +49,7 @@ class GameRouter extends EventEmitter {
             logger.error('Could not find new node for game');
             return;
         }
-        logger.info('starting game on node', node.identity);
+        logger.info(`starting game on node ${node.identity}`);
 
         this.gameService.create(game.getSaveState());
 
@@ -113,7 +113,7 @@ class GameRouter extends EventEmitter {
     }
 
     notifyFailedConnect(game, username) {
-        logger.info('notify failed connect', game.node.identity);
+        logger.info(`notify failed connect ${game.node.identity}`);
         if(!game.node) {
             return;
         }
@@ -144,7 +144,7 @@ class GameRouter extends EventEmitter {
             return;
         }
 
-        logger.info('received message', message.command, message.arg);
+        logger.info(`received ${message.command} from ${identityStr}`);
 
         switch(message.command) {
             case 'HEARTBEAT':
@@ -187,7 +187,7 @@ class GameRouter extends EventEmitter {
                 if(worker) {
                     worker.numGames--;
                 } else {
-                    logger.error('Got close game for non existant worker', identity);
+                    logger.error(`Got close game for non existent worker ${identity}`);
                 }
 
                 this.emit('onGameClosed', message.arg.game);
@@ -210,7 +210,7 @@ class GameRouter extends EventEmitter {
 
     // Internal methods
     sendCommand(identity, command, arg) {
-        logger.info('sending command', command);
+        logger.info(`sending ${command} to ${identity}`);
         this.router.send([identity, '', JSON.stringify({ command: command, arg: arg })]).catch(err => {
             logger.error('Error sending command:', err);
         });
@@ -222,7 +222,7 @@ class GameRouter extends EventEmitter {
 
         Object.values(this.workers).forEach(worker => {
             if(worker.pingSent && currentTime - worker.pingSent > pingTimeout) {
-                logger.info('worker', worker.identity + ' timed out');
+                logger.info(`worker ${worker.identity} timed out`);
                 delete this.workers[worker.identity];
                 this.emit('onWorkerTimedOut', worker.identity);
             } else if(!worker.pingSent) {

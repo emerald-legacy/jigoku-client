@@ -235,7 +235,7 @@ class Lobby {
 
         Object.values(game.getPlayersAndSpectators()).forEach(player => {
             if(!this.sockets[player.id]) {
-                logger.info('Wanted to send to ', player.id, ' but have no socket');
+                logger.info(`Wanted to send to ${player.id} but have no socket`);
                 return;
             }
 
@@ -261,12 +261,12 @@ class Lobby {
             game && game.started && now - game.createdAt > timeout && Object.keys(game.getPlayers()).length === 0);
 
         stalePendingGames.forEach(game => {
-            logger.info('closed pending game', game.id, 'due to inactivity');
+            logger.info(`closed pending game ${game.id} due to inactivity`);
             delete this.games[game.id];
         });
 
         emptyGames.forEach(game => {
-            logger.info('closed started game', game.id, 'due to no active players');
+            logger.info(`closed started game ${game.id} due to no active players`);
             delete this.games[game.id];
             this.router.closeGame(game);
         });
@@ -368,7 +368,7 @@ class Lobby {
         let game = new PendingGame(socket.user, gameDetails);
         game.newGame(socket.id, socket.user, gameDetails.password, (err, message) => {
             if(err) {
-                logger.info('game failed to create', err, message);
+                logger.info(`game failed to create: ${err} ${message}`);
 
                 return;
             }
@@ -587,7 +587,7 @@ class Lobby {
             return;
         }
 
-        logger.info(socket.user.username, 'closed game', game.id, '(' + game.name + ') forcefully');
+        logger.info(`${socket.user.username} closed game ${game.id} (${game.name}) forcefully`);
 
         if(!game.started) {
             delete this.games[game.id];
@@ -649,7 +649,7 @@ class Lobby {
             }
 
             if(!owner) {
-                logger.error('Got a game where the owner wasn\'t a player', game.owner);
+                logger.error(`Got a game where the owner wasn't a player: ${game.owner}`);
                 continue;
             }
 
