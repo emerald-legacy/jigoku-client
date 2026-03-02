@@ -14,10 +14,6 @@ const jwt = require('jsonwebtoken');
 const http = require('http');
 const helmet = require('helmet');
 const { rateLimit } = require('express-rate-limit');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const webpackHotMiddleware = require('webpack-hot-middleware');
-const webpack = require('webpack');
-const webpackConfig = require('../webpack.config.js');
 const db = require('./db.js');
 
 const UserService = require('./services/UserService.js');
@@ -129,19 +125,28 @@ class Server {
         });
 
         if(this.isDeveloping) {
-            /** @type {any} */
-            const wpConfig = webpackConfig;
-            const compiler = webpack(wpConfig);
-            const middleware = webpackDevMiddleware(compiler, {
-                publicPath: webpackConfig.output.publicPath
-            });
+            try {
+                const webpack = require('webpack');
+                const webpackConfig = require('../webpack.config.js');
+                const webpackDevMiddleware = require('webpack-dev-middleware');
+                const webpackHotMiddleware = require('webpack-hot-middleware');
 
-            app.use(middleware);
-            app.use(webpackHotMiddleware(compiler, {
-                log: false,
-                path: '/__webpack_hmr',
-                heartbeat: 2000
-            }));
+                /** @type {any} */
+                const wpConfig = webpackConfig;
+                const compiler = webpack(wpConfig);
+                const middleware = webpackDevMiddleware(compiler, {
+                    publicPath: webpackConfig.output.publicPath
+                });
+
+                app.use(middleware);
+                app.use(webpackHotMiddleware(compiler, {
+                    log: false,
+                    path: '/__webpack_hmr',
+                    heartbeat: 2000
+                }));
+            } catch(err) {
+                logger.info('Webpack not available, serving pre-built bundle from public/');
+            }
         }
 
         app.get('/{*splat}', (req, res) => {
