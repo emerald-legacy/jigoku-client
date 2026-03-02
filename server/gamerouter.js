@@ -14,7 +14,7 @@ class GameRouter extends EventEmitter {
         this.running = false;
 
         this.init(config.mqUrl);
-        setInterval(this.checkTimeouts.bind(this), 1000 * 60);
+        setInterval(this.checkTimeouts.bind(this), 1000 * 15);
     }
 
     async init(url) {
@@ -223,7 +223,7 @@ class GameRouter extends EventEmitter {
 
     checkTimeouts() {
         var currentTime = Date.now();
-        const pingTimeout = 1 * 60 * 1000;
+        const pingTimeout = 30 * 1000;
 
         Object.values(this.workers).forEach(worker => {
             if(worker.pingSent && currentTime - worker.pingSent > pingTimeout) {
