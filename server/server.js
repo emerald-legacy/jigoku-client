@@ -124,6 +124,7 @@ class Server {
             });
         });
 
+        let useWebpackDev = false;
         if(this.isDeveloping) {
             try {
                 const webpack = require('webpack');
@@ -144,6 +145,7 @@ class Server {
                     path: '/__webpack_hmr',
                     heartbeat: 2000
                 }));
+                useWebpackDev = true;
             } catch(err) {
                 logger.info('Webpack not available, serving pre-built bundle from public/');
             }
@@ -160,7 +162,7 @@ class Server {
                 authReq.user = userWithoutBlockList;
             }
 
-            res.render('index', { basedir: path.join(__dirname, '..', 'views'), user: Settings.getUserWithDefaultsSet(authReq.user), token: token, production: !this.isDeveloping });
+            res.render('index', { basedir: path.join(__dirname, '..', 'views'), user: Settings.getUserWithDefaultsSet(authReq.user), token: token, production: !useWebpackDev });
         });
 
         // Define error middleware last
