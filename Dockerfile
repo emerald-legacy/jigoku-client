@@ -48,7 +48,10 @@ COPY --from=builder /app/views ./views
 COPY --from=builder /app/config ./config
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/index.js ./
+COPY --from=builder /app/version.js ./
 COPY --from=builder /app/docker-entrypoint.sh ./
+COPY --from=builder /app/client/GameModes.js ./client/
+COPY --from=builder /app/client/deck-validator.js ./client/
 
 RUN mkdir -p server/logs public/img/cards && chmod +x docker-entrypoint.sh
 
