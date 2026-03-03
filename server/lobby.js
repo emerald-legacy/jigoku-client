@@ -260,23 +260,55 @@ class Lobby {
 
     clearStaleGames() {
         let now = Date.now();
-        const timeout = 60 * 60 * 1000;
-        let stalePendingGames = Object.values(this.games).filter(game => game && !game.started && now - game.createdAt > timeout);
-        let emptyGames = Object.values(this.games).filter(game =>
-            game && game.started && now - game.createdAt > timeout && Object.keys(game.getPlayers()).length === 0);
+        const pendingTimeout = ONE_HOUR;
+        let changed = false;
 
-        stalePendingGames.forEach(game => {
-            logger.info(`closed pending game ${game.id} due to inactivity`);
-            delete this.games[game.id];
+        Object.values(this.games).forEach(game => {
+            if(!game) {
+                return;
+            }
+
+            let age = now - game.createdAt;
+
+            // Pending games older than 1 hour
+            if(!game.started && age > pendingTimeout) {
+                logger.info(`closed pending game ${game.id} due to inactivity`);
+                delete this.games[game.id];
+                changed = true;
+                return;
+            }
+
+            if(!game.started) {
+                return;
+            }
+
+            // Started games with no players after 5 minutes
+            if(age > FIVE_MINUTES && Object.keys(game.getPlayers()).length === 0) {
+                logger.info(`closed started game ${game.id} due to no active players`);
+                delete this.games[game.id];
+                this.router.closeGame(game);
+                changed = true;
+                return;
+            }
+
+            // Started games whose node no longer exists
+            if(game.node && !this.router.workers[game.node.identity]) {
+                logger.info(`closed game ${game.id} because node ${game.node.identity} is no longer connected`);
+                delete this.games[game.id];
+                changed = true;
+                return;
+            }
+
+            // Any game older than 4 hours is stale
+            if(age > FOUR_HOURS) {
+                logger.info(`closed game ${game.id} after ${Math.round(age / ONE_HOUR)}h (maximum game age exceeded)`);
+                delete this.games[game.id];
+                this.router.closeGame(game);
+                changed = true;
+            }
         });
 
-        emptyGames.forEach(game => {
-            logger.info(`closed started game ${game.id} due to no active players`);
-            delete this.games[game.id];
-            this.router.closeGame(game);
-        });
-
-        if(emptyGames.length > 0 || stalePendingGames.length > 0) {
+        if(changed) {
             this.broadcastGameList();
         }
     }
