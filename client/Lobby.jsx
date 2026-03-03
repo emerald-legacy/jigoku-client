@@ -168,7 +168,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
             <div className='col-sm-offset-1 col-sm-10'>
                 <div className='panel-title text-center'>Getting Started</div>
                 <div className='panel panel-darker'>
-                    <p>This site allows you to play the Emerald Legacy in your browser. If you're new, head on over to the <Link href='/how-to-play'>How To Play guide</Link> for a thorough explanation on how to use the site!</p>
+                    <p>This site allows you to play Emerald Legacy in your browser. If you're new, head on over to the <Link href='/how-to-play'>How To Play guide</Link> for a thorough explanation on how to use the site!</p>
                 </div>
             </div>
 
