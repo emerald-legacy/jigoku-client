@@ -190,7 +190,7 @@ function CardPile({
         ) : null;
 
         return (
-            <Draggable handle='.grip'>
+            <Draggable handle='.grip' cancel='.close-button'>
                 <div className={ `popup ${isMe ? '' : 'opponent'}` }>
                     <div className='grip'>
                         <div
