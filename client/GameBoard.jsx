@@ -541,7 +541,7 @@ export class InnerGameBoard extends React.Component {
         return rings.reduce(getOwnedAttachmentsByElement, ownedRingAttachments);
     }
     isControlledByPlayer(card, player) {
-        return card.controller.id === player.id;
+        return card.controller.name === player.name;
     }
     renderSidebar(thisPlayer, otherPlayer) {
         let size = this.props.user.settings.cardSize;
