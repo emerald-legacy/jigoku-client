@@ -14,6 +14,11 @@ const validateDeck = require('../client/deck-validator.js'); // XXX Move this to
 const Settings = require('./settings.js');
 const GetShadowlandsSummonables = require('./shadowLandsHelper.js');
 
+const ONE_MINUTE = 60 * 1000;
+const FIVE_MINUTES = 5 * ONE_MINUTE;
+const ONE_HOUR = 60 * ONE_MINUTE;
+const FOUR_HOURS = 4 * ONE_HOUR;
+
 class Lobby {
     constructor(server, options = {}) {
         this.sockets = {};
@@ -48,7 +53,7 @@ class Lobby {
 
         this.loadCardData();
 
-        setInterval(() => this.clearStaleGames(), 60 * 1000);
+        setInterval(() => this.clearStaleGames(), ONE_MINUTE);
     }
 
     async loadCardData() {

@@ -4,6 +4,10 @@ const db = require('./db.js');
 const EventEmitter = require('events');
 const GameService = require('./services/GameService.js');
 
+const ONE_SECOND = 1000;
+const FIFTEEN_SECONDS = 15 * ONE_SECOND;
+const THIRTY_SECONDS = 30 * ONE_SECOND;
+
 class GameRouter extends EventEmitter {
     constructor(config) {
         super();
@@ -14,7 +18,7 @@ class GameRouter extends EventEmitter {
         this.running = false;
 
         this.init(config.mqUrl);
-        setInterval(this.checkTimeouts.bind(this), 1000 * 15);
+        setInterval(this.checkTimeouts.bind(this), FIFTEEN_SECONDS);
     }
 
     async init(url) {
@@ -223,7 +227,7 @@ class GameRouter extends EventEmitter {
 
     checkTimeouts() {
         var currentTime = Date.now();
-        const pingTimeout = 30 * 1000;
+        const pingTimeout = THIRTY_SECONDS;
 
         Object.values(this.workers).forEach(worker => {
             if(worker.pingSent && currentTime - worker.pingSent > pingTimeout) {
