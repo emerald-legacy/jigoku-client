@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary }) {
+function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, strengthSummary }) {
     const renderGroupedModifier = (groupedModifier) => {
         const amount = groupedModifier.reduce((total, modifier) => total + modifier.amount, 0);
         let sign = '';
@@ -66,6 +66,17 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary }
                     <div className='stat-specifics'>{ renderModifiers(glorySummary.modifiers) }</div>
                 </div>
             ) }
+            { strengthSummary && (
+                <div className='stat-container'>
+                    <div className='stat-total'>
+                        <span className='stat--type-label'>STR</span>
+                        <span className='stat-value'>{ strengthSummary.stat }</span>
+                    </div>
+                    <div className='stat-specifics'>
+                        { renderModifiers(strengthSummary.modifiers) }
+                    </div>
+                </div>
+            ) }
         </div>
     );
 }
@@ -75,6 +86,7 @@ CardStats.propTypes = {
     glorySummary: PropTypes.object,
     militarySkillSummary: PropTypes.object,
     politicalSkillSummary: PropTypes.object,
+    strengthSummary: PropTypes.object,
     text: PropTypes.string
 };
 

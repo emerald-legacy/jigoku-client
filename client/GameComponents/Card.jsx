@@ -623,12 +623,13 @@ function Card(props) {
                     <CardCounters counters={ getCountersForCard(card) } />
                 </div>
                 { shouldShowMenu() ? <CardMenu menu={ card.menu } onMenuItemClick={ handleMenuItemClick } /> : null }
-                { !shouldShowMenu() && showStats ?
+                { !shouldShowMenu() && (showStats || card.strengthSummary?.stat) ?
                     <CardStats
                         text={ card.name }
                         militarySkillSummary={ card.militarySkillSummary }
                         politicalSkillSummary={ card.politicalSkillSummary }
                         glorySummary={ card.glorySummary }
+                        strengthSummary={ card.strengthSummary }
                     /> : null
                 }
                 { getPopup() }
