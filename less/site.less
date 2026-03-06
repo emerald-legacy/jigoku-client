@@ -34,11 +34,36 @@ img, svg {
   vertical-align: middle;
 }
 
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
 // Undo Tailwind preflight border reset on hr
 hr {
   border: none;
   border-top: 2px solid rgba(255, 255, 255, 0.3);
   margin: 5px 0;
+}
+
+// Undo Tailwind preflight heading/paragraph reset
+h1, h2, h3, h4, h5, h6 {
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+p {
+  margin: 0 0 10px;
+}
+
+// Undo Tailwind preflight list reset — scoped to content areas only
+.about-container, .panel-body {
+  ul, ol {
+    list-style: revert;
+    margin: revert;
+    padding: revert;
+  }
 }
 
 html {
@@ -363,11 +388,6 @@ h4 {
 }
 
 .about-container {
-    position: absolute;
-    top: 33px;
-    bottom: 0px;
-    left: 15px;
-    right: 15px;
     overflow-y: auto;
 }
 

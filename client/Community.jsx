@@ -1,6 +1,6 @@
 function Community() {
     return (
-        <div className='col-xs-12 full-height'>
+        <div className='col-xs-12 full-height relative'>
             <div className='panel-title text-center'>
                 Jigoku Online - Community Information
             </div>

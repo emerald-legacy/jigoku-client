@@ -27,6 +27,9 @@
 
 .decklist {
   height: 200px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .decklist > img {
@@ -97,6 +100,13 @@
   padding: 3px 5px;
   margin-bottom: 5px;
   text-overflow: ellipsis;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+
+  > .row {
+    flex-basis: 100%;
+  }
 }
 
 .deck-row > img {
@@ -165,6 +175,8 @@
 .info-row {
   margin-left: 0px;
   margin-right: 0px;
+  justify-content: space-between;
+  gap: 5px;
 }
 
 .deck-status-button {

@@ -64,14 +64,14 @@
     .close { @apply bg-transparent border-0 cursor-pointer text-white text-2xl leading-none p-0; }
 
     /* Navbar */
-    .navbar { @apply fixed top-0 inset-x-0 z-50; min-height: 36px; }
+    .navbar { @apply fixed top-0 inset-x-0 z-50; min-height: 55px; }
     .navbar-inverse { @apply bg-navbar-bg text-white; }
     .no-highlight { user-select: none; }
 
     /* Navbar links and items */
     .navbar li { @apply flex items-center; }
-    .navbar li a { @apply block px-3 py-2 text-sm text-white no-underline hover:text-gray-300 leading-tight; }
-    .navbar li span { @apply block px-3 py-2 text-sm text-gray-400 leading-tight; }
+    .navbar li a { @apply block px-2 py-1 text-sm text-white no-underline hover:text-gray-300; line-height: 55px; }
+    .navbar li span { @apply block px-2 py-1 text-sm text-gray-400; line-height: 55px; }
 
     /* Gravatar avatar */
     .gravatar { @apply inline-block align-middle mr-1.5 rounded-sm; }
@@ -155,7 +155,7 @@
     .dropdown-menu {
         @apply absolute top-full left-0 bg-gray-800 border border-gray-600 rounded shadow-lg min-w-[160px] z-50 list-none p-1 m-0 hidden;
     }
-    .dropdown-menu li a { @apply block px-4 py-2 text-white no-underline hover:bg-gray-700 rounded; }
+    .dropdown-menu li a { @apply block px-3 py-1 text-white no-underline hover:bg-gray-700 rounded leading-normal; }
     .dropdown.open .dropdown-menu { @apply block; }
 
     /* Typeahead CSS */

@@ -2,7 +2,7 @@ import Link from './Link.jsx';
 
 function HowToPlay() {
     return (
-        <div className='col-xs-12 full-height'>
+        <div className='col-xs-12 full-height relative'>
             <div className='panel-title text-center'>How To Play on Jigoku Online</div>
             <div className='panel about-container'>
                 <p>
