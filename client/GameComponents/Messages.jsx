@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import EmojiConvertor from 'emoji-js';
 import { v4 as uuid } from 'uuid';
 
+import { CheckCircle, Info, AlertCircle, AlertTriangle } from 'lucide-react';
 import Avatar from '../Avatar.jsx';
 import * as actions from '../actions';
 
@@ -99,7 +100,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                         case 'success':
                             return (
                                 <div className='alert alert-success' key={ index++ }>
-                                    <span className='glyphicon glyphicon-ok-sign' />
+                                    <CheckCircle size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } />
                                     &nbsp;
                                     { alertMessage }
                                 </div>
@@ -107,7 +108,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                         case 'info':
                             return (
                                 <div className='alert alert-info' key={ index++ }>
-                                    <span className='glyphicon glyphicon-info-sign' />
+                                    <Info size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } />
                                     &nbsp;
                                     { alertMessage }
                                 </div>
@@ -115,7 +116,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                         case 'danger':
                             return (
                                 <div className='alert alert-danger' key={ index++ }>
-                                    <span className='glyphicon glyphicon-exclamation-sign' />
+                                    <AlertCircle size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } />
                                     &nbsp;
                                     { alertMessage }
                                 </div>
@@ -123,7 +124,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                         case 'warning':
                             return (
                                 <div className='alert alert-warning' key={ index++ }>
-                                    <span className='glyphicon glyphicon-warning-sign' />
+                                    <AlertTriangle size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } />
                                     &nbsp;
                                     { alertMessage }
                                 </div>

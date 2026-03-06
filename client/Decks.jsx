@@ -135,11 +135,11 @@ export function InnerDecks({
         if(selectedDeck) {
             deckInfo = (
                 <div className='col-sm-7'>
-                    <div className='panel-title text-center col-xs-12'>
+                    <div className='panel-title text-center'>
                         { selectedDeck.name }
                     </div>
-                    <div className='panel col-xs-12'>
-                        <div className='btn-group col-xs-12'>
+                    <div className='panel'>
+                        <div className='btn-group'>
                             <button className='btn btn-primary' onClick={ handleEditClick }>Edit</button>
                             <button className='btn btn-primary' onClick={ handleDeleteClick }>Delete</button>
                             { showDelete && (
@@ -156,7 +156,8 @@ export function InnerDecks({
             <div className='full-height'>
                 { successPanel }
                 { limitWarning }
-                <div className='col-sm-5 full-height'>
+                <div className='row h-full'>
+                <div className='col-sm-5 full-height relative'>
                     <div className='panel-title text-center'>
                         Your decks ({ deckCount } / 50)
                     </div>
@@ -196,6 +197,7 @@ export function InnerDecks({
                     </div>
                 </div>
                 { deckInfo }
+                </div>
             </div>
         );
     }

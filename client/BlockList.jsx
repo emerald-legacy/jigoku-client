@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
+import { X } from 'lucide-react';
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 import Input from './FormComponents/Input.jsx';
 
@@ -74,7 +75,7 @@ export function InnerBlockList({
                 <td>{ blockedUser }</td>
                 <td>
                     <a href='#' className='btn' onClick={ (e) => onRemoveClick(blockedUser, e) }>
-                        <span className='glyphicon glyphicon-remove' />
+                        <X size={ 16 } />
                     </a>
                 </td>
             </tr>

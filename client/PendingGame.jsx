@@ -315,8 +315,8 @@ export function InnerPendingGame({
                     </div>
                 </form>
             </div>
-            { popup }
             { backdrop }
+            { popup }
         </div>
     );
 }

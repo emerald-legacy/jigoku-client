@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import PropTypes from 'prop-types';
+import { X } from 'lucide-react';
 
 import CardMenu from './CardMenu.jsx';
 import CardStats from './CardStats.jsx';
@@ -513,7 +514,7 @@ function Card(props) {
                 <div className='panel-title' onClick={ event => event.stopPropagation() }>
                     <span className='text-center'>{ title }</span>
                     <span className='pull-right'>
-                        <a className='close-button glyphicon glyphicon-remove' onClick={ onCloseClickHandler } />
+                        <a className='close-button' onClick={ onCloseClickHandler }><X size={ 16 } /></a>
                     </span>
                 </div>
                 <div className={ popupClass } onClick={ event => event.stopPropagation() }>

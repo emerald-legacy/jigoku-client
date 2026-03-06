@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { toast } from 'sonner';
 import GameModes from './GameModes';
 
+import { X } from 'lucide-react';
 import Avatar from './Avatar.jsx';
 import * as actions from './actions';
 
@@ -122,7 +123,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         return (
             <div key={ game.id } className={ 'game-row' + gameModifier + (game.node && isAdmin ? ' ' + game.node : '') }>
                 <span className='col-xs-12 game-title'>
-                    { isAdmin ? <a href='#' className='glyphicon glyphicon-remove' onClick={ (event) => removeGame(event, game) } /> : null }
+                    { isAdmin ? <a href='#' onClick={ (event) => removeGame(event, game) }><X size={ 16 } /></a> : null }
                     <b>{ gameTitle }</b> { game.clocks && game.clocks.type !== 'none' ? <img src='/img/free-clock-icon-png.png' className='clock-icon' /> : null }
                 </span>
                 <div>{ gameRow }</div>

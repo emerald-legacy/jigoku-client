@@ -209,8 +209,8 @@ export function InnerProfile({ refreshUser, socket, user }) {
     }
 
     return (
-        <div className='col-sm-8 col-sm-offset-2 profile full-height'>
-            <div className='about-container'>
+        <div className='row profile full-height'>
+            <div className='col-sm-8 col-sm-offset-2 about-container'>
                 { errorMessage ? <AlertPanel type='error' message={ errorMessage } /> : null }
                 { successMessage ? <AlertPanel type='success' message={ successMessage } /> : null }
                 <form className='form form-horizontal'>

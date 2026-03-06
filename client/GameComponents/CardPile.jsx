@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
+import { X } from 'lucide-react';
 
 import Card from './Card.jsx';
 import { tryParseJSON } from '../util.js';
@@ -200,9 +201,9 @@ function CardPile({
                             <span className='text-center'>{ title }</span>
                             <span className='pull-right'>
                                 <a
-                                    className='close-button glyphicon glyphicon-remove'
+                                    className='close-button'
                                     onClick={ handleCloseClick }
-                                />
+                                ><X size={ 16 } /></a>
                             </span>
                         </div>
                     </div>

@@ -34,7 +34,7 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
         content = <AlertPanel type='error' message={ apiError } />;
     } else {
         content = (
-            <div>
+            <div className='row'>
                 <div className='col-sm-6'>
                     <div className='panel-title text-center'>
                         Deck Editor
@@ -44,10 +44,10 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
                     </div>
                 </div>
                 <div className='col-sm-6'>
-                    <div className='panel-title text-center col-xs-12'>
+                    <div className='panel-title text-center'>
                         { deck ? deck.name : 'New Deck' }
                     </div>
-                    <div className='panel col-xs-12'>
+                    <div className='panel'>
                         <DeckSummary cards={ cards } deck={ deck } />
                     </div>
                 </div>

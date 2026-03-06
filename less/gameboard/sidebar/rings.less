@@ -15,6 +15,7 @@ s.ring-pane {
     align-items: center;
     min-width: 25%;
     font-size:40pt;
+    border: none;
 }
 
 .ring-panel.removed-rings {
@@ -51,6 +52,7 @@ circle.ring-background {
     cx:50%;
     cy:50%;
     r:50%;
+    border: none;
 
     &.unselectable {
         filter: brightness(60%);
@@ -62,6 +64,8 @@ svg.ring-svg {
     position:absolute;
     height:@ring-height;
     width:@ring-width;
+    background: transparent;
+    border: none;
 
     &.contested {
         &.tint-military {
@@ -95,6 +99,10 @@ svg.ring-svg {
     margin-top:0px;
     position:relative;
     color:white;
+    background: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none;
     min-height: @ring-height;
     max-height: @ring-height;
     max-width: @ring-width;

@@ -91,15 +91,13 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
         size = 'small';
     }
 
-    let className = 'ring icon-element-' + ring.element + ' ' + size;
-    let bgClassName = 'ring-background  tint-' + ring.conflictType + ' ' + size;
+    let className = 'ring icon-element-' + ring.element + (size ? ' ' + size : '');
+    let bgClassName = 'ring-background tint-' + ring.conflictType + (size ? ' ' + size : '');
     let svgClassName =
         'ring-svg tint-' +
         ring.conflictType +
-        ' ' +
-        size +
-        ' ' +
-        (ring.selected || ring.contested ? 'contested' : '');
+        (size ? ' ' + size : '') +
+        (ring.selected || ring.contested ? ' contested' : '');
     if(ring.unselectable) {
         className = className + ' unselectable';
         bgClassName += ' unselectable';

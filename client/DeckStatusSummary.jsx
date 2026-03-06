@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { Check, X } from 'lucide-react';
 import GameModes from './GameModes';
 
 function DeckStatusSummary({ status }) {
@@ -47,7 +48,7 @@ function DeckStatusSummary({ status }) {
         <ul className='deck-status-summary'>
             { items.map((item, index) => (
                 <li className={ item.value ? 'valid' : 'invalid' } key={ index }>
-                    <span className={ item.value ? 'glyphicon glyphicon-ok' : 'glyphicon glyphicon-remove' } />
+                    { item.value ? <Check size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } /> : <X size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } /> }
                     { ` ${item.title}` }
                 </li>
             )) }

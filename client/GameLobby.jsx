@@ -49,18 +49,20 @@ export function InnerGameLobby({ bannerNotice, currentGame, games, newGame, pass
             { bannerNotice ? <AlertPanel type='error' message={ bannerNotice } /> : null }
             { errorMessage ? <AlertPanel type='error' message={ errorMessage } /> : null }
 
-            <div className='col-sm-7 full-height'>
-                <div className='panel-title text-center'>
-                    Current Games
+            <div className='row h-full'>
+                <div className='col-sm-7 full-height relative'>
+                    <div className='panel-title text-center'>
+                        Current Games
+                    </div>
+                    <div className='panel game-list-container'>
+                        <button className='btn btn-primary' onClick={ onNewGameClick } disabled={ !!currentGame }>New Game</button>
+                        { games.length === 0 ? <h4>No games are currently in progress</h4> : <GameList games={ games } /> }
+                    </div>
                 </div>
-                <div className='panel game-list-container'>
-                    <button className='btn btn-primary' onClick={ onNewGameClick } disabled={ !!currentGame }>New Game</button>
-                    { games.length === 0 ? <h4>No games are currently in progress</h4> : <GameList games={ games } /> }
+                <div className='col-sm-5'>
+                    { (!currentGame && newGame) ? <NewGame defaultGameName={ username + '\'s game' } /> : null }
+                    { rightside }
                 </div>
-            </div>
-            <div className='col-sm-5'>
-                { (!currentGame && newGame) ? <NewGame defaultGameName={ username + '\'s game' } /> : null }
-                { rightside }
             </div>
         </div>
     );

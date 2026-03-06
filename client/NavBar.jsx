@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { ChevronDown } from 'lucide-react';
 
 import Link from './Link.jsx';
 import Avatar from './Avatar.jsx';
@@ -65,7 +66,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
                     <a href='#' className='dropdown-toggle' role='button' aria-haspopup='true' aria-expanded={ isOpen }
                         onClick={ (e) => handleDropdownToggle(menuItem.name, e) }>
                         { menuItem.avatar ? <Avatar emailHash={ menuItem.emailHash } forceDefault={ menuItem.disableGravatar } /> : null }
-                        { menuItem.name }<span className='caret' />
+                        { menuItem.name } <ChevronDown size={ 12 } style={ { display: 'inline', verticalAlign: 'middle' } } />
                     </a>
                     <ul className='dropdown-menu'>
                         { childItems }
@@ -101,29 +102,27 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
         </li>
     ));
 
-    const navbarCollapseClass = navbarCollapsed ? 'collapse navbar-collapse' : 'collapse navbar-collapse in';
-
     return (
-        <nav className='navbar navbar-inverse navbar-fixed-top no-highlight'>
-            <div className='container'>
-                <div className='navbar-header'>
-                    <button className={ navbarCollapsed ? 'navbar-toggle collapsed' : 'navbar-toggle' }
+        <nav className='navbar navbar-inverse no-highlight'>
+            <div className='max-w-[1170px] mx-auto px-4 flex items-center justify-between flex-wrap text-sm'>
+                <div className='flex items-center justify-between w-full md:w-auto'>
+                    <Link href='/' className='text-white font-bold text-sm py-2 leading-tight'>{ title }</Link>
+                    <button className='md:hidden p-2 text-gray-400'
                         type='button'
                         aria-expanded={ !navbarCollapsed }
                         aria-controls='navbar'
                         onClick={ handleNavbarToggle }>
                         <span className='sr-only'>Toggle Navigation</span>
-                        <span className='icon-bar' />
-                        <span className='icon-bar' />
-                        <span className='icon-bar' />
+                        <span className='block w-[22px] h-0.5 bg-gray-400 rounded my-1' />
+                        <span className='block w-[22px] h-0.5 bg-gray-400 rounded my-1' />
+                        <span className='block w-[22px] h-0.5 bg-gray-400 rounded my-1' />
                     </button>
-                    <Link href='/' className='navbar-brand'>{ title }</Link>
                 </div>
-                <div id='navbar' className={ navbarCollapseClass }>
-                    <ul className='nav navbar-nav'>
+                <div id='navbar' className={ navbarCollapsed ? 'hidden md:flex md:items-center md:w-auto w-full' : 'flex flex-col md:flex-row md:items-center md:w-auto w-full' }>
+                    <ul className='flex flex-col md:flex-row list-none m-0 p-0'>
                         { leftMenuToRender }
                     </ul>
-                    <ul className='nav navbar-nav navbar-right'>
+                    <ul className='flex flex-col md:flex-row list-none m-0 p-0 md:ml-auto'>
                         { contextMenu }
                         { numGamesElement }
                         { rightMenuToRender }

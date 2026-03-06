@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { ArrowRight } from 'lucide-react';
 
 function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
     const handleMouseOver = useCallback((event, card) => {
@@ -77,7 +78,7 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
     return (
         <div className='prompt-control-targeting'>
             { sourceElement }
-            { targetCards && targetCards.length > 0 ? <span className='glyphicon glyphicon-arrow-right targeting-arrow' /> : null }
+            { targetCards && targetCards.length > 0 ? <span className='targeting-arrow'><ArrowRight size={ 16 } /></span> : null }
             { targetCards && targetCards.length > 0 ? targetCards : null }
         </div>
     );
