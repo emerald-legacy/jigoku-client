@@ -66,34 +66,29 @@
         position: relative;
         vertical-align: middle;
 
-        i {
-            display: none;
-        }
-
-        &:hover .glyphicon {
+        &:hover svg {
             color: #fff;
         }
     }
 
-    .glyphicon {
+    svg {
         color: @brand-primary;
     }
 
     .auto {
-        .glyphicon {
+        svg {
             color: @strength-color;
         }
     }
 
     .with-alert {
-
-        i {
-            display: block;
+        svg.lucide-alert-circle {
             color: @header-background;
             position: absolute;
             top: -5px;
             right: 0;
-            font-size: 20px;
+            width: 20px;
+            height: 20px;
         }
     }
 }

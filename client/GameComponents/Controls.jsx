@@ -19,7 +19,7 @@ function Controls({
             >
                 <Menu size={ 16 } />
                 { laptopSize ? '' : ' Toggle Chat' }
-                <AlertCircle size={ 16 } />
+                { showChatAlert && <AlertCircle size={ 16 } /> }
             </button>
             { showManualMode && (
                 <button

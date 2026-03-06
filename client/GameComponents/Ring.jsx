@@ -117,7 +117,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
     }
     return (
         <div
-            className='ring no-highlight'
+            className={ 'ring no-highlight' + (ring.unselectable ? ' unselectable' : '') }
             onClick={ (event) => handleClick(event, ring.element) }
         >
             <svg className={ svgClassName }>

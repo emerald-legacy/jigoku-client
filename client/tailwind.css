@@ -29,7 +29,7 @@
 
     /* Forms */
     .form-group { @apply mb-4 flex flex-wrap items-center; }
-    .form-control { @apply w-full h-[34px] px-3 py-1.5 bg-white border border-gray-300 rounded text-sm shadow-inner transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary; }
+    .form-control { @apply w-full h-[34px] px-3 py-1.5 bg-white text-black border border-gray-300 rounded text-sm shadow-inner transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary; }
     .control-label { @apply mb-0 font-bold text-sm text-right pr-2; }
     .help-block { @apply mt-1 text-sm text-danger; }
     .checkbox { @apply flex items-center gap-1 text-sm; }
@@ -81,16 +81,10 @@
     .sr-only { @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0; clip: rect(0, 0, 0, 0); }
 
     /* Bootstrap grid compatibility */
-    .row { @apply flex flex-wrap -mx-4; }
-    .container { @apply max-w-[1170px] mx-auto px-4; }
+    .row { @apply flex flex-wrap; margin-left: -15px; margin-right: -15px; }
+    /* .container — moved to LESS (site.less) to avoid Tailwind built-in override */
 
-    /* Panels and content containers */
-    .panel { @apply p-4 mb-2; }
-    .panel-title {
-        @apply text-center text-white font-bold py-2 px-4 mb-0 text-sm uppercase tracking-wider;
-        background-color: var(--color-header-bg);
-        border-bottom: 2px solid var(--color-header-border);
-    }
+    /* Panels and content containers — defined in LESS (application.less + common.less) */
     .about-container { @apply mb-4; }
     .full-height { @apply h-full; }
 
@@ -102,33 +96,33 @@
     .hidden-xs { @apply hidden sm:inline-block; }
 
     /* Column grid */
-    .col-xs-1 { @apply w-1/12 px-4; }
-    .col-xs-2 { @apply w-2/12 px-4; }
-    .col-xs-3 { @apply w-3/12 px-4; }
-    .col-xs-4 { @apply w-4/12 px-4; }
-    .col-xs-7 { @apply w-7/12 px-4; }
-    .col-xs-8 { @apply w-8/12 px-4; }
-    .col-xs-12 { @apply w-full px-4; }
+    .col-xs-1 { @apply w-1/12 px-[15px]; }
+    .col-xs-2 { @apply w-2/12 px-[15px]; }
+    .col-xs-3 { @apply w-3/12 px-[15px]; }
+    .col-xs-4 { @apply w-4/12 px-[15px]; }
+    .col-xs-7 { @apply w-7/12 px-[15px]; }
+    .col-xs-8 { @apply w-8/12 px-[15px]; }
+    .col-xs-12 { @apply w-full px-[15px]; }
 
-    .col-sm-1 { @apply sm:w-1/12 px-4; }
-    .col-sm-2 { @apply sm:w-2/12 px-4; }
-    .col-sm-3 { @apply sm:w-3/12 px-4; }
-    .col-sm-4 { @apply sm:w-4/12 px-4; }
-    .col-sm-5 { @apply sm:w-5/12 px-4; }
-    .col-sm-6 { @apply sm:w-6/12 px-4; }
-    .col-sm-7 { @apply sm:w-7/12 px-4; }
-    .col-sm-8 { @apply sm:w-8/12 px-4; }
-    .col-sm-9 { @apply sm:w-9/12 px-4; }
-    .col-sm-10 { @apply sm:w-10/12 px-4; }
-    .col-sm-12 { @apply sm:w-full px-4; }
+    .col-sm-1 { @apply sm:w-1/12 px-[15px]; }
+    .col-sm-2 { @apply sm:w-2/12 px-[15px]; }
+    .col-sm-3 { @apply sm:w-3/12 px-[15px]; }
+    .col-sm-4 { @apply sm:w-4/12 px-[15px]; }
+    .col-sm-5 { @apply sm:w-5/12 px-[15px]; }
+    .col-sm-6 { @apply sm:w-6/12 px-[15px]; }
+    .col-sm-7 { @apply sm:w-7/12 px-[15px]; }
+    .col-sm-8 { @apply sm:w-8/12 px-[15px]; }
+    .col-sm-9 { @apply sm:w-9/12 px-[15px]; }
+    .col-sm-10 { @apply sm:w-10/12 px-[15px]; }
+    .col-sm-12 { @apply sm:w-full px-[15px]; }
 
-    .col-md-3 { @apply md:w-3/12 px-4; }
-    .col-md-6 { @apply md:w-6/12 px-4; }
-    .col-md-7 { @apply md:w-7/12 px-4; }
+    .col-md-3 { @apply md:w-3/12 px-[15px]; }
+    .col-md-6 { @apply md:w-6/12 px-[15px]; }
+    .col-md-7 { @apply md:w-7/12 px-[15px]; }
 
-    .col-lg-2 { @apply lg:w-2/12 px-4; }
-    .col-lg-8 { @apply lg:w-8/12 px-4; }
-    .col-lg-9 { @apply lg:w-9/12 px-4; }
+    .col-lg-2 { @apply lg:w-2/12 px-[15px]; }
+    .col-lg-8 { @apply lg:w-8/12 px-[15px]; }
+    .col-lg-9 { @apply lg:w-9/12 px-[15px]; }
 
     /* Column offsets */
     .col-sm-offset-1 { @apply sm:ml-[8.333333%]; }
