@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useRef, memo } from 'react';
 import PropTypes from 'prop-types';
 import { X } from 'lucide-react';
 
@@ -78,32 +78,32 @@ function Card(props) {
     const [touchStart, setTouchStart] = useState(null);
     const cardRef = useRef(null);
 
-    const handleMouseOver = useCallback((cardData) => {
+    const handleMouseOver = (cardData) => {
         if(onMouseOver) {
             onMouseOver(cardData);
         }
-    }, [onMouseOver]);
+    };
 
-    const handleMouseOut = useCallback(() => {
+    const handleMouseOut = () => {
         if(onMouseOut) {
             onMouseOut();
         }
-    }, [onMouseOut]);
+    };
 
-    const onCardDragStart = useCallback((event, cardData, sourceArea) => {
+    const onCardDragStart = (event, cardData, sourceArea) => {
         const dragData = { card: cardData, source: sourceArea };
         event.dataTransfer.setData('Text', JSON.stringify(dragData));
-    }, []);
+    };
 
-    const onTouchMove = useCallback((event) => {
+    const onTouchMove = (event) => {
         event.preventDefault();
         const touch = event.targetTouches[0];
         event.currentTarget.style.left = touch.screenX - 32 + 'px';
         event.currentTarget.style.top = touch.screenY - 42 + 'px';
         event.currentTarget.style.position = 'fixed';
-    }, []);
+    };
 
-    const getReactComponentFromDOMNode = useCallback((dom) => {
+    const getReactComponentFromDOMNode = (dom) => {
         for(const key in dom) {
             if(key.indexOf('__reactInternalInstance$') === 0) {
                 const compInternals = dom[key]._currentElement;
@@ -113,14 +113,14 @@ function Card(props) {
             }
         }
         return null;
-    }, []);
+    };
 
-    const onTouchStart = useCallback((event) => {
+    const onTouchStart = (event) => {
         const rect = event.currentTarget.getBoundingClientRect();
         setTouchStart({ left: rect.left, top: rect.top });
-    }, []);
+    };
 
-    const onTouchEnd = useCallback((event) => {
+    const onTouchEnd = (event) => {
         const target = event.currentTarget;
         const targetRect = target.getBoundingClientRect();
         const nearestPile = findNearestElement(target, '.card-pile, .hand, .player-board');
@@ -160,9 +160,9 @@ function Card(props) {
             target.style.top = touchStart.top + 'px';
         }
         event.currentTarget.style.position = 'initial';
-    }, [touchStart, card, source, onDragDrop, getReactComponentFromDOMNode]);
+    };
 
-    const handleClick = useCallback((event, cardData) => {
+    const handleClick = (event, cardData) => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -179,16 +179,16 @@ function Card(props) {
         if(onClick) {
             onClick(cardData);
         }
-    }, [card, onClick]);
+    };
 
-    const handleMenuItemClick = useCallback((menuItem) => {
+    const handleMenuItemClick = (menuItem) => {
         if(onMenuItemClick) {
             onMenuItemClick(card, menuItem);
             setShowMenu(prev => !prev);
         }
-    }, [card, onMenuItemClick]);
+    };
 
-    const getCountersForCard = useCallback((cardData) => {
+    const getCountersForCard = (cardData) => {
         const counters = {};
         let statusFlag = 1;
         if(cardData.isHonored) {
@@ -230,9 +230,9 @@ function Card(props) {
         });
 
         return filteredCounters;
-    }, []);
+    };
 
-    const getWrapper = useCallback(() => {
+    const getWrapper = () => {
         let wrapperClassName = '';
         if(source === 'play area') {
             wrapperClassName += ' at-home';
@@ -251,9 +251,9 @@ function Card(props) {
         }
 
         return wrapperClassName;
-    }, [source, card, declaring, size, isMe]);
+    };
 
-    const getWrapperStyle = useCallback(() => {
+    const getWrapperStyle = () => {
         let wrapperStyle = {};
         let attachmentOffset = 13;
         let cardHeight = 84;
@@ -295,9 +295,9 @@ function Card(props) {
         }
 
         return wrapperStyle;
-    }, [card, player, size, source]);
+    };
 
-    const getCardPileElement = useCallback(() => {
+    const getCardPileElement = () => {
         const cardPile = player && card && player.cardPiles[card.uuid];
         if(!cardPile || !cardPile.length) {
             return null;
@@ -321,9 +321,9 @@ function Card(props) {
                 size={ size }
             />
         );
-    }, [card, player, onMouseOver, onMouseOut, onClick, onDragDrop, size]);
+    };
 
-    const getAttachments = useCallback(() => {
+    const getAttachments = () => {
         const provinces = ['province 1', 'province 2', 'province 3', 'province 4', 'stronghold province'];
         if(source !== 'play area' && !provinces.includes(source)) {
             return null;
@@ -380,9 +380,9 @@ function Card(props) {
         });
 
         return attachmentElements;
-    }, [card, source, size, disableMouseOver, handleMouseOver, handleMouseOut, onClick, onMenuItemClick, onCardDragStart]);
+    };
 
-    const renderUnderneathCards = useCallback(() => {
+    const renderUnderneathCards = () => {
         const underneathCards = card.childCards;
         if(!underneathCards || underneathCards.length === 0) {
             return null;
@@ -407,34 +407,34 @@ function Card(props) {
                 size={ size }
             />
         );
-    }, [card, onMouseOver, onMouseOut, onClick, isMe, onDragDrop, size]);
+    };
 
-    const getCardOrder = useCallback(() => {
+    const getCardOrder = () => {
         if(!card.order) {
             return null;
         }
         return (<div className='card-order'>{ card.order }</div>);
-    }, [card]);
+    };
 
-    const shouldShowMenu = useCallback(() => {
+    const shouldShowMenu = () => {
         if(!card.menu || !showMenu) {
             return false;
         }
         return true;
-    }, [card, showMenu]);
+    };
 
-    const isFacedown = useCallback(() => {
+    const isFacedown = () => {
         return card.facedown || !card.id;
-    }, [card]);
+    };
 
-    const getCardImagePath = useCallback(() => {
+    const getCardImagePath = () => {
         if(card.packId) {
             return '/img/cards/' + card.id + '-' + card.packId + '.jpg';
         }
         return '/img/cards/' + card.id + '.jpg';
-    }, [card]);
+    };
 
-    const onCloseClickHandler = useCallback((event) => {
+    const onCloseClickHandler = (event) => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -443,25 +443,25 @@ function Card(props) {
         if(onCloseClick) {
             onCloseClick();
         }
-    }, [onCloseClick]);
+    };
 
-    const onPopupCardClick = useCallback((cardData) => {
+    const onPopupCardClick = (cardData) => {
         setShowPopup(false);
 
         if(onClick) {
             onClick(cardData);
         }
-    }, [onClick]);
+    };
 
-    const onPopupMenuItemClick = useCallback(() => {
+    const onPopupMenuItemClick = () => {
         setShowPopup(false);
 
         if(onClick) {
             onClick(card);
         }
-    }, [onClick, card]);
+    };
 
-    const getPopup = useCallback(() => {
+    const getPopup = () => {
         let cardIndex = 0;
 
         const cardList = (card.attachments || []).map(attachmentCard => {
@@ -526,9 +526,9 @@ function Card(props) {
                 </div>
             </div>
         );
-    }, [card, source, disableMouseOver, isMe, onMouseOver, onMouseOut, onDragDrop, orientation, size, showPopup, popupLocation, title, onCloseClickHandler, onPopupCardClick, onPopupMenuItemClick]);
+    };
 
-    const getCardElement = useCallback(() => {
+    const getCardElement = () => {
         let cardClass = 'card';
         let imageClass = 'card-image';
         let cardBack = 'cardback.png';
@@ -636,7 +636,7 @@ function Card(props) {
                 { getPopup() }
             </div>
         );
-    }, [card, size, orientation, className, source, player, wrapped, style, id, disableMouseOver, showStats, handleMouseOver, handleMouseOut, handleClick, onCardDragStart, onTouchMove, onTouchEnd, onTouchStart, getCardOrder, isFacedown, getCardImagePath, getCountersForCard, shouldShowMenu, handleMenuItemClick, getPopup]);
+    };
 
     if(wrapped) {
         return (
@@ -652,8 +652,9 @@ function Card(props) {
     return getCardElement();
 }
 
-Card.displayName = 'Card';
-Card.propTypes = {
+const MemoCard = memo(Card);
+MemoCard.displayName = 'Card';
+MemoCard.propTypes = {
     card: PropTypes.shape({
         attached: PropTypes.bool,
         attachments: PropTypes.array,
@@ -722,4 +723,4 @@ Card.propTypes = {
     title: PropTypes.string,
     wrapped: PropTypes.bool
 };
-export default Card;
+export default MemoCard;
