@@ -32,9 +32,11 @@
     .form-control { @apply w-full h-[34px] px-3 py-1.5 bg-white text-black border border-gray-300 rounded text-sm shadow-inner transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary; }
     .control-label { @apply mb-0 font-bold text-sm text-right pr-2; }
     .help-block { @apply mt-1 text-sm text-danger; }
-    .checkbox { @apply flex items-center gap-1 text-sm; }
+    .checkbox { @apply flex items-center gap-1 text-sm py-0.5; }
     .checkbox label { @apply flex items-center gap-1.5 cursor-pointer; }
     .checkbox input[type="checkbox"] { @apply mt-0; }
+    .radio-inline { @apply inline-flex items-center gap-1 mr-4 cursor-pointer text-sm; }
+    .radio-inline input[type="radio"] { @apply mt-0; }
 
     /* Alerts */
     .alert { @apply p-4 mb-4 border rounded; }
@@ -82,7 +84,7 @@
     .sr-only { @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0; clip: rect(0, 0, 0, 0); }
 
     /* Bootstrap grid compatibility */
-    .row { @apply flex flex-wrap; margin-left: -15px; margin-right: -15px; }
+    .row { @apply flex flex-wrap mb-2; margin-left: -15px; margin-right: -15px; }
     /* .container — moved to LESS (site.less) to avoid Tailwind built-in override */
 
     /* Panels and content containers — defined in LESS (application.less + common.less) */
