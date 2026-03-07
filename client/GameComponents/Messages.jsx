@@ -1,10 +1,8 @@
 import { useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import EmojiConvertor from 'emoji-js';
 import { CheckCircle, Info, AlertCircle, AlertTriangle } from 'lucide-react';
 import Avatar from '../Avatar.jsx';
-import * as actions from '../actions';
 
 const iconsConflict = ['military', 'political'];
 
@@ -230,17 +228,8 @@ InnerMessages.displayName = 'Messages';
 InnerMessages.propTypes = {
     messages: PropTypes.array,
     onCardMouseOut: PropTypes.func,
-    onCardMouseOver: PropTypes.func,
-    socket: PropTypes.object
+    onCardMouseOver: PropTypes.func
 };
 
-function mapStateToProps(state) {
-    return {
-        socket: state.socket.socket
-    };
-}
-
-const Messages = connect(mapStateToProps, actions)(InnerMessages);
-
-export default Messages;
+export default InnerMessages;
 export { InnerMessages };
