@@ -49,6 +49,8 @@ export class InnerGameBoard extends React.Component {
         this.onToggleChatClick = this.onToggleChatClick.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
 
+        this._cardsInPlayCache = {};
+
         this.state = {
             cardToZoom: undefined,
             showChat: true,
@@ -263,6 +265,20 @@ export class InnerGameBoard extends React.Component {
             return [];
         }
 
+        let cacheKey = isMe ? 'me' : 'other';
+        let cached = this._cardsInPlayCache[cacheKey];
+        let conflict = this.props.currentGame.conflict;
+        let cardSize = this.props.user.settings.cardSize;
+        let disableCardStats = this.props.user.settings.optionSettings.disableCardStats;
+
+        if(cached &&
+            cached.cardsInPlay === player.cardPiles.cardsInPlay &&
+            cached.conflict === conflict &&
+            cached.cardSize === cardSize &&
+            cached.disableCardStats === disableCardStats) {
+            return cached.result;
+        }
+
         let sortedCards = [...player.cardPiles.cardsInPlay].sort((a, b) => {
             if(a.type < b.type) {
                 return -1;
@@ -289,7 +305,6 @@ export class InnerGameBoard extends React.Component {
         });
 
         let cardsByLocation = [];
-        let conflict = this.props.currentGame.conflict;
         let playerIsDefending = (player && conflict.defendingPlayerId && player.id.includes(conflict.defendingPlayerId));
         let playerDeclaringParticipants = conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen));
 
@@ -297,11 +312,19 @@ export class InnerGameBoard extends React.Component {
             let cardsInPlay = cards.map(card => {
                 return (<Card key={ card.uuid } id={ card.uuid } source='play area' card={ card } disableMouseOver={ card.facedown && !card.code }
                     onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
-                    showStats={ !this.props.user.settings.optionSettings.disableCardStats } player={ player }
-                    onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ this.props.user.settings.cardSize } isMe={ isMe } declaring={ playerDeclaringParticipants }/>);
+                    showStats={ !disableCardStats } player={ player }
+                    onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ cardSize } isMe={ isMe } declaring={ playerDeclaringParticipants }/>);
             });
             cardsByLocation.push(cardsInPlay);
         });
+
+        this._cardsInPlayCache[cacheKey] = {
+            cardsInPlay: player.cardPiles.cardsInPlay,
+            conflict,
+            cardSize,
+            disableCardStats,
+            result: cardsByLocation
+        };
 
         return cardsByLocation;
     }
