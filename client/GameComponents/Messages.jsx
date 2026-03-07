@@ -2,8 +2,6 @@ import { useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import EmojiConvertor from 'emoji-js';
-import { v4 as uuid } from 'uuid';
-
 import { CheckCircle, Info, AlertCircle, AlertTriangle } from 'lucide-react';
 import Avatar from '../Avatar.jsx';
 import * as actions from '../actions';
@@ -216,9 +214,9 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
     );
 
     const getMessage = () => {
-        return messages?.map((message) => {
+        return messages?.map((message, index) => {
             return (
-                <div key={ 'message' + uuid() } className='message'>
+                <div key={ 'message' + index } className='message'>
                     { formatMessageText(message.message) }
                 </div>
             );
