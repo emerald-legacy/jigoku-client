@@ -7,7 +7,6 @@ const logger = require('./log.js');
 const version = new Date(require('../version.js'));
 const PendingGame = require('./pendinggame.js');
 const GameRouter = require('./gamerouter.js');
-const MessageService = require('./services/MessageService.js');
 const DeckService = require('./services/DeckService.js');
 const CardService = require('./services/CardService.js');
 const validateDeck = require('../client/deck-validator.js'); // XXX Move this to a common location
@@ -25,7 +24,6 @@ class Lobby {
         this.users = {};
         this.games = {};
         this.config = options.config;
-        this.messageService = options.messageService || new MessageService(options.db);
         this.deckService = options.deckService || new DeckService(options.db);
         this.cardService = options.cardService || new CardService(options.db);
         this.router = options.router || new GameRouter(this.config);
@@ -317,7 +315,6 @@ class Lobby {
     onConnection(ioSocket) {
         var socket = new Socket(ioSocket, { config: this.config });
 
-        socket.registerEvent('lobbychat', this.onLobbyChat.bind(this));
         socket.registerEvent('newgame', this.onNewGame.bind(this));
         socket.registerEvent('joingame', this.onJoinGame.bind(this));
         socket.registerEvent('leavegame', this.onLeaveGame.bind(this));
@@ -341,10 +338,6 @@ class Lobby {
 
         // Force user list send for the newly connected socket, bypassing the throttle
         this.sendUserListFilteredWithBlockList(socket, this.getUserList());
-
-        this.messageService.getLastMessages().then(messages => {
-            socket.send('lobbymessages', messages.reverse());
-        });
 
         this.broadcastGameList(socket);
 
@@ -530,20 +523,6 @@ class Lobby {
 
         game.chat(socket.user.username, message);
         this.sendGameState(game);
-    }
-
-    onLobbyChat(socket, message) {
-        var chatMessage = { user: { username: socket.user.username, emailHash: socket.user.emailHash, noAvatar: socket.user.settings.disableGravatar }, message: message, time: new Date() };
-
-        Object.values(this.sockets).forEach(s => {
-            if(s && s.user && s.user.blockList && s.user.blockList.includes(chatMessage.user.username.toLowerCase())) {
-                return;
-            }
-
-            s.send('lobbychat', chatMessage);
-        });
-
-        this.messageService.addMessage(chatMessage);
     }
 
     onSelectDeck(socket, gameId, deckId) {

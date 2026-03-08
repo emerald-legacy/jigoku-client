@@ -2,8 +2,6 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import EmojiConvertor from 'emoji-js';
-import { format, isToday, isYesterday } from 'date-fns';
 
 import { X, Menu } from 'lucide-react';
 import * as actions from './actions';
@@ -12,11 +10,7 @@ import News from './SiteComponents/News.jsx';
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 import Link from './Link.jsx';
 
-const emoji = new EmojiConvertor();
-
-export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, socket, users }) {
-    const [canScroll, setCanScroll] = useState(true);
-    const [message, setMessage] = useState('');
+export function InnerLobby({ bannerNotice, loadNews, loading, news, users }) {
     const [showUsers, setShowUsers] = useState(false);
     const [serverVersions, setServerVersions] = useState([]);
 
@@ -31,99 +25,9 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
             .catch(() => setServerVersions([]));
     }, []);
 
-    const sendMessage = useCallback(() => {
-        if(message === '') {
-            return;
-        }
-
-        socket.emit('lobbychat', message);
-        setMessage('');
-    }, [message, socket]);
-
-    const handleKeyPress = useCallback((event) => {
-        if(event.key === 'Enter') {
-            sendMessage();
-            event.preventDefault();
-        }
-    }, [sendMessage]);
-
-    const handleSendClick = useCallback((event) => {
-        event.preventDefault();
-        sendMessage();
-    }, [sendMessage]);
-
-    const handleChange = useCallback((value) => {
-        setMessage(value);
-    }, []);
-
     const handleBurgerClick = useCallback(() => {
         setShowUsers(prev => !prev);
     }, []);
-
-    const renderedMessages = useMemo(() => {
-        if(!messages) {
-            return [];
-        }
-
-        const groupedMessages = {};
-        let index = 0;
-        let lastUser;
-        let currentGroup = 0;
-
-        for(const msg of messages) {
-            if(!msg.user) {
-                continue;
-            }
-
-            const msgDate = new Date(msg.time);
-            const formattedTime = format(msgDate, 'yyyyMMddHHmm');
-            if(lastUser && msg.user && lastUser !== msg.user.username) {
-                currentGroup++;
-            }
-
-            const key = msg.user.username + formattedTime + currentGroup;
-
-            if(!groupedMessages[key]) {
-                groupedMessages[key] = [];
-            }
-
-            groupedMessages[key].push(msg);
-            lastUser = msg.user.username;
-        }
-
-        return Object.values(groupedMessages).map((msgGroup) => {
-            const firstMessage = msgGroup[0];
-
-            if(!firstMessage.user) {
-                return null;
-            }
-
-            const msgDate = new Date(firstMessage.time);
-            let timestamp = '';
-            if(isToday(msgDate)) {
-                timestamp = format(msgDate, 'H:mm');
-            } else if(isYesterday(msgDate)) {
-                timestamp = 'yesterday ' + format(msgDate, 'H:mm');
-            } else {
-                timestamp = format(msgDate, 'MMM do H:mm');
-            }
-
-            const renderedMsgs = msgGroup.map((msg, msgIndex) => {
-                if(!msg.user) {
-                    return null;
-                }
-                return <div key={ msgIndex } className='lobby-message'>{ emoji.replace_colons(msg.message) }</div>;
-            });
-
-            return (
-                <div key={ timestamp + firstMessage.user.username + (index++).toString() }>
-                    <Avatar emailHash={ firstMessage.user.emailHash } float forceDefault={ firstMessage.user.noAvatar } />
-                    <span className='username'>{ firstMessage.user.username }</span><span>{ timestamp }</span>
-                    { renderedMsgs }
-                </div>
-            );
-        });
-    }, [messages]);
 
     const userList = useMemo(() => {
         if(!users) {
@@ -225,12 +129,9 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
 InnerLobby.displayName = 'Lobby';
 InnerLobby.propTypes = {
     bannerNotice: PropTypes.string,
-    fetchNews: PropTypes.func,
     loadNews: PropTypes.func,
     loading: PropTypes.bool,
-    messages: PropTypes.array,
     news: PropTypes.array,
-    socket: PropTypes.object,
     users: PropTypes.array
 };
 
@@ -238,10 +139,8 @@ function mapStateToProps(state) {
     return {
         bannerNotice: state.chat.notice,
         loading: state.api.loading,
-        messages: state.chat.messages,
         news: state.news.news,
         newsLoading: state.news.newsLoading,
-        socket: state.socket.socket,
         users: state.games.users
     };
 }
