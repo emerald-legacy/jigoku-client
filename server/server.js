@@ -166,7 +166,7 @@ class Server {
         });
 
         // Define error middleware last
-        app.use(function(err, req, res, next) { // eslint-disable-line no-unused-vars
+        app.use(function(err, req, res, next) {
             logger.error(`Unhandled error on ${req.method} ${req.url}: ${err}`);
             if(res.headersSent) {
                 return next(err);

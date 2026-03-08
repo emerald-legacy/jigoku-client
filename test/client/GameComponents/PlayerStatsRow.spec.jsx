@@ -32,7 +32,7 @@ describe('the <PlayerStatsRow /> component', () => {
 
     describe('when rendered with stats', () => {
         beforeEach(() => {
-            render(<PlayerStatsRow {...defaultProps} />);
+            render(<PlayerStatsRow { ...defaultProps } />);
         });
 
         it('should display the player name', () => {
@@ -54,7 +54,7 @@ describe('the <PlayerStatsRow /> component', () => {
 
     describe('when user is undefined', () => {
         beforeEach(() => {
-            render(<PlayerStatsRow {...defaultProps} user={undefined} />);
+            render(<PlayerStatsRow { ...defaultProps } user={ undefined } />);
         });
 
         it('should display "Noone" as the player name', () => {
@@ -64,7 +64,7 @@ describe('the <PlayerStatsRow /> component', () => {
 
     describe('when stats are undefined', () => {
         beforeEach(() => {
-            render(<PlayerStatsRow {...defaultProps} stats={undefined} />);
+            render(<PlayerStatsRow { ...defaultProps } stats={ undefined } />);
         });
 
         it('should display 0 for fate and honor', () => {
@@ -79,7 +79,7 @@ describe('the <PlayerStatsRow /> component', () => {
 
     describe('when firstPlayer is true', () => {
         beforeEach(() => {
-            render(<PlayerStatsRow {...defaultProps} firstPlayer={true} />);
+            render(<PlayerStatsRow { ...defaultProps } firstPlayer />);
         });
 
         it('should show the first player indicator', () => {
@@ -90,7 +90,7 @@ describe('the <PlayerStatsRow /> component', () => {
 
     describe('when firstPlayer is false', () => {
         beforeEach(() => {
-            render(<PlayerStatsRow {...defaultProps} firstPlayer={false} />);
+            render(<PlayerStatsRow { ...defaultProps } firstPlayer={ false } />);
         });
 
         it('should not show the first player indicator', () => {
@@ -101,7 +101,7 @@ describe('the <PlayerStatsRow /> component', () => {
 
     describe('when showControls is true', () => {
         beforeEach(() => {
-            render(<PlayerStatsRow {...defaultProps} showControls={true} />);
+            render(<PlayerStatsRow { ...defaultProps } showControls />);
         });
 
         it('should render increment and decrement buttons', () => {
@@ -126,7 +126,7 @@ describe('the <PlayerStatsRow /> component', () => {
 
     describe('when showControls is false', () => {
         beforeEach(() => {
-            render(<PlayerStatsRow {...defaultProps} showControls={false} />);
+            render(<PlayerStatsRow { ...defaultProps } showControls={ false } />);
         });
 
         it('should not render increment and decrement buttons', () => {
@@ -140,7 +140,7 @@ describe('the <PlayerStatsRow /> component', () => {
     describe('hand size display', () => {
         describe('when otherPlayer is true', () => {
             beforeEach(() => {
-                render(<PlayerStatsRow {...defaultProps} otherPlayer={true} handSize={7} />);
+                render(<PlayerStatsRow { ...defaultProps } otherPlayer handSize={ 7 } />);
             });
 
             it('should show hand size', () => {
@@ -150,7 +150,7 @@ describe('the <PlayerStatsRow /> component', () => {
 
         describe('when spectating is true', () => {
             beforeEach(() => {
-                render(<PlayerStatsRow {...defaultProps} spectating={true} handSize={7} />);
+                render(<PlayerStatsRow { ...defaultProps } spectating handSize={ 7 } />);
             });
 
             it('should show hand size', () => {
@@ -160,7 +160,7 @@ describe('the <PlayerStatsRow /> component', () => {
 
         describe('when neither otherPlayer nor spectating', () => {
             beforeEach(() => {
-                render(<PlayerStatsRow {...defaultProps} otherPlayer={false} spectating={false} handSize={7} />);
+                render(<PlayerStatsRow { ...defaultProps } otherPlayer={ false } spectating={ false } handSize={ 7 } />);
             });
 
             it('should not show hand size', () => {
@@ -171,25 +171,25 @@ describe('the <PlayerStatsRow /> component', () => {
 
     describe('conflict icons', () => {
         it('should show political icon when politicalRemaining > 0', () => {
-            render(<PlayerStatsRow {...defaultProps} stats={{ ...defaultProps.stats, politicalRemaining: 1 }} />);
+            render(<PlayerStatsRow { ...defaultProps } stats={ { ...defaultProps.stats, politicalRemaining: 1 } } />);
             const politicalIcons = document.querySelectorAll('.icon-political');
             expect(politicalIcons.length).toBe(1);
         });
 
         it('should show two political icons when politicalRemaining > 1', () => {
-            render(<PlayerStatsRow {...defaultProps} stats={{ ...defaultProps.stats, politicalRemaining: 2 }} />);
+            render(<PlayerStatsRow { ...defaultProps } stats={ { ...defaultProps.stats, politicalRemaining: 2 } } />);
             const politicalIcons = document.querySelectorAll('.icon-political');
             expect(politicalIcons.length).toBe(2);
         });
 
         it('should show military icon when militaryRemaining > 0', () => {
-            render(<PlayerStatsRow {...defaultProps} stats={{ ...defaultProps.stats, militaryRemaining: 1 }} />);
+            render(<PlayerStatsRow { ...defaultProps } stats={ { ...defaultProps.stats, militaryRemaining: 1 } } />);
             const militaryIcons = document.querySelectorAll('.icon-military');
             expect(militaryIcons.length).toBe(1);
         });
 
         it('should show two military icons when militaryRemaining > 1', () => {
-            render(<PlayerStatsRow {...defaultProps} stats={{ ...defaultProps.stats, militaryRemaining: 2 }} />);
+            render(<PlayerStatsRow { ...defaultProps } stats={ { ...defaultProps.stats, militaryRemaining: 2 } } />);
             const militaryIcons = document.querySelectorAll('.icon-military');
             expect(militaryIcons.length).toBe(2);
         });

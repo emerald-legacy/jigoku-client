@@ -5,7 +5,7 @@ import DeckSummary from '../../client/DeckSummary.jsx';
 
 // Mock DeckStatus component
 vi.mock('../../client/DeckStatus.jsx', () => ({
-    default: ({ deck }) => <span data-testid="deck-status">{deck?.valid ? 'Valid' : 'Invalid'}</span>
+    default: ({ deck }) => <span data-testid='deck-status'>{ deck?.valid ? 'Valid' : 'Invalid' }</span>
 }));
 
 describe('the <DeckSummary /> component', () => {
@@ -40,7 +40,7 @@ describe('the <DeckSummary /> component', () => {
 
     describe('when deck is not provided', () => {
         beforeEach(() => {
-            render(<DeckSummary cards={mockCards} deck={null} />);
+            render(<DeckSummary cards={ mockCards } deck={ null } />);
         });
 
         it('should display waiting message', () => {
@@ -53,7 +53,7 @@ describe('the <DeckSummary /> component', () => {
 
         beforeEach(() => {
             deck = createMockDeck();
-            render(<DeckSummary cards={mockCards} deck={deck} />);
+            render(<DeckSummary cards={ mockCards } deck={ deck } />);
         });
 
         it('should display the clan name', () => {
@@ -98,7 +98,7 @@ describe('the <DeckSummary /> component', () => {
     describe('when alliance is none', () => {
         beforeEach(() => {
             const deck = createMockDeck({ alliance: { name: '', value: 'none' } });
-            render(<DeckSummary cards={mockCards} deck={deck} />);
+            render(<DeckSummary cards={ mockCards } deck={ deck } />);
         });
 
         it('should display "None" for alliance', () => {
@@ -109,7 +109,7 @@ describe('the <DeckSummary /> component', () => {
     describe('when format is not specified', () => {
         beforeEach(() => {
             const deck = createMockDeck({ format: null });
-            render(<DeckSummary cards={mockCards} deck={deck} />);
+            render(<DeckSummary cards={ mockCards } deck={ deck } />);
         });
 
         it('should default to Emerald format', () => {
@@ -120,7 +120,7 @@ describe('the <DeckSummary /> component', () => {
     describe('card list rendering', () => {
         beforeEach(() => {
             const deck = createMockDeck();
-            render(<DeckSummary cards={mockCards} deck={deck} />);
+            render(<DeckSummary cards={ mockCards } deck={ deck } />);
         });
 
         it('should display card names', () => {
@@ -142,7 +142,7 @@ describe('the <DeckSummary /> component', () => {
     describe('card hover functionality', () => {
         beforeEach(() => {
             const deck = createMockDeck();
-            render(<DeckSummary cards={mockCards} deck={deck} />);
+            render(<DeckSummary cards={ mockCards } deck={ deck } />);
         });
 
         it('should show hover image when mousing over a card', () => {
@@ -172,7 +172,7 @@ describe('the <DeckSummary /> component', () => {
                     { card: { id: 'p3', name: 'Province 3', type: 'province' }, count: 1 }
                 ]
             });
-            render(<DeckSummary cards={mockCards} deck={deck} />);
+            render(<DeckSummary cards={ mockCards } deck={ deck } />);
 
             // Should show "3 cards" for provinces
             expect(screen.getByText('3 cards')).toBeInTheDocument();
@@ -185,7 +185,7 @@ describe('the <DeckSummary /> component', () => {
                     { card: { id: 'd2', name: 'Card 2', type: 'holding' }, count: 5 }
                 ]
             });
-            render(<DeckSummary cards={mockCards} deck={deck} />);
+            render(<DeckSummary cards={ mockCards } deck={ deck } />);
 
             expect(screen.getByText('15 cards')).toBeInTheDocument();
         });

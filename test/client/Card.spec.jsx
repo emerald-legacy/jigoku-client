@@ -23,19 +23,19 @@ vi.mock('jquery-nearest', () => ({ default: {} }));
 
 // Mock child components
 vi.mock('../../client/GameComponents/CardMenu.jsx', () => ({
-    default: ({ menu }) => menu ? <div data-testid="card-menu">Menu</div> : null
+    default: ({ menu }) => menu ? <div data-testid='card-menu'>Menu</div> : null
 }));
 
 vi.mock('../../client/GameComponents/CardStats.jsx', () => ({
-    default: () => <div data-testid="card-stats">Stats</div>
+    default: () => <div data-testid='card-stats'>Stats</div>
 }));
 
 vi.mock('../../client/GameComponents/CardCounters.jsx', () => ({
-    default: ({ counters }) => <div data-testid="card-counters">{JSON.stringify(counters)}</div>
+    default: ({ counters }) => <div data-testid='card-counters'>{ JSON.stringify(counters) }</div>
 }));
 
 vi.mock('../../client/GameComponents/CardPile.jsx', () => ({
-    default: ({ title }) => <div data-testid="card-pile">{title}</div>
+    default: ({ title }) => <div data-testid='card-pile'>{ title }</div>
 }));
 
 import Card from '../../client/GameComponents/Card.jsx';
@@ -61,7 +61,7 @@ describe('the <Card /> component', () => {
 
     describe('when initially rendered with empty card', () => {
         beforeEach(() => {
-            render(<Card card={{}} source="hand" />);
+            render(<Card card={ {} } source='hand' />);
         });
 
         it('should show a facedown card with a card back rendered', () => {
@@ -72,7 +72,7 @@ describe('the <Card /> component', () => {
 
     describe('when rendered with a card', () => {
         beforeEach(() => {
-            render(<Card card={card} source="hand" />);
+            render(<Card card={ card } source='hand' />);
         });
 
         it('should show the card image', () => {
@@ -87,7 +87,7 @@ describe('the <Card /> component', () => {
 
     describe('that is selected', () => {
         beforeEach(() => {
-            render(<Card card={{ ...card, selected: true }} source="hand" />);
+            render(<Card card={ { ...card, selected: true } } source='hand' />);
         });
 
         it('should mark the card as selected', () => {
@@ -98,7 +98,7 @@ describe('the <Card /> component', () => {
 
     describe('that is selected and also new', () => {
         beforeEach(() => {
-            render(<Card card={{ ...card, selected: true, new: true }} source="hand" />);
+            render(<Card card={ { ...card, selected: true, new: true } } source='hand' />);
         });
 
         it('should flag as selected and not new (selected takes priority)', () => {
@@ -110,7 +110,7 @@ describe('the <Card /> component', () => {
 
     describe('that is new', () => {
         beforeEach(() => {
-            render(<Card card={{ ...card, new: true }} source="hand" />);
+            render(<Card card={ { ...card, new: true } } source='hand' />);
         });
 
         it('should mark the card as new', () => {
@@ -121,7 +121,7 @@ describe('the <Card /> component', () => {
 
     describe('that is facedown', () => {
         beforeEach(() => {
-            render(<Card card={{ ...card, facedown: true }} source="hand" />);
+            render(<Card card={ { ...card, facedown: true } } source='hand' />);
         });
 
         it('should show a facedown image', () => {
@@ -133,7 +133,7 @@ describe('the <Card /> component', () => {
 
     describe('that is bowed', () => {
         beforeEach(() => {
-            render(<Card card={{ ...card, bowed: true }} source="hand" />);
+            render(<Card card={ { ...card, bowed: true } } source='hand' />);
         });
 
         it('should add the bowed styling to the card', () => {
@@ -149,7 +149,7 @@ describe('the <Card /> component', () => {
 
     describe('that is broken (province)', () => {
         beforeEach(() => {
-            render(<Card card={{ ...card, isBroken: true, type: 'province' }} source="province 1" />);
+            render(<Card card={ { ...card, isBroken: true, type: 'province' } } source='province 1' />);
         });
 
         it('should add the broken styling to the card image', () => {
@@ -160,7 +160,7 @@ describe('the <Card /> component', () => {
 
     describe('that is selectable', () => {
         beforeEach(() => {
-            render(<Card card={{ ...card, selectable: true }} source="hand" />);
+            render(<Card card={ { ...card, selectable: true } } source='hand' />);
         });
 
         it('should mark the card as selectable', () => {
@@ -171,7 +171,7 @@ describe('the <Card /> component', () => {
 
     describe('that is in danger', () => {
         beforeEach(() => {
-            render(<Card card={{ ...card, inDanger: true }} source="hand" />);
+            render(<Card card={ { ...card, inDanger: true } } source='hand' />);
         });
 
         it('should mark the card as in-danger', () => {
@@ -182,7 +182,7 @@ describe('the <Card /> component', () => {
 
     describe('that is in conflict', () => {
         beforeEach(() => {
-            render(<Card card={{ ...card, inConflict: true }} source="play area" />);
+            render(<Card card={ { ...card, inConflict: true } } source='play area' />);
         });
 
         it('should mark the card as in conflict', () => {
@@ -196,11 +196,11 @@ describe('the <Card /> component', () => {
             beforeEach(() => {
                 render(
                     <Card
-                        card={card}
-                        source="hand"
+                        card={ card }
+                        source='hand'
                         disableMouseOver
-                        onMouseOver={onMouseOver}
-                        onMouseOut={onMouseOut}
+                        onMouseOver={ onMouseOver }
+                        onMouseOut={ onMouseOut }
                     />
                 );
             });
@@ -216,10 +216,10 @@ describe('the <Card /> component', () => {
             beforeEach(() => {
                 render(
                     <Card
-                        card={card}
-                        source="hand"
-                        onMouseOver={onMouseOver}
-                        onMouseOut={onMouseOut}
+                        card={ card }
+                        source='hand'
+                        onMouseOver={ onMouseOver }
+                        onMouseOut={ onMouseOut }
                     />
                 );
             });
@@ -242,9 +242,9 @@ describe('the <Card /> component', () => {
         beforeEach(() => {
             render(
                 <Card
-                    card={card}
-                    source="hand"
-                    onClick={onClick}
+                    card={ card }
+                    source='hand'
+                    onClick={ onClick }
                 />
             );
         });
@@ -258,19 +258,19 @@ describe('the <Card /> component', () => {
 
     describe('card back based on card type', () => {
         it('should use conflict card back for conflict cards', () => {
-            render(<Card card={{ ...card, facedown: true, isConflict: true }} source="conflict deck" />);
+            render(<Card card={ { ...card, facedown: true, isConflict: true } } source='conflict deck' />);
             const cardImage = document.querySelector('.card-image');
             expect(cardImage.src).toContain('conflictcardback.png');
         });
 
         it('should use dynasty card back for dynasty cards', () => {
-            render(<Card card={{ ...card, facedown: true, isDynasty: true }} source="dynasty deck" />);
+            render(<Card card={ { ...card, facedown: true, isDynasty: true } } source='dynasty deck' />);
             const cardImage = document.querySelector('.card-image');
             expect(cardImage.src).toContain('dynastycardback.png');
         });
 
         it('should use province card back for province cards', () => {
-            render(<Card card={{ ...card, facedown: true, isProvince: true }} source="province deck" />);
+            render(<Card card={ { ...card, facedown: true, isProvince: true } } source='province deck' />);
             const cardImage = document.querySelector('.card-image');
             expect(cardImage.src).toContain('provincecardback.png');
         });
@@ -278,19 +278,19 @@ describe('the <Card /> component', () => {
 
     describe('card size classes', () => {
         it('should add large class when size is large', () => {
-            render(<Card card={card} source="hand" size="large" />);
+            render(<Card card={ card } source='hand' size='large' />);
             const cardElement = document.querySelector('.card');
             expect(cardElement.className).toContain('large');
         });
 
         it('should add small class when size is small', () => {
-            render(<Card card={card} source="hand" size="small" />);
+            render(<Card card={ card } source='hand' size='small' />);
             const cardElement = document.querySelector('.card');
             expect(cardElement.className).toContain('small');
         });
 
         it('should add x-large class when size is x-large', () => {
-            render(<Card card={card} source="hand" size="x-large" />);
+            render(<Card card={ card } source='hand' size='x-large' />);
             const cardElement = document.querySelector('.card');
             expect(cardElement.className).toContain('x-large');
         });
@@ -298,7 +298,7 @@ describe('the <Card /> component', () => {
 
     describe('card with packId', () => {
         it('should include packId in the image path', () => {
-            render(<Card card={{ ...card, packId: 'core' }} source="hand" />);
+            render(<Card card={ { ...card, packId: 'core' } } source='hand' />);
             const cardImage = document.querySelector('.card-image');
             expect(cardImage.src).toContain('/img/cards/test-card-1-core.jpg');
         });
