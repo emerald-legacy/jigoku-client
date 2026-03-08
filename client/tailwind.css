@@ -2,6 +2,7 @@
 @source "../client/**/*.{jsx,js}";
 
 @theme {
+    --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
     --color-primary: #336600;
     --color-primary-dark: #2b5500;
     --color-secondary: #1a3300;
