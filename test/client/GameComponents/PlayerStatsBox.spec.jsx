@@ -28,7 +28,7 @@ describe('the <PlayerStatsBox /> component', () => {
 
     describe('when rendered with stats', () => {
         beforeEach(() => {
-            render(<PlayerStatsBox {...defaultProps} />);
+            render(<PlayerStatsBox { ...defaultProps } />);
         });
 
         it('should display the fate value', () => {
@@ -50,7 +50,7 @@ describe('the <PlayerStatsBox /> component', () => {
 
     describe('when stats are undefined', () => {
         beforeEach(() => {
-            render(<PlayerStatsBox {...defaultProps} stats={undefined} />);
+            render(<PlayerStatsBox { ...defaultProps } stats={ undefined } />);
         });
 
         it('should display 0 for fate', () => {
@@ -66,7 +66,7 @@ describe('the <PlayerStatsBox /> component', () => {
 
     describe('when firstPlayer is true', () => {
         beforeEach(() => {
-            render(<PlayerStatsBox {...defaultProps} firstPlayer={true} />);
+            render(<PlayerStatsBox { ...defaultProps } firstPlayer />);
         });
 
         it('should show the first player indicator', () => {
@@ -78,7 +78,7 @@ describe('the <PlayerStatsBox /> component', () => {
 
     describe('when firstPlayer is false', () => {
         beforeEach(() => {
-            render(<PlayerStatsBox {...defaultProps} firstPlayer={false} />);
+            render(<PlayerStatsBox { ...defaultProps } firstPlayer={ false } />);
         });
 
         it('should hide the first player indicator', () => {
@@ -89,7 +89,7 @@ describe('the <PlayerStatsBox /> component', () => {
 
     describe('when showControls is true', () => {
         beforeEach(() => {
-            render(<PlayerStatsBox {...defaultProps} showControls={true} />);
+            render(<PlayerStatsBox { ...defaultProps } showControls />);
         });
 
         it('should render increment and decrement buttons', () => {
@@ -114,7 +114,7 @@ describe('the <PlayerStatsBox /> component', () => {
 
     describe('when showControls is false', () => {
         beforeEach(() => {
-            render(<PlayerStatsBox {...defaultProps} showControls={false} />);
+            render(<PlayerStatsBox { ...defaultProps } showControls={ false } />);
         });
 
         it('should not render increment and decrement buttons', () => {
@@ -127,7 +127,7 @@ describe('the <PlayerStatsBox /> component', () => {
 
     describe('when otherPlayer is true', () => {
         beforeEach(() => {
-            render(<PlayerStatsBox {...defaultProps} otherPlayer={true} />);
+            render(<PlayerStatsBox { ...defaultProps } otherPlayer />);
         });
 
         it('should not have "our-side" class', () => {
@@ -138,7 +138,7 @@ describe('the <PlayerStatsBox /> component', () => {
 
     describe('when otherPlayer is false', () => {
         beforeEach(() => {
-            render(<PlayerStatsBox {...defaultProps} otherPlayer={false} />);
+            render(<PlayerStatsBox { ...defaultProps } otherPlayer={ false } />);
         });
 
         it('should have "our-side" class', () => {
@@ -149,25 +149,25 @@ describe('the <PlayerStatsBox /> component', () => {
 
     describe('conflict icons', () => {
         it('should show political icon when politicalRemaining > 0', () => {
-            render(<PlayerStatsBox {...defaultProps} stats={{ ...defaultProps.stats, politicalRemaining: 1 }} />);
+            render(<PlayerStatsBox { ...defaultProps } stats={ { ...defaultProps.stats, politicalRemaining: 1 } } />);
             const politicalIcons = document.querySelectorAll('.icon-political');
             expect(politicalIcons.length).toBe(1);
         });
 
         it('should show two political icons when politicalRemaining > 1', () => {
-            render(<PlayerStatsBox {...defaultProps} stats={{ ...defaultProps.stats, politicalRemaining: 2 }} />);
+            render(<PlayerStatsBox { ...defaultProps } stats={ { ...defaultProps.stats, politicalRemaining: 2 } } />);
             const politicalIcons = document.querySelectorAll('.icon-political');
             expect(politicalIcons.length).toBe(2);
         });
 
         it('should show military icon when militaryRemaining > 0', () => {
-            render(<PlayerStatsBox {...defaultProps} stats={{ ...defaultProps.stats, militaryRemaining: 1 }} />);
+            render(<PlayerStatsBox { ...defaultProps } stats={ { ...defaultProps.stats, militaryRemaining: 1 } } />);
             const militaryIcons = document.querySelectorAll('.icon-military');
             expect(militaryIcons.length).toBe(1);
         });
 
         it('should show two military icons when militaryRemaining > 1', () => {
-            render(<PlayerStatsBox {...defaultProps} stats={{ ...defaultProps.stats, militaryRemaining: 2 }} />);
+            render(<PlayerStatsBox { ...defaultProps } stats={ { ...defaultProps.stats, militaryRemaining: 2 } } />);
             const militaryIcons = document.querySelectorAll('.icon-military');
             expect(militaryIcons.length).toBe(2);
         });

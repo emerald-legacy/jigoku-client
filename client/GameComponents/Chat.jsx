@@ -11,7 +11,7 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
         if(canScroll && messagePanelRef.current) {
             messagePanelRef.current.scrollTop = 999999;
         }
-    });
+    }, [canScroll, messages]);
 
     const handleChange = useCallback((event) => {
         setMessage(event.target.value);

@@ -210,9 +210,8 @@ class App extends React.Component {
         });
     }
 
-    componentDidUpdate() {
-        this.props.receiveLobbyMessage({});
-        if(!this.props.currentGame) {
+    componentDidUpdate(prevProps) {
+        if(prevProps.currentGame && !this.props.currentGame) {
             this.props.setContextMenu([]);
         }
     }

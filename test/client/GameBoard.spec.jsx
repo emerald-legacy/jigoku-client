@@ -24,68 +24,68 @@ vi.mock('react-redux-toastr', () => ({
 
 // Mock react-draggable
 vi.mock('react-draggable', () => ({
-    default: ({ children }) => <div data-testid="draggable">{children}</div>
+    default: ({ children }) => <div data-testid='draggable'>{ children }</div>
 }));
 
 // Mock all the child components
 vi.mock('../../client/GameComponents/PlayerStatsBox.jsx', () => ({
-    default: () => <div data-testid="player-stats-box">PlayerStatsBox</div>
+    default: () => <div data-testid='player-stats-box'>PlayerStatsBox</div>
 }));
 
 vi.mock('../../client/GameComponents/PlayerStatsRow.jsx', () => ({
-    default: () => <div data-testid="player-stats-row">PlayerStatsRow</div>
+    default: () => <div data-testid='player-stats-row'>PlayerStatsRow</div>
 }));
 
 vi.mock('../../client/GameComponents/PlayerHand.jsx', () => ({
-    default: ({ cards }) => <div data-testid="player-hand">{cards?.length || 0} cards in hand</div>
+    default: ({ cards }) => <div data-testid='player-hand'>{ cards?.length || 0 } cards in hand</div>
 }));
 
 vi.mock('../../client/GameComponents/DynastyRow.jsx', () => ({
-    default: () => <div data-testid="dynasty-row">DynastyRow</div>
+    default: () => <div data-testid='dynasty-row'>DynastyRow</div>
 }));
 
 vi.mock('../../client/GameComponents/StrongholdRow.jsx', () => ({
-    default: () => <div data-testid="stronghold-row">StrongholdRow</div>
+    default: () => <div data-testid='stronghold-row'>StrongholdRow</div>
 }));
 
 vi.mock('../../client/GameComponents/Ring.jsx', () => ({
-    default: ({ ring }) => <div data-testid={`ring-${ring.element}`}>{ring.element}</div>
+    default: ({ ring }) => <div data-testid={ `ring-${ring.element}` }>{ ring.element }</div>
 }));
 
 vi.mock('../../client/GameComponents/HonorFan.jsx', () => ({
-    default: ({ value }) => <div data-testid="honor-fan">{value}</div>
+    default: ({ value }) => <div data-testid='honor-fan'>{ value }</div>
 }));
 
 vi.mock('../../client/GameComponents/ActivePlayerPrompt.jsx', () => ({
-    default: ({ title }) => <div data-testid="active-player-prompt">{title}</div>
+    default: ({ title }) => <div data-testid='active-player-prompt'>{ title }</div>
 }));
 
 vi.mock('../../client/Avatar.jsx', () => ({
-    default: () => <div data-testid="avatar">Avatar</div>
+    default: () => <div data-testid='avatar'>Avatar</div>
 }));
 
 vi.mock('../../client/GameComponents/CardZoom.jsx', () => ({
-    default: () => <div data-testid="card-zoom">CardZoom</div>
+    default: () => <div data-testid='card-zoom'>CardZoom</div>
 }));
 
 vi.mock('../../client/GameComponents/Card.jsx', () => ({
-    default: ({ card }) => <div data-testid="card">{card?.name || 'Card'}</div>
+    default: ({ card }) => <div data-testid='card'>{ card?.name || 'Card' }</div>
 }));
 
 vi.mock('../../client/GameComponents/Chat.jsx', () => ({
-    default: () => <div data-testid="chat">Chat</div>
+    default: () => <div data-testid='chat'>Chat</div>
 }));
 
 vi.mock('../../client/GameComponents/Controls.jsx', () => ({
-    default: () => <div data-testid="controls">Controls</div>
+    default: () => <div data-testid='controls'>Controls</div>
 }));
 
 vi.mock('../../client/GameComponents/CardPile.jsx', () => ({
-    default: () => <div data-testid="card-pile">CardPile</div>
+    default: () => <div data-testid='card-pile'>CardPile</div>
 }));
 
 vi.mock('../../client/GameComponents/GameConfiguration.jsx', () => ({
-    default: () => <div data-testid="game-configuration">GameConfiguration</div>
+    default: () => <div data-testid='game-configuration'>GameConfiguration</div>
 }));
 
 import { InnerGameBoard } from '../../client/GameBoard.jsx';
@@ -176,21 +176,21 @@ describe('the <GameBoard /> component', () => {
 
     describe('when currentGame is not provided', () => {
         it('should display waiting message', () => {
-            render(<InnerGameBoard {...defaultProps} currentGame={null} />);
+            render(<InnerGameBoard { ...defaultProps } currentGame={ null } />);
             expect(screen.getByText('Waiting for server...')).toBeInTheDocument();
         });
     });
 
     describe('when there are no players', () => {
         it('should display waiting for players message', () => {
-            render(<InnerGameBoard {...defaultProps} currentGame={{ ...defaultProps.currentGame, players: {} }} />);
+            render(<InnerGameBoard { ...defaultProps } currentGame={ { ...defaultProps.currentGame, players: {} } } />);
             expect(screen.getByText('Waiting for game to have players or close...')).toBeInTheDocument();
         });
     });
 
     describe('when rendered with a valid game', () => {
         beforeEach(() => {
-            render(<InnerGameBoard {...defaultProps} />);
+            render(<InnerGameBoard { ...defaultProps } />);
         });
 
         it('should render the game board', () => {
@@ -225,7 +225,7 @@ describe('the <GameBoard /> component', () => {
 
     describe('when user is a spectator', () => {
         beforeEach(() => {
-            render(<InnerGameBoard {...defaultProps} username="SpectatorUser" />);
+            render(<InnerGameBoard { ...defaultProps } username='SpectatorUser' />);
         });
 
         it('should render the game board', () => {
@@ -247,14 +247,14 @@ describe('the <GameBoard /> component', () => {
 
             render(
                 <InnerGameBoard
-                    {...defaultProps}
-                    currentGame={{
+                    { ...defaultProps }
+                    currentGame={ {
                         ...defaultProps.currentGame,
                         players: {
                             TestPlayer: mockPlayer,
                             OtherPlayer: otherPlayer
                         }
-                    }}
+                    } }
                 />
             );
         });
@@ -283,11 +283,11 @@ describe('the <GameBoard /> component', () => {
 
             render(
                 <InnerGameBoard
-                    {...defaultProps}
-                    currentGame={{
+                    { ...defaultProps }
+                    currentGame={ {
                         ...defaultProps.currentGame,
                         rings: ringsWithRemoved
-                    }}
+                    } }
                 />
             );
         });
@@ -303,11 +303,11 @@ describe('the <GameBoard /> component', () => {
         beforeEach(() => {
             render(
                 <InnerGameBoard
-                    {...defaultProps}
-                    currentGame={{
+                    { ...defaultProps }
+                    currentGame={ {
                         ...defaultProps.currentGame,
                         manualMode: true
-                    }}
+                    } }
                 />
             );
         });
@@ -330,11 +330,11 @@ describe('the <GameBoard /> component', () => {
 
             render(
                 <InnerGameBoard
-                    {...defaultProps}
-                    currentGame={{
+                    { ...defaultProps }
+                    currentGame={ {
                         ...defaultProps.currentGame,
                         conflict: activeConflict
-                    }}
+                    } }
                 />
             );
         });
@@ -351,7 +351,7 @@ describe('the <GameBoard /> component', () => {
 
     describe('player hand', () => {
         it('should render player hand for the current player', () => {
-            render(<InnerGameBoard {...defaultProps} />);
+            render(<InnerGameBoard { ...defaultProps } />);
             expect(screen.getByTestId('player-hand')).toBeInTheDocument();
             expect(screen.getByText('2 cards in hand')).toBeInTheDocument();
         });

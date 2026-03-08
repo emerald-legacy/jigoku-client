@@ -1,31 +1,20 @@
 import PropTypes from 'prop-types';
+import { AlertTriangle, AlertCircle, Info, CheckCircle } from 'lucide-react';
+
+const typeConfig = {
+    warning: { Icon: AlertTriangle, alertClass: 'alert alert-warning' },
+    error: { Icon: AlertCircle, alertClass: 'alert alert-danger' },
+    info: { Icon: Info, alertClass: 'alert alert-info' },
+    success: { Icon: CheckCircle, alertClass: 'alert alert-success' }
+};
 
 function AlertPanel({ children, message, noIcon, title, type }) {
-    let icon = 'glyphicon';
-    let alertClass = 'alert fade in';
-
-    switch(type) {
-        case 'warning':
-            icon += ' glyphicon-warning-sign';
-            alertClass += ' alert-warning';
-            break;
-        case 'error':
-            icon += ' glyphicon-exclamation-sign';
-            alertClass += ' alert-danger';
-            break;
-        case 'info':
-            icon += ' glyphicon-info-sign';
-            alertClass += ' alert-info';
-            break;
-        case 'success':
-            icon += ' glyphicon-ok-sign';
-            alertClass += ' alert-success';
-            break;
-    }
+    const config = typeConfig[type] || {};
+    const IconComponent = config.Icon;
 
     return (
-        <div className={ alertClass } role='alert'>
-            { noIcon ? null : <span className={ icon } aria-hidden='true' /> }
+        <div className={ config.alertClass || 'alert' } role='alert'>
+            { noIcon || !IconComponent ? null : <IconComponent size={ 16 } aria-hidden='true' style={ { display: 'inline', verticalAlign: 'text-bottom' } } /> }
             { title ? <span className='sr-only'>{ title }</span> : null }
             &nbsp;{ message }
             &nbsp;{ children }

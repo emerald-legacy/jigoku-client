@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import EmojiConvertor from 'emoji-js';
 import { format, isToday, isYesterday } from 'date-fns';
 
+import { X, Menu } from 'lucide-react';
 import * as actions from './actions';
 import Avatar from './Avatar.jsx';
 import News from './SiteComponents/News.jsx';
@@ -142,7 +143,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
                 { showUsers ? (
                     <div>
                         <a href='#' className='btn pull-right' onClick={ handleBurgerClick }>
-                            <span className='glyphicon glyphicon-remove' />
+                            <X size={ 16 } />
                         </a>
                         <div className='userlist'>Online Users
                             { userList }
@@ -151,7 +152,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, messages, news, so
                 ) : (
                     <div>
                         <a href='#' className='btn' onClick={ handleBurgerClick }>
-                            <span className='glyphicon glyphicon-menu-hamburger' />
+                            <Menu size={ 16 } />
                         </a>
                     </div>
                 ) }

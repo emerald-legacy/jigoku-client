@@ -17,7 +17,7 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
     const deckStatus = getStatusName(deck.status);
 
     return (
-        <div className={ active ? 'deck-row active' : 'deck-row' } key={ deck.name }>
+        <div className={ active ? 'deck-row active' : 'deck-row' } key={ deck.name } onClick={ onClick }>
             { showCheckbox && (
                 <div className='col-xs-1' onClick={ (e) => e.stopPropagation() }>
                     <input
@@ -27,36 +27,29 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
                     />
                 </div>
             ) }
-            <div
-                className={ showCheckbox ? 'col-xs-1 deck-image' : 'col-xs-1 deck-image' }
-                onClick={ onClick }
-            >
+            <div className='col-xs-1 deck-image'>
                 <img className='deck-sm-mon' src={ '/img/mons/' + deck.faction.value + '.png' } />
             </div>
             <span
                 className={
                     showCheckbox
-                        ? 'col-xs-7 col-md-6 col-lg-8 deck-name'
-                        : 'col-xs-8 col-md-7 col-lg-9 deck-name'
+                        ? 'col-xs-7 deck-name'
+                        : 'col-xs-8 deck-name'
                 }
-                onClick={ onClick }
             >
                 { deck.name }
             </span>
-            <span
-                className='col-xs-2 col-md-3 col-lg-2 deck-status-label text-right pull-right'
-                onClick={ onClick }
-            >
+            <span className='col-xs-2 deck-status-label text-right ml-auto'>
                 { deckStatus }
             </span>
-            <div className='row small' onClick={ onClick }>
-                <span className='col-md-7 deck-factionalliance'>
+            <div className='row small'>
+                <span className='col-xs-7 deck-factionalliance'>
                     { deck.faction.name }
                     { deck.alliance && deck.alliance.name ? (
                         <span>/{ deck.alliance.name }</span>
                     ) : null }
                 </span>
-                <span className='col-xs-4 col-md-3 deck-date text-right pull-right'>
+                <span className='col-xs-4 deck-date text-right ml-auto'>
                     { format(new Date(deck.lastUpdated), 'do MMM yyyy') }
                 </span>
             </div>

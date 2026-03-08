@@ -11,6 +11,7 @@ const config = {
     entry: [
         'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=2000',
         path.join(__dirname, 'client/index.jsx'),
+        path.join(__dirname, 'client/tailwind.css'),
         LESS_DIR + '/site.less'
     ],
     output: {
@@ -28,10 +29,6 @@ const config = {
             'process.env.NODE_ENV': JSON.stringify('development'),
             '__DEV__': JSON.stringify('true'),
             '__BUILD_VERSION__': JSON.stringify('LOCAL')
-        }),
-        new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery'
         })
     ],
     module: {
@@ -59,21 +56,6 @@ const config = {
                 ]
             },
             {
-                test: /\.scss$/,
-                use: [
-                    'style-loader',
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            url: {
-                                filter: (url) => !url.startsWith('/')
-                            }
-                        }
-                    },
-                    'sass-loader'
-                ]
-            },
-            {
                 test: /\.css$/,
                 use: [
                     'style-loader',
@@ -84,7 +66,8 @@ const config = {
                                 filter: (url) => !url.startsWith('/')
                             }
                         }
-                    }
+                    },
+                    'postcss-loader'
                 ]
             },
             {

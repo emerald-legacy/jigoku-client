@@ -6,7 +6,6 @@ function Input({
     label,
     labelClass,
     name,
-    noGroup,
     onBlur,
     onChange,
     placeholder,
@@ -14,8 +13,8 @@ function Input({
     validationMessage,
     value
 }) {
-    const inputControl = (
-        <div>
+    return (
+        <div className='form-group'>
             <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
                 { label }
             </label>
@@ -36,12 +35,6 @@ function Input({
             { children }
         </div>
     );
-
-    if(noGroup) {
-        return inputControl;
-    }
-
-    return <div className='form-group'>{ inputControl }</div>;
 }
 
 Input.displayName = 'Input';
@@ -51,7 +44,6 @@ Input.propTypes = {
     label: PropTypes.string,
     labelClass: PropTypes.string,
     name: PropTypes.string,
-    noGroup: PropTypes.bool,
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
     placeholder: PropTypes.string,

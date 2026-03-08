@@ -135,11 +135,11 @@ export function InnerDecks({
         if(selectedDeck) {
             deckInfo = (
                 <div className='col-sm-7'>
-                    <div className='panel-title text-center col-xs-12'>
+                    <div className='panel-title text-center'>
                         { selectedDeck.name }
                     </div>
-                    <div className='panel col-xs-12'>
-                        <div className='btn-group col-xs-12'>
+                    <div className='panel'>
+                        <div className='btn-group'>
                             <button className='btn btn-primary' onClick={ handleEditClick }>Edit</button>
                             <button className='btn btn-primary' onClick={ handleDeleteClick }>Delete</button>
                             { showDelete && (
@@ -156,46 +156,48 @@ export function InnerDecks({
             <div className='full-height'>
                 { successPanel }
                 { limitWarning }
-                <div className='col-sm-5 full-height'>
-                    <div className='panel-title text-center'>
+                <div className='row h-full'>
+                    <div className='col-sm-5 full-height relative'>
+                        <div className='panel-title text-center'>
                         Your decks ({ deckCount } / 50)
-                    </div>
-                    <div className='panel deck-list-container'>
-                        <div className='btn-group'>
-                            { isAtLimit ? (
-                                <button className='btn btn-primary' disabled title='Maximum deck limit reached'>New Deck</button>
-                            ) : (
-                                <Link className='btn btn-primary' href='/decks/add'>New Deck</Link>
-                            ) }
-                            { selectedDeckIds.length > 0 && (
-                                <button className='btn btn-danger' onClick={ handleDeleteSelectedClick }>
+                        </div>
+                        <div className='panel deck-list-container'>
+                            <div className='btn-group'>
+                                { isAtLimit ? (
+                                    <button className='btn btn-primary' disabled title='Maximum deck limit reached'>New Deck</button>
+                                ) : (
+                                    <Link className='btn btn-primary' href='/decks/add'>New Deck</Link>
+                                ) }
+                                { selectedDeckIds.length > 0 && (
+                                    <button className='btn btn-danger' onClick={ handleDeleteSelectedClick }>
                                     Delete Selected ({ selectedDeckIds.length })
-                                </button>
-                            ) }
-                            { showDeleteSelected && (
-                                <button className='btn btn-danger' onClick={ handleConfirmDeleteSelectedClick }>
+                                    </button>
+                                ) }
+                                { showDeleteSelected && (
+                                    <button className='btn btn-danger' onClick={ handleConfirmDeleteSelectedClick }>
                                     Confirm Delete
-                                </button>
-                            ) }
-                        </div>
-                        { decks && decks.length > 0 && (
-                            <div className='checkbox' style={ { marginTop: '10px', marginBottom: '10px' } }>
-                                <label>
-                                    <input
-                                        type='checkbox'
-                                        checked={ selectedDeckIds.length === decks.length }
-                                        onChange={ handleToggleSelectAll }
-                                    />
-                                    Select All
-                                </label>
+                                    </button>
+                                ) }
                             </div>
-                        ) }
-                        <div className='deck-list' style={ { top: decks && decks.length > 0 ? '95px' : '55px' } }>
-                            { !decks || decks.length === 0 ? 'You have no decks, try adding one.' : deckList }
+                            { decks && decks.length > 0 && (
+                                <div className='checkbox' style={ { marginTop: '10px', marginBottom: '10px' } }>
+                                    <label>
+                                        <input
+                                            type='checkbox'
+                                            checked={ selectedDeckIds.length === decks.length }
+                                            onChange={ handleToggleSelectAll }
+                                        />
+                                    Select All
+                                    </label>
+                                </div>
+                            ) }
+                            <div className='deck-list' style={ { top: decks && decks.length > 0 ? '95px' : '55px' } }>
+                                { !decks || decks.length === 0 ? 'You have no decks, try adding one.' : deckList }
+                            </div>
                         </div>
                     </div>
+                    { deckInfo }
                 </div>
-                { deckInfo }
             </div>
         );
     }

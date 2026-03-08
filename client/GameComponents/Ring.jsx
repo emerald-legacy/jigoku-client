@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 
 import CardCounters from './CardCounters.jsx';
@@ -91,15 +91,13 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
         size = 'small';
     }
 
-    let className = 'ring icon-element-' + ring.element + ' ' + size;
-    let bgClassName = 'ring-background  tint-' + ring.conflictType + ' ' + size;
+    let className = 'ring icon-element-' + ring.element + (size ? ' ' + size : '');
+    let bgClassName = 'ring-background tint-' + ring.conflictType + (size ? ' ' + size : '');
     let svgClassName =
         'ring-svg tint-' +
         ring.conflictType +
-        ' ' +
-        size +
-        ' ' +
-        (ring.selected || ring.contested ? 'contested' : '');
+        (size ? ' ' + size : '') +
+        (ring.selected || ring.contested ? ' contested' : '');
     if(ring.unselectable) {
         className = className + ' unselectable';
         bgClassName += ' unselectable';
@@ -119,7 +117,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
     }
     return (
         <div
-            className='ring no-highlight'
+            className={ 'ring no-highlight' + (ring.unselectable ? ' unselectable' : '') }
             onClick={ (event) => handleClick(event, ring.element) }
         >
             <svg className={ svgClassName }>
@@ -147,4 +145,4 @@ Ring.propTypes = {
     socket: PropTypes.object
 };
 
-export default Ring;
+export default memo(Ring);

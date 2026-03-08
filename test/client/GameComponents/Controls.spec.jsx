@@ -18,12 +18,12 @@ describe('the <Controls /> component', () => {
         beforeEach(() => {
             render(
                 <Controls
-                    onSettingsClick={onSettingsClick}
-                    onManualModeClick={onManualModeClick}
-                    onToggleChatClick={onToggleChatClick}
-                    showChatAlert={false}
-                    manualModeEnabled={false}
-                    showManualMode={false}
+                    onSettingsClick={ onSettingsClick }
+                    onManualModeClick={ onManualModeClick }
+                    onToggleChatClick={ onToggleChatClick }
+                    showChatAlert={ false }
+                    manualModeEnabled={ false }
+                    showManualMode={ false }
                 />
             );
         });
@@ -49,12 +49,12 @@ describe('the <Controls /> component', () => {
         beforeEach(() => {
             render(
                 <Controls
-                    onSettingsClick={onSettingsClick}
-                    onManualModeClick={onManualModeClick}
-                    onToggleChatClick={onToggleChatClick}
-                    showChatAlert={false}
-                    manualModeEnabled={false}
-                    showManualMode={true}
+                    onSettingsClick={ onSettingsClick }
+                    onManualModeClick={ onManualModeClick }
+                    onToggleChatClick={ onToggleChatClick }
+                    showChatAlert={ false }
+                    manualModeEnabled={ false }
+                    showManualMode
                 />
             );
         });
@@ -76,12 +76,12 @@ describe('the <Controls /> component', () => {
         beforeEach(() => {
             render(
                 <Controls
-                    onSettingsClick={onSettingsClick}
-                    onManualModeClick={onManualModeClick}
-                    onToggleChatClick={onToggleChatClick}
-                    showChatAlert={false}
-                    manualModeEnabled={true}
-                    showManualMode={true}
+                    onSettingsClick={ onSettingsClick }
+                    onManualModeClick={ onManualModeClick }
+                    onToggleChatClick={ onToggleChatClick }
+                    showChatAlert={ false }
+                    manualModeEnabled
+                    showManualMode
                 />
             );
         });
@@ -97,12 +97,12 @@ describe('the <Controls /> component', () => {
         beforeEach(() => {
             render(
                 <Controls
-                    onSettingsClick={onSettingsClick}
-                    onManualModeClick={onManualModeClick}
-                    onToggleChatClick={onToggleChatClick}
-                    showChatAlert={true}
-                    manualModeEnabled={false}
-                    showManualMode={false}
+                    onSettingsClick={ onSettingsClick }
+                    onManualModeClick={ onManualModeClick }
+                    onToggleChatClick={ onToggleChatClick }
+                    showChatAlert
+                    manualModeEnabled={ false }
+                    showManualMode={ false }
                 />
             );
         });
@@ -117,12 +117,12 @@ describe('the <Controls /> component', () => {
         beforeEach(() => {
             render(
                 <Controls
-                    onSettingsClick={onSettingsClick}
-                    onManualModeClick={onManualModeClick}
-                    onToggleChatClick={onToggleChatClick}
-                    showChatAlert={false}
-                    manualModeEnabled={false}
-                    showManualMode={true}
+                    onSettingsClick={ onSettingsClick }
+                    onManualModeClick={ onManualModeClick }
+                    onToggleChatClick={ onToggleChatClick }
+                    showChatAlert={ false }
+                    manualModeEnabled={ false }
+                    showManualMode
                 />
             );
         });

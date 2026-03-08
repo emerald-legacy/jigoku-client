@@ -25,8 +25,8 @@ import GameModes from './GameModes';
 import * as actions from './actions';
 
 export class InnerGameBoard extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.modalRef = createRef();
 
@@ -47,7 +47,12 @@ export class InnerGameBoard extends React.Component {
         this.onManualModeClick = this.onManualModeClick.bind(this);
         this.onSettingsClick = this.onSettingsClick.bind(this);
         this.onToggleChatClick = this.onToggleChatClick.bind(this);
+        this.onTimerExpired = this.onTimerExpired.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
+
+        this.boundActions = bindActionCreators(actions, props.dispatch);
+
+        this._cardsInPlayCache = {};
 
         this.state = {
             cardToZoom: undefined,
@@ -263,6 +268,20 @@ export class InnerGameBoard extends React.Component {
             return [];
         }
 
+        let cacheKey = isMe ? 'me' : 'other';
+        let cached = this._cardsInPlayCache[cacheKey];
+        let conflict = this.props.currentGame.conflict;
+        let cardSize = this.props.user.settings.cardSize;
+        let disableCardStats = this.props.user.settings.optionSettings.disableCardStats;
+
+        if(cached &&
+            cached.cardsInPlay === player.cardPiles.cardsInPlay &&
+            cached.conflict === conflict &&
+            cached.cardSize === cardSize &&
+            cached.disableCardStats === disableCardStats) {
+            return cached.result;
+        }
+
         let sortedCards = [...player.cardPiles.cardsInPlay].sort((a, b) => {
             if(a.type < b.type) {
                 return -1;
@@ -289,7 +308,6 @@ export class InnerGameBoard extends React.Component {
         });
 
         let cardsByLocation = [];
-        let conflict = this.props.currentGame.conflict;
         let playerIsDefending = (player && conflict.defendingPlayerId && player.id.includes(conflict.defendingPlayerId));
         let playerDeclaringParticipants = conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen));
 
@@ -297,11 +315,19 @@ export class InnerGameBoard extends React.Component {
             let cardsInPlay = cards.map(card => {
                 return (<Card key={ card.uuid } id={ card.uuid } source='play area' card={ card } disableMouseOver={ card.facedown && !card.code }
                     onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
-                    showStats={ !this.props.user.settings.optionSettings.disableCardStats } player={ player }
-                    onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ this.props.user.settings.cardSize } isMe={ isMe } declaring={ playerDeclaringParticipants }/>);
+                    showStats={ !disableCardStats } player={ player }
+                    onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ cardSize } isMe={ isMe } declaring={ playerDeclaringParticipants }/>);
             });
             cardsByLocation.push(cardsInPlay);
         });
+
+        this._cardsInPlayCache[cacheKey] = {
+            cardsInPlay: player.cardPiles.cardsInPlay,
+            conflict,
+            cardSize,
+            disableCardStats,
+            result: cardsByLocation
+        };
 
         return cardsByLocation;
     }
@@ -570,7 +596,7 @@ export class InnerGameBoard extends React.Component {
                 </div>
                 <div className='sidebar-pane our-side'>
                     <PlayerStatsBox
-                        { ...bindActionCreators(actions, this.props.dispatch) }
+                        { ...this.boundActions }
                         clockState={ thisPlayer.clock }
                         stats={ thisPlayer.stats }
                         showControls={ !this.state.spectating && this.props.currentGame.manualMode }
@@ -604,7 +630,7 @@ export class InnerGameBoard extends React.Component {
                 onMouseOver={ this.onMouseOver }
                 onMouseOut={ this.onMouseOut }
                 user={ this.props.user }
-                onTimerExpired={ this.onTimerExpired.bind(this) }
+                onTimerExpired={ this.onTimerExpired }
                 phase={ thisPlayer.phase } />
         </div>);
     }
@@ -850,7 +876,7 @@ export class InnerGameBoard extends React.Component {
                     !thisPlayer.optionSettings.showStatusInSidebar &&
                     <div className='player-stats-row our-side'>
                         <PlayerStatsRow
-                            { ...bindActionCreators(actions, this.props.dispatch) }
+                            { ...this.boundActions }
                             clockState={ thisPlayer.clock }
                             stats={ thisPlayer.stats }
                             showControls={ !this.state.spectating && manualMode }

@@ -11,6 +11,7 @@ const config = {
     devtool: 'source-map',
     entry: [
         path.join(__dirname, 'client/index.jsx'),
+        path.join(__dirname, 'client/tailwind.css'),
         LESS_DIR + '/site.less'
     ],
     output: {
@@ -44,10 +45,6 @@ const config = {
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('production'),
             '__BUILD_VERSION__': JSON.stringify(process.env.BUILD_VERSION || 'LOCAL')
-        }),
-        new webpack.ProvidePlugin({
-            $: 'jquery',
-            jQuery: 'jquery'
         })
     ],
     module: {
@@ -58,21 +55,6 @@ const config = {
                 use: {
                     loader: 'babel-loader'
                 }
-            },
-            {
-                test: /\.scss$/,
-                use: [
-                    'style-loader',
-                    {
-                        loader: 'css-loader',
-                        options: {
-                            url: {
-                                filter: (url) => !url.startsWith('/')
-                            }
-                        }
-                    },
-                    'sass-loader'
-                ]
             },
             {
                 test: /\.less$/,
@@ -100,7 +82,8 @@ const config = {
                                 filter: (url) => !url.startsWith('/')
                             }
                         }
-                    }
+                    },
+                    'postcss-loader'
                 ]
             },
             {

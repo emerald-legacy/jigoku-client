@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { Menu, AlertCircle, Wrench, Settings } from 'lucide-react';
 
 function Controls({
     manualModeEnabled,
@@ -16,21 +17,21 @@ function Controls({
                 className={ 'btn btn-transparent' + (showChatAlert ? ' with-alert' : '') }
                 onClick={ onToggleChatClick }
             >
-                <span className='glyphicon glyphicon-menu-hamburger' />
+                <Menu size={ 16 } />
                 { laptopSize ? '' : ' Toggle Chat' }
-                <i className='glyphicon glyphicon-exclamation-sign' />
+                { showChatAlert && <AlertCircle size={ 16 } /> }
             </button>
             { showManualMode && (
                 <button
                     className={ 'btn btn-transparent ' + (manualModeEnabled ? 'manual' : 'auto') }
                     onClick={ onManualModeClick }
                 >
-                    <span className='glyphicon glyphicon-wrench' />
+                    <Wrench size={ 16 } />
                     { laptopSize ? '' : ' Manual Mode ' + (manualModeEnabled ? ' Enabled' : 'Disabled') }
                 </button>
             ) }
             <button className='btn btn-transparent' onClick={ onSettingsClick }>
-                <span className='glyphicon glyphicon-cog' />
+                <Settings size={ 16 } />
                 { laptopSize ? '' : ' Settings' }
             </button>
         </div>

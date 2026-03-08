@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import PropTypes from 'prop-types';
 
 function CardZoom({ cardName, imageUrl, orientation, show }) {
@@ -27,4 +28,4 @@ CardZoom.propTypes = {
     show: PropTypes.bool
 };
 
-export default CardZoom;
+export default memo(CardZoom);
