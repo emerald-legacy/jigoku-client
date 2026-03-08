@@ -38,6 +38,11 @@
     .radio-inline { @apply inline-flex items-center gap-1 mr-4 cursor-pointer text-sm; }
     .radio-inline input[type="radio"] { @apply mt-0; }
 
+    /* Progress bars */
+    .progress { @apply w-full h-5 bg-gray-700 rounded overflow-hidden; }
+    .progress-bar { @apply h-full transition-[width] duration-500 ease-linear; }
+    .progress-bar-success { @apply bg-success; }
+
     /* Alerts */
     .alert { @apply p-4 mb-4 border rounded; }
     .alert-danger { @apply border-danger/30 bg-danger/10 text-danger; }
@@ -84,7 +89,8 @@
     .sr-only { @apply absolute w-px h-px p-0 -m-px overflow-hidden whitespace-nowrap border-0; clip: rect(0, 0, 0, 0); }
 
     /* Bootstrap grid compatibility */
-    .row { @apply flex flex-wrap mb-2; margin-left: -15px; margin-right: -15px; }
+    .row { @apply flex flex-wrap; margin-left: -15px; margin-right: -15px; }
+    .form > .row { @apply mb-2; }
     /* .container — moved to LESS (site.less) to avoid Tailwind built-in override */
 
     /* Panels and content containers — defined in LESS (application.less + common.less) */
@@ -135,7 +141,8 @@
     .col-sm-offset-10 { @apply sm:ml-[83.333333%]; }
 
     /* Form horizontal */
-    .form-horizontal .form-group { @apply ml-0 mr-0 flex flex-wrap items-center; }
+    .form-horizontal .form-group { @apply ml-0 mr-0 flex flex-wrap items-center mb-3; }
+    .form-horizontal .form-group .form-group { @apply mb-0 contents; }
     .form-horizontal .control-label { @apply text-right; }
 
     /* Caret (dropdown arrow) */
@@ -153,7 +160,11 @@
         @apply absolute top-full left-0 bg-gray-800 border border-gray-600 rounded shadow-lg min-w-[160px] z-50 list-none p-1 m-0 hidden;
     }
     .dropdown-menu li a { @apply block px-3 py-1 text-white no-underline hover:bg-gray-700 rounded leading-normal; }
+    .dropdown-item { @apply block px-3 py-1 text-white no-underline hover:bg-gray-700 rounded cursor-pointer; }
     .dropdown.open .dropdown-menu { @apply block; }
+
+    /* Typeahead: override hidden dropdown-menu inside rbt container */
+    .rbt .dropdown-menu { @apply block; }
 
     /* Typeahead CSS */
     @import "react-bootstrap-typeahead/css/Typeahead.css";

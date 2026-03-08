@@ -33,23 +33,23 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
             <span
                 className={
                     showCheckbox
-                        ? 'col-xs-7 col-md-6 col-lg-8 deck-name'
-                        : 'col-xs-8 col-md-7 col-lg-9 deck-name'
+                        ? 'col-xs-7 deck-name'
+                        : 'col-xs-8 deck-name'
                 }
             >
                 { deck.name }
             </span>
-            <span className='col-xs-2 col-md-3 col-lg-2 deck-status-label text-right pull-right'>
+            <span className='col-xs-2 deck-status-label text-right ml-auto'>
                 { deckStatus }
             </span>
             <div className='row small'>
-                <span className='col-md-7 deck-factionalliance'>
+                <span className='col-xs-7 deck-factionalliance'>
                     { deck.faction.name }
                     { deck.alliance && deck.alliance.name ? (
                         <span>/{ deck.alliance.name }</span>
                     ) : null }
                 </span>
-                <span className='col-xs-4 col-md-3 deck-date text-right pull-right'>
+                <span className='col-xs-4 deck-date text-right ml-auto'>
                     { format(new Date(deck.lastUpdated), 'do MMM yyyy') }
                 </span>
             </div>
