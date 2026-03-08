@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import { X } from 'lucide-react';
@@ -335,4 +335,4 @@ CardPile.propTypes = {
     topCard: PropTypes.object
 };
 
-export default CardPile;
+export default memo(CardPile);

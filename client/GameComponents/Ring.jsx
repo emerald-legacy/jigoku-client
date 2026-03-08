@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import PropTypes from 'prop-types';
 
 import CardCounters from './CardCounters.jsx';
@@ -145,4 +145,4 @@ Ring.propTypes = {
     socket: PropTypes.object
 };
 
-export default Ring;
+export default memo(Ring);
