@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import Card from './Card.jsx';
 import { tryParseJSON } from '../util.js';
 
+const EMPTY_STYLE = {};
+
 function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut, onMouseOver }) {
     const handleDragOver = useCallback((event) => {
         event.target.classList.add('highlight-panel');
@@ -100,7 +102,7 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
                     key={ card.uuid }
                     card={ card }
                     className={ className }
-                    style={ {} }
+                    style={ EMPTY_STYLE }
                     disableMouseOver={ !isMe }
                     source='hand'
                     onMouseOver={ onMouseOver }
