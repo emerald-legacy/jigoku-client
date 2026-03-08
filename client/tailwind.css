@@ -78,7 +78,8 @@
 
     /* Navbar links and items */
     .navbar li { @apply flex items-center; }
-    .navbar li a { @apply block px-2 py-1 text-sm text-white no-underline hover:text-gray-300; line-height: 55px; }
+    .navbar li a { @apply block px-2 py-1 text-sm text-gray-400 no-underline hover:text-white; line-height: 55px; }
+    .navbar li.active a { @apply text-white; }
     .navbar li span { @apply block px-2 py-1 text-sm text-gray-400; line-height: 55px; }
 
     /* Gravatar avatar */

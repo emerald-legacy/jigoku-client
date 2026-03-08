@@ -58,7 +58,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
             }
 
             const childItems = menuItem.childItems.map(item => (
-                <li key={ item.name }><Link href={ item.path }>{ item.name }</Link></li>
+                <li key={ item.name } onClick={ () => setOpenDropdown(null) }><Link href={ item.path }>{ item.name }</Link></li>
             ));
 
             return (
@@ -105,7 +105,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
     return (
         <nav className='navbar navbar-inverse no-highlight'>
             <div className='max-w-[1170px] mx-auto px-4 flex items-center flex-wrap text-sm'>
-                <Link href='/' className='text-white font-bold text-sm py-2 leading-tight mr-2'>{ title }</Link>
+                <Link href='/' className='text-gray-400 font-bold text-sm py-2 leading-tight mr-2'>{ title }</Link>
                 <button className='md:hidden p-2 text-gray-400 ml-auto'
                     type='button'
                     aria-expanded={ !navbarCollapsed }
