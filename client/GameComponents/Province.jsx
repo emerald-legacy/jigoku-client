@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import PropTypes from 'prop-types';
 
 import Card from './Card.jsx';
@@ -225,4 +226,4 @@ Province.propTypes = {
     title: PropTypes.string
 };
 
-export default Province;
+export default memo(Province);
