@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ArrowRight } from 'lucide-react';
+import { getCardImageUrl, getCardBackUrl } from '../cardImageUrl.js';
 
 function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
     const handleMouseOver = useCallback((event, card) => {
@@ -17,12 +18,10 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
 
     const getCardImagePath = useCallback((card) => {
         if(!card.id) {
-            return '/img/cards/' + (card.isDynasty ? 'dynasty' : card.isConflict ? 'conflict' : 'province') + 'cardback.jpg';
+            const backFile = (card.isDynasty ? 'dynasty' : card.isConflict ? 'conflict' : 'province') + 'cardback.jpg';
+            return getCardBackUrl(backFile);
         }
-        if(card.packId) {
-            return '/img/cards/' + card.id + '-' + card.packId + '.jpg';
-        }
-        return '/img/cards/' + card.id + '.jpg';
+        return getCardImageUrl(card.id, card.packId);
     }, []);
 
     const renderSimpleCard = useCallback((card) => {

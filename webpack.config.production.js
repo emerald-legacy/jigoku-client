@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 
 const BUILD_DIR = path.resolve(__dirname, 'public');
 const APP_DIR = path.resolve(__dirname, 'client');
@@ -16,8 +17,11 @@ const config = {
     ],
     output: {
         path: BUILD_DIR,
-        filename: 'bundle.min.js',
-        publicPath: '/'
+        filename: 'bundle.[contenthash:8].min.js',
+        publicPath: '/',
+        clean: {
+            keep: /^(?!bundle\.|vendors\.)/
+        }
     },
     optimization: {
         minimizer: [
@@ -36,7 +40,7 @@ const config = {
                     test: /[\\/]node_modules[\\/]/,
                     name: 'vendors',
                     chunks: 'all',
-                    filename: 'vendors.min.js'
+                    filename: 'vendors.[contenthash:8].min.js'
                 }
             }
         }
@@ -45,6 +49,10 @@ const config = {
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify('production'),
             '__BUILD_VERSION__': JSON.stringify(process.env.BUILD_VERSION || 'LOCAL')
+        }),
+        new WebpackManifestPlugin({
+            fileName: 'manifest.json',
+            publicPath: '/'
         })
     ],
     module: {

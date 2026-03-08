@@ -238,6 +238,12 @@ async function fetchCards() {
             }
         }
 
+        // Write version file for cache busting
+        const versionPath = path.join(imageDir, 'version.json');
+        const version = { timestamp: Date.now() };
+        fs.writeFileSync(versionPath, JSON.stringify(version));
+        console.log('Wrote image version file:', version.timestamp);
+
         return cards;
     } catch(error) {
         console.error('Unable to fetch cards:', error.message);

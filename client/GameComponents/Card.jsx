@@ -6,6 +6,7 @@ import CardMenu from './CardMenu.jsx';
 import CardStats from './CardStats.jsx';
 import CardCounters from './CardCounters.jsx';
 import CardPile from './CardPile.jsx';
+import { getCardImageUrl, getCardBackUrl } from '../cardImageUrl.js';
 
 const shortNames = {
     honor: 'H',
@@ -428,10 +429,7 @@ function Card(props) {
     };
 
     const getCardImagePath = () => {
-        if(card.packId) {
-            return '/img/cards/' + card.id + '-' + card.packId + '.jpg';
-        }
-        return '/img/cards/' + card.id + '.jpg';
+        return getCardImageUrl(card.id, card.packId);
     };
 
     const onCloseClickHandler = (event) => {
@@ -619,7 +617,7 @@ function Card(props) {
                 >
                     <div>
                         <span className='card-name'>{ card.name }</span>
-                        <img className={ imageClass } src={ !isFacedown() && !card.isToken ? getCardImagePath() : ('/img/cards/' + cardBack) } />
+                        <img className={ imageClass } src={ !isFacedown() && !card.isToken ? getCardImagePath() : getCardBackUrl(cardBack) } />
                     </div>
                     <CardCounters counters={ getCountersForCard(card) } />
                 </div>

@@ -16,6 +16,7 @@ const helmet = require('helmet');
 const { rateLimit } = require('express-rate-limit');
 const db = require('./db.js');
 
+const fs = require('fs');
 const UserService = require('./services/UserService.js');
 const Settings = require('./settings.js');
 
@@ -151,6 +152,27 @@ class Server {
             }
         }
 
+        // Load webpack manifest for production cache-busted filenames
+        let manifest = {};
+        if(!useWebpackDev) {
+            try {
+                const manifestPath = path.join(__dirname, '..', 'public', 'manifest.json');
+                manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+            } catch(err) {
+                logger.warn('Could not load manifest.json, falling back to default filenames');
+            }
+        }
+
+        // Load card image version for cache busting
+        let cardImageVersion = '';
+        try {
+            const versionPath = path.join(__dirname, '..', 'public', 'img', 'cards', 'version.json');
+            const versionData = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
+            cardImageVersion = String(versionData.timestamp);
+        } catch(err) {
+            // No version file — no cache busting for images
+        }
+
         app.get('/{*splat}', (req, res) => {
             let token = undefined;
             /** @type {any} */
@@ -162,7 +184,15 @@ class Server {
                 authReq.user = userWithoutBlockList;
             }
 
-            res.render('index', { basedir: path.join(__dirname, '..', 'views'), user: Settings.getUserWithDefaultsSet(authReq.user), token: token, production: !useWebpackDev });
+            res.render('index', {
+                basedir: path.join(__dirname, '..', 'views'),
+                user: Settings.getUserWithDefaultsSet(authReq.user),
+                token: token,
+                production: !useWebpackDev,
+                vendorsJs: manifest['vendors.js'] || '/vendors.min.js',
+                bundleJs: manifest['main.js'] || '/bundle.min.js',
+                cardImageVersion: cardImageVersion
+            });
         });
 
         // Define error middleware last

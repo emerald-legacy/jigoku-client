@@ -107,7 +107,8 @@
     "webpack-cli": "^6.0.1",
     "webpack-dev-middleware": "^7.4.5",
     "webpack-dev-server": "^5.2.3",
-    "webpack-hot-middleware": "^2.26.1"
+    "webpack-hot-middleware": "^2.26.1",
+    "webpack-manifest-plugin": "^6.0.1"
   },
   "volta": {
     "node": "22.13.0"

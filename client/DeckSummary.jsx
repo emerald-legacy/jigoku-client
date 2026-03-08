@@ -2,6 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import DeckStatus from './DeckStatus.jsx';
+import { getCardImageUrl } from './cardImageUrl.js';
 
 function DeckSummary({ cards, deck }) {
     const [cardToShow, setCardToShow] = useState(undefined);
@@ -22,15 +23,9 @@ function DeckSummary({ cards, deck }) {
         if(!card) {
             return '';
         }
-        // All images are stored as {id}-{packId}.jpg
-        if(packId) {
-            return '/img/cards/' + card.id + '-' + packId + '.jpg';
-        }
         // Fallback: use first version's pack_id if available
-        if(card.versions && card.versions.length > 0) {
-            return '/img/cards/' + card.id + '-' + card.versions[0].pack_id + '.jpg';
-        }
-        return '/img/cards/' + card.id + '.jpg';
+        const effectivePackId = packId || (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
+        return getCardImageUrl(card.id, effectivePackId);
     };
 
     const getCardsToRender = () => {
