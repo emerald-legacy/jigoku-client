@@ -86,7 +86,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
     const numGamesElement = numGames !== undefined ? <li><span>{ numGames + ' Games' }</span></li> : null;
 
     const contextMenu = context?.map(menuItem => (
-        <li key={ menuItem.text }
+        <li key={ menuItem.text } style={ { position: 'relative' } }
             onMouseOver={ () => onMenuItemMouseOver(menuItem) }
             onMouseOut={ onMenuItemMouseOut }
         >
