@@ -25,8 +25,8 @@ import GameModes from './GameModes';
 import * as actions from './actions';
 
 export class InnerGameBoard extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.modalRef = createRef();
 
@@ -47,7 +47,10 @@ export class InnerGameBoard extends React.Component {
         this.onManualModeClick = this.onManualModeClick.bind(this);
         this.onSettingsClick = this.onSettingsClick.bind(this);
         this.onToggleChatClick = this.onToggleChatClick.bind(this);
+        this.onTimerExpired = this.onTimerExpired.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
+
+        this.boundActions = bindActionCreators(actions, props.dispatch);
 
         this._cardsInPlayCache = {};
 
@@ -593,7 +596,7 @@ export class InnerGameBoard extends React.Component {
                 </div>
                 <div className='sidebar-pane our-side'>
                     <PlayerStatsBox
-                        { ...bindActionCreators(actions, this.props.dispatch) }
+                        { ...this.boundActions }
                         clockState={ thisPlayer.clock }
                         stats={ thisPlayer.stats }
                         showControls={ !this.state.spectating && this.props.currentGame.manualMode }
@@ -627,7 +630,7 @@ export class InnerGameBoard extends React.Component {
                 onMouseOver={ this.onMouseOver }
                 onMouseOut={ this.onMouseOut }
                 user={ this.props.user }
-                onTimerExpired={ this.onTimerExpired.bind(this) }
+                onTimerExpired={ this.onTimerExpired }
                 phase={ thisPlayer.phase } />
         </div>);
     }
@@ -873,7 +876,7 @@ export class InnerGameBoard extends React.Component {
                     !thisPlayer.optionSettings.showStatusInSidebar &&
                     <div className='player-stats-row our-side'>
                         <PlayerStatsRow
-                            { ...bindActionCreators(actions, this.props.dispatch) }
+                            { ...this.boundActions }
                             clockState={ thisPlayer.clock }
                             stats={ thisPlayer.stats }
                             showControls={ !this.state.spectating && manualMode }
