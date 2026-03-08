@@ -21,6 +21,7 @@ import CardPile from './GameComponents/CardPile.jsx';
 import GameConfiguration from './GameComponents/GameConfiguration.jsx';
 import { tryParseJSON } from './util.js';
 import GameModes from './GameModes';
+import { getCardImageUrl } from './cardImageUrl.js';
 
 import * as actions from './actions';
 
@@ -208,10 +209,7 @@ export class InnerGameBoard extends React.Component {
         if(!card || !card.id) {
             return '';
         }
-        if(card.packId) {
-            return '/img/cards/' + card.id + '-' + card.packId + '.jpg';
-        }
-        return '/img/cards/' + card.id + '.jpg';
+        return getCardImageUrl(card.id, card.packId);
     }
 
     onCardClick(card) {

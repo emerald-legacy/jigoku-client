@@ -127,14 +127,6 @@ class App extends React.Component {
             this.props.clearGameState();
         });
 
-        socket.on('lobbychat', message => {
-            this.props.receiveLobbyMessage(message);
-        });
-
-        socket.on('lobbymessages', messages => {
-            this.props.receiveLobbyMessages(messages);
-        });
-
         socket.on('passworderror', message => {
             this.props.receivePasswordError(message);
         });
@@ -516,8 +508,6 @@ App.propTypes = {
     receiveGameState: PropTypes.func,
     receiveGames: PropTypes.func,
     receiveJoinGame: PropTypes.func,
-    receiveLobbyMessage: PropTypes.func,
-    receiveLobbyMessages: PropTypes.func,
     receiveNewGame: PropTypes.func,
     receivePasswordError: PropTypes.func,
     receiveUsers: PropTypes.func,
