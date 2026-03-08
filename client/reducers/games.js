@@ -30,6 +30,12 @@ function games(state = {
                 newGame: false
             });
         case 'RECEIVE_GAMESTATE':
+            // If server sends incremental messages, accumulate them
+            if(action.currentGame && action.currentGame.newMessages && state.currentGame && state.currentGame.messages) {
+                action.currentGame.messages = state.currentGame.messages.concat(action.currentGame.messages);
+            }
+            delete action.currentGame.newMessages;
+
             retState = Object.assign({}, state, {
                 currentGame: action.currentGame
             });
