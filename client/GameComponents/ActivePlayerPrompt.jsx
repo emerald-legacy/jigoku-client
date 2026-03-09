@@ -286,7 +286,7 @@ function ActivePlayerPrompt({
                 { promptTitleElement }
                 <div className='menu-pane'>
                     <div className='panel'>
-                        <h4>{ title }</h4>
+                        <div className='menu-pane-title'>{ title }</div>
                         { renderedControls }
                         { renderedButtons }
                     </div>
