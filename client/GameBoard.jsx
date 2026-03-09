@@ -165,7 +165,7 @@ export class InnerGameBoard extends React.Component {
 
         let thisPlayer = this.props.currentGame.players[this.props.username];
         if(!thisPlayer) {
-            thisPlayer = Object.values(this.props.currentGame.players)[0];
+            thisPlayer = Object.values(this.props.currentGame.players).sort((a, b) => a.name.localeCompare(b.name))[0];
         }
 
         let otherPlayer = Object.values(this.props.currentGame.players).find(player => {
@@ -673,7 +673,7 @@ export class InnerGameBoard extends React.Component {
 
         let thisPlayer = this.props.currentGame.players[this.props.username];
         if(!thisPlayer) {
-            thisPlayer = Object.values(this.props.currentGame.players)[0];
+            thisPlayer = Object.values(this.props.currentGame.players).sort((a, b) => a.name.localeCompare(b.name))[0];
         }
 
         if(!thisPlayer) {
