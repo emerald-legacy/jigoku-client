@@ -73,15 +73,15 @@
     .close { @apply bg-transparent border-0 cursor-pointer text-white text-2xl leading-none p-0; }
 
     /* Navbar */
-    .navbar { @apply fixed top-0 inset-x-0 z-50; min-height: 55px; }
+    .navbar { @apply fixed top-0 inset-x-0 z-50; height: 40px; }
     .navbar-inverse { @apply bg-navbar-bg text-white; }
     .no-highlight { user-select: none; }
 
     /* Navbar links and items */
     .navbar li { @apply flex items-center; }
-    .navbar li a { @apply block px-2 py-1 text-sm text-gray-400 no-underline hover:text-white; line-height: 55px; }
-    .navbar li.active a { @apply text-white; }
-    .navbar li span { @apply block px-2 py-1 text-sm text-gray-400; line-height: 55px; }
+    .navbar li a { @apply block px-2 py-1 text-sm text-gray-400 no-underline rounded transition-colors hover:text-white hover:bg-white/10; line-height: 40px; }
+    .navbar li.active a { @apply text-white bg-white/15; }
+    .navbar li span { @apply block px-2 py-1 text-sm text-gray-400; line-height: 40px; }
 
     /* Gravatar avatar */
     .gravatar { @apply inline-block align-middle mr-1.5 rounded-sm; }
