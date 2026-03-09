@@ -91,6 +91,7 @@ body {
   margin-right: auto;
   padding-left: 15px;
   padding-right: 15px;
+  padding-top: 16px;
 }
 
 .full-height {
@@ -366,19 +367,10 @@ h4 {
   flex-direction: column;
   height: 100%;
   overflow-y: auto;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
-    width: 0.5em;
-    height: 0.5em;
-   }
- 
-  &::-webkit-scrollbar-thumb {
-    background-color: rgba(255,255,255,.1);
-    border-radius: 3px;
- 
-    &:hover {
-     background: rgba(255,255,255,.2);
-    }
+    display: none;
   }
 }
 
@@ -461,7 +453,7 @@ a {
 }
 
 .lobby-version {
-  color: #666;
+  color: white;
   font-size: 0.75em;
   padding: 0;
   margin: -5px 0 5px;
