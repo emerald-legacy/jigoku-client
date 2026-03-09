@@ -20,7 +20,7 @@
 
 @layer components {
     /* Buttons */
-    .btn { @apply px-3 py-1.5 rounded text-sm cursor-pointer inline-block text-center; }
+    .btn { @apply px-3 py-1.5 rounded text-sm cursor-pointer inline-block text-center disabled:opacity-50 disabled:cursor-not-allowed; }
     .btn-primary { @apply bg-primary text-white border border-primary-dark hover:bg-primary/80; }
     .btn-default { @apply bg-primary text-white border border-primary-dark hover:bg-primary/80; }
     .btn-danger { @apply bg-danger text-white border border-danger hover:bg-danger/80; }
