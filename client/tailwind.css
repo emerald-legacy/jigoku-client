@@ -73,7 +73,7 @@
     .close { @apply bg-transparent border-0 cursor-pointer text-white text-2xl leading-none p-0; }
 
     /* Navbar */
-    .navbar { @apply fixed top-0 inset-x-0 z-50; height: 40px; }
+    .navbar { @apply fixed top-0 inset-x-0; height: 40px; z-index: 10000; }
     .navbar-inverse { @apply bg-navbar-bg text-white; }
     .no-highlight { user-select: none; }
 
