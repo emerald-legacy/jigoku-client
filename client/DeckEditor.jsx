@@ -7,6 +7,7 @@ import Input from './FormComponents/Input.jsx';
 import Select from './FormComponents/Select.jsx';
 import Typeahead from './FormComponents/Typeahead.jsx';
 import TextArea from './FormComponents/TextArea.jsx';
+import { preferredPackId } from './cardImageUrl.js';
 
 import * as actions from './actions';
 
@@ -66,8 +67,8 @@ export function InnerDeckEditor({
         let packName = '';
         if(card.versions && card.versions.length) {
             const packData = packId
-                ? card.versions.find(v => v.pack_id === packId) || card.versions[0]
-                : card.versions[0];
+                ? card.versions.find(v => v.pack_id === packId) || card.versions[card.versions.length - 1]
+                : card.versions[card.versions.length - 1];
             const pack = packs?.find(p => p.id === packData.pack_id);
             if(pack && pack.name) {
                 packName = ' (' + pack.name + ')';
@@ -199,10 +200,8 @@ export function InnerDeckEditor({
             return;
         }
 
-        let defaultPackId;
-        if(cardToAdd.versions && cardToAdd.versions.length > 0) {
-            defaultPackId = cardToAdd.versions[0].pack_id;
-        }
+        const formatValue = deck.format?.value;
+        const defaultPackId = preferredPackId(cardToAdd, formatValue);
 
         let list = cardList;
         list += getCardListEntry(numberToAdd, cardToAdd, defaultPackId);
@@ -258,7 +257,7 @@ export function InnerDeckEditor({
             });
 
             if(card) {
-                const packId = pack ? pack.id : (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
+                const packId = pack ? pack.id : preferredPackId(card, deck.format?.value);
                 currentDeck = addCard(card, num, packId, currentDeck);
             }
         });
@@ -317,11 +316,13 @@ export function InnerDeckEditor({
             newDeck.conflictCards = [];
             newDeck.dynastyCards = [];
 
+            const importFormatValue = newDeck.format?.value;
+            const cardPackIds = deckResponse.card_pack_ids || {};
             let list = '';
             Object.entries(deckResponse.cards || {}).forEach(([id, count]) => {
                 const card = cards[id];
                 if(card) {
-                    const packId = card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined;
+                    const packId = cardPackIds[id] || preferredPackId(card, importFormatValue);
                     list += getCardListEntry(count, card, packId);
 
                     let targetList;
