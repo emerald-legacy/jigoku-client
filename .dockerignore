@@ -15,4 +15,3 @@ test
 .DS_Store
 coverage
 *.log
-.travis.yml

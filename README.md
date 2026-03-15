@@ -102,8 +102,6 @@ If you are making any game engine changes, these will not be accepted without un
 ### Sentry.io Project
 [Sentry.io - RingTeki](https://sentry.io/ringteki-team/ringteki/)
 
-### Build Status
-[![Travis Build](https://travis-ci.com/ringteki/ringteki-client.svg?branch=master)](https://travis-ci.com/ringteki/ringteki-client)
 
 ### Discord Discusson
 [Ringteki Discord Server](https://discord.gg/tMzhyND)
