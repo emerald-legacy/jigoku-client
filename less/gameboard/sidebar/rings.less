@@ -36,7 +36,7 @@ s.ring-pane {
 }
 
 .claimed-pool {
-    font-size:24pt;
+    font-size:32pt;
     display:flex;
     justify-content:flex-start;
     flex-direction:row;
@@ -44,6 +44,16 @@ s.ring-pane {
     width:100%;
     margin:5px;
     min-height:2em;
+
+    &.small {
+        font-size:24pt;
+    }
+    &.large {
+        font-size:36pt;
+    }
+    &.x-large {
+        font-size:40pt;
+    }
 }
 
 circle.ring-background {
@@ -145,7 +155,7 @@ svg.ring-svg {
     }
 
     .claimed-pool {
-        font-size:18pt;
+        font-size:24pt;
     }
 
     .ring-info {

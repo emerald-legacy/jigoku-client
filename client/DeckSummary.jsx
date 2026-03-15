@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import DeckStatus from './DeckStatus.jsx';
-import { getCardImageUrl } from './cardImageUrl.js';
+import { getCardImageUrl, preferredPackId } from './cardImageUrl.js';
 
 function DeckSummary({ cards, deck }) {
     const [cardToShow, setCardToShow] = useState(undefined);
@@ -19,12 +19,13 @@ function DeckSummary({ cards, deck }) {
         setPackIdToShow(undefined);
     };
 
+    const formatValue = deck?.format?.value;
+
     const getCardImagePath = (card, packId) => {
         if(!card) {
             return '';
         }
-        // Fallback: use first version's pack_id if available
-        const effectivePackId = packId || (card.versions && card.versions.length > 0 ? card.versions[0].pack_id : undefined);
+        const effectivePackId = packId || preferredPackId(card, formatValue);
         return getCardImageUrl(card.id, effectivePackId);
     };
 
