@@ -126,7 +126,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
                     { isAdmin ? <a href='#' onClick={ (event) => removeGame(event, game) }><X size={ 16 } /></a> : null }
                     <b>{ gameTitle }</b> { game.clocks && game.clocks.type !== 'none' ? <img src='/img/free-clock-icon-png.png' className='clock-icon' /> : null }
                 </span>
-                <div>{ gameRow }</div>
+                <div className='game-row-players'>{ gameRow }</div>
                 <div className='col-xs-3 game-row-buttons pull-right'>
                     { (currentGame || playerCount === 2 || game.started) ?
                         null :
