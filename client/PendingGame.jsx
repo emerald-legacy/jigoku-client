@@ -124,7 +124,11 @@ export function InnerPendingGame({
 
         return (
             <div className='player-row' key={ player.name }>
-                <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } /><span>{ player.name }</span>{ deck } { status } { selectLink }
+                <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } />
+                <span className='player-row-name'>{ player.name }</span>
+                { deck }
+                { status }
+                { selectLink }
             </div>
         );
     }, [username, handleSelectDeckClick]);

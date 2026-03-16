@@ -17,16 +17,11 @@
 }
 
 .game-row {
-  min-height: 70px;
   border-radius: 4px;
-  border-width: 1px;
-  border-color: @brand-primary;
-  border-style: solid;
-  padding: 5px;
+  border: 1px solid @brand-primary;
+  padding: 8px 10px;
   margin-bottom: 5px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
+  color: white;
 
   &.skirmish {
     border-color: @brand-info;
@@ -37,31 +32,133 @@
     background-color: fade(rgb(62, 146, 56), 10%);
   }
 
-  &.imperial {
-    background-color: fade(rgb(146, 62, 56), 40%);
-  }
 
-  &.obsidian {
-    background-image: repeating-linear-gradient( 135deg, rgba(115, 140, 77, 0.3), rgba(115, 140, 77, 0.3) 10px, rgba(217, 154, 37, 0.3) 10px, rgba(217, 154, 37, 0.3) 20px);
+  &.active {
+    border-color: @brand-danger;
+    color: @brand-danger;
   }
 }
 
-.player-name {
-  min-width:0;
-  margin-left: 5px;
-  padding-right: 0;
-  padding-left: 0;
-  text-overflow: ellipsis;
+.game-row-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
   overflow: hidden;
 }
 
-.game-row.active {
-  border-color: @brand-danger;
+.game-row-remove {
+  flex-shrink: 0;
   color: @brand-danger;
 }
 
-.game-row > button {
-  margin-top: 12px;
+.game-badge {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.game-badge-mode {
+  background: fade(@brand-primary, 40%);
+  color: white;
+
+  .game-row.skirmish &,
+  .game-row.imperial & {
+    background: rgb(180, 150, 40);
+  }
+
+  .game-row.obsidian & {
+    background: rgb(190, 40, 40);
+  }
+}
+
+.game-badge-type-beginner {
+  background: rgb(62, 146, 56);
+  color: white;
+}
+
+.game-badge-type-casual {
+  background: fade(@brand-info, 30%);
+  color: white;
+}
+
+.game-badge-type-competitive {
+  background: rgb(139, 35, 35);
+  color: white;
+}
+
+.game-badge-lock {
+  padding: 0;
+  font-size: 13px;
+}
+
+.game-row-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.game-row-content {
+  display: flex;
+  align-items: center;
+}
+
+.game-row-players {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+  gap: 4px;
+}
+
+.game-row-player {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.player-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.game-row-vs {
+  flex-shrink: 0;
+  color: white;
+  font-size: 14px;
+  padding: 0 4px;
+}
+
+.game-icon {
+  flex-shrink: 0;
+}
+
+.game-row-empty {
+  opacity: 0.5;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.game-row-buttons {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  gap: 5px;
+  padding-left: 10px;
+}
+
+.clock-icon {
+  height: 1.2em;
+  width: 1.2em;
+  filter: invert(90%);
+  flex-shrink: 0;
 }
 
 .game-node {
@@ -80,16 +177,19 @@
 }
 
 .deck-selection {
-  margin-left: 10px;
-  padding: 6px 12px;
-  border: 1px solid black;
-  border-radius: 4px;
-  background: @brand-primary;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: fade(@brand-primary, 50%);
   color: white;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
 }
 
 .players {
-  height: 100px;
+  min-height: 50px;
   clear: both;
 }
 
@@ -109,11 +209,12 @@
 }
 
 .deck-status {
-  text-align: center;
-  padding: 6px 12px;
-  border: 1px solid black;
-  border-radius: 4px;
-  color: black;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: white;
 
   &.valid {
     background: @brand-success;
@@ -148,7 +249,20 @@
 }
 
 .player-row {
-  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  flex-wrap: nowrap;
+  min-width: 0;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.player-row-name {
+  white-space: nowrap;
 }
 
 .game-list-container {
@@ -171,49 +285,10 @@
   background-color: fade(@brand-info, 20%);
 }
 
-
 .dev-node-1 {
   background-color: fade(@brand-warning, 20%);
 }
 
 .dev-node-2 {
   background-color: fade(@brand-danger, 20%);
-}
-
-.game-row-players {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  min-width: 0;
-  flex-wrap: nowrap;
-}
-
-.game-row-avatar {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.game-row-vs {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.game-row-buttons {
-  padding-left: 0;
-  padding-right: 0;
-  margin-left: auto;
-  min-width: 120px;
-}
-
-.game-title {
-  padding-left: 0;
-  padding-right: 0;
-  padding-bottom: 5px;
-}
-
-.clock-icon
-{
-    height: 1.5em;
-    width: 1.5em;
-    filter: invert(90%);
 }

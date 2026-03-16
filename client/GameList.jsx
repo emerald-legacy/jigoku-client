@@ -8,6 +8,23 @@ import { X } from 'lucide-react';
 import Avatar from './Avatar.jsx';
 import * as actions from './actions';
 
+const gameModeLabels = {
+    [GameModes.Skirmish]: 'SKIRMISH',
+    [GameModes.JadeEdict]: 'JADE',
+    [GameModes.Stronghold]: 'IMPERIAL',
+    [GameModes.Emerald]: 'EMERALD',
+    [GameModes.Obsidian]: 'OBSIDIAN',
+    [GameModes.Sanctuary]: 'SANCTUARY'
+};
+
+const gameModeModifiers = {
+    [GameModes.Skirmish]: 'skirmish',
+    [GameModes.JadeEdict]: 'jade',
+    [GameModes.Stronghold]: 'imperial',
+    [GameModes.Obsidian]: 'obsidian',
+    [GameModes.Sanctuary]: 'sanctuary'
+};
+
 export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, socket, username }) {
     const joinGame = useCallback((event, game) => {
         event.preventDefault();
@@ -49,91 +66,41 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
     }, [socket]);
 
     const gameList = games?.map((game) => {
-        let firstPlayer = true;
-        const gameRow = [];
-
         const players = game.players ? Object.values(game.players) : [];
-        players.forEach((player) => {
-            if(firstPlayer) {
-                gameRow.push(
-                    <span key={ `${game.id}-p1-avatar` } className='col-xs-4 col-sm-3 game-row-avatar'>
-                        <span className='hidden-xs col-sm-3 game-row-avatar'>
-                            <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } />
-                        </span>
-                        <span className='player-name col-sm-8'>{ player.name }</span>
-                    </span>
-                );
-                gameRow.push(<span key={ `${game.id}-p1-icon` } className={ 'hidden-xs col-xs-1 game-icon icon-clan-' + player.faction } />);
-                firstPlayer = false;
-            } else {
-                gameRow.push(<span key={ `${game.id}-vs` } className='col-xs-1 game-row-vs text-center'><b> vs </b></span>);
-                gameRow.push(<span key={ `${game.id}-p2-icon` } className={ 'hidden-xs col-xs-1 game-icon icon-clan-' + player.faction } />);
-                gameRow.push(
-                    <span key={ `${game.id}-p2-avatar` } className='col-xs-4 col-sm-3 game-row-avatar'>
-                        <span className='player-name col-sm-8'>{ player.name }</span>
-                        <span className='hidden-xs game-row-avatar pull-right col-sm-3'>
-                            <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } />
-                        </span>
-                    </span>
-                );
-            }
-        });
-
-        let gameTitle = '';
-
-        if(game.needsPassword) {
-            gameTitle += '\uD83D\uDD12 ';
-        }
-
-        if(game.gameMode === GameModes.Skirmish) {
-            gameTitle += '[SKIRMISH] ';
-        } else if(game.gameMode === GameModes.JadeEdict) {
-            gameTitle += '[JADE] ';
-        } else if(game.gameMode === GameModes.Stronghold) {
-            gameTitle += '[IMPERIAL] ';
-        } else if(game.gameMode === GameModes.Emerald) {
-            gameTitle += '[EMERALD] ';
-        } else if(game.gameMode === GameModes.Obsidian) {
-            gameTitle += '[OBSIDIAN] ';
-        } else if(game.gameMode === GameModes.Sanctuary) {
-            gameTitle += '[SANCTUARY] ';
-        }
-
-        if(game.gameType) {
-            gameTitle += '[' + game.gameType + '] ';
-        }
-
-        gameTitle += game.name;
-
-        let gameModifier = '';
-        if(game.gameMode === GameModes.Skirmish) {
-            gameModifier = ' skirmish';
-        } else if(game.gameMode === GameModes.JadeEdict) {
-            gameModifier = ' jade';
-        } else if(game.gameMode === GameModes.Stronghold) {
-            gameModifier = ' imperial';
-        } else if(game.gameMode === GameModes.Obsidian) {
-            gameModifier = ' obsidian';
-        } else if(game.gameMode === GameModes.Sanctuary) {
-            gameModifier = ' sanctuary';
-        }
-
         const playerCount = players.length;
+        const modeLabel = gameModeLabels[game.gameMode];
+        const modeModifier = gameModeModifiers[game.gameMode] || '';
 
         return (
-            <div key={ game.id } className={ 'game-row' + gameModifier + (game.node && isAdmin ? ' ' + game.node : '') }>
-                <span className='col-xs-12 game-title'>
-                    { isAdmin ? <a href='#' onClick={ (event) => removeGame(event, game) }><X size={ 16 } /></a> : null }
-                    <b>{ gameTitle }</b> { game.clocks && game.clocks.type !== 'none' ? <img src='/img/free-clock-icon-png.png' className='clock-icon' /> : null }
-                </span>
-                <div className='game-row-players'>{ gameRow }</div>
-                <div className='col-xs-3 game-row-buttons pull-right'>
-                    { (currentGame || playerCount === 2 || game.started) ?
-                        null :
-                        <button className='btn btn-primary pull-right' onClick={ (event) => joinGame(event, game) }>Join</button>
-                    }
-                    { canWatch(game) ?
-                        <button className='btn btn-primary pull-right' onClick={ (event) => watchGame(event, game) }>Watch</button> : null }
+            <div key={ game.id } className={ 'game-row' + (modeModifier ? ' ' + modeModifier : '') + (game.node && isAdmin ? ' ' + game.node : '') }>
+                <div className='game-row-header'>
+                    { isAdmin ? <a href='#' className='game-row-remove' onClick={ (event) => removeGame(event, game) }><X size={ 14 } /></a> : null }
+                    { game.needsPassword ? <span className='game-badge game-badge-lock'>{'\uD83D\uDD12'}</span> : null }
+                    { modeLabel ? <span className={ 'game-badge game-badge-mode' }>{ modeLabel }</span> : null }
+                    { game.gameType ? <span className={ 'game-badge game-badge-type-' + game.gameType }>{ game.gameType }</span> : null }
+                    { game.clocks && game.clocks.type !== 'none' ? <img src='/img/free-clock-icon-png.png' className='clock-icon' /> : null }
+                    <span className='game-row-name'>{ game.name }</span>
+                </div>
+                <div className='game-row-content'>
+                    <div className='game-row-players'>
+                        { players.map((player, i) => (
+                            <span key={ player.name } className='game-row-player'>
+                                { i > 0 && <span className='game-row-vs'>vs</span> }
+                                <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } />
+                                <span className='player-name'>{ player.name }</span>
+                                <span className={ 'game-icon icon-clan-' + player.faction } />
+                            </span>
+                        )) }
+                        { playerCount === 0 && <span className='game-row-empty'>Waiting for players...</span> }
+                    </div>
+                    <div className='game-row-buttons'>
+                        { canWatch(game) ?
+                            <button className='btn btn-primary btn-sm' onClick={ (event) => watchGame(event, game) }>Watch</button> : null }
+                        { (currentGame || playerCount === 2 || game.started) ?
+                            null :
+                            <button className='btn btn-primary btn-sm' onClick={ (event) => joinGame(event, game) }>Join</button>
+                        }
+                    </div>
                 </div>
             </div>
         );
