@@ -75,7 +75,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
             <div key={ game.id } className={ 'game-row' + (modeModifier ? ' ' + modeModifier : '') + (game.node && isAdmin ? ' ' + game.node : '') }>
                 <div className='game-row-header'>
                     { isAdmin ? <a href='#' className='game-row-remove' onClick={ (event) => removeGame(event, game) }><X size={ 14 } /></a> : null }
-                    { game.needsPassword ? <span className='game-badge game-badge-lock'>{'\uD83D\uDD12'}</span> : null }
+                    { game.needsPassword ? <span className='game-badge game-badge-lock'>{ '\uD83D\uDD12' }</span> : null }
                     { modeLabel ? <span className={ 'game-badge game-badge-mode' }>{ modeLabel }</span> : null }
                     { game.gameType ? <span className={ 'game-badge game-badge-type-' + game.gameType }>{ game.gameType }</span> : null }
                     { game.clocks && game.clocks.type !== 'none' ? <img src='/img/free-clock-icon-png.png' className='clock-icon' /> : null }
