@@ -607,6 +607,7 @@ class Lobby {
 
         if(!game.started) {
             delete this.games[game.id];
+            this.broadcastGameList();
         } else {
             this.router.closeGame(game);
         }
