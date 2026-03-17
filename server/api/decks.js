@@ -1,9 +1,12 @@
 const db = require('../db.js');
 const DeckService = require('../services/DeckService.js');
+const DeckStatsService = require('../services/DeckStatsService.js');
+const { computeDeckContentHash } = require('../services/deckHashUtil.js');
 const { wrapAsync } = require('../util.js');
 
 module.exports.init = function(server) {
     const deckService = new DeckService(db.getDb());
+    const deckStatsService = new DeckStatsService(db.getDb());
 
     server.get('/api/decks/:id', wrapAsync(async function(req, res) {
         if(!req.user) {
@@ -25,6 +28,20 @@ module.exports.init = function(server) {
         }
 
         res.send({ success: true, deck: deck });
+    }));
+
+    server.get('/api/deckstats', wrapAsync(async function(req, res) {
+        if(!req.user) {
+            return res.status(401).send({ message: 'Unauthorized' });
+        }
+
+        const statsDocs = await deckStatsService.getByUsername(req.user.username);
+        const stats = {};
+        for(const doc of statsDocs) {
+            stats[doc.deckId.toString()] = doc.stats;
+        }
+
+        res.send({ success: true, stats });
     }));
 
     server.get('/api/decks', wrapAsync(async function(req, res) {
@@ -58,6 +75,9 @@ module.exports.init = function(server) {
 
         const data = { id: req.params.id, ...JSON.parse(req.body.data) };
         await deckService.update(data);
+
+        const contentHash = computeDeckContentHash(data);
+        await deckStatsService.upsertForDeck(req.params.id, req.user.username, contentHash);
 
         res.send({ success: true, message: 'Saved' });
     }));
@@ -97,6 +117,7 @@ module.exports.init = function(server) {
         }
 
         await deckService.delete(id);
+        await deckStatsService.deleteByDeckId(id);
         res.send({ success: true, message: 'Deck deleted successfully', deckId: id });
     }));
 
@@ -122,6 +143,7 @@ module.exports.init = function(server) {
         }
 
         await Promise.all(deckIds.map(id => deckService.delete(id)));
+        await deckStatsService.deleteByDeckIds(deckIds);
 
         res.send({
             success: true,

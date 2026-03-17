@@ -3,6 +3,7 @@ const logger = require('./log.js');
 const db = require('./db.js');
 const EventEmitter = require('events');
 const GameService = require('./services/GameService.js');
+const DeckStatsService = require('./services/DeckStatsService.js');
 const url = require('url');
 
 const ONE_SECOND = 1000;
@@ -15,6 +16,7 @@ class GameRouter extends EventEmitter {
 
         this.workers = {};
         this.gameService = new GameService(db.getDb());
+        this.deckStatsService = new DeckStatsService(db.getDb());
         this.connections = new Map();
 
         this.init(config.lobbyWsUrl);
@@ -197,6 +199,7 @@ class GameRouter extends EventEmitter {
             case 'GAMEWIN':
                 logger.info(`received GAMEWIN from ${identityStr}`);
                 this.gameService.update(message.arg.game);
+                this.updateDeckStats(message.arg.game);
                 break;
             case 'GAMECLOSED':
                 logger.info(`received GAMECLOSED from ${identityStr}`);
@@ -222,6 +225,39 @@ class GameRouter extends EventEmitter {
 
         if(worker) {
             worker.lastMessage = Date.now();
+        }
+    }
+
+    updateDeckStats(game) {
+        if(!game || !game.players || !game.winner || !game.winReason) {
+            return;
+        }
+
+        const normalizeClan = (faction) => {
+            if(!faction) {
+                return null;
+            }
+            // Handle "Crab Clan" -> "crab", or already lowercase "crab" -> "crab"
+            return faction.toLowerCase().replace(/\s*clan\s*/i, '').trim();
+        };
+
+        for(const player of game.players) {
+            if(!player.deckId) {
+                continue;
+            }
+
+            const won = player.name === game.winner;
+            const opponent = game.players.find(p => p.name !== player.name);
+            const opponentClan = opponent ? normalizeClan(opponent.faction) : null;
+
+            this.deckStatsService.recordGameResult(player.deckId, {
+                won,
+                opponentClan,
+                winReason: game.winReason,
+                username: player.name
+            }).catch(err => {
+                logger.error(`Failed to update deck stats: ${err}`);
+            });
         }
     }
 

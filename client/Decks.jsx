@@ -14,9 +14,11 @@ export function InnerDecks({
     cards,
     clearDeckStatus,
     deckDeleted,
+    deckStats,
     decks,
     deleteDeck,
     deleteDecks,
+    loadDeckStats,
     loadDecksWithLazyValidation,
     loading,
     navigate,
@@ -29,7 +31,8 @@ export function InnerDecks({
 
     useEffect(() => {
         loadDecksWithLazyValidation();
-    }, [loadDecksWithLazyValidation]);
+        loadDeckStats();
+    }, [loadDecksWithLazyValidation, loadDeckStats]);
 
     useEffect(() => {
         if(deckDeleted) {
@@ -146,7 +149,7 @@ export function InnerDecks({
                                 <button className='btn btn-danger' onClick={ handleConfirmDeleteClick }>Delete</button>
                             ) }
                         </div>
-                        <DeckSummary deck={ selectedDeck } cards={ cards } />
+                        <DeckSummary deck={ selectedDeck } cards={ cards } stats={ deckStats && selectedDeck ? deckStats[selectedDeck._id] : undefined } />
                     </div>
                 </div>
             );
@@ -211,10 +214,12 @@ InnerDecks.propTypes = {
     cards: PropTypes.object,
     clearDeckStatus: PropTypes.func,
     deckDeleted: PropTypes.bool,
+    deckStats: PropTypes.object,
     decks: PropTypes.array,
     deleteDeck: PropTypes.func,
     deleteDecks: PropTypes.func,
     loadDecks: PropTypes.func,
+    loadDeckStats: PropTypes.func,
     loadDecksWithLazyValidation: PropTypes.func,
     loading: PropTypes.bool,
     navigate: PropTypes.func,
@@ -227,6 +232,7 @@ function mapStateToProps(state) {
         apiError: state.api.message,
         cards: state.cards.cards,
         deckDeleted: state.cards.deckDeleted,
+        deckStats: state.cards.deckStats,
         decks: state.cards.decks,
         loading: state.api.loading,
         selectedDeck: state.cards.selectedDeck
