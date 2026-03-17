@@ -594,12 +594,14 @@ class Lobby {
     }
 
     onRemoveGame(socket, gameId) {
-        if(!socket || !socket.user.admin) {
+        var isAdmin = socket && socket.user.admin;
+        var game = this.games[gameId];
+        if(!game) {
             return;
         }
 
-        var game = this.games[gameId];
-        if(!game) {
+        var isOwner = game.owner.username === socket.user.username;
+        if(!isAdmin && !isOwner) {
             return;
         }
 
