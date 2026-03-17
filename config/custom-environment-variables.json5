@@ -1,7 +1,7 @@
 {
     env: 'NODE_ENV',
     dbPath: 'DB_PATH',
-    mqUrl: 'ZMQ_URL',
+    lobbyWsUrl: 'LOBBY_WS_URL',
     domain: 'DOMAIN',
     https: 'HTTPS',
     secret: 'SECRET',

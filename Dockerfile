@@ -9,7 +9,6 @@ RUN apt-get update && \
         python3 \
         make \
         g++ \
-        libzmq3-dev \
         git \
     && rm -rf /var/lib/apt/lists/*
 
@@ -34,7 +33,6 @@ FROM node:24-bookworm-slim
 # Install runtime dependencies only
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        libzmq5 \
         tini \
     && rm -rf /var/lib/apt/lists/*
 

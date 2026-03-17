@@ -3,7 +3,7 @@
 
     secret: 'somethingverysecret',
     dbPath: 'mongodb://127.0.0.1:27017/ringteki',
-    mqUrl: 'tcp://127.0.0.1:6000',
+    lobbyWsUrl: 'ws://127.0.0.1:6000',
 
     // Additional CSP connect-src hosts (for game nodes, external APIs, etc.)
     // In production, add your game node URLs here, e.g.: ['https://node1.example.com', 'wss://node1.example.com']
