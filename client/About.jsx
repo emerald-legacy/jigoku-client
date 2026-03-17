@@ -11,7 +11,7 @@ function About() {
                     className='btn btn-danger btn-lg pull-right'
                     target='_blank'
                     rel='noopener noreferrer'
-                    href='https://github.com/gryffon/ringteki/issues'
+                    href='https://github.com/emerald-legacy/jigoku-client/issues'
                 >
                     Report Problems
                 </a>
@@ -77,7 +77,7 @@ function About() {
                     <a
                         target='_blank'
                         rel='noopener noreferrer'
-                        href='http://github.com/gryffon/ringteki'
+                        href='http://github.com/emerald-legacy/jigoku-client'
                     >
                         GitHub Repository
                     </a>
