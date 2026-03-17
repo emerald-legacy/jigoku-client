@@ -244,13 +244,13 @@ export function InnerPendingGame({
             onClick={ handleModalClick }
         >
             <div className='modal-dialog' role='document'>
-                <div className='modal-content deck-popup'>
-                    <div className='modal-header'>
-                        <button type='button' className='close' aria-label='Close' onClick={ () => setShowModal(false) } style={ { fontSize: '28px', opacity: 1, color: '#fff', textShadow: 'none' } }><span aria-hidden='true'>&times;</span></button>
-                        <h4 className='modal-title'>Select Deck</h4>
+                <div className='modal-content deck-select-modal'>
+                    <div className='deck-select-header'>
+                        <span className='deck-select-title'>Select Deck</span>
+                        <button type='button' className='deck-select-close' aria-label='Close' onClick={ () => setShowModal(false) }>&times;</button>
                     </div>
                     <div className='modal-body'>
-                        <div className='deck-list-popup'>
+                        <div className='deck-select-list'>
                             { renderedDecks }
                         </div>
                     </div>

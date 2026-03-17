@@ -374,16 +374,14 @@ export function InnerDeckEditor({
             onClick={ handleModalClick }
         >
             <div className='modal-dialog' role='document'>
-                <div className='modal-content deck-popup'>
-                    <div className='modal-header' style={ { padding: '10px 15px' } }>
-                        <button type='button' className='close' aria-label='Close' onClick={ () => setShowModal(false) } style={ { fontSize: '24px', opacity: 1, color: '#fff', textShadow: 'none', marginTop: '-2px' } }>
-                            <span aria-hidden='true'>&times;</span>
-                        </button>
-                        <h4 className='modal-title' style={ { margin: 0, fontSize: '16px' } }>Import from EmeraldDB</h4>
+                <div className='modal-content deck-select-modal'>
+                    <div className='deck-select-header'>
+                        <span className='deck-select-title'>Import from EmeraldDB</span>
+                        <button type='button' className='deck-select-close' aria-label='Close' onClick={ () => setShowModal(false) }>&times;</button>
                     </div>
-                    <div className='modal-body' style={ { padding: '10px 15px' } }>
-                        <p style={ { margin: '0 0 8px 0', fontSize: '13px' } }>Paste the permalink URL from EmeraldDB:</p>
-                        <div style={ { display: 'flex', gap: '8px', alignItems: 'stretch' } }>
+                    <div className='deck-import-body'>
+                        <p className='deck-import-hint'>Paste the permalink URL from EmeraldDB:</p>
+                        <div className='deck-import-row'>
                             <input
                                 className='form-control'
                                 name='importUrl'
@@ -392,10 +390,9 @@ export function InnerDeckEditor({
                                 value={ importUrl }
                                 onChange={ (e) => setImportUrl(e.target.value) }
                                 onKeyPress={ handleImportKeyPress }
-                                style={ { flex: 1, height: '34px' } }
                                 autoFocus
                             />
-                            <button className='btn btn-primary' onClick={ handleImportDeck } style={ { height: '34px', padding: '6px 16px' } }>Import</button>
+                            <button className='btn btn-primary' onClick={ handleImportDeck }>Import</button>
                         </div>
                     </div>
                 </div>
@@ -410,7 +407,7 @@ export function InnerDeckEditor({
             { popup }
             { backdrop }
             <span className='btn btn-primary' onClick={ handleImportDeckClick }>Import deck</span>
-            <h4>Either type the cards manually into the box below, add the cards one by one using the card box and autocomplete or for best results, copy the permalink url from <a href='https://www.emeralddb.org' target='_blank' rel='noreferrer'>Emerald DB</a> and paste it into the popup from clicking the "Import Deck" button.</h4>
+            <p>Either type the cards manually into the box below, add the cards one by one using the card box and autocomplete or for best results, copy the permalink url from <a href='https://www.emeralddb.org' target='_blank' rel='noreferrer'>Emerald DB</a> and paste it into the popup from clicking the &quot;Import Deck&quot; button.</p>
             <form className='form form-horizontal'>
                 <Input name='deckName' label='Deck Name' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Deck Name'
                     type='text' onChange={ (e) => handleChange('name', e) } value={ deck.name } />

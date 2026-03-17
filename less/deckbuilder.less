@@ -96,36 +96,85 @@
 }
 
 .deck-row {
-  min-height: 50px;
   border-radius: 4px;
-  border-width: 1px;
-  border-color: @brand-primary;
-  border-style: solid;
-  padding: 3px 5px;
-  margin-bottom: 5px;
-  text-overflow: ellipsis;
+  border: 1px solid @brand-primary;
+  padding: 8px 10px;
+  margin-bottom: 4px;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-
-  > .row {
-    flex-basis: 100%;
-  }
-}
-
-.deck-row > img {
-  height: 100%;
-  padding-right: 10px;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
 }
 
 .deck-row:hover {
   border-color: @brand-info;
-  background-color: fade(@brand-info, 40%);
+  background-color: fade(@brand-info, 20%);
 }
 
 .deck-row.active {
   border-color: @brand-secondary;
   background-color: fade(@brand-secondary, 60%);
+}
+
+.deck-row-checkbox {
+  flex-shrink: 0;
+}
+
+.deck-row-clans {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.deck-clan-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.deck-clan-separator {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 14px;
+  font-weight: 300;
+  padding: 0 1px;
+}
+
+.deck-row-name {
+  flex: 1;
+  min-width: 0;
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: fade(@brand-primary, 35%);
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.deck-row-status {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: white;
+
+  &.valid {
+    background: @brand-success;
+  }
+
+  &.casual-play {
+    background: @brand-warning;
+  }
+
+  &.invalid {
+    background: @brand-danger;
+  }
 }
 
 .select-button {
@@ -140,32 +189,6 @@
   padding-top: 10px;
 }
 
-.deck-date {
-  padding-left: 0px;
-  font-size: smaller;
-}
-
-.deck-name {
-  padding-left: 5px;
-  padding-right: 0px;
-}
-
-.deck-status-label {
-  padding-right: 0px;
-  padding-left: 0px;
-}
-
-.deck-factionagenda {
-  padding-left: 5px;
-  padding-right: 0px;
-  font-size: smaller;
-}
-
-.deck-image {
-  padding-left: 0px;
-  padding-right: 0px;
-  min-width: 30px;
-}
 
 .deck-card-image {
   width: 100%;
@@ -202,9 +225,6 @@
   padding-right: 10px;
 }
 
-.deck-sm-mon {
-  max-width: 35px;
-}
 
 .deck-alliance-mon {
   max-width: 100px;
