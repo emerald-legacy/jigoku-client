@@ -241,10 +241,18 @@ export default function(state = {}, action) {
             });
 
             return newState;
+        case 'RECEIVE_DECK_STATS':
+            if(!action.response || !action.response.stats) {
+                return state;
+            }
+            return Object.assign({}, state, {
+                deckStats: action.response.stats
+            });
         case 'DECK_SAVED':
             newState = Object.assign({}, state, {
                 deckSaved: true,
-                decks: undefined
+                decks: undefined,
+                deckStats: undefined
             });
 
             return newState;
@@ -257,6 +265,11 @@ export default function(state = {}, action) {
                 return deck._id !== action.response.deckId;
             });
 
+            if(newState.deckStats) {
+                newState.deckStats = Object.assign({}, newState.deckStats);
+                delete newState.deckStats[action.response.deckId];
+            }
+
             newState.selectedDeck = newState.decks[0];
 
             return newState;
@@ -268,6 +281,13 @@ export default function(state = {}, action) {
             newState.decks = newState.decks.filter(deck => {
                 return !action.response.deckIds.includes(deck._id);
             });
+
+            if(newState.deckStats) {
+                newState.deckStats = Object.assign({}, newState.deckStats);
+                for(const id of action.response.deckIds) {
+                    delete newState.deckStats[id];
+                }
+            }
 
             newState.selectedDeck = newState.decks[0];
 

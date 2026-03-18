@@ -2,9 +2,10 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 import DeckStatus from './DeckStatus.jsx';
+import DeckStats from './DeckStats.jsx';
 import { getCardImageUrl, preferredPackId } from './cardImageUrl.js';
 
-function DeckSummary({ cards, deck }) {
+function DeckSummary({ cards, deck, stats }) {
     const [cardToShow, setCardToShow] = useState(undefined);
     const [packIdToShow, setPackIdToShow] = useState(undefined);
 
@@ -179,6 +180,7 @@ function DeckSummary({ cards, deck }) {
                     ) : null }
                 </div>
             </div>
+            <DeckStats stats={ stats } />
             <div className='col-xs-12 no-x-padding'>
                 <div className='cards'>{ cardsToRender }</div>
             </div>
@@ -189,7 +191,8 @@ function DeckSummary({ cards, deck }) {
 DeckSummary.displayName = 'DeckSummary';
 DeckSummary.propTypes = {
     cards: PropTypes.object,
-    deck: PropTypes.object
+    deck: PropTypes.object,
+    stats: PropTypes.object
 };
 
 export default DeckSummary;
