@@ -8,15 +8,28 @@ const sharp = require('sharp');
 
 const CardService = require('../services/CardService.js');
 
-const [, , env, forceFlag] = process.argv;
-const forceDownload = forceFlag === '--force' || forceFlag === '-f';
+const args = process.argv.slice(2);
+const env = args[0];
+const forceDownload = args.includes('--force') || args.includes('-f');
+
+// Parse --cycle flag: only download images for packs in this cycle (e.g. emerald-legacy)
+const cycleIndex = args.indexOf('--cycle');
+const cycleFilter = cycleIndex !== -1 ? args[cycleIndex + 1] : null;
+
+// Parse --packs flag: comma-separated list of pack IDs to limit image downloads
+const packsIndex = args.indexOf('--packs');
+const packFilter = packsIndex !== -1 && args[packsIndex + 1]
+    ? new Set(args[packsIndex + 1].split(','))
+    : null;
 
 if(env !== 'live' && env !== 'playtest') {
     console.error(
         'Must pass parameter with valid environment. The options are `live` or `playtest`'
     );
-    console.error('Usage: node fetchdata.js <live|playtest> [--force]');
+    console.error('Usage: node fetchdata.js <live|playtest> [--force] [--cycle cycle-id] [--packs pack1,pack2,...]');
     console.error('  --force, -f: Re-download existing images');
+    console.error('  --cycle: Only download images for packs in this cycle (e.g. emerald-legacy)');
+    console.error('  --packs: Only download images for these pack IDs (comma-separated)');
     process.exit(1);
 }
 
@@ -121,7 +134,35 @@ async function downloadParallel(tasks, concurrency = 10) {
     return results;
 }
 
-async function fetchCards() {
+async function resolvePackFilter() {
+    // Start with explicit --packs if provided
+    let filter = packFilter ? new Set(packFilter) : null;
+
+    // If --cycle is set, fetch packs from API and add matching pack IDs
+    if(cycleFilter) {
+        const packs = await apiRequest('packs');
+        const cyclePacks = packs.filter(p => p.cycle_id === cycleFilter);
+        if(cyclePacks.length === 0) {
+            console.warn(`Warning: no packs found for cycle "${cycleFilter}"`);
+        } else {
+            if(!filter) {
+                filter = new Set();
+            }
+            for(const pack of cyclePacks) {
+                filter.add(pack.id);
+            }
+            console.log(`Cycle "${cycleFilter}" resolved to ${cyclePacks.length} packs: ${cyclePacks.map(p => p.id).join(', ')}`);
+        }
+    }
+
+    if(filter) {
+        console.log('Pack filter active - only downloading images for:', [...filter].join(', '));
+    }
+
+    return filter;
+}
+
+async function fetchCards(imagePackFilter) {
     try {
         const cards = await apiRequest('cards');
         await cardService.replaceCards(cards);
@@ -159,10 +200,16 @@ async function fetchCards() {
                 continue;
             }
 
-            // Download ALL versions of the card
+            // Download ALL versions of the card (or filtered versions if --packs is set)
             for(let versionIndex = 0; versionIndex < card.versions.length; versionIndex++) {
                 const version = card.versions[versionIndex];
                 totalVersions++;
+
+                // Skip versions not in the pack filter
+                if(imagePackFilter && !imagePackFilter.has(version.pack_id)) {
+                    skippedCount++;
+                    continue;
+                }
 
                 if(!version.image_url) {
                     skippedCount++;
@@ -265,7 +312,8 @@ async function main() {
     await db.connect(dbPath);
     cardService = new CardService(db.getDb());
 
-    await Promise.all([fetchCards(), fetchPacks()]);
+    const imagePackFilter = await resolvePackFilter();
+    await Promise.all([fetchCards(imagePackFilter), fetchPacks()]);
     await db.close();
 }
 
