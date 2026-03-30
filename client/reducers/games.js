@@ -94,6 +94,10 @@ function games(state = {
             retState.newGame = false;
             return retState;
         }
+        case 'RECEIVE_GAME_STATS':
+            return Object.assign({}, state, {
+                gameStats: action.response.stats
+            });
         case 'HANDOFF_RECEIVED':
             return Object.assign({}, state, {
                 gameId: action.details.gameId

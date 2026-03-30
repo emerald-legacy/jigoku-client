@@ -3,8 +3,8 @@ const logger = require('./log.js');
 const db = require('./db.js');
 const EventEmitter = require('events');
 const GameService = require('./services/GameService.js');
+const GameStatsService = require('./services/GameStatsService.js');
 const DeckStatsService = require('./services/DeckStatsService.js');
-const url = require('url');
 
 const ONE_SECOND = 1000;
 const FIFTEEN_SECONDS = 15 * ONE_SECOND;
@@ -16,6 +16,7 @@ class GameRouter extends EventEmitter {
 
         this.workers = {};
         this.gameService = new GameService(db.getDb());
+        this.gameStatsService = GameStatsService.getInstance(db.getDb());
         this.deckStatsService = new DeckStatsService(db.getDb());
         this.connections = new Map();
 
@@ -31,8 +32,8 @@ class GameRouter extends EventEmitter {
         logger.info(`GameRouter listening on ws://0.0.0.0:${port}`);
 
         this.wss.on('connection', (ws, req) => {
-            const parsed = url.parse(req.url, true);
-            const identity = parsed.query.identity;
+            const parsed = new URL(req.url, 'http://localhost');
+            const identity = parsed.searchParams.get('identity');
 
             if(!identity) {
                 logger.error('WebSocket connection without identity, closing');
@@ -199,6 +200,7 @@ class GameRouter extends EventEmitter {
             case 'GAMEWIN':
                 logger.info(`received GAMEWIN from ${identityStr}`);
                 this.gameService.update(message.arg.game);
+                this.gameStatsService.invalidateCache();
                 this.updateDeckStats(message.arg.game);
                 break;
             case 'GAMECLOSED':

@@ -4,13 +4,14 @@ import { connect } from 'react-redux';
 
 import NewGame from './NewGame.jsx';
 import GameList from './GameList.jsx';
+import GameStats from './GameStats.jsx';
 import PendingGame from './PendingGame.jsx';
 import PasswordGame from './PasswordGame.jsx';
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
 
 import * as actions from './actions';
 
-export function InnerGameLobby({ bannerNotice, currentGame, games, newGame, passwordGame, setContextMenu, startNewGame, username }) {
+export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, newGame, passwordGame, loadGameStats, setContextMenu, startNewGame, username }) {
     const [errorMessage, setErrorMessage] = useState(undefined);
 
     useEffect(() => {
@@ -24,6 +25,10 @@ export function InnerGameLobby({ bannerNotice, currentGame, games, newGame, pass
             setErrorMessage(undefined);
         }
     }, [username]);
+
+    useEffect(() => {
+        loadGameStats();
+    }, [loadGameStats]);
 
     const onNewGameClick = useCallback((event) => {
         event.preventDefault();
@@ -62,6 +67,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, games, newGame, pass
                 <div className='col-sm-5'>
                     { (!currentGame && newGame) ? <NewGame defaultGameName={ username + '\'s game' } /> : null }
                     { rightside }
+                    <GameStats stats={ gameStats } />
                 </div>
             </div>
         </div>
@@ -72,8 +78,10 @@ InnerGameLobby.displayName = 'GameLobby';
 InnerGameLobby.propTypes = {
     bannerNotice: PropTypes.string,
     currentGame: PropTypes.object,
+    gameStats: PropTypes.object,
     games: PropTypes.array,
     isAdmin: PropTypes.bool,
+    loadGameStats: PropTypes.func,
     newGame: PropTypes.bool,
     passwordGame: PropTypes.object,
     setContextMenu: PropTypes.func,
@@ -85,6 +93,7 @@ function mapStateToProps(state) {
     return {
         bannerNotice: state.chat.notice,
         currentGame: state.games.currentGame,
+        gameStats: state.games.gameStats,
         isAdmin: state.auth.isAdmin,
         games: state.games.games,
         newGame: state.games.newGame,

@@ -9,3 +9,4 @@ export * from './ReduxActions/deck';
 export * from './ReduxActions/admin';
 export * from './ReduxActions/user';
 export * from './ReduxActions/deckstats';
+export * from './ReduxActions/gamestats';
