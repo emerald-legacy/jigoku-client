@@ -146,11 +146,10 @@ class GameStatsService {
                     continue;
                 }
 
-                recordGame(buckets.all, game, players);
-
                 const mode = game.gameMode;
                 if(mode && buckets[mode]) {
                     recordGame(buckets[mode], game, players);
+                    recordGame(buckets.all, game, players);
                 }
             }
 
