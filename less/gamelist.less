@@ -294,14 +294,46 @@
 }
 
 .game-stats {
-  padding: 10px 14px;
-  margin-top: 10px;
+  margin-top: 0;
 }
 
-.game-stats-title {
-  font-weight: 600;
-  font-size: 15px;
-  margin-bottom: 8px;
+.game-stats-body {
+  padding: 10px 14px;
+}
+
+.game-stats-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.game-stats-tab {
+  flex: 1;
+  padding: 4px 8px;
+  border: 1px solid fade(@brand-primary, 40%);
+  border-radius: 3px;
+  background: transparent;
+  color: fade(white, 60%);
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+
+  &:hover {
+    background: fade(@brand-primary, 20%);
+    color: white;
+  }
+
+  &.active {
+    background: fade(@brand-primary, 40%);
+    color: white;
+    font-weight: 600;
+  }
+}
+
+.game-stats-empty {
+  font-size: 14px;
+  opacity: 0.6;
+  padding: 8px 0;
 }
 
 .game-stats-period {
@@ -357,20 +389,22 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 4px 16px;
-  padding: 4px 0 6px 24px;
+  padding: 4px 0 6px 0;
   font-size: 12px;
+}
+
+.game-stats-matchup-vs {
+  width: 24px;
+  flex-shrink: 0;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .game-stats-matchup {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-}
-
-.game-stats-matchup-vs {
-  color: white;
-  font-size: 12px;
-  font-weight: 600;
 }
 
 .game-stats-matchup-detail {
