@@ -104,8 +104,8 @@ function GameStats({ stats }) {
                         { modeStats.mostSuccessfulClans && modeStats.mostSuccessfulClans.length > 0 && (
                             <div className='game-stats-best'>
                                 <div className='game-stats-best-label'>
-                                { activeTab === 'stronghold' ? 'In favor with the Emperor' : 'In favor with the Empress' }
-                            </div>
+                                    { activeTab === 'stronghold' ? 'In favor with the Emperor' : 'In favor with the Empress' }
+                                </div>
                                 <div className='game-stats-best-clans'>
                                     { modeStats.mostSuccessfulClans.map(({ clan, winRate }) => (
                                         <span key={ clan } className='game-stats-best-entry'>
