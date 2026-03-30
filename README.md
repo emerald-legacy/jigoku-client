@@ -1,69 +1,58 @@
-# Ringteki
+# Jigoku Client
 
-Web based implementation of The Legend of the Five Rings LCG
+Web based implementation of The Legend of the Five Rings LCG — lobby server and React frontend.
 
 ## FAQ
 
 ### What is it?
 
-This is the respository for the code internally known as ringteki which is running on [jigoku.online](https://jigoku.online/) allowing people to play L5R LCG online using only their browser
-
-### Does't this look a lot like Jinteki/Throneteki? The Android netrunner/AGOT online experience?
-
-Glad you noticed!  Yes, jinteki was a huge inspiration for this project, as the interface is clean and user friendly, so I've tried to make this similar in a lot of ways
-
-Ringteki is a fork of the throneteki sourcecode
+This is the repository for the lobby server and client which is running on [jigoku.online](https://jigoku.online/) allowing people to play L5R LCG online using only their browser.
 
 ### Can I contribute?
 
-Sure!  The code is written in node.js(server) and react.js(client).  Feel free to make suggestions, implement new cards, refactor bits of the code that are a bit clunky(there's a few of those atm), raise pull requests or submit bug reports
+Sure! The code is written in Node.js (server) and React (client). Feel free to make suggestions, refactor bits of the code, raise pull requests or submit bug reports.
 
-If you are going to contribute code, try and follow the style of the existing code as much as possible and talk to me before engaging in any big refactors.  Also bear in mind there is an .eslintrc file in the project so try to follow those rules.
+If you are going to contribute code, try and follow the style of the existing code as much as possible and talk to me before engaging in any big refactors.
 
-[Documentation for implementing cards](https://github.com/gryffon/ringteki/blob/master/docs/implementing-cards.md)
-
-There is also a list of events raised by the code [here](https://docs.google.com/spreadsheets/d/1gJEGGwZcbVoUZnuc0zkKNblleVP0qoMWUQOvI_8G3mQ/edit?usp=sharing). If you're writing abilities which listen for these events, it tells you what parameters the event has and whether it has a handler.  If you're writing code which calls any of these events, please make sure you pass the same parameters.
-
-The biggest help at the moment would be in terms of CSS, as that's a bit of a weakness of mine, feel free to pick up any of the issues tagged 'CSS' in the issue list.
-
-If you're not coding inclined, then just playing games on the site, and reporting bugs and issues that you find is a big help
-
-### X Y Z doesn't work
-That's not a question, but that still sucks, sorry :(  First, bear in mind the site is in its infancy so a lot of things aren't implemented yet, but you should be able to do most things with a bit of manual input.  If there's anything you can't do that you need to be able to do, let me know by raising an issue.
-
-See this document for features I have planned and a link to the currently implemented cards:  
+If you're not coding inclined, then just playing games on the site and reporting bugs and issues that you find is a big help.
 
 ### How do I do X Y Z?
 
-Check out the [About page](https://jigoku.online/about)  of a Ringteki live deployment.
+Check out the [About page](https://jigoku.online/about) of a Jigoku live deployment.
 
 ## Development
 
 #### Required Software
 * Git
-* Node.js 8
-* MongoDB
-* ZeroMQ Libraries
-* TypeScript
+* Node.js 22+
+* MongoDB 7
 
-Commands required to run the lobby server (lobby server will be located at http://127.0.0.1:4000/ if you run it locally)
+#### Getting Started
 
 ```
-Clone the repository
-npm install # See https://github.com/JustinTulloss/zeromq.node/issues/283 for zmq errors on OS X
-mkdir build/server/logs
+git clone <repo>
+npm install
 node server/scripts/fetchdata.js
-tsc
 node .
 ```
 
-node server/scripts/fetchdata.js needs to be run whenever there is new card data (either new cards or updated cards).  This will fetch card images for you.
+`node server/scripts/fetchdata.js` needs to be run whenever there is new card data (either new cards or updated cards). This will fetch card images for you.
 
-tsc is the typescript compiler, and needs to be run before you can run the lobby server.
+`node .` starts the lobby server. The lobby will be available at http://127.0.0.1:4000/.
 
-node . is what actually starts the lobby server.  You'll need to wait for webpack to run before you can access it.
+#### Configuration
 
-This will run the lobby server.  The default configurations assume you are running mongo locally on the default port. If you need to change any configurations, edit `config/default.json5` or create a `config/local.json5` configuration that overrides any desired settings.   
+The lobby server is configured via `config/default.json5`. Create a `config/local.json5` to override settings for your environment. Key settings:
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| `dbPath` | `mongodb://127.0.0.1:27017/ringteki` | MongoDB connection string |
+| `lobbyWsUrl` | `ws://127.0.0.1:6000` | WebSocket URL the lobby listens on for game node connections |
+| `secret` | — | Session secret |
+| `lobby.port` | `4000` | HTTP port for the lobby server |
+| `cspConnectSources` | `[]` | Additional CSP connect-src hosts for game nodes |
+
+Some settings can also be overridden via environment variables: `DB_PATH`, `LOBBY_WS_URL`, `NODE_ENV`, `LOG_LEVEL`, `HTTPS`, `ALLOWED_ORIGINS`.
 
 For production:
 
@@ -72,26 +61,15 @@ npm run build
 NODE_ENV=production PORT=4000 node .
 ```
 
-Then for each game node (typically one per CPU/core):
-
-```
-PORT={port} SERVER={node-name} node server/gamenode
-```
-
 ### Coding Guidelines
 
-All JavaScript code included in Ringteki should pass (no errors, no warnings)
-linting by [ESLint](http://eslint.org/), according to the rules defined in
-`.eslintrc` at the root of this repo. To manually check that that is indeed the
-case install ESLint and run
+All code should pass linting (ESLint flat config) with no errors or warnings:
 
 ```
-eslint client/ server/ test/
+npm run lint
 ```
 
-from repository's root.
-
-All tests should also pass.  To run these manually do:
+All tests should also pass:
 
 ```
 npm test
@@ -99,12 +77,5 @@ npm test
 
 If you are making any game engine changes, these will not be accepted without unit tests to cover them.
 
-### Sentry.io Project
-[Sentry.io - RingTeki](https://sentry.io/ringteki-team/ringteki/)
-
-
-### Discord Discusson
-[Ringteki Discord Server](https://discord.gg/tMzhyND)
-
-### Coveralls.io
-[![Coverage Status](https://coveralls.io/repos/github/ringteki/ringteki-client/badge.svg?branch=develop)](https://coveralls.io/github/ringteki/ringteki-client?branch=develop)
+### Discord Discussion
+[Jigoku Discord Server](https://discord.gg/tMzhyND)
