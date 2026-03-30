@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 const clanOrder = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
 
 function GameStats({ stats }) {
+    const [expandedClan, setExpandedClan] = useState(null);
+
     if(!stats || stats.totalGames === 0) {
         return (
             <div className='game-stats panel'>
@@ -10,6 +13,10 @@ function GameStats({ stats }) {
             </div>
         );
     }
+
+    const toggleClan = (clan) => {
+        setExpandedClan(expandedClan === clan ? null : clan);
+    };
 
     return (
         <div className='game-stats panel'>
@@ -24,15 +31,45 @@ function GameStats({ stats }) {
                         return null;
                     }
 
+                    const hasMatchups = data.matchups && Object.keys(data.matchups).length > 0;
+                    const isExpanded = expandedClan === clan;
+
                     return (
-                        <div key={ clan } className='game-stats-clan'>
-                            <img
-                                className='game-stats-clan-icon'
-                                src={ `/img/mons/${clan}.png` }
-                                title={ clan }
-                            />
-                            <span>{ data.gamesPlayed } played</span>
-                            <span className='game-stats-clan-wins'>{ data.wins }W</span>
+                        <div key={ clan } className={ 'game-stats-clan-row' + (isExpanded ? ' expanded' : '') }>
+                            <div
+                                className={ 'game-stats-clan' + (hasMatchups ? ' clickable' : '') }
+                                onClick={ hasMatchups ? () => toggleClan(clan) : undefined }
+                            >
+                                <img
+                                    className='game-stats-clan-icon'
+                                    src={ `/img/mons/${clan}.png` }
+                                    title={ clan }
+                                />
+                                <span>{ data.gamesPlayed } played</span>
+                                <span className='game-stats-clan-wins'>{ data.wins }W</span>
+                                { hasMatchups && (
+                                    <span className='game-stats-expand'>{ isExpanded ? '\u25B2' : '\u25BC' }</span>
+                                ) }
+                            </div>
+                            { isExpanded && data.matchups && (
+                                <div className='game-stats-matchups'>
+                                    <span className='game-stats-matchup-vs'>vs.</span>
+                                    { clanOrder.filter(opp => data.matchups[opp]).map(opp => {
+                                        const m = data.matchups[opp];
+                                        return (
+                                            <div key={ opp } className='game-stats-matchup'>
+                                                <img
+                                                    className='game-stats-clan-icon'
+                                                    src={ `/img/mons/${opp}.png` }
+                                                    title={ opp }
+                                                />
+                                                <span>{ m.winRate }%</span>
+                                                <span className='game-stats-matchup-detail'>({ m.wins }/{ m.played })</span>
+                                            </div>
+                                        );
+                                    }) }
+                                </div>
+                            ) }
                         </div>
                     );
                 }) }

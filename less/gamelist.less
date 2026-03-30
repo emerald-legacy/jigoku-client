@@ -317,9 +317,18 @@
 
 .game-stats-clans {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 14px;
+  flex-direction: column;
+  gap: 4px;
   margin-bottom: 10px;
+}
+
+.game-stats-clan-row {
+  border-radius: 3px;
+  transition: background-color 0.15s;
+
+  &.expanded {
+    background: fade(@brand-primary, 15%);
+  }
 }
 
 .game-stats-clan {
@@ -327,6 +336,45 @@
   align-items: center;
   gap: 4px;
   font-size: 13px;
+
+  &.clickable {
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+.game-stats-expand {
+  font-size: 9px;
+  opacity: 0.5;
+  margin-left: 2px;
+}
+
+.game-stats-matchups {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  padding: 4px 0 6px 24px;
+  font-size: 12px;
+}
+
+.game-stats-matchup {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.game-stats-matchup-vs {
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.game-stats-matchup-detail {
+  opacity: 0.5;
 }
 
 .game-stats-clan-icon {

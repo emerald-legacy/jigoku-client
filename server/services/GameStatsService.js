@@ -49,8 +49,15 @@ class GameStatsService {
             }).toArray();
 
             const clanData = {};
+            const matchupData = {};
             for(const clan of allClans) {
                 clanData[clan] = { gamesPlayed: 0, wins: 0 };
+                matchupData[clan] = {};
+                for(const opp of allClans) {
+                    if(opp !== clan) {
+                        matchupData[clan][opp] = { played: 0, wins: 0 };
+                    }
+                }
             }
 
             let totalGames = 0;
@@ -66,6 +73,9 @@ class GameStatsService {
 
                 totalGames++;
 
+                const clan0 = normalizeClan(players[0].faction);
+                const clan1 = normalizeClan(players[1].faction);
+
                 for(const player of players) {
                     const clan = normalizeClan(player.faction);
                     if(!clan || !clanData[clan]) {
@@ -73,17 +83,41 @@ class GameStatsService {
                     }
 
                     clanData[clan].gamesPlayed++;
+
+                    const opponent = player === players[0] ? clan1 : clan0;
+                    if(opponent && matchupData[clan][opponent]) {
+                        matchupData[clan][opponent].played++;
+                    }
+
                     if(game.winner && player.name === game.winner) {
                         clanData[clan].wins++;
+                        if(opponent && matchupData[clan][opponent]) {
+                            matchupData[clan][opponent].wins++;
+                        }
                     }
                 }
             }
 
-            const clanStats = allClans.map(clan => ({
-                clan,
-                gamesPlayed: clanData[clan].gamesPlayed,
-                wins: clanData[clan].wins
-            }));
+            const clanStats = allClans.map(clan => {
+                const matchups = {};
+                for(const opp of allClans) {
+                    if(opp !== clan && matchupData[clan][opp].played > 0) {
+                        const m = matchupData[clan][opp];
+                        matchups[opp] = {
+                            played: m.played,
+                            wins: m.wins,
+                            winRate: Math.round((m.wins / m.played) * 100)
+                        };
+                    }
+                }
+
+                return {
+                    clan,
+                    gamesPlayed: clanData[clan].gamesPlayed,
+                    wins: clanData[clan].wins,
+                    matchups
+                };
+            });
 
             // Rank by win percentage; require at least 1 game played
             const withRate = clanStats
