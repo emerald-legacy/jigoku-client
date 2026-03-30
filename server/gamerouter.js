@@ -168,7 +168,7 @@ class GameRouter extends EventEmitter {
                     logger.info('Unknown node %s sent heartbeat, requesting registration', identityStr);
                     this.sendCommand(identityStr, 'REGISTER');
                 }
-                return;
+                break;
             case 'PONG':
                 logger.debug(`received PONG from ${identityStr}`);
                 if(worker) {
