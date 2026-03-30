@@ -41,7 +41,7 @@ function GameStats({ stats }) {
                 <div className='game-stats-best'>
                     <div className='game-stats-best-label'>In favor with the Empress</div>
                     <div className='game-stats-best-clans'>
-                        { stats.mostSuccessfulClans.map(({ clan, wins }) => (
+                        { stats.mostSuccessfulClans.map(({ clan, winRate }) => (
                             <span key={ clan } className='game-stats-best-entry'>
                                 <img
                                     className='game-stats-clan-icon'
@@ -49,7 +49,7 @@ function GameStats({ stats }) {
                                     title={ clan }
                                 />
                                 <span className='game-stats-best-name'>
-                                    { clan } ({ wins } wins)
+                                    { clan } ({ winRate }% win rate)
                                 </span>
                             </span>
                         )) }

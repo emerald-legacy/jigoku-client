@@ -85,16 +85,20 @@ class GameStatsService {
                 wins: clanData[clan].wins
             }));
 
-            // Collect all clans tied for most wins
-            let mostWins = 0;
-            for(const entry of clanStats) {
-                if(entry.wins > mostWins) {
-                    mostWins = entry.wins;
+            // Rank by win percentage; require at least 1 game played
+            const withRate = clanStats
+                .filter(entry => entry.gamesPlayed > 0)
+                .map(entry => ({ clan: entry.clan, winRate: Math.round((entry.wins / entry.gamesPlayed) * 100) }));
+
+            let bestRate = 0;
+            for(const entry of withRate) {
+                if(entry.winRate > bestRate) {
+                    bestRate = entry.winRate;
                 }
             }
 
-            const mostSuccessfulClans = mostWins > 0
-                ? clanStats.filter(entry => entry.wins === mostWins).map(entry => ({ clan: entry.clan, wins: entry.wins }))
+            const mostSuccessfulClans = bestRate > 0
+                ? withRate.filter(entry => entry.winRate === bestRate)
                 : [];
 
             const stats = { totalGames, clanStats, mostSuccessfulClans };
