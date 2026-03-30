@@ -42,14 +42,6 @@ function Formats() {
                     <a href='https://obsidianheresy.blogspot.com/2021/10/the-format.html' target='_blank' rel='noopener noreferrer'>Learn more about the Obsidian Heresy in their website</a>
                 </p>
 
-                <h3>Jade Edict [Community] [discontinued]</h3>
-                <p>
-                    The Jade Edict was a community made balance patch for L5R. It started being developed a few months before the announcement that FFG would stop
-                    publishing L5R, and it was released one week after that announcement. Jade was developed with a strong focus on clan balance and competitive
-                    play, and it changed the Rally rule by removing it completely from the game.
-                    <a href='https://www.jadecourt.org/' target='_blank' rel='noopener noreferrer'>Learn more about the Jade Edict in their website</a>. With the release of the Emerald Legacy, the
-                    Jade Edict was discontinued.
-                </p>
 
             </div>
         </div>

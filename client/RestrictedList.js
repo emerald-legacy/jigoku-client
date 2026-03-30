@@ -28,36 +28,6 @@ const restrictedList = {
             'bayushi-kachiko-2'
         ],
         'skirmish': [],
-        'jade-edict': [
-            'keeper-initiate',
-            'kaiu-envoy',
-            'kuni-laboratory',
-            'way-of-the-crab',
-            'reprieve',
-            'sacred-sanctuary',
-            'seal-of-the-dragon',
-            'mirumoto-s-fury',
-            'exposed-courtyard',
-            'chronicler-of-conquests',
-            'sanpuku-seido',
-            'bayushi-shoju-2',
-            'shadow-step',
-            'mark-of-shame',
-            'a-fate-worse-than-death',
-            'khanbulak-benefactor',
-            'utaku-tetsuko',
-            'shinjo-yasamura',
-            'alibi-artist',
-            'contested-countryside',
-            'slovenly-scavenger',
-            'ki-alignment',
-            'called-to-war',
-            'embrace-the-void',
-            'forgotten-library',
-            'secluded-shrine',
-            'adorned-temple',
-            'shadowed-village'
-        ],
         'emerald': [
             'keeper-initiate',
             'kaiu-envoy',
@@ -100,9 +70,7 @@ class RestrictedList {
         let errors = [];
 
         if(cardsOnRestrictedList.length > 1) {
-            if(gameMode === GameModes.JadeEdict) {
-                errors.push(`Contains more than 1 card on the Jade Edict restricted list: ${cardsOnRestrictedList.map(card => card.name).join(', ')}`);
-            } else if(gameMode === GameModes.Emerald) {
+            if(gameMode === GameModes.Emerald) {
                 errors.push(`Contains more than 1 card on the Emerald Legacy restricted list: ${cardsOnRestrictedList.map(card => card.name).join(', ')}`);
             } else {
                 errors.push(`Contains more than 1 card on the FAQ v${restrictedList.version} restricted list: ${cardsOnRestrictedList.map(card => card.name).join(', ')}`);

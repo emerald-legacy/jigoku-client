@@ -13,12 +13,6 @@ function DeckStatusSummary({ status }) {
             { title: `FAQ v${faqVersion} restricted/ban list`, value: faqRestrictedList },
             { title: 'Only released cards', value: noUnreleasedCards }
         ];
-    } else if(gameMode === GameModes.JadeEdict) {
-        items = [
-            { title: 'Basic deckbuilding rules', value: basicRules },
-            { title: 'Jade Edict restricted/ban list', value: faqRestrictedList },
-            { title: 'Only released cards', value: noUnreleasedCards }
-        ];
     } else if(gameMode === GameModes.Emerald) {
         items = [
             { title: 'Basic deckbuilding rules', value: basicRules },

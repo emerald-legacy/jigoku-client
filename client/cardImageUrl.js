@@ -23,7 +23,7 @@ const communityFormats = new Set(['emerald', 'sanctuary', 'obsidian']);
 /**
  * Pick the preferred pack_id from a card's versions array based on game format.
  * Community formats (emerald, sanctuary, obsidian) prefer the last version (EL printing).
- * Imperial formats (stronghold, skirmish, jade-edict) prefer the first version (FFG printing).
+ * Imperial formats (stronghold, skirmish) prefer the first version (FFG printing).
  */
 export function preferredPackId(card, formatValue) {
     const versions = card?.versions;

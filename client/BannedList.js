@@ -38,52 +38,6 @@ const bannedList = {
             'chronicler-of-conquests',
             'lost-papers'
         ],
-        'jade-edict': [
-            'ikoma-tsanuri-2',
-            'guest-of-honor',
-            'spyglass',
-            'charge',
-            'isawa-tadaka',
-            'karada-district',
-            'master-of-gisei-toshi',
-            'kanjo-district',
-            'jurojin-s-curse',
-            'hidden-moon-dojo',
-            'mirumoto-daisho',
-            'gateway-to-meido',
-            'forged-edict',
-            'magistrate-station',
-            'policy-debate',
-            'lost-papers',
-            'city-of-the-rich-frog',
-            'the-imperial-palace',
-            'proving-grounds',
-            'shameful-display',
-            'rebuild',
-            'common-cause',
-            'kakita-toshimoko',
-            'daidoji-netsu',
-            'daidoji-uji-2',
-            'the-wealth-of-the-crane',
-            'shoshi-ni-kie',
-            'logistics',
-            'tactical-ingenuity',
-            'display-of-power',
-            'consumed-by-five-fires',
-            'duty',
-            'cunning-magistrate',
-            'dispatch-to-nowhere',
-            'governor-s-spy',
-            'talisman-of-the-sun',
-            'scouted-terrain',
-            'festival-for-the-fortunes',
-            'enlightenment',
-            'calling-the-storm',
-            'force-of-the-river',
-            'accursed-summoning',
-            'dance-of-chikusho-do',
-            'centered-breath'
-        ],
         'emerald': [
             'ikoma-tsanuri-2',
             'guest-of-honor',
@@ -153,9 +107,7 @@ class BannedList {
         let errors = [];
 
         if(cardsOnBannedList.length > 0) {
-            if(gameMode === GameModes.JadeEdict) {
-                errors.push(`Contains a card on the Jade Edict banned list: ${cardsOnBannedList.map(card => card.name).join(', ')}`);
-            } else if(gameMode === GameModes.Emerald) {
+            if(gameMode === GameModes.Emerald) {
                 errors.push(`Contains a card on the Emerald Legacy banned list: ${cardsOnBannedList.map(card => card.name).join(', ')}`);
             } else if(gameMode === GameModes.Obsidian) {
                 errors.push(`Contains cards on the Obsidian Heresy banned list: ${cardsOnBannedList.map(card => card.name).join(', ')}`);

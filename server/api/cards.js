@@ -41,7 +41,6 @@ module.exports.init = function(server) {
             { name: 'Sanctuary', value: 'sanctuary' },
             { name: 'Imperial', value: 'stronghold' },
             { name: 'Skirmish', value: 'skirmish' },
-            { name: 'Jade', value: 'jade-edict' },
             { name: 'Obsidian', value: 'obsidian' }
         ];
         res.send({ success: true, formats: formats });

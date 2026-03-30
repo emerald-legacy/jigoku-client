@@ -3,8 +3,7 @@ const GameModes = Object.freeze({
     Sanctuary: 'sanctuary',
     Obsidian: 'obsidian',
     Stronghold: 'stronghold',
-    Skirmish: 'skirmish',
-    JadeEdict: 'jade-edict'
+    Skirmish: 'skirmish'
 });
 
 module.exports = GameModes;

@@ -10,7 +10,6 @@ import * as actions from './actions';
 
 const gameModeLabels = {
     [GameModes.Skirmish]: 'SKIRMISH',
-    [GameModes.JadeEdict]: 'JADE',
     [GameModes.Stronghold]: 'IMPERIAL',
     [GameModes.Emerald]: 'EMERALD',
     [GameModes.Obsidian]: 'OBSIDIAN',
@@ -19,7 +18,6 @@ const gameModeLabels = {
 
 const gameModeModifiers = {
     [GameModes.Skirmish]: 'skirmish',
-    [GameModes.JadeEdict]: 'jade',
     [GameModes.Stronghold]: 'imperial',
     [GameModes.Obsidian]: 'obsidian',
     [GameModes.Sanctuary]: 'sanctuary'
