@@ -50,7 +50,7 @@ async function apiRequest(apiPath) {
     return response.json();
 }
 
-const dbPath = process.env.DB_PATH || 'mongodb://127.0.0.1:27017/ringteki';
+const dbPath = process.env.DB_PATH || 'mongodb://127.0.0.1:27017/jigoku';
 let cardService;
 
 async function downloadFile(url, destPath, timeout = 30000) {

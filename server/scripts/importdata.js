@@ -5,7 +5,7 @@ const fs = require('fs');
 const CardService = require('../services/CardService.js');
 
 async function main() {
-    await db.connect('mongodb://127.0.0.1:27017/ringteki');
+    await db.connect('mongodb://127.0.0.1:27017/jigoku');
     const cardService = new CardService(db.getDb());
 
     const files = fs.readdirSync('fiveringdsdb-data/Pack');

@@ -87,40 +87,14 @@ function About() {
                     <Link href='/community'>Community</Link> page.
                 </p>
 
-                <h3>Donations</h3>
+                <h3>Support the Project</h3>
                 <p>
-                    Since I've been asked a few times about where people can donate to the
-                    project, I thought I'd put up a small section about it here.
-                </p>
-                <p>
-                    You can use this link:{ ' ' }
-                    <a target='_blank' rel='noopener noreferrer' href='https://paypal.me/ringteki'>
-                        Paypal
-                    </a>{ ' ' }
-                    to donate to the project. Note: The account uses my name, but is completely
-                    separate from my personal Paypal account.
-                </p>
-                <p>
-                    We may also look into creating a Patreon in the future, for those people who
-                    wish to make recurring donations.
-                </p>
-
-                <p>
-                    Just to make things clear, I'm not doing this for any personal gain
-                    whatsoever, I'm happy to run the servers at my own expense, but any money
-                    raised via this link will be used towards paying the hosting fees for the
-                    server and related services such as error tracking. All money in this account
-                    will only go towards these expenses.
-                </p>
-                <p>
-                    Also, this is not required to continue to use and enjoy the site and will not
-                    give anything of substance in return. I will also create an expense report
-                    that I will publish, so that you know where your donations are going.
-                </p>
-
-                <p>
-                    If you wish to reward the devs in particular, feel free to thank them when
-                    you see them out at events. Sharing a cold beverage is always appreciated!
+                    If you enjoy the site and want to help keep it running, you can support
+                    us on{ ' ' }
+                    <a target='_blank' rel='noopener noreferrer' href='https://patreon.com/emeraldlegacy'>
+                        Patreon
+                    </a>
+                    . All contributions go towards hosting and server costs.
                 </p>
 
                 <h2>Special Thanks</h2>

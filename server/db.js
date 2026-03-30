@@ -26,7 +26,7 @@ async function connect(url) {
             await client.connect();
 
             const urlObj = new URL(url);
-            const dbName = urlObj.pathname.slice(1) || 'ringteki';
+            const dbName = urlObj.pathname.slice(1) || 'jigoku';
 
             db = client.db(dbName);
             logger.info('Connected to MongoDB');

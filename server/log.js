@@ -8,7 +8,7 @@ const logFormat = printf(({ level, message, timestamp }) => {
 });
 
 const rotate = new winston.transports.DailyRotateFile({
-    filename: __dirname + '/logs/ringteki-%DATE%.log',
+    filename: __dirname + '/logs/jigoku-%DATE%.log',
     datePattern: 'YYYY-MM-DD',
     zippedArchive: true,
     maxSize: '20m',

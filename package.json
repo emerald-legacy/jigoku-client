@@ -1,7 +1,7 @@
 {
-  "name": "ringteki-client",
+  "name": "jigoku-client",
   "version": "2.0.0",
-  "description": "The client code for Ringteki, a browser based implementation of the Legend of the Five Rings LCG",
+  "description": "The client code for Jigoku, a browser based implementation of the Legend of the Five Rings LCG",
   "main": "index.js",
   "scripts": {
     "test": "vitest run",
@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ringteki/ringteki-client.git"
+    "url": "git+https://github.com/jigoku/jigoku-client.git"
   },
   "keywords": [
     "l5r",
@@ -26,9 +26,9 @@
   "author": "Ryan Karetas <ryan@karetas.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ringteki/ringteki-client/issues"
+    "url": "https://github.com/jigoku/jigoku-client/issues"
   },
-  "homepage": "https://github.com/ringteki/ringteki-client#readme",
+  "homepage": "https://github.com/jigoku/jigoku-client#readme",
   "engines": {
     "node": ">=22.0.0"
   },

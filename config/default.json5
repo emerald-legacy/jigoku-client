@@ -2,7 +2,7 @@
     env: 'development',
 
     secret: 'somethingverysecret',
-    dbPath: 'mongodb://127.0.0.1:27017/ringteki',
+    dbPath: 'mongodb://127.0.0.1:27017/jigoku',
     lobbyWsUrl: 'ws://127.0.0.1:6000',
 
     // Additional CSP connect-src hosts (for game nodes, external APIs, etc.)

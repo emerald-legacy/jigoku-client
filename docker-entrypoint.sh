@@ -5,7 +5,7 @@ set -e
 echo "Waiting for MongoDB..."
 until node -e "
 const { MongoClient } = require('mongodb');
-const url = process.env.DB_PATH || 'mongodb://mongodb:27017/ringteki';
+const url = process.env.DB_PATH || 'mongodb://mongodb:27017/jigoku';
 const client = new MongoClient(url);
 client.connect()
   .then(() => client.db().collection('cards').countDocuments())
@@ -18,7 +18,7 @@ done
 # Check if cards have been fetched
 CARD_COUNT=$(node -e "
 const { MongoClient } = require('mongodb');
-const url = process.env.DB_PATH || 'mongodb://mongodb:27017/ringteki';
+const url = process.env.DB_PATH || 'mongodb://mongodb:27017/jigoku';
 const client = new MongoClient(url);
 client.connect()
   .then(() => client.db().collection('cards').countDocuments())
