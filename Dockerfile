@@ -37,12 +37,15 @@ COPY --from=builder /app/docker-entrypoint.sh ./
 COPY --from=builder /app/client/GameModes.js ./client/
 COPY --from=builder /app/client/deck-validator.js ./client/
 
-RUN mkdir -p server/logs public/img/cards && chmod +x docker-entrypoint.sh
+RUN mkdir -p server/logs public/img/cards && chmod +x docker-entrypoint.sh \
+    && chown -R node:node /app
 
 ARG BUILD_VERSION=LOCAL
 ENV NODE_ENV=production
 ENV BUILD_VERSION=$BUILD_VERSION
 ENV PORT=4000
+
+USER node
 
 EXPOSE 4000
 
