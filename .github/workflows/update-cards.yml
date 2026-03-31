@@ -1,5 +1,6 @@
 name: Update Card Data
-
+permissions:
+    contents: read
 on:
   workflow_dispatch:
     inputs:
