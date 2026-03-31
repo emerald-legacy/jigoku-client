@@ -1,16 +1,7 @@
 # Build stage
-FROM node:24-bookworm-slim AS builder
+FROM node:24.14-alpine3.23 AS builder
 
 WORKDIR /app
-
-# Install build dependencies for native modules
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        python3 \
-        make \
-        g++ \
-        git \
-    && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
 
@@ -28,13 +19,8 @@ RUN mkdir -p server/logs public/img/cards && npm run build
 RUN npm prune --omit=dev
 
 # Production stage
-FROM node:24-bookworm-slim
+FROM node:24.14-alpine3.23
 
-# Install runtime dependencies only
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        tini \
-    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -63,5 +49,4 @@ EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
     CMD node -e "require('http').get('http://localhost:4000/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1))" || exit 1
 
-ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["./docker-entrypoint.sh"]
