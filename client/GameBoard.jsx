@@ -20,6 +20,7 @@ import Controls from './GameComponents/Controls.jsx';
 import CardPile from './GameComponents/CardPile.jsx';
 import GameConfiguration from './GameComponents/GameConfiguration.jsx';
 import { tryParseJSON } from './util.js';
+import { downloadGameLog } from './GameComponents/gameLogSerializer.js';
 import GameModes from './GameModes';
 import { getCardImageUrl } from './cardImageUrl.js';
 
@@ -48,6 +49,7 @@ export class InnerGameBoard extends React.Component {
         this.onManualModeClick = this.onManualModeClick.bind(this);
         this.onSettingsClick = this.onSettingsClick.bind(this);
         this.onToggleChatClick = this.onToggleChatClick.bind(this);
+        this.onDownloadLogClick = this.onDownloadLogClick.bind(this);
         this.onTimerExpired = this.onTimerExpired.bind(this);
         this.sendMessage = this.sendMessage.bind(this);
 
@@ -398,6 +400,12 @@ export class InnerGameBoard extends React.Component {
     onManualModeClick(event) {
         event.preventDefault();
         this.props.sendGameMessage('toggleManualMode');
+    }
+
+    onDownloadLogClick() {
+        if(this.props.currentGame) {
+            downloadGameLog(this.props.currentGame);
+        }
     }
 
     getRings(owner, className) {
@@ -869,7 +877,9 @@ export class InnerGameBoard extends React.Component {
                         <Controls
                             onSettingsClick={ this.onSettingsClick }
                             onManualModeClick={ this.onManualModeClick }
+                            onDownloadLogClick={ this.onDownloadLogClick }
                             onToggleChatClick={ this.onToggleChatClick }
+                            showDownloadLog={ !!this.props.currentGame.winner }
                             showChatAlert={ this.state.showChatAlert }
                             manualModeEnabled={ manualMode }
                             showManualMode={ !this.state.spectating }
