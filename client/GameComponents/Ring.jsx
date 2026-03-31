@@ -3,9 +3,11 @@ import PropTypes from 'prop-types';
 
 import CardCounters from './CardCounters.jsx';
 import CardMenu from './CardMenu.jsx';
+import { getRingEffect } from '../RingEffectDescriptions.js';
 
-function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
+function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode }) {
     const [showMenu, setShowMenu] = useState(false);
+    const [isHovered, setIsHovered] = useState(false);
 
     const handleClick = (event, ringElement) => {
         event.preventDefault();
@@ -115,10 +117,16 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
     if(!visible) {
         return <div />;
     }
+
+    const shouldShowTooltip = showRingEffects && isHovered && !ring.claimed && !showMenu;
+    const ringEffect = shouldShowTooltip ? getRingEffect(gameMode, ring.element) : '';
+
     return (
         <div
             className={ 'ring no-highlight' + (ring.unselectable ? ' unselectable' : '') }
             onClick={ (event) => handleClick(event, ring.element) }
+            onMouseEnter={ () => setIsHovered(true) }
+            onMouseLeave={ () => setIsHovered(false) }
         >
             <svg className={ svgClassName }>
                 <circle cx='50%' cy='50%' r='50%' className={ bgClassName } />
@@ -130,6 +138,12 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
             { shouldShowMenu() ? (
                 <CardMenu menu={ ring.menu } onMenuItemClick={ handleMenuItemClick } />
             ) : null }
+            { shouldShowTooltip && ringEffect ? (
+                <div className='ring-tooltip'>
+                    <div className='ring-tooltip-title'>{ ring.element.charAt(0).toUpperCase() + ring.element.slice(1) }</div>
+                    <div className='ring-tooltip-text'>{ ringEffect }</div>
+                </div>
+            ) : null }
         </div>
     );
 }
@@ -137,10 +151,12 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize }) {
 Ring.displayName = 'Ring';
 Ring.propTypes = {
     buttons: PropTypes.array,
+    gameMode: PropTypes.string,
     onClick: PropTypes.func,
     onMenuItemClick: PropTypes.func,
     owner: PropTypes.string,
     ring: PropTypes.object,
+    showRingEffects: PropTypes.bool,
     size: PropTypes.string,
     socket: PropTypes.object
 };

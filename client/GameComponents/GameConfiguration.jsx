@@ -150,6 +150,14 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
                             onChange={ (e) => handleOptionSettingToggle('sortHandByName', e) }
                             checked={ optionSettings.sortHandByName }
                         />
+                        <Checkbox
+                            name='optionSettings.showRingEffects'
+                            noGroup
+                            label='Show ring effect descriptions on hover'
+                            fieldClass='col-sm-6'
+                            onChange={ (e) => handleOptionSettingToggle('showRingEffects', e) }
+                            checked={ optionSettings.showRingEffects }
+                        />
                     </div>
                 </div>
             </form>

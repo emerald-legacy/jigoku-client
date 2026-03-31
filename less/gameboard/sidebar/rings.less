@@ -160,6 +160,33 @@ svg.ring-svg {
     }
   }
 
+.ring-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 4px;
+    background: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    line-height: 1.4;
+    white-space: nowrap;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.ring-tooltip-title {
+    font-weight: bold;
+    margin-bottom: 2px;
+    text-transform: capitalize;
+}
+
+.ring-tooltip-text {
+    opacity: 0.9;
+}
+
 @media (max-width: 1360px) {
     .ring-panel {
         padding: 0 5px;

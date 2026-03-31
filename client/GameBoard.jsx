@@ -401,23 +401,29 @@ export class InnerGameBoard extends React.Component {
     }
 
     getRings(owner, className) {
+        const thisPlayer = this.props.currentGame.players[this.props.username];
+        const showRingEffects = thisPlayer?.optionSettings?.showRingEffects;
+        const gameMode = this.props.currentGame.gameMode;
         return (<div className={ className } >
-            { !this.props.currentGame.rings.air.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.air } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } /> : null }
-            { !this.props.currentGame.rings.earth.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.earth } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } /> : null }
-            { !this.props.currentGame.rings.fire.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.fire } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } /> : null }
-            { !this.props.currentGame.rings.void.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.void } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } /> : null }
-            { !this.props.currentGame.rings.water.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.water } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } /> : null }
+            { !this.props.currentGame.rings.air.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.air } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+            { !this.props.currentGame.rings.earth.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.earth } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+            { !this.props.currentGame.rings.fire.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.fire } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+            { !this.props.currentGame.rings.void.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.void } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+            { !this.props.currentGame.rings.water.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.water } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
         </div>);
     }
 
     getRemovedRings(owner, className) {
+        const thisPlayer = this.props.currentGame.players[this.props.username];
+        const showRingEffects = thisPlayer?.optionSettings?.showRingEffects;
+        const gameMode = this.props.currentGame.gameMode;
         return (
             <div className={ className }>
-                { this.props.currentGame.rings.air.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.air } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } /> : null }
-                { this.props.currentGame.rings.earth.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.earth } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } /> : null }
-                { this.props.currentGame.rings.fire.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.fire } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } /> : null }
-                { this.props.currentGame.rings.void.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.void } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } /> : null }
-                { this.props.currentGame.rings.water.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.water } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } /> : null }
+                { this.props.currentGame.rings.air.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.air } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+                { this.props.currentGame.rings.earth.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.earth } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+                { this.props.currentGame.rings.fire.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.fire } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+                { this.props.currentGame.rings.void.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.void } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
+                { this.props.currentGame.rings.water.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.water } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
             </div>
         );
     }

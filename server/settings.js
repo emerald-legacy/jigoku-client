@@ -14,7 +14,8 @@ const defaultOptionSettings = {
     confirmOneClick: false,
     disableCardStats: false,
     showStatusInSidebar: false,
-    sortHandByName: false
+    sortHandByName: false,
+    showRingEffects: false
 };
 
 const defaultSettings = {
