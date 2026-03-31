@@ -6,10 +6,6 @@ const iconsElement = ['air', 'earth', 'fire', 'water', 'void'];
 const iconsClan = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
 const otherIcons = ['fate', 'honor', 'card', 'cards'];
 
-/**
- * Convert a message fragment (as received from the server) to plain text.
- * Mirrors the rendering logic in Messages.jsx formatMessageText().
- */
 function fragmentToText(fragment) {
     if(fragment === null || fragment === undefined) {
         return '';
@@ -107,16 +103,21 @@ export function downloadGameLog(currentGame) {
     const url = URL.createObjectURL(blob);
 
     const now = new Date();
-    const timestamp = now.getFullYear() +
+    const date = now.getFullYear() +
         '-' + String(now.getMonth() + 1).padStart(2, '0') +
-        '-' + String(now.getDate()).padStart(2, '0') +
-        '-' + String(now.getHours()).padStart(2, '0') +
-        String(now.getMinutes()).padStart(2, '0') +
-        String(now.getSeconds()).padStart(2, '0');
+        '-' + String(now.getDate()).padStart(2, '0');
+
+    const sanitize = (s) => (s || '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
+    const gameName = sanitize(log.metadata.gameName);
+    const playerParts = log.metadata.players
+        .map((p) => sanitize(p.name) + '-' + sanitize(p.faction))
+        .join('_vs_');
+
+    const filename = date + '_' + gameName + '_' + playerParts + '.json.gz';
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'jigoku-log-' + timestamp + '.json.gz';
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -126,11 +127,9 @@ export function downloadGameLog(currentGame) {
 export function parseGameLog(arrayBuffer) {
     let json;
     try {
-        // Try gzip decompression first (version 2)
         const decompressed = gunzipSync(new Uint8Array(arrayBuffer));
         json = strFromU8(decompressed);
-    } catch {
-        // Fall back to plain JSON (version 1)
+    } catch(e) {
         const decoder = new TextDecoder();
         json = decoder.decode(arrayBuffer);
     }
@@ -141,7 +140,6 @@ export function parseGameLog(arrayBuffer) {
         throw new Error('Invalid game log file');
     }
 
-    // Pre-compute accumulated messages for each replay state
     if(log.replayData && log.replayData.length > 0) {
         let accumulated = [];
         for(const entry of log.replayData) {
@@ -152,7 +150,6 @@ export function parseGameLog(arrayBuffer) {
                 accumulated = [...(state.messages || [])];
             }
             entry.accumulatedMessages = [...accumulated];
-            // Clean up the state's message fields to save memory
             delete state.messages;
             delete state.newMessages;
         }
