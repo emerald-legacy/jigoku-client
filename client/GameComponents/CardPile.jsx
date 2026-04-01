@@ -1,4 +1,4 @@
-import { useState, memo } from 'react';
+import { useState, useRef, memo } from 'react';
 import Draggable from 'react-draggable';
 import { X } from 'lucide-react';
 
@@ -32,6 +32,7 @@ function CardPile({
 }) {
     const [showPopup, setShowPopup] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
+    const draggableRef = useRef(null);
 
     const onCollectionClick = (event) => {
         event.preventDefault();
@@ -190,9 +191,9 @@ function CardPile({
         ) : null;
 
         return (
-            <Draggable handle='.grip' cancel='.close-button'>
-                <div className={ `popup ${isMe ? '' : 'opponent'}` }>
-                    <div className='grip'>
+            <Draggable handle='.grip' cancel='.close-button' nodeRef={ draggableRef }>
+                <div ref={ draggableRef } className={ `popup ${isMe ? "" : "opponent"}` }>
+                    <div className="grip">
                         <div
                             className="panel-title"
                             onClick={ (event) => event.stopPropagation() }
@@ -242,7 +243,7 @@ function CardPile({
     if(displayCardCount === 0) {
         className += ' panel';
     }
-    const headerText = title ? title + ' (' + displayCardCount + ')' : '';
+    const headerText = title ? `${title} (${displayCardCount})` : '';
     const topCard = propsTopCard || (cards && cards[0]);
     const cardOrientation =
         orientation === 'horizontal' && topCard && topCard.facedown

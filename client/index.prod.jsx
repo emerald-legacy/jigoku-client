@@ -1,6 +1,6 @@
 /*global user, authToken */
 import React from 'react';
-import { render } from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import Application from './Application.jsx';
 import { Provider } from 'react-redux';
 import { Toaster } from 'sonner';
@@ -70,7 +70,10 @@ if(typeof user !== 'undefined') {
     store.dispatch(login(user, authToken, user.admin));
 }
 
-render(
+const container = document.getElementById('component');
+const root = createRoot(container);
+
+root.render(
     <Provider store={ store }>
         <div className="body">
             <Toaster
@@ -82,4 +85,5 @@ render(
                 <Application />
             </ErrorBoundary>
         </div>
-    </Provider>, document.getElementById('component'));
+    </Provider>
+);
