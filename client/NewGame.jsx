@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { connect } from 'react-redux';
 import GameModes from './GameModes';
 
@@ -24,32 +24,32 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
     const [password, setPassword] = useState('');
     const [gameName, setGameName] = useState(defaultGameName || '');
 
-    const handleCancelClick = useCallback((event) => {
+    const handleCancelClick = (event) => {
         event.preventDefault();
         cancelNewGame();
-    }, [cancelNewGame]);
+    };
 
-    const handleNameChange = useCallback((event) => {
+    const handleNameChange = (event) => {
         setGameName(event.target.value.substr(0, 140));
-    }, []);
+    };
 
-    const handlePasswordChange = useCallback((event) => {
+    const handlePasswordChange = (event) => {
         setPassword(event.target.value);
-    }, []);
+    };
 
-    const handleSpectatorsClick = useCallback((event) => {
+    const handleSpectatorsClick = (event) => {
         setSpectators(event.target.checked);
-    }, []);
+    };
 
-    const handleSpectatorSquelchClick = useCallback((event) => {
+    const handleSpectatorSquelchClick = (event) => {
         setSpectatorSquelch(event.target.checked);
-    }, []);
+    };
 
-    const handleClockClick = useCallback((event) => {
+    const handleClockClick = (event) => {
         setClocks(event.target.checked);
-    }, []);
+    };
 
-    const handleSubmitClick = useCallback((event) => {
+    const handleSubmitClick = (event) => {
         event.preventDefault();
 
         const clockConfig = {
@@ -71,32 +71,32 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
         });
 
         loadDecks(selectedGameMode);
-    }, [socket, gameName, spectators, spectatorSquelch, selectedGameType, selectedGameMode, clocks, selectedClockType, clockTimer, byoyomiPeriods, byoyomiTimePeriod, password, loadDecks]);
+    };
 
-    const handleRadioChange = useCallback((gameType) => {
+    const handleRadioChange = (gameType) => {
         setSelectedGameType(gameType);
-    }, []);
+    };
 
-    const handleRulesRadioChange = useCallback((gameMode) => {
+    const handleRulesRadioChange = (gameMode) => {
         setSelectedGameMode(gameMode);
-    }, []);
+    };
 
-    const handleClockRadioChange = useCallback((clockType) => {
+    const handleClockRadioChange = (clockType) => {
         setSelectedClockType(clockType);
         setClockTimer(defaultTime[clockType]);
-    }, []);
+    };
 
-    const isGameTypeSelected = useCallback((gameType) => {
+    const isGameTypeSelected = (gameType) => {
         return selectedGameType === gameType;
-    }, [selectedGameType]);
+    };
 
-    const isGameModeSelected = useCallback((gameMode) => {
+    const isGameModeSelected = (gameMode) => {
         return selectedGameMode === gameMode;
-    }, [selectedGameMode]);
+    };
 
-    const isClockTypeSelected = useCallback((clockType) => {
+    const isClockTypeSelected = (clockType) => {
         return selectedClockType === clockType;
-    }, [selectedClockType]);
+    };
 
     const getClockInput = () => {
         return (

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Draggable from 'react-draggable';
 
 import AbilityTargeting from './AbilityTargeting.jsx';
@@ -68,6 +68,7 @@ function ActivePlayerPrompt({
     const timerRef = useRef({ started: null, timerTime: 0 });
     const timerHandleRef = useRef(null);
     const prevButtonsRef = useRef(buttons);
+    const draggableRef = useRef(null);
 
     // Effect to handle timer when buttons change
     useEffect(() => {
@@ -108,7 +109,7 @@ function ActivePlayerPrompt({
                     return;
                 }
 
-                const newTimerClass = (((timerRef.current.timerTime - difference) / timerRef.current.timerTime) * 100).toFixed() + '%';
+                const newTimerClass = `${(((timerRef.current.timerTime - difference) / timerRef.current.timerTime) * 100).toFixed()}%`;
                 setTimerClass(newTimerClass);
                 setTimeLeft((timerRef.current.timerTime - difference).toFixed());
             }, 100);
@@ -126,7 +127,7 @@ function ActivePlayerPrompt({
         };
     }, [buttons, user, onTimerExpired]);
 
-    const handleButtonClick = useCallback((event, command, arg, uuid, method) => {
+    const handleButtonClick = (event, command, arg, uuid, method) => {
         event.preventDefault();
 
         if(timerHandleRef.current) {
@@ -140,9 +141,9 @@ function ActivePlayerPrompt({
         if(onButtonClick) {
             onButtonClick(command, arg, uuid, method);
         }
-    }, [onButtonClick]);
+    };
 
-    const handleCancelTimerClick = useCallback((event, button) => {
+    const handleCancelTimerClick = (event, button) => {
         event.preventDefault();
 
         if(timerHandleRef.current) {
@@ -156,27 +157,27 @@ function ActivePlayerPrompt({
         if(button.method) {
             onButtonClick(button.command, button.arg, button.uuid, button.method);
         }
-    }, [onButtonClick]);
+    };
 
-    const handleMouseOver = useCallback((event, card) => {
+    const handleMouseOver = (event, card) => {
         if(card && onMouseOver) {
             onMouseOver(card);
         }
-    }, [onMouseOver]);
+    };
 
-    const handleMouseOut = useCallback((event, card) => {
+    const handleMouseOut = (event, card) => {
         if(card && onMouseOut) {
             onMouseOut(card);
         }
-    }, [onMouseOut]);
+    };
 
-    const handleCardNameSelected = useCallback((command, uuid, method, cardName) => {
+    const handleCardNameSelected = (command, uuid, method, cardName) => {
         if(onButtonClick) {
             onButtonClick(command, cardName, uuid, method);
         }
-    }, [onButtonClick]);
+    };
 
-    const renderedButtons = useMemo(() => {
+    const renderedButtons = (() => {
         if(!buttons) {
             return [];
         }
@@ -211,9 +212,9 @@ function ActivePlayerPrompt({
         }
 
         return result;
-    }, [buttons, handleButtonClick, handleCancelTimerClick, handleMouseOver, handleMouseOut]);
+    })();
 
-    const renderedControls = useMemo(() => {
+    const renderedControls = (() => {
         if(!controls) {
             return [];
         }
@@ -242,19 +243,19 @@ function ActivePlayerPrompt({
                     return null;
             }
         });
-    }, [controls, cards, onMouseOut, onMouseOver, handleCardNameSelected]);
+    })();
 
-    const getDefaultPosition = useCallback(() => ({
+    const getDefaultPosition = () => ({
         x: (window.innerWidth / 2) - 105,
         y: (window.innerHeight / 2) - 211
-    }), []);
+    });
 
-    const activePromptBounds = useMemo(() => ({
+    const activePromptBounds = {
         top: 0,
         bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 172,
         left: 0,
         right: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 210
-    }), []);
+    };
 
     let promptTitleElement = null;
     if(promptTitle) {
@@ -274,11 +275,11 @@ function ActivePlayerPrompt({
     }
 
     return (
-        <Draggable handle='.grip' bounds={ activePromptBounds } defaultPosition={ getDefaultPosition() }>
-            <div className='no-highlight'>
+        <Draggable handle='.grip' bounds={ activePromptBounds } defaultPosition={ getDefaultPosition() } nodeRef={ draggableRef }>
+            <div ref={ draggableRef } className="no-highlight">
                 { timer }
-                    <div className={ 'phase-indicator ' + phase } onClick={ onTitleClick }>
                 <div className="grip">
+                    <div className={ `phase-indicator ${phase}` } onClick={ onTitleClick }>
                         { phase } phase
                     </div>
                 </div>

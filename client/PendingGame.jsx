@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
@@ -79,7 +79,7 @@ export function InnerPendingGame({
         }
     });
 
-    const isGameReady = useCallback(() => {
+    const isGameReady = () => {
         if(!currentGame?.players) {
             return false;
         }
@@ -90,19 +90,19 @@ export function InnerPendingGame({
         }
 
         return currentGame.owner === username;
-    }, [currentGame, username]);
+    };
 
-    const handleSelectDeckClick = useCallback(() => {
+    const handleSelectDeckClick = () => {
         setFilteredDecks(decks || []);
         setShowModal(true);
-    }, [decks]);
+    };
 
-    const selectDeck = useCallback((index) => {
+    const selectDeck = (index) => {
         setShowModal(false);
         socket.emit('selectdeck', currentGame.id, filteredDecks[index]);
-    }, [socket, currentGame, filteredDecks]);
+    };
 
-    const getPlayerStatus = useCallback((player) => {
+    const getPlayerStatus = (player) => {
         const playerIsMe = player && player.name === username;
 
         let deck = null;
@@ -130,11 +130,11 @@ export function InnerPendingGame({
                 { selectLink }
             </div>
         );
-    }, [username, handleSelectDeckClick]);
+    };
 
-    const getGameStatus = useCallback(() => {
+    const getGameStatus = () => {
         if(connecting) {
-            return 'Connecting to game server: ' + host;
+            return `Connecting to game server: ${host}`;
         }
 
         if(waiting) {
@@ -152,50 +152,50 @@ export function InnerPendingGame({
         }
 
         return 'Ready to begin, click start to begin the game';
-    }, [connecting, host, waiting, currentGame]);
+    };
 
-    const handleLeaveClick = useCallback((event) => {
+    const handleLeaveClick = (event) => {
         event.preventDefault();
         socket.emit('leavegame', currentGame.id);
         gameSocketClose();
-    }, [socket, currentGame, gameSocketClose]);
+    };
 
-    const handleStartClick = useCallback((event) => {
+    const handleStartClick = (event) => {
         event.preventDefault();
         setWaiting(true);
         socket.emit('startgame', currentGame.id);
-    }, [socket, currentGame]);
+    };
 
-    const sendMessage = useCallback(() => {
+    const sendMessage = () => {
         if(message === '') {
             return;
         }
 
         sendSocketMessage('chat', message);
         setMessage('');
-    }, [message, sendSocketMessage]);
+    };
 
-    const handleKeyPress = useCallback((event) => {
+    const handleKeyPress = (event) => {
         if(event.key === 'Enter') {
             sendMessage();
             event.preventDefault();
         }
-    }, [sendMessage]);
+    };
 
-    const handleSendClick = useCallback((event) => {
+    const handleSendClick = (event) => {
         event.preventDefault();
         sendMessage();
-    }, [sendMessage]);
+    };
 
-    const handleChange = useCallback((event) => {
+    const handleChange = (event) => {
         setMessage(event.target.value);
-    }, []);
+    };
 
-    const handleMouseOver = useCallback((card) => {
+    const handleMouseOver = (card) => {
         zoomCard(card);
-    }, [zoomCard]);
+    };
 
-    const getClock = useCallback(() => {
+    const getClock = () => {
         const game = currentGame;
         if(!game.clocks || game.clocks.type === 'none') {
             return;
@@ -203,30 +203,28 @@ export function InnerPendingGame({
         if(game.clocks.type === 'byoyomi') {
             return `Clock: ${game.clocks.time} mins + ${game.clocks.periods} x ${game.clocks.timePeriod} secs (byoyomi)`;
         }
-        return 'Clock: ' + game.clocks.time + ' mins (' + (game.clocks.type) + ')';
-    }, [currentGame]);
+        return `Clock: ${game.clocks.time} mins (${game.clocks.type})`;
+    };
 
-    const renderedDecks = useMemo(() => {
-        if(loading) {
-            return <div>Loading decks from the server...</div>;
-        }
-        if(apiError) {
-            return <AlertPanel type='error' message={ apiError } />;
-        }
-        if(filteredDecks.length > 0) {
-            return filteredDecks.map((deck, index) => (
-                <DeckRow key={ deck.name + index.toString() } deck={ deck } onClick={ () => selectDeck(index) } />
-            ));
-        }
-        return <div>You have no decks for this format, please add one</div>;
-    }, [loading, apiError, filteredDecks, selectDeck]);
+    let renderedDecks;
+    if(loading) {
+        renderedDecks = <div>Loading decks from the server...</div>;
+    } else if(apiError) {
+        renderedDecks = <AlertPanel type='error' message={ apiError } />;
+    } else if(filteredDecks.length > 0) {
+        renderedDecks = filteredDecks.map((deck, index) => (
+            <DeckRow key={ deck.name + index.toString() } deck={ deck } onClick={ () => selectDeck(index) } />
+        ));
+    } else {
+        renderedDecks = <div>You have no decks for this format, please add one</div>;
+    }
 
-    const handleModalClick = useCallback((event) => {
+    const handleModalClick = (event) => {
         // Close modal when clicking the overlay (outside the modal-dialog)
         if(event.target === event.currentTarget) {
             setShowModal(false);
         }
-    }, []);
+    };
 
     if(currentGame && currentGame.started) {
         return <div>Loading game in progress, please wait...</div>;

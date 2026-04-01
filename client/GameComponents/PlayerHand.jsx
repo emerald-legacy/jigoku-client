@@ -1,21 +1,19 @@
-import { useCallback, useMemo } from 'react';
-
 import Card from './Card.jsx';
 import { tryParseJSON } from '../util.js';
 
 const EMPTY_STYLE = {};
 
 function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut, onMouseOver }) {
-    const handleDragOver = useCallback((event) => {
+    const handleDragOver = (event) => {
         event.target.classList.add('highlight-panel');
         event.preventDefault();
-    }, []);
+    };
 
-    const handleDragLeave = useCallback((event) => {
+    const handleDragLeave = (event) => {
         event.target.classList.remove('highlight-panel');
-    }, []);
+    };
 
-    const handleDragDrop = useCallback((event, target) => {
+    const handleDragDrop = (event, target) => {
         event.stopPropagation();
         event.preventDefault();
 
@@ -35,9 +33,9 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
         if(onDragDrop) {
             onDragDrop(dragData.card, dragData.source, target);
         }
-    }, [onDragDrop]);
+    };
 
-    const getCardWidth = useCallback(() => {
+    const getCardWidth = () => {
         switch(cardSize) {
             case 'small':
                 return 65 * 0.8;
@@ -49,25 +47,25 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
             default:
                 return 65;
         }
-    }, [cardSize]);
+    };
 
     const cardWidth = getCardWidth();
 
-    const maxWidth = useMemo(() => {
-        switch(cardSize) {
-            case 'small':
-            case 'large':
-            case 'x-large':
-            case 'xxl':
-                return cardWidth * 7.5;
-            default:
-                return 480;
-        }
-    }, [cardSize, cardWidth]);
+    let maxWidth;
+    switch(cardSize) {
+        case 'small':
+        case 'large':
+        case 'x-large':
+        case 'xxl':
+            maxWidth = cardWidth * 7.5;
+            break;
+        default:
+            maxWidth = 480;
+    }
 
     const needsSquish = cards && cards.length * cardWidth > maxWidth;
 
-    const handCards = useMemo(() => {
+    const handCards = (() => {
         const handLength = cards ? cards.length : 0;
         let cardIndex = 1;
         let attachmentOffset = 13;
@@ -112,14 +110,14 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
                 />
             );
         }) || [];
-    }, [cards, cardSize, needsSquish, cardWidth, isMe, onMouseOver, onMouseOut, onCardClick, onDragDrop]);
+    })();
 
     let className = 'panel hand';
     let titleBarClassName = 'hand-title-bar no-highlight';
 
     if(cardSize !== 'normal') {
-        className += ' ' + cardSize;
-        titleBarClassName += ' ' + cardSize;
+        className += ` ${cardSize}`;
+        titleBarClassName += ` ${cardSize}`;
     }
 
     // Calculate dynamic width based on number of cards
@@ -132,14 +130,14 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
         className += ' squish';
     }
 
-    const handStyle = { width: handWidth + 'px' };
-    const titleBarStyle = { width: handWidth + 'px' };
+    const handStyle = { width: `${handWidth}px` };
+    const titleBarStyle = { width: `${handWidth}px` };
 
     return (
         <div>
             <div className="grip">
                 <div className={ titleBarClassName } style={ titleBarStyle }>
-                    { 'Hand (' + handCards.length + ')' }
+                    { `Hand (${handCards.length})` }
                 </div>
             </div>
             <div

@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState } from 'react';
 
 import AdditionalCardPile from './AdditionalCardPile.jsx';
 import Card from './Card.jsx';
@@ -43,16 +43,16 @@ function DynastyRow({
     const [showConflictMenu, setShowConflictMenu] = useState(false);
     const [showDynastyMenu, setShowDynastyMenu] = useState(false);
 
-    const handleDragOver = useCallback((event) => {
+    const handleDragOver = (event) => {
         event.target.classList.add('highlight-panel');
         event.preventDefault();
-    }, []);
+    };
 
-    const handleDragLeave = useCallback((event) => {
+    const handleDragLeave = (event) => {
         event.target.classList.remove('highlight-panel');
-    }, []);
+    };
 
-    const handleDragDrop = useCallback((event, target) => {
+    const handleDragDrop = (event, target) => {
         event.stopPropagation();
         event.preventDefault();
 
@@ -72,15 +72,15 @@ function DynastyRow({
         if(onDragDrop) {
             onDragDrop(dragData.card, dragData.source, target);
         }
-    }, [onDragDrop]);
+    };
 
-    const handleConflictCloseClick = useCallback(() => {
+    const handleConflictCloseClick = () => {
         if(onConflictClick) {
             onConflictClick();
         }
-    }, [onConflictClick]);
+    };
 
-    const handleConflictCloseAndShuffleClick = useCallback(() => {
+    const handleConflictCloseAndShuffleClick = () => {
         if(onConflictClick) {
             onConflictClick();
         }
@@ -88,15 +88,15 @@ function DynastyRow({
         if(onConflictShuffleClick) {
             onConflictShuffleClick();
         }
-    }, [onConflictClick, onConflictShuffleClick]);
+    };
 
-    const handleDynastyCloseClick = useCallback(() => {
+    const handleDynastyCloseClick = () => {
         if(onDynastyClick) {
             onDynastyClick();
         }
-    }, [onDynastyClick]);
+    };
 
-    const handleDynastyCloseAndShuffleClick = useCallback(() => {
+    const handleDynastyCloseAndShuffleClick = () => {
         if(onDynastyClick) {
             onDynastyClick();
         }
@@ -104,58 +104,58 @@ function DynastyRow({
         if(onDynastyShuffleClick) {
             onDynastyShuffleClick();
         }
-    }, [onDynastyClick, onDynastyShuffleClick]);
+    };
 
-    const handleDiscardedCardClick = useCallback((event, cardId) => {
+    const handleDiscardedCardClick = (event, cardId) => {
         event.preventDefault();
         event.stopPropagation();
 
         if(onDiscardedCardClick) {
             onDiscardedCardClick(cardId);
         }
-    }, [onDiscardedCardClick]);
+    };
 
-    const handleConflictClick = useCallback(() => {
+    const handleConflictClick = () => {
         setShowConflictMenu(prev => !prev);
-    }, []);
+    };
 
-    const handleDynastyMenuClick = useCallback(() => {
+    const handleDynastyMenuClick = () => {
         setShowDynastyMenu(prev => !prev);
-    }, []);
+    };
 
-    const handleConflictShuffleClick = useCallback(() => {
+    const handleConflictShuffleClick = () => {
         if(onConflictShuffleClick) {
             onConflictShuffleClick();
         }
-    }, [onConflictShuffleClick]);
+    };
 
-    const handleDynastyShuffleClick = useCallback(() => {
+    const handleDynastyShuffleClick = () => {
         if(onDynastyShuffleClick) {
             onDynastyShuffleClick();
         }
-    }, [onDynastyShuffleClick]);
+    };
 
-    const handleShowConflictDeckClick = useCallback(() => {
+    const handleShowConflictDeckClick = () => {
         if(onConflictClick) {
             onConflictClick();
         }
-    }, [onConflictClick]);
+    };
 
-    const handleShowDynastyDeckClick = useCallback(() => {
+    const handleShowDynastyDeckClick = () => {
         if(onDynastyClick) {
             onDynastyClick();
         }
-    }, [onDynastyClick]);
+    };
 
-    const additionalPilesElements = useMemo(() => {
-        if(!additionalPiles) {
-            return [];
-        }
+    let additionalPilesElements;
+    if(!additionalPiles) {
+        additionalPilesElements = [];
+    } else {
         const piles = Object.values(additionalPiles).filter(pile => pile.cards.length > 0 && pile.area === 'player row');
         let index = 0;
-        return piles.map(pile => (
+        additionalPilesElements = piles.map(pile => (
             <AdditionalCardPile
-                key={ 'additional-pile-' + index++ }
+                key={ `additional-pile-${index++}` }
                 className="additional-cards"
                 isMe={ isMe }
                 onMouseOut={ onMouseOut }
@@ -164,27 +164,27 @@ function DynastyRow({
                 spectating={ spectating }
             />
         ));
-    }, [additionalPiles, isMe, onMouseOut, onMouseOver, spectating]);
+    }
 
-    const conflictDeckMenu = useMemo(() => [
+    const conflictDeckMenu = [
         { text: 'Show', handler: handleShowConflictDeckClick, showPopup: true },
         { text: 'Shuffle', handler: handleConflictShuffleClick }
-    ], [handleShowConflictDeckClick, handleConflictShuffleClick]);
+    ];
 
-    const dynastyDeckMenu = useMemo(() => [
+    const dynastyDeckMenu = [
         { text: 'Show', handler: handleShowDynastyDeckClick, showPopup: true },
         { text: 'Shuffle', handler: handleDynastyShuffleClick }
-    ], [handleShowDynastyDeckClick, handleDynastyShuffleClick]);
+    ];
 
-    const conflictDeckPopupMenu = useMemo(() => [
+    const conflictDeckPopupMenu = [
         { text: 'Close', handler: handleConflictCloseClick },
         { text: 'Close and Shuffle', handler: handleConflictCloseAndShuffleClick }
-    ], [handleConflictCloseClick, handleConflictCloseAndShuffleClick]);
+    ];
 
-    const dynastyDeckPopupMenu = useMemo(() => [
+    const dynastyDeckPopupMenu = [
         { text: 'Close', handler: handleDynastyCloseClick },
         { text: 'Close and Shuffle', handler: handleDynastyCloseAndShuffleClick }
-    ], [handleDynastyCloseClick, handleDynastyCloseAndShuffleClick]);
+    ];
 
     const popupLocation = isMe || spectating ? 'top' : 'bottom';
 

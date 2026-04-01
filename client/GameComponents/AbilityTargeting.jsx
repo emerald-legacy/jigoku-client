@@ -1,29 +1,28 @@
-import { useCallback } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { getCardImageUrl, getCardBackUrl } from '../cardImageUrl.js';
 
 function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
-    const handleMouseOver = useCallback((event, card) => {
+    const handleMouseOver = (event, card) => {
         if(card && !card.facedown && onMouseOver) {
             onMouseOver(card);
         }
-    }, [onMouseOver]);
+    };
 
-    const handleMouseOut = useCallback((event, card) => {
+    const handleMouseOut = (event, card) => {
         if(card && onMouseOut) {
             onMouseOut(card);
         }
-    }, [onMouseOut]);
+    };
 
-    const getCardImagePath = useCallback((card) => {
+    const getCardImagePath = (card) => {
         if(!card.id) {
-            const backFile = (card.isDynasty ? 'dynasty' : card.isConflict ? 'conflict' : 'province') + 'cardback.jpg';
+            const backFile = `${card.isDynasty ? 'dynasty' : card.isConflict ? 'conflict' : 'province'}cardback.jpg`;
             return getCardBackUrl(backFile);
         }
         return getCardImageUrl(card.id, card.packId);
-    }, []);
+    };
 
-    const renderSimpleCard = useCallback((card) => {
+    const renderSimpleCard = (card) => {
         return (
             <div
                 className="target-card vertical"
@@ -37,9 +36,9 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
                 />
             </div>
         );
-    }, [handleMouseOut, handleMouseOver, getCardImagePath]);
+    };
 
-    const renderSimpleRing = useCallback((ring) => {
+    const renderSimpleRing = (ring) => {
         return (
             <div className="ring-prompt">
                 <div className="ring no-highlight">
@@ -47,15 +46,15 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
                 </div>
             </div>
         );
-    }, []);
+    };
 
-    const renderStringChoice = useCallback((string) => {
+    const renderStringChoice = (string) => {
         return (
             <div className="target-card vertical">
                 { string }
             </div>
         );
-    }, []);
+    };
 
     const targetCards = targets?.map((target, index) => {
         if(target.type === 'select') {

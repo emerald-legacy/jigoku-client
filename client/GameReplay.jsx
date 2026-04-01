@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Upload, SkipBack, ChevronLeft, Play, Pause, ChevronRight, SkipForward } from 'lucide-react';
 import { InnerGameBoard } from './GameBoard.jsx';
@@ -99,7 +99,7 @@ function GameReplay() {
         };
     }, [isPlaying, speedIndex, totalStates]);
 
-    const handleFile = useCallback((file) => {
+    const handleFile = (file) => {
         setError(null);
 
         const reader = new FileReader();
@@ -114,62 +114,61 @@ function GameReplay() {
                 setCurrentIndex(0);
                 setIsPlaying(false);
             } catch(err) {
-                setError('Failed to parse game log: ' + err.message);
+                setError(`Failed to parse game log: ${err.message}`);
             }
         };
         reader.readAsArrayBuffer(file);
-    }, []);
+    };
 
-    const handleDrop = useCallback((e) => {
+    const handleDrop = (e) => {
         e.preventDefault();
         setDragOver(false);
         const file = e.dataTransfer.files[0];
         if(file) {
             handleFile(file);
         }
-    }, [handleFile]);
+    };
 
-    const handleDragOver = useCallback((e) => {
+    const handleDragOver = (e) => {
         e.preventDefault();
         setDragOver(true);
-    }, []);
+    };
 
-    const handleDragLeave = useCallback(() => {
+    const handleDragLeave = () => {
         setDragOver(false);
-    }, []);
+    };
 
-    const handleFileInput = useCallback((e) => {
+    const handleFileInput = (e) => {
         const file = e.target.files[0];
         if(file) {
             handleFile(file);
         }
-    }, [handleFile]);
+    };
 
-    const handleReset = useCallback(() => {
+    const handleReset = () => {
         setLogData(null);
         setCurrentIndex(0);
         setIsPlaying(false);
         setError(null);
         setCardToZoom(null);
         setPortalTarget(null);
-    }, []);
+    };
 
-    const handleJumpToStart = useCallback(() => {
+    const handleJumpToStart = () => {
         setCurrentIndex(0);
         setIsPlaying(false);
-    }, []);
+    };
 
-    const handleJumpToEnd = useCallback(() => {
+    const handleJumpToEnd = () => {
         setCurrentIndex(totalStates - 1);
         setIsPlaying(false);
-    }, [totalStates]);
-
+    };
 
     if(!logData) {
         return (
             <div className="replay-container">
                 <div
-                    className={ 'replay-upload' + (dragOver ? ' drag-over' : '') }
+                    className={ `replay-upload${dragOver ? " drag-over" : ""}` }
                     onDrop={ handleDrop }
                     onDragOver={ handleDragOver }
                     onDragLeave={ handleDragLeave }
@@ -214,8 +213,8 @@ function GameReplay() {
         }
     };
 
-    const metaText = metadata.players.map((p) => p.name + ' (' + p.faction + ')').join(' vs ')
-        + (metadata.winner ? ' — Winner: ' + metadata.winner : '');
+    const metaText = metadata.players.map((p) => `${p.name} (${p.faction})`).join(' vs ')
+        + (metadata.winner ? ` — Winner: ${metadata.winner}` : '');
 
     return (
         <div className="replay-mode">

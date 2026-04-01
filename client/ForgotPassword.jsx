@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -13,7 +13,7 @@ export function InnerForgotPassword() {
     const [success, setSuccess] = useState('');
     const [submitting, setSubmitting] = useState(false);
 
-    const verifyUsername = useCallback(() => {
+    const verifyUsername = () => {
         const newValidation = { ...validation };
         delete newValidation['username'];
 
@@ -23,9 +23,9 @@ export function InnerForgotPassword() {
 
         setValidation(newValidation);
         return newValidation;
-    }, [username, validation]);
+    };
 
-    const onSubmit = useCallback((event) => {
+    const onSubmit = (event) => {
         event.preventDefault();
         grecaptcha.ready(() => {
             grecaptcha.execute('6LcIUw8rAAAAANoZo59wKxiypGadOD5iXaN659la', { action: 'submit' }).then(async (token) => {
@@ -65,7 +65,7 @@ export function InnerForgotPassword() {
                 }
             });
         });
-    }, [username]);
+    };
 
     const fields = [
         {

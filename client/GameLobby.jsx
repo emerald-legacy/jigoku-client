@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import NewGame from './NewGame.jsx';
@@ -29,7 +29,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
         loadGameStats();
     }, [loadGameStats]);
 
-    const onNewGameClick = useCallback((event) => {
+    const onNewGameClick = (event) => {
         event.preventDefault();
 
         if(!username) {
@@ -38,7 +38,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
         }
 
         startNewGame();
-    }, [username, startNewGame]);
+    };
 
     let rightside = null;
 

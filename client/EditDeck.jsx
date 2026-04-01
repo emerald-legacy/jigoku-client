@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import DeckSummary from './DeckSummary.jsx';
@@ -12,7 +12,7 @@ export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDe
         if(deckId) {
             loadDeck(deckId);
         } else if(deck) {
-            setUrl('/decks/edit/' + deck._id);
+            setUrl(`/decks/edit/${deck._id}`);
             loadDeck(deck._id);
         }
     }, [deckId, deck, loadDeck, setUrl]);
@@ -23,9 +23,9 @@ export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDe
         }
     }, [deckSaved, navigate]);
 
-    const handleEditDeck = useCallback((deckData) => {
+    const handleEditDeck = (deckData) => {
         saveDeck(deckData);
-    }, [saveDeck]);
+    };
 
     let content;
 

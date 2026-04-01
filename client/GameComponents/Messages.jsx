@@ -1,4 +1,4 @@
-import { useRef, useCallback } from 'react';
+import { useRef } from 'react';
 import EmojiConvertor from 'emoji-js';
 import { CheckCircle, Info, AlertCircle, AlertTriangle } from 'lucide-react';
 import Avatar from '../Avatar.jsx';
@@ -21,44 +21,37 @@ const emoji = new EmojiConvertor();
 function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
     const highlightedCardIdRef = useRef(null);
 
-    const handleMouseOver = useCallback(
-        (fragment) => {
-            const highlightedElement = document.getElementById(highlightedCardIdRef.current);
-            if(highlightedCardIdRef.current && highlightedElement) {
-                highlightedElement.classList.remove('highlight');
-            }
+    const handleMouseOver = (fragment) => {
+        const highlightedElement = document.getElementById(highlightedCardIdRef.current);
+        if(highlightedCardIdRef.current && highlightedElement) {
+            highlightedElement.classList.remove('highlight');
+        }
 
-            const element = document.getElementById(fragment.uuid);
+        const element = document.getElementById(fragment.uuid);
 
-            if(element) {
-                element.classList.add('highlight');
-                highlightedCardIdRef.current = fragment.uuid;
-            }
+        if(element) {
+            element.classList.add('highlight');
+            highlightedCardIdRef.current = fragment.uuid;
+        }
 
-            if(onCardMouseOver) {
-                onCardMouseOver(fragment);
-            }
-        },
-        [onCardMouseOver]
-    );
+        if(onCardMouseOver) {
+            onCardMouseOver(fragment);
+        }
+    };
 
-    const handleMouseOut = useCallback(
-        (fragment) => {
-            const element = document.getElementById(fragment.uuid);
+    const handleMouseOut = (fragment) => {
+        const element = document.getElementById(fragment.uuid);
 
-            if(element) {
-                element.classList.remove('highlight');
-            }
+        if(element) {
+            element.classList.remove('highlight');
+        }
 
-            if(onCardMouseOut) {
-                onCardMouseOut(fragment);
-            }
-        },
-        [onCardMouseOut]
-    );
+        if(onCardMouseOut) {
+            onCardMouseOut(fragment);
+        }
+    };
 
-    const formatMessageText = useCallback(
-        (message) => {
+    const formatMessageText = (message) => {
             // Handle non-array messages (strings, numbers, etc.)
             if(!Array.isArray(message)) {
                 if(message === null || message === undefined) {
@@ -162,20 +155,20 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                     );
                 } else if(iconsConflict.includes(fragment)) {
                     return (
-                        <span className={ 'icon-' + fragment } key={ index++ }>
-                            <span className='hide-text'>{ fragment }</span>
+                        <span className={ `icon-${fragment}` } key={ index++ }>
+                            <span className="hide-text">{ fragment }</span>
                         </span>
                     );
                 } else if(iconsElement.includes(fragment)) {
                     return (
-                        <span className={ 'icon-element-' + fragment } key={ index++ }>
-                            <span className='hide-text'>{ fragment }</span>
+                        <span className={ `icon-element-${fragment}` } key={ index++ }>
+                            <span className="hide-text">{ fragment }</span>
                         </span>
                     );
                 } else if(iconsClan.includes(fragment)) {
                     return (
-                        <span className={ 'icon-clan-' + fragment } key={ index++ }>
-                            <span className='hide-text'>{ fragment }</span>
+                        <span className={ `icon-clan-${fragment}` } key={ index++ }>
+                            <span className="hide-text">{ fragment }</span>
                         </span>
                     );
                 } else if(otherIcons[fragment]) {
@@ -206,14 +199,12 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                 }
                 return '';
             });
-        },
-        [handleMouseOver, handleMouseOut]
-    );
+    };
 
     const getMessage = () => {
         return messages?.map((message, index) => {
             return (
-                <div key={ 'message' + index } className='message'>
+                <div key={ `message${index}` } className="message">
                     { formatMessageText(message.message) }
                 </div>
             );

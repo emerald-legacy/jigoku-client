@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -59,7 +59,7 @@ export function InnerDeckEditor({
         return () => document.removeEventListener('keydown', handleEscape);
     }, [showModal]);
 
-    const getCardListEntry = useCallback((count, card, packId) => {
+    const getCardListEntry = (count, card, packId) => {
         if(!card) {
             return '';
         }
@@ -70,11 +70,11 @@ export function InnerDeckEditor({
                 : card.versions[card.versions.length - 1];
             const pack = packs?.find(p => p.id === packData.pack_id);
             if(pack && pack.name) {
-                packName = ' (' + pack.name + ')';
+                packName = ` (${pack.name})`;
             }
         }
-        return count + ' ' + card.name + packName + '\n';
-    }, [packs]);
+        return `${count} ${card.name}${packName}\n`;
+    };
 
     useEffect(() => {
         let updatedDeck = copyDeck(deck);
@@ -115,7 +115,7 @@ export function InnerDeckEditor({
         }
     }, []);
 
-    const addCard = useCallback((card, number, packId, currentDeck) => {
+    const addCard = (card, number, packId, currentDeck) => {
         const deckCopy = copyDeck(currentDeck);
         const provinces = deckCopy.provinceCards || [];
         const stronghold = deckCopy.stronghold || [];
@@ -150,34 +150,34 @@ export function InnerDeckEditor({
         deckCopy.dynastyCards = dynasty;
 
         return deckCopy;
-    }, []);
+    };
 
-    const handleChange = useCallback((field, event) => {
+    const handleChange = (field, event) => {
         const newDeck = copyDeck(deck);
         newDeck[field] = event.target.value;
         setDeck(newDeck);
         updateDeck(newDeck);
-    }, [deck, updateDeck]);
+    };
 
-    const handleNumberToAddChange = useCallback((event) => {
+    const handleNumberToAddChange = (event) => {
         setNumberToAdd(event.target.value);
-    }, []);
+    };
 
-    const handleFormatChange = useCallback((selectedFormat) => {
+    const handleFormatChange = (selectedFormat) => {
         const newDeck = copyDeck(deck, true);
         newDeck.format = selectedFormat;
         setDeck(newDeck);
         updateDeck(newDeck);
-    }, [deck, updateDeck]);
+    };
 
-    const handleFactionChange = useCallback((selectedFaction) => {
+    const handleFactionChange = (selectedFaction) => {
         const newDeck = copyDeck(deck, true);
         newDeck.faction = selectedFaction;
         setDeck(newDeck);
         updateDeck(newDeck);
-    }, [deck, updateDeck]);
+    };
 
-    const handleAllianceChange = useCallback((selectedAlliance) => {
+    const handleAllianceChange = (selectedAlliance) => {
         const newDeck = copyDeck(deck, true);
         if(!selectedAlliance) {
             newDeck.alliance = { name: '', value: '' };
@@ -186,13 +186,13 @@ export function InnerDeckEditor({
         }
         setDeck(newDeck);
         updateDeck(newDeck);
-    }, [deck, updateDeck]);
+    };
 
-    const handleAddCardChange = useCallback((selectedCards) => {
+    const handleAddCardChange = (selectedCards) => {
         setCardToAdd(selectedCards[0]);
-    }, []);
+    };
 
-    const handleAddCard = useCallback((event) => {
+    const handleAddCard = (event) => {
         event.preventDefault();
 
         if(!cardToAdd || !cardToAdd.name) {
@@ -211,9 +211,9 @@ export function InnerDeckEditor({
         setCardList(list);
         setDeck(clearedDeck);
         updateDeck(clearedDeck);
-    }, [cardToAdd, numberToAdd, cardList, deck, addCard, getCardListEntry, updateDeck]);
+    };
 
-    const handleCardListChange = useCallback((event) => {
+    const handleCardListChange = (event) => {
         let currentDeck = copyDeck(deck);
         const split = event.target.value.split('\n');
 
@@ -265,26 +265,26 @@ export function InnerDeckEditor({
         setCardList(event.target.value);
         setDeck(currentDeck);
         updateDeck(currentDeck);
-    }, [deck, cards, packs, addCard, updateDeck]);
+    };
 
-    const handleSaveClick = useCallback((event) => {
+    const handleSaveClick = (event) => {
         event.preventDefault();
         if(onDeckSave) {
             onDeckSave(propDeck);
         }
-    }, [onDeckSave, propDeck]);
+    };
 
-    const handleImportDeckClick = useCallback(() => {
+    const handleImportDeckClick = () => {
         setShowModal(true);
-    }, []);
+    };
 
-    const handleModalClick = useCallback((event) => {
+    const handleModalClick = (event) => {
         if(event.target === event.currentTarget) {
             setShowModal(false);
         }
-    }, []);
+    };
 
-    const handleImportDeck = useCallback(async () => {
+    const handleImportDeck = async () => {
         setShowModal(false);
         const emeraldUrl = importUrl.replace('/decks', '/api/decklists');
 
@@ -346,19 +346,19 @@ export function InnerDeckEditor({
         } catch(error) {
             console.error('Failed to import deck:', error);
         }
-    }, [importUrl, deck, factions, formats, cards, getCardListEntry, updateDeck]);
+    };
 
-    const handleImportKeyPress = useCallback((event) => {
+    const handleImportKeyPress = (event) => {
         if(event.key === 'Enter') {
             event.preventDefault();
             handleImportDeck();
         }
-    }, [handleImportDeck]);
+    };
 
-    const formatsArray = useMemo(() => formats ? Object.values(formats) : [], [formats]);
-    const factionsArray = useMemo(() => factions ? Object.values(factions) : [], [factions]);
-    const alliancesArray = useMemo(() => alliances ? Object.values(alliances) : [], [alliances]);
-    const cardsArray = useMemo(() => cards ? Object.values(cards) : [], [cards]);
+    const formatsArray = formats ? Object.values(formats) : [];
+    const factionsArray = factions ? Object.values(factions) : [];
+    const alliancesArray = alliances ? Object.values(alliances) : [];
+    const cardsArray = cards ? Object.values(cards) : [];
 
     if(!propDeck || loading) {
         return <div>Waiting for deck...</div>;
@@ -366,7 +366,7 @@ export function InnerDeckEditor({
 
     const popup = (
         <div
-            className={ `modal fade ${showModal ? 'in' : ''}` }
+            className={ `modal fade ${showModal ? "in" : ""}` }
             style={ { display: showModal ? 'block' : 'none' } }
             tabIndex='-1'
             role='dialog'

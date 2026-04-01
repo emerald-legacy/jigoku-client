@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -13,7 +13,7 @@ export function InnerLogin({ login, navigate, socket }) {
     const [validation, setValidation] = useState({});
     const [error, setError] = useState('');
 
-    const verifyUsername = useCallback(() => {
+    const verifyUsername = () => {
         const newValidation = { ...validation };
         delete newValidation['username'];
 
@@ -23,9 +23,9 @@ export function InnerLogin({ login, navigate, socket }) {
 
         setValidation(newValidation);
         return newValidation;
-    }, [username, validation]);
+    };
 
-    const verifyPassword = useCallback(() => {
+    const verifyPassword = () => {
         const newValidation = { ...validation };
         delete newValidation['password'];
 
@@ -35,9 +35,9 @@ export function InnerLogin({ login, navigate, socket }) {
 
         setValidation(newValidation);
         return newValidation;
-    }, [password, validation]);
+    };
 
-    const onLogin = useCallback(async (event) => {
+    const onLogin = async (event) => {
         event.preventDefault();
 
         setError('');
@@ -81,7 +81,7 @@ export function InnerLogin({ login, navigate, socket }) {
                 setError('Could not communicate with the server.  Please try again later.');
             }
         }
-    }, [username, password, login, navigate, socket]);
+    };
 
     const fields = [
         {

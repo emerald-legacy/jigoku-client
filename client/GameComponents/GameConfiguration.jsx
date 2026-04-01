@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 
 import Checkbox from '../FormComponents/Checkbox.jsx';
 
@@ -13,13 +13,13 @@ const windows = [
 function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettingToggle, onToggle, optionSettings, timerSettings }) {
     const [windowTimer, setWindowTimer] = useState(timerSettings.windowTimer);
 
-    const handleToggle = useCallback((option, value) => {
+    const handleToggle = (option, value) => {
         if(onToggle) {
             onToggle(option, !value);
         }
-    }, [onToggle]);
+    };
 
-    const handleSlideStop = useCallback((event) => {
+    const handleSlideStop = (event) => {
         let value = parseInt(event.target.value);
 
         if(Number.isNaN(value)) {
@@ -35,25 +35,25 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
         }
 
         setWindowTimer(value);
-    }, []);
+    };
 
-    const handleTimerSettingToggle = useCallback((option, event) => {
+    const handleTimerSettingToggle = (option, event) => {
         if(onTimerSettingToggle) {
             onTimerSettingToggle(option, event.target.checked);
         }
-    }, [onTimerSettingToggle]);
+    };
 
-    const handleOptionSettingToggle = useCallback((option, event) => {
+    const handleOptionSettingToggle = (option, event) => {
         if(onOptionSettingToggle) {
             onOptionSettingToggle(option, event.target.checked);
         }
-    }, [onOptionSettingToggle]);
+    };
 
     const windowsElements = windows.map((window) => (
         <Checkbox
             key={ window.name }
             noGroup
-            name={ 'promptedActionWindows.' + window.name }
+            name={ `promptedActionWindows.${window.name}` }
             label={ window.label }
             fieldClass={ window.style }
             type='checkbox'

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { format } from 'date-fns';
 
@@ -24,15 +24,15 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
         }
     }, [newsSaved, clearNewsStatus, loadNews]);
 
-    const onNewsTextChange = useCallback((event) => {
+    const onNewsTextChange = (event) => {
         setNewsText(event.target.value);
-    }, []);
+    };
 
-    const onAddNews = useCallback((event) => {
+    const onAddNews = (event) => {
         event.preventDefault();
         addNews(newsText);
         setNewsText('');
-    }, [addNews, newsText]);
+    };
 
     let content = null;
 

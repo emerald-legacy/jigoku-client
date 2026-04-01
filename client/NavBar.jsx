@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { ChevronDown } from 'lucide-react';
 
@@ -13,23 +13,23 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
     const [navbarCollapsed, setNavbarCollapsed] = useState(true);
     const dropdownRef = useRef(null);
 
-    const onMenuItemMouseOver = useCallback((menuItem) => {
+    const onMenuItemMouseOver = (menuItem) => {
         setShowPopup(menuItem);
-    }, []);
+    };
 
-    const onMenuItemMouseOut = useCallback(() => {
+    const onMenuItemMouseOut = () => {
         setShowPopup(undefined);
-    }, []);
+    };
 
-    const handleDropdownToggle = useCallback((menuItemName, event) => {
+    const handleDropdownToggle = (menuItemName, event) => {
         event.preventDefault();
         event.stopPropagation();
         setOpenDropdown(prev => prev === menuItemName ? null : menuItemName);
-    }, []);
+    };
 
-    const handleNavbarToggle = useCallback(() => {
+    const handleNavbarToggle = () => {
         setNavbarCollapsed(prev => !prev);
-    }, []);
+    };
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -43,7 +43,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
         return () => document.removeEventListener('click', handleClickOutside);
     }, [openDropdown]);
 
-    const renderMenuItem = useCallback((menuItem) => {
+    const renderMenuItem = (menuItem) => {
         if(menuItem.childItems) {
             let className = 'dropdown';
             const isOpen = openDropdown === menuItem.name;
@@ -77,12 +77,12 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
         const active = menuItem.path === currentPath ? 'active' : '';
 
         return <li key={ menuItem.name } className={ active }><Link href={ menuItem.path }>{ menuItem.name }</Link></li>;
-    }, [currentPath, openDropdown, handleDropdownToggle]);
+    };
 
     const leftMenuToRender = leftMenu?.map(renderMenuItem);
     const rightMenuToRender = rightMenu?.map(renderMenuItem);
 
-    const numGamesElement = numGames !== undefined ? <li><span>{ numGames + ' Games' }</span></li> : null;
+    const numGamesElement = numGames !== undefined ? <li><span>{ `${numGames} Games` }</span></li> : null;
 
     const contextMenu = context?.map(menuItem => (
         <li key={ menuItem.text } style={ { position: 'relative' } }

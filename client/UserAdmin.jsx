@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
@@ -34,27 +34,27 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
         }
     }, [userSaved, clearUserStatus]);
 
-    const onUsernameChange = useCallback((event) => {
+    const onUsernameChange = (event) => {
         setUsername(event.target.value);
-    }, []);
+    };
 
-    const onFindClick = useCallback((event) => {
+    const onFindClick = (event) => {
         event.preventDefault();
         findUser(username);
-    }, [findUser, username]);
+    };
 
-    const onSaveClick = useCallback((event) => {
+    const onSaveClick = (event) => {
         event.preventDefault();
         currentUser.permissions = permissions;
         saveUser(currentUser);
-    }, [currentUser, permissions, saveUser]);
+    };
 
-    const onPermissionToggle = useCallback((field, event) => {
+    const onPermissionToggle = (field, event) => {
         setPermissions(prev => ({
             ...prev,
             [field]: event.target.checked
         }));
-    }, []);
+    };
 
     let content = null;
     let successPanel = null;
@@ -73,7 +73,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
         const permissionsElements = permissionsList.map((permission) => (
             <Checkbox
                 key={ permission.name }
-                name={ 'permissions.' + permission.name }
+                name={ `permissions.${permission.name}` }
                 label={ permission.label }
                 fieldClass='col-sm-offset-3 col-sm-4'
                 type='checkbox'

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
@@ -42,32 +42,32 @@ export function InnerDecks({
         }
     }, [deckDeleted, clearDeckStatus]);
 
-    const handleDeleteClick = useCallback((event) => {
+    const handleDeleteClick = (event) => {
         event.preventDefault();
         setShowDelete(prev => !prev);
-    }, []);
+    };
 
-    const handleEditClick = useCallback((event) => {
+    const handleEditClick = (event) => {
         event.preventDefault();
         navigate('/decks/edit');
-    }, [navigate]);
+    };
 
-    const handleConfirmDeleteClick = useCallback((event) => {
+    const handleConfirmDeleteClick = (event) => {
         event.preventDefault();
         deleteDeck(selectedDeck);
         setShowDelete(false);
-    }, [deleteDeck, selectedDeck]);
+    };
 
-    const handleToggleSelectAll = useCallback((event) => {
+    const handleToggleSelectAll = (event) => {
         if(event.target.checked) {
             const allDeckIds = decks.map(deck => deck._id);
             setSelectedDeckIds(allDeckIds);
         } else {
             setSelectedDeckIds([]);
         }
-    }, [decks]);
+    };
 
-    const handleToggleSelectDeck = useCallback((deckId) => {
+    const handleToggleSelectDeck = (deckId) => {
         setSelectedDeckIds(prev => {
             const index = prev.indexOf(deckId);
             if(index === -1) {
@@ -76,21 +76,21 @@ export function InnerDecks({
             return prev.filter(id => id !== deckId);
 
         });
-    }, []);
+    };
 
-    const handleDeleteSelectedClick = useCallback((event) => {
+    const handleDeleteSelectedClick = (event) => {
         event.preventDefault();
         setShowDeleteSelected(prev => !prev);
-    }, []);
+    };
 
-    const handleConfirmDeleteSelectedClick = useCallback((event) => {
+    const handleConfirmDeleteSelectedClick = (event) => {
         event.preventDefault();
         if(selectedDeckIds.length > 0) {
             deleteDecks(selectedDeckIds);
             setShowDeleteSelected(false);
             setSelectedDeckIds([]);
         }
-    }, [deleteDecks, selectedDeckIds]);
+    };
 
     let content = null;
 

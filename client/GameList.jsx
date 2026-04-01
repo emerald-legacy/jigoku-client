@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'sonner';
 import GameModes from './GameModes';
@@ -23,7 +22,7 @@ const gameModeModifiers = {
 };
 
 export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, socket, username }) {
-    const joinGame = useCallback((event, game) => {
+    const joinGame = (event, game) => {
         event.preventDefault();
 
         if(!username) {
@@ -36,13 +35,13 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         } else {
             socket.emit('joingame', game.id);
         }
-    }, [username, joinPasswordGame, socket]);
+    };
 
-    const canWatch = useCallback((game) => {
+    const canWatch = (game) => {
         return !currentGame && game.allowSpectators;
-    }, [currentGame]);
+    };
 
-    const watchGame = useCallback((event, game) => {
+    const watchGame = (event, game) => {
         event.preventDefault();
 
         if(!username) {
@@ -55,12 +54,12 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         } else {
             socket.emit('watchgame', game.id);
         }
-    }, [username, joinPasswordGame, socket]);
+    };
 
-    const removeGame = useCallback((event, game) => {
+    const removeGame = (event, game) => {
         event.preventDefault();
         socket.emit('removegame', game.id);
-    }, [socket]);
+    };
 
     const gameList = games?.map((game) => {
         const players = game.players ? Object.values(game.players) : [];

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 
 import { connect } from 'react-redux';
@@ -12,7 +12,7 @@ export function InnerResetPassword({ id, token, navigate }) {
     const [validation, setValidation] = useState({});
     const [error, setError] = useState('');
 
-    const verifyPassword = useCallback((isSubmitting, currentPassword, currentPassword1) => {
+    const verifyPassword = (isSubmitting, currentPassword, currentPassword1) => {
         const newValidation = { ...validation };
         delete newValidation['password'];
 
@@ -30,9 +30,9 @@ export function InnerResetPassword({ id, token, navigate }) {
 
         setValidation(newValidation);
         return newValidation;
-    }, [validation]);
+    };
 
-    const onSubmit = useCallback(async (event) => {
+    const onSubmit = async (event) => {
         event.preventDefault();
 
         setError('');
@@ -71,7 +71,7 @@ export function InnerResetPassword({ id, token, navigate }) {
         } catch{
             setError('Could not communicate with the server.  Please try again later.');
         }
-    }, [id, token, password, password1, navigate]);
+    };
 
     if(!id || !token) {
         return <AlertPanel type='error' message='This page is not intended to be viewed directly.  Please click on the link in your email to reset your password' />;

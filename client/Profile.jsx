@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -40,7 +40,7 @@ export function InnerProfile({ refreshUser, socket, user }) {
         }
     }, [user]);
 
-    const handleChange = useCallback((field, event) => {
+    const handleChange = (field, event) => {
         const value = event.target.value;
         switch(field) {
             case 'email':
@@ -53,30 +53,30 @@ export function InnerProfile({ refreshUser, socket, user }) {
                 setNewPasswordAgain(value);
                 break;
         }
-    }, []);
+    };
 
-    const handleWindowToggle = useCallback((field, event) => {
+    const handleWindowToggle = (field, event) => {
         setPromptedActionWindows(prev => ({
             ...prev,
             [field]: event.target.checked
         }));
-    }, []);
+    };
 
-    const handleTimerSettingToggle = useCallback((field, event) => {
+    const handleTimerSettingToggle = (field, event) => {
         setTimerSettings(prev => ({
             ...prev,
             [field]: event.target.checked
         }));
-    }, []);
+    };
 
-    const handleOptionSettingToggle = useCallback((field, event) => {
+    const handleOptionSettingToggle = (field, event) => {
         setOptionSettings(prev => ({
             ...prev,
             [field]: event.target.checked
         }));
-    }, []);
+    };
 
-    const verifyPassword = useCallback((isSubmitting) => {
+    const verifyPassword = (isSubmitting) => {
         const newValidation = { ...validation };
         delete newValidation.password;
 
@@ -98,9 +98,9 @@ export function InnerProfile({ refreshUser, socket, user }) {
         }
 
         setValidation(newValidation);
-    }, [newPassword, newPasswordAgain, validation]);
+    };
 
-    const verifyEmail = useCallback(() => {
+    const verifyEmail = () => {
         const newValidation = { ...validation };
         delete newValidation.email;
 
@@ -109,9 +109,9 @@ export function InnerProfile({ refreshUser, socket, user }) {
         }
 
         setValidation(newValidation);
-    }, [email, validation]);
+    };
 
-    const handleSaveClick = useCallback(async (event) => {
+    const handleSaveClick = async (event) => {
         event.preventDefault();
 
         setErrorMessage(undefined);
@@ -160,9 +160,9 @@ export function InnerProfile({ refreshUser, socket, user }) {
         } finally {
             setLoading(false);
         }
-    }, [user, email, newPassword, promptedActionWindows, disableGravatar, windowTimer, optionSettings, timerSettings, selectedBackground, selectedCardSize, validation, verifyEmail, verifyPassword, socket, refreshUser]);
+    };
 
-    const handleSlideStop = useCallback((event) => {
+    const handleSlideStop = (event) => {
         let value = parseInt(event.target.value);
 
         if(Number.isNaN(value)) {
@@ -178,30 +178,28 @@ export function InnerProfile({ refreshUser, socket, user }) {
         }
 
         setWindowTimer(value);
-    }, []);
+    };
 
-    const handleBackgroundClick = useCallback((background) => {
+    const handleBackgroundClick = (background) => {
         setSelectedBackground(background);
-    }, []);
+    };
 
-    const handleCardClick = useCallback((size) => {
+    const handleCardClick = (size) => {
         setSelectedCardSize(size);
-    }, []);
+    };
 
-    const windowsElements = useMemo(() => {
-        return windows.map(window => (
-            <Checkbox
-                key={ window.name }
-                noGroup
-                name={ 'promptedActionWindows.' + window.name }
-                label={ window.label }
-                fieldClass={ window.style }
-                type='checkbox'
-                onChange={ (e) => handleWindowToggle(window.name, e) }
-                checked={ promptedActionWindows[window.name] }
-            />
-        ));
-    }, [promptedActionWindows, handleWindowToggle]);
+    const windowsElements = windows.map(window => (
+        <Checkbox
+            key={ window.name }
+            noGroup
+            name={ `promptedActionWindows.${window.name}` }
+            label={ window.label }
+            fieldClass={ window.style }
+            type='checkbox'
+            onChange={ (e) => handleWindowToggle(window.name, e) }
+            checked={ promptedActionWindows[window.name] }
+        />
+    ));
 
     if(!user) {
         return <AlertPanel type='error' message='You must be logged in to update your profile' />;

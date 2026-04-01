@@ -1,5 +1,5 @@
 /* global __BUILD_VERSION__ */
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { X, Menu } from 'lucide-react';
@@ -24,25 +24,25 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }) {
             .catch(() => setServerVersions([]));
     }, []);
 
-    const handleBurgerClick = useCallback(() => {
+    const handleBurgerClick = () => {
         setShowUsers(prev => !prev);
-    }, []);
+    };
 
-    const userList = useMemo(() => {
-        if(!users) {
-            return [];
-        }
-        return users.map(user => (
-            <div className='user-row' key={ user.name }>
+    let userList;
+    if(!users) {
+        userList = [];
+    } else {
+        userList = users.map(user => (
+            <div className="user-row" key={ user.name }>
                 <Avatar emailHash={ user.emailHash } forceDefault={ user.noAvatar } />
                 <span>{ user.name }</span>
             </div>
         ));
-    }, [users]);
+    }
 
     return (
-        <div className='flex-container'>
-            <div className={ 'sidebar' + (showUsers ? ' expanded' : '') }>
+        <div className="flex-container">
+            <div className={ `sidebar${showUsers ? " expanded" : ""}` }>
                 { showUsers ? (
                     <div>
                         <a href='#' className="btn pull-right" onClick={ handleBurgerClick }>

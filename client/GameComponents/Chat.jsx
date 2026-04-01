@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Messages from './Messages.jsx';
 
 function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
@@ -12,20 +12,20 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
         }
     }, [canScroll, messages]);
 
-    const handleChange = useCallback((event) => {
+    const handleChange = (event) => {
         setMessage(event.target.value);
-    }, []);
+    };
 
-    const handleKeyPress = useCallback((event) => {
+    const handleKeyPress = (event) => {
         if(event.key === 'Enter') {
             sendMessage(message);
             setMessage('');
 
             event.preventDefault();
         }
-    }, [message, sendMessage]);
+    };
 
-    const handleScroll = useCallback(() => {
+    const handleScroll = () => {
         const messagesEl = messagePanelRef.current;
         if(!messagesEl) {
             return;
@@ -38,9 +38,9 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
                 setCanScroll(false);
             }
         }, 500);
-    }, []);
+    };
 
-    const classes = 'chat' + (visible ? '' : ' collapsed');
+    const classes = `chat${visible ? '' : ' collapsed'}`;
 
     return (
         <div className={ classes }>

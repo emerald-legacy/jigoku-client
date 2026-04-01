@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -13,82 +13,73 @@ export function InnerRegister({ navigate, register, socket }) {
     const [validation, setValidation] = useState({});
     const [error, setError] = useState('');
 
-    const verifyUsername = useCallback(
-        (isSubmitting, currentUsername = username) => {
-            const newValidation = { ...validation };
-            delete newValidation['username'];
+    const verifyUsername = (isSubmitting, currentUsername = username) => {
+        const newValidation = { ...validation };
+        delete newValidation['username'];
 
-            if(currentUsername.length < 3 || currentUsername.length > 15) {
-                newValidation['username'] =
-                    'Username must be between 3 and 15 characters long';
-            }
+        if(currentUsername.length < 3 || currentUsername.length > 15) {
+            newValidation['username'] =
+                'Username must be between 3 and 15 characters long';
+        }
 
-            if(!/^[A-Z0-9_-]+$/i.test(currentUsername)) {
-                newValidation['username'] =
-                    'Usernames must only use the characters a-z, 0-9, _ and -';
-            }
+        if(!/^[A-Z0-9_-]+$/i.test(currentUsername)) {
+            newValidation['username'] =
+                'Usernames must only use the characters a-z, 0-9, _ and -';
+        }
 
-            if(isSubmitting) {
-                return newValidation;
-            }
-
-            axios
-                .post('/api/account/check-username', { username: currentUsername })
-                .then((response) => {
-                    if(response.data.message) {
-                        newValidation['username'] = response.data.message;
-                    }
-                })
-                .finally(() => {
-                    setValidation({ ...newValidation });
-                });
-
+        if(isSubmitting) {
             return newValidation;
-        },
-        [username, validation]
-    );
+        }
 
-    const verifyEmail = useCallback(
-        (currentEmail = email) => {
-            const newValidation = { ...validation };
-            delete newValidation['email'];
+        axios
+            .post('/api/account/check-username', { username: currentUsername })
+            .then((response) => {
+                if(response.data.message) {
+                    newValidation['username'] = response.data.message;
+                }
+            })
+            .finally(() => {
+                setValidation({ ...newValidation });
+            });
 
-            if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(currentEmail)) {
-                newValidation['email'] = 'Please enter a valid email address';
-            }
+        return newValidation;
+    };
 
-            return newValidation;
-        },
-        [email, validation]
-    );
+    const verifyEmail = (currentEmail = email) => {
+        const newValidation = { ...validation };
+        delete newValidation['email'];
 
-    const verifyPassword = useCallback(
-        (isSubmitting, currentPassword = password, currentPassword1 = password1) => {
-            const newValidation = { ...validation };
-            delete newValidation['password'];
+        if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(currentEmail)) {
+            newValidation['email'] = 'Please enter a valid email address';
+        }
 
-            if(currentPassword.length < 6) {
-                newValidation['password'] =
-                    'The password you specify must be at least 6 characters long';
-            }
+        return newValidation;
+    };
 
-            if(isSubmitting && !currentPassword1) {
-                newValidation['password'] = 'Please enter your password again';
-            }
+    const verifyPassword = (isSubmitting, currentPassword = password, currentPassword1 = password1) => {
+        const newValidation = { ...validation };
+        delete newValidation['password'];
 
-            if(
-                currentPassword &&
-                currentPassword1 &&
-                currentPassword !== currentPassword1
-            ) {
-                newValidation['password'] =
-                    'The passwords you have specified do not match';
-            }
+        if(currentPassword.length < 6) {
+            newValidation['password'] =
+                'The password you specify must be at least 6 characters long';
+        }
 
-            return newValidation;
-        },
-        [password, password1, validation]
-    );
+        if(isSubmitting && !currentPassword1) {
+            newValidation['password'] = 'Please enter your password again';
+        }
+
+        if(
+            currentPassword &&
+            currentPassword1 &&
+            currentPassword !== currentPassword1
+        ) {
+            newValidation['password'] =
+                'The passwords you have specified do not match';
+        }
+
+        return newValidation;
+    };
 
     const handleUsernameBlur = () => {
         const newValidation = verifyUsername(false, username);

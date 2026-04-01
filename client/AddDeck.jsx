@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import DeckSummary from './DeckSummary.jsx';
@@ -21,9 +21,9 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
         }
     }, [deckSaved, navigate]);
 
-    const handleAddDeck = useCallback((deckData) => {
+    const handleAddDeck = (deckData) => {
         saveDeck(deckData);
-    }, [saveDeck]);
+    };
 
     let content;
 
