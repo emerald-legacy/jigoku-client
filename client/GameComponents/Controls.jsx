@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { Menu, AlertCircle, Wrench, Settings, Download } from 'lucide-react';
 
 function Controls({
@@ -47,15 +46,5 @@ function Controls({
 }
 
 Controls.displayName = 'Controls';
-Controls.propTypes = {
-    manualModeEnabled: PropTypes.bool,
-    onDownloadLogClick: PropTypes.func,
-    onManualModeClick: PropTypes.func,
-    onSettingsClick: PropTypes.func,
-    onToggleChatClick: PropTypes.func,
-    showChatAlert: PropTypes.bool,
-    showDownloadLog: PropTypes.bool,
-    showManualMode: PropTypes.bool
-};
 
 export default Controls;

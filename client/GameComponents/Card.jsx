@@ -1,5 +1,4 @@
 import React, { useState, useRef, memo } from 'react';
-import PropTypes from 'prop-types';
 import { X } from 'lucide-react';
 
 import CardMenu from './CardMenu.jsx';
@@ -652,73 +651,5 @@ function Card(props) {
 
 const MemoCard = memo(Card);
 MemoCard.displayName = 'Card';
-MemoCard.propTypes = {
-    card: PropTypes.shape({
-        attached: PropTypes.bool,
-        attachments: PropTypes.array,
-        baseMilitarySkill: PropTypes.number,
-        basePoliticalSkill: PropTypes.number,
-        bowed: PropTypes.bool,
-        childCards: PropTypes.array,
-        controlled: PropTypes.bool,
-        controller: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-        covert: PropTypes.bool,
-        facedown: PropTypes.bool,
-        glorySummary: PropTypes.object,
-        id: PropTypes.string,
-        inConflict: PropTypes.bool,
-        inDanger: PropTypes.bool,
-        isBroken: PropTypes.bool,
-        isConflict: PropTypes.bool,
-        isDynasty: PropTypes.bool,
-        isDishonored: PropTypes.bool,
-        isHonored: PropTypes.bool,
-        isProvince: PropTypes.bool,
-        isToken: PropTypes.bool,
-        location: PropTypes.string,
-        menu: PropTypes.array,
-        militarySkill: PropTypes.number,
-        militarySkillSummary: PropTypes.object,
-        name: PropTypes.string,
-        new: PropTypes.bool,
-        order: PropTypes.number,
-        politicalSkill: PropTypes.number,
-        politicalSkillSummary: PropTypes.object,
-        popupMenuText: PropTypes.string,
-        power: PropTypes.number,
-        saved: PropTypes.bool,
-        selectable: PropTypes.bool,
-        selected: PropTypes.bool,
-        showPopup: PropTypes.bool,
-        strength: PropTypes.number,
-        tokens: PropTypes.object,
-        type: PropTypes.string,
-        unselectable: PropTypes.bool,
-        uuid: PropTypes.string
-    }).isRequired,
-    className: PropTypes.string,
-    declaring: PropTypes.bool,
-    disableMouseOver: PropTypes.bool,
-    id: PropTypes.string,
-    isInPopup: PropTypes.bool,
-    isMe: PropTypes.bool,
-    onClick: PropTypes.func,
-    onCloseClick: PropTypes.func,
-    onDragDrop: PropTypes.func,
-    onMenuItemClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    onTouchMove: PropTypes.func,
-    orientation: PropTypes.oneOf(['horizontal', 'bowed', 'vertical']),
-    player: PropTypes.shape({
-        cardPiles: PropTypes.object
-    }),
-    popupLocation: PropTypes.string,
-    showStats: PropTypes.bool,
-    size: PropTypes.string,
-    source: PropTypes.oneOf(['hand', 'dynasty discard pile', 'conflict discard pile', 'play area', 'dynasty deck', 'conflict deck', 'province deck', 'province 1', 'province 2', 'province 3', 'province 4', 'attachment', 'stronghold province', 'additional', 'role card', 'underneath stronghold']).isRequired,
-    style: PropTypes.object,
-    title: PropTypes.string,
-    wrapped: PropTypes.bool
-};
+
 export default MemoCard;

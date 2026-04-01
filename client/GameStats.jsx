@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 
 const clanOrder = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
 
@@ -130,8 +129,5 @@ function GameStats({ stats }) {
 }
 
 GameStats.displayName = 'GameStats';
-GameStats.propTypes = {
-    stats: PropTypes.object
-};
 
 export default GameStats;

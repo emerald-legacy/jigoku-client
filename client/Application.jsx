@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import { connect } from 'react-redux';
@@ -497,42 +496,6 @@ class App extends React.Component {
 }
 
 App.displayName = 'Application';
-App.propTypes = {
-    clearGameState: PropTypes.func,
-    closeGameSocket: PropTypes.func,
-    currentGame: PropTypes.object,
-    currentGameId: PropTypes.string,
-    disconnecting: PropTypes.bool,
-    dispatch: PropTypes.func,
-    gameSocket: PropTypes.object,
-    gameSocketConnectError: PropTypes.func,
-    gameSocketConnected: PropTypes.func,
-    gameSocketConnecting: PropTypes.func,
-    gameSocketDisconnect: PropTypes.func,
-    gameSocketReconnecting: PropTypes.func,
-    games: PropTypes.array,
-    loadCards: PropTypes.func,
-    loadFactions: PropTypes.func,
-    loadFormats: PropTypes.func,
-    loadPacks: PropTypes.func,
-    loggedIn: PropTypes.bool,
-    navigate: PropTypes.func,
-    onGameHandoffReceived: PropTypes.func,
-    path: PropTypes.string,
-    receiveBannerNotice: PropTypes.func,
-    receiveGameState: PropTypes.func,
-    receiveGames: PropTypes.func,
-    receiveJoinGame: PropTypes.func,
-    receiveNewGame: PropTypes.func,
-    receivePasswordError: PropTypes.func,
-    receiveUsers: PropTypes.func,
-    sendGameSocketConnectFailed: PropTypes.func,
-    setContextMenu: PropTypes.func,
-    socketConnected: PropTypes.func,
-    token: PropTypes.string,
-    user: PropTypes.object,
-    username: PropTypes.string
-};
 
 function mapStateToProps(state) {
     return {

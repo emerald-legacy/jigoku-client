@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
 
 function HonorCounter({ cancel, fade, name, value }) {
-    let className = 'honorcounter ' + name;
+    let className = `honorcounter ${name}`;
 
     if(cancel) {
         className += ' cancel';
@@ -20,12 +19,5 @@ function HonorCounter({ cancel, fade, name, value }) {
 }
 
 HonorCounter.displayName = 'HonorCounter';
-HonorCounter.propTypes = {
-    cancel: PropTypes.bool,
-    fade: PropTypes.bool,
-    name: PropTypes.string.isRequired,
-    shortName: PropTypes.string,
-    value: PropTypes.number
-};
 
 export default HonorCounter;

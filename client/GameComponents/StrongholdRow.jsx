@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 import Province from './Province.jsx';
 import Placeholder from './Placeholder.jsx';
@@ -151,20 +150,5 @@ function StrongholdRow({
 }
 
 StrongholdRow.displayName = 'StrongholdRow';
-StrongholdRow.propTypes = {
-    cardSize: PropTypes.string,
-    isMe: PropTypes.bool,
-    isSkirmish: PropTypes.bool,
-    onCardClick: PropTypes.func,
-    onDragDrop: PropTypes.func,
-    onMenuItemClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    otherPlayer: PropTypes.object,
-    role: PropTypes.object,
-    spectating: PropTypes.bool,
-    strongholdProvinceCards: PropTypes.array,
-    thisPlayer: PropTypes.object
-};
 
 export default StrongholdRow;

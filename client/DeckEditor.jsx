@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -441,18 +440,6 @@ export function InnerDeckEditor({
 }
 
 InnerDeckEditor.displayName = 'DeckEditor';
-InnerDeckEditor.propTypes = {
-    alliances: PropTypes.object,
-    cards: PropTypes.object,
-    deck: PropTypes.object,
-    factions: PropTypes.object,
-    formats: PropTypes.object,
-    loading: PropTypes.bool,
-    mode: PropTypes.string,
-    onDeckSave: PropTypes.func,
-    packs: PropTypes.array,
-    updateDeck: PropTypes.func
-};
 
 function mapStateToProps(state) {
     return {

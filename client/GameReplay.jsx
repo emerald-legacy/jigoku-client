@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
 import { Upload, SkipBack, ChevronLeft, Play, Pause, ChevronRight, SkipForward } from 'lucide-react';
 import { InnerGameBoard } from './GameBoard.jsx';
 import { parseGameLog } from './GameComponents/gameLogSerializer.js';
@@ -54,20 +53,6 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJu
         </div>
     );
 }
-
-ReplayControls.propTypes = {
-    currentIndex: PropTypes.number,
-    isPlaying: PropTypes.bool,
-    onJumpToEnd: PropTypes.func,
-    onJumpToStart: PropTypes.func,
-    onReset: PropTypes.func,
-    onSpeedChange: PropTypes.func,
-    onStepBack: PropTypes.func,
-    onStepForward: PropTypes.func,
-    onTogglePlay: PropTypes.func,
-    speedIndex: PropTypes.number,
-    totalStates: PropTypes.number
-};
 
 function GameReplay() {
     const [logData, setLogData] = useState(null);

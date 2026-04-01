@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { toast } from 'sonner';
 import GameModes from './GameModes';
@@ -112,15 +111,6 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
 }
 
 InnerGameList.displayName = 'GameList';
-InnerGameList.propTypes = {
-    currentGame: PropTypes.object,
-    games: PropTypes.array,
-    isAdmin: PropTypes.bool,
-    joinPasswordGame: PropTypes.func,
-    showNodes: PropTypes.bool,
-    socket: PropTypes.object,
-    username: PropTypes.string
-};
 
 function mapStateToProps(state) {
     return {

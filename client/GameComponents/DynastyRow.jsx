@@ -1,5 +1,4 @@
 import { useState, useCallback, useMemo } from 'react';
-import PropTypes from 'prop-types';
 
 import AdditionalCardPile from './AdditionalCardPile.jsx';
 import Card from './Card.jsx';
@@ -371,42 +370,5 @@ function DynastyRow({
 }
 
 DynastyRow.displayName = 'DynastyRow';
-DynastyRow.propTypes = {
-    additionalPiles: PropTypes.object,
-    cardSize: PropTypes.string,
-    conflictDeck: PropTypes.array,
-    conflictDeckTopCard: PropTypes.object,
-    conflictDiscardPile: PropTypes.array,
-    dynastyDeck: PropTypes.array,
-    dynastyDeckTopCard: PropTypes.object,
-    dynastyDiscardPile: PropTypes.array,
-    hand: PropTypes.array,
-    honor: PropTypes.number,
-    isMe: PropTypes.bool,
-    isSkirmish: PropTypes.bool,
-    manualMode: PropTypes.bool,
-    numConflictCards: PropTypes.number,
-    numDynastyCards: PropTypes.number,
-    onCardClick: PropTypes.func,
-    onConflictClick: PropTypes.func,
-    onConflictShuffleClick: PropTypes.func,
-    onDiscardedCardClick: PropTypes.func,
-    onDragDrop: PropTypes.func,
-    onDynastyClick: PropTypes.func,
-    onDynastyShuffleClick: PropTypes.func,
-    onMenuItemClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    otherPlayer: PropTypes.object,
-    province1Cards: PropTypes.array,
-    province2Cards: PropTypes.array,
-    province3Cards: PropTypes.array,
-    province4Cards: PropTypes.array,
-    provinceDeck: PropTypes.array,
-    removedFromGame: PropTypes.array,
-    showConflictDeck: PropTypes.bool,
-    showDynastyDeck: PropTypes.bool,
-    spectating: PropTypes.bool
-};
 
 export default DynastyRow;

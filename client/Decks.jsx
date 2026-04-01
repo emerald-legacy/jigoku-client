@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
@@ -209,23 +208,6 @@ export function InnerDecks({
 }
 
 InnerDecks.displayName = 'Decks';
-InnerDecks.propTypes = {
-    apiError: PropTypes.string,
-    cards: PropTypes.object,
-    clearDeckStatus: PropTypes.func,
-    deckDeleted: PropTypes.bool,
-    deckStats: PropTypes.object,
-    decks: PropTypes.array,
-    deleteDeck: PropTypes.func,
-    deleteDecks: PropTypes.func,
-    loadDecks: PropTypes.func,
-    loadDeckStats: PropTypes.func,
-    loadDecksWithLazyValidation: PropTypes.func,
-    loading: PropTypes.bool,
-    navigate: PropTypes.func,
-    selectDeck: PropTypes.func,
-    selectedDeck: PropTypes.object
-};
 
 function mapStateToProps(state) {
     return {

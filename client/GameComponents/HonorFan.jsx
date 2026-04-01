@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 function HonorFan({ size, value }) {
     return (
@@ -9,14 +8,5 @@ function HonorFan({ size, value }) {
 }
 
 HonorFan.displayName = 'HonorFan';
-HonorFan.propTypes = {
-    buttons: PropTypes.array,
-    onButtonClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    size: PropTypes.string,
-    socket: PropTypes.object,
-    value: PropTypes.string
-};
 
 export default HonorFan;

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 
 import DeckStatus from './DeckStatus.jsx';
 import DeckStats from './DeckStats.jsx';
@@ -189,10 +188,5 @@ function DeckSummary({ cards, deck, stats }) {
 }
 
 DeckSummary.displayName = 'DeckSummary';
-DeckSummary.propTypes = {
-    cards: PropTypes.object,
-    deck: PropTypes.object,
-    stats: PropTypes.object
-};
 
 export default DeckSummary;

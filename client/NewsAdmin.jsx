@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { format } from 'date-fns';
 
@@ -87,15 +86,6 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
 }
 
 InnerNewsAdmin.displayName = 'NewsAdmin';
-InnerNewsAdmin.propTypes = {
-    addNews: PropTypes.func,
-    apiError: PropTypes.string,
-    clearNewsStatus: PropTypes.func,
-    loadNews: PropTypes.func,
-    loading: PropTypes.bool,
-    news: PropTypes.array,
-    newsSaved: PropTypes.bool
-};
 
 function mapStateToProps(state) {
     return {

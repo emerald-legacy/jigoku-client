@@ -1,5 +1,4 @@
 import { useState, memo } from 'react';
-import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 import { X } from 'lucide-react';
 
@@ -290,49 +289,5 @@ function CardPile({
 }
 
 CardPile.displayName = 'CardPile';
-CardPile.propTypes = {
-    cardCount: PropTypes.number,
-    cards: PropTypes.array,
-    className: PropTypes.string,
-    closeOnClick: PropTypes.bool,
-    disableMenu: PropTypes.bool,
-    disableMouseOver: PropTypes.bool,
-    hiddenTopCard: PropTypes.bool,
-    isMe: PropTypes.bool,
-    menu: PropTypes.array,
-    onCardClick: PropTypes.func,
-    onCloseClick: PropTypes.func,
-    onDragDrop: PropTypes.func,
-    onMenuItemClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    onTouchMove: PropTypes.func,
-    orientation: PropTypes.string,
-    popupLocation: PropTypes.string,
-    popupMenu: PropTypes.array,
-    size: PropTypes.string,
-    source: PropTypes.oneOf([
-        'none',
-        'hand',
-        'conflict discard pile',
-        'dynasty discard pile',
-        'play area',
-        'conflict deck',
-        'dynasty deck',
-        'province deck',
-        'attachment',
-        'faction',
-        'stronghold province',
-        'role card',
-        'province 1',
-        'province 2',
-        'province 3',
-        'province 4',
-        'additional',
-        'removed from game'
-    ]).isRequired,
-    title: PropTypes.string,
-    topCard: PropTypes.object
-};
 
 export default memo(CardPile);

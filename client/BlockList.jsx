@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { X } from 'lucide-react';
@@ -141,18 +140,6 @@ export function InnerBlockList({
 }
 
 InnerBlockList.displayName = 'BlockList';
-InnerBlockList.propTypes = {
-    addBlockListEntry: PropTypes.func,
-    apiError: PropTypes.string,
-    blockList: PropTypes.array,
-    blockListAdded: PropTypes.bool,
-    blockListDeleted: PropTypes.bool,
-    clearBlockListStatus: PropTypes.func,
-    loadBlockList: PropTypes.func,
-    loading: PropTypes.bool,
-    removeBlockListEntry: PropTypes.func,
-    user: PropTypes.object
-};
 
 function mapStateToProps(state) {
     return {

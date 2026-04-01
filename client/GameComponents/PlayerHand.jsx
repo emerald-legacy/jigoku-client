@@ -1,5 +1,4 @@
 import { useCallback, useMemo } from 'react';
-import PropTypes from 'prop-types';
 
 import Card from './Card.jsx';
 import { tryParseJSON } from '../util.js';
@@ -157,14 +156,5 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
 }
 
 PlayerHand.displayName = 'PlayerHand';
-PlayerHand.propTypes = {
-    cardSize: PropTypes.string,
-    cards: PropTypes.array,
-    isMe: PropTypes.bool,
-    onCardClick: PropTypes.func,
-    onDragDrop: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func
-};
 
 export default PlayerHand;

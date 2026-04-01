@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { ChevronDown } from 'lucide-react';
 
@@ -133,14 +132,6 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
 }
 
 InnerNavBar.displayName = 'NavBar';
-InnerNavBar.propTypes = {
-    context: PropTypes.array,
-    currentPath: PropTypes.string,
-    leftMenu: PropTypes.array,
-    numGames: PropTypes.number,
-    rightMenu: PropTypes.array,
-    title: PropTypes.string
-};
 
 function mapStateToProps(state) {
     return {

@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import Messages from './Messages.jsx';
 
 function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
@@ -66,12 +65,5 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
 }
 
 Chat.displayName = 'Chat';
-Chat.propTypes = {
-    messages: PropTypes.array,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    sendMessage: PropTypes.func,
-    visible: PropTypes.bool
-};
 
 export default Chat;

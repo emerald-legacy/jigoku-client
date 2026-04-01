@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 const clanOrder = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
 
@@ -82,8 +81,5 @@ function DeckStats({ stats }) {
 }
 
 DeckStats.displayName = 'DeckStats';
-DeckStats.propTypes = {
-    stats: PropTypes.object
-};
 
 export default DeckStats;

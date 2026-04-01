@@ -1,5 +1,4 @@
 import { useState, memo } from 'react';
-import PropTypes from 'prop-types';
 
 import CardCounters from './CardCounters.jsx';
 import CardMenu from './CardMenu.jsx';
@@ -149,16 +148,5 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
 }
 
 Ring.displayName = 'Ring';
-Ring.propTypes = {
-    buttons: PropTypes.array,
-    gameMode: PropTypes.string,
-    onClick: PropTypes.func,
-    onMenuItemClick: PropTypes.func,
-    owner: PropTypes.string,
-    ring: PropTypes.object,
-    showRingEffects: PropTypes.bool,
-    size: PropTypes.string,
-    socket: PropTypes.object
-};
 
 export default memo(Ring);

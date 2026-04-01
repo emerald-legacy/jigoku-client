@@ -1,6 +1,5 @@
 import { Typeahead } from 'react-bootstrap-typeahead';
 import { useRef, useImperativeHandle, forwardRef } from 'react';
-import PropTypes from 'prop-types';
 
 const TypeaheadInput = forwardRef(function TypeaheadInput(
     {
@@ -35,7 +34,7 @@ const TypeaheadInput = forwardRef(function TypeaheadInput(
     }));
 
     const labelElement = label ? (
-        <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
+        <label htmlFor={ name } className={ `${labelClass || ""} control-label` }>
             { label }
         </label>
     ) : null;
@@ -68,25 +67,5 @@ const TypeaheadInput = forwardRef(function TypeaheadInput(
 });
 
 TypeaheadInput.displayName = 'TypeAhead';
-TypeaheadInput.propTypes = {
-    autoFocus: PropTypes.bool,
-    children: PropTypes.object,
-    dropup: PropTypes.bool,
-    emptyLabel: PropTypes.string,
-    fieldClass: PropTypes.string,
-    label: PropTypes.string,
-    labelClass: PropTypes.string,
-    labelKey: PropTypes.string,
-    minLength: PropTypes.number,
-    name: PropTypes.string,
-    onChange: PropTypes.func,
-    onInputChange: PropTypes.func,
-    onKeyDown: PropTypes.func,
-    options: PropTypes.array,
-    placeholder: PropTypes.string,
-    submitFormOnEnter: PropTypes.bool,
-    validationMessage: PropTypes.string,
-    value: PropTypes.string
-};
 
 export default TypeaheadInput;

@@ -1,5 +1,4 @@
 import { useCallback, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import DeckSummary from './DeckSummary.jsx';
@@ -63,23 +62,6 @@ export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDe
 }
 
 InnerEditDeck.displayName = 'InnerEditDeck';
-InnerEditDeck.propTypes = {
-    agendas: PropTypes.object,
-    apiError: PropTypes.string,
-    banners: PropTypes.array,
-    cards: PropTypes.object,
-    deck: PropTypes.object,
-    deckId: PropTypes.string,
-    deckSaved: PropTypes.bool,
-    factions: PropTypes.object,
-    formats: PropTypes.object,
-    loadDeck: PropTypes.func,
-    loading: PropTypes.bool,
-    navigate: PropTypes.func,
-    packs: PropTypes.array,
-    saveDeck: PropTypes.func,
-    setUrl: PropTypes.func
-};
 
 function mapStateToProps(state) {
     return {

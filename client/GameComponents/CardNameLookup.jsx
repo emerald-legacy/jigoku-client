@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 
 import Typeahead from '../FormComponents/Typeahead.jsx';
 
@@ -34,9 +33,5 @@ function CardNameLookup({ cards, onCardSelected }) {
 }
 
 CardNameLookup.displayName = 'CardNameLookup';
-CardNameLookup.propTypes = {
-    cards: PropTypes.object,
-    onCardSelected: PropTypes.func
-};
 
 export default CardNameLookup;

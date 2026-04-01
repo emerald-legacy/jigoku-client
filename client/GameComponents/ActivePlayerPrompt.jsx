@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import Draggable from 'react-draggable';
 
 import AbilityTargeting from './AbilityTargeting.jsx';
@@ -297,21 +296,5 @@ function ActivePlayerPrompt({
 }
 
 ActivePlayerPrompt.displayName = 'ActivePlayerPrompt';
-ActivePlayerPrompt.propTypes = {
-    buttons: PropTypes.array,
-    cards: PropTypes.object,
-    controls: PropTypes.array,
-    getDefaultPosition: PropTypes.func,
-    onButtonClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    onTimerExpired: PropTypes.func,
-    onTitleClick: PropTypes.func,
-    phase: PropTypes.string,
-    promptTitle: PropTypes.string,
-    socket: PropTypes.object,
-    title: PropTypes.string,
-    user: PropTypes.object
-};
 
 export default ActivePlayerPrompt;

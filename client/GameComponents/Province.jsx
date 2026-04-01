@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import PropTypes from 'prop-types';
 
 import Card from './Card.jsx';
 import { tryParseJSON } from '../util.js';
@@ -193,37 +192,5 @@ function Province({
 }
 
 Province.displayName = 'Province';
-Province.propTypes = {
-    cardCount: PropTypes.number,
-    cards: PropTypes.array,
-    disableMouseOver: PropTypes.bool,
-    dynastyCard: PropTypes.object,
-    hiddenDynastyCard: PropTypes.bool,
-    hiddenProvinceCard: PropTypes.bool,
-    isBroken: PropTypes.bool,
-    isMe: PropTypes.bool,
-    menu: PropTypes.array,
-    onCardClick: PropTypes.func,
-    onDragDrop: PropTypes.func,
-    onMenuItemClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    onTouchMove: PropTypes.func,
-    orientation: PropTypes.string,
-    popupLocation: PropTypes.string,
-    popupMenu: PropTypes.array,
-    provinceCard: PropTypes.object,
-    showDynastyRow: PropTypes.bool,
-    size: PropTypes.string,
-    source: PropTypes.oneOf([
-        'stronghold province',
-        'province 1',
-        'province 2',
-        'province 3',
-        'province 4'
-    ]).isRequired,
-    strongholdCard: PropTypes.object,
-    title: PropTypes.string
-};
 
 export default memo(Province);

@@ -1,5 +1,4 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
@@ -326,20 +325,6 @@ export function InnerPendingGame({
 }
 
 InnerPendingGame.displayName = 'PendingGame';
-InnerPendingGame.propTypes = {
-    apiError: PropTypes.string,
-    connecting: PropTypes.bool,
-    currentGame: PropTypes.object,
-    decks: PropTypes.array,
-    gameSocketClose: PropTypes.func,
-    host: PropTypes.string,
-    loadDecks: PropTypes.func,
-    loading: PropTypes.bool,
-    sendSocketMessage: PropTypes.func,
-    socket: PropTypes.object,
-    username: PropTypes.string,
-    zoomCard: PropTypes.func
-};
 
 function mapStateToProps(state) {
     return {

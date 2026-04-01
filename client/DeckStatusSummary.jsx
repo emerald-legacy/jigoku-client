@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { Check, X } from 'lucide-react';
 import GameModes from './GameModes';
 
@@ -51,8 +50,5 @@ function DeckStatusSummary({ status }) {
 }
 
 DeckStatusSummary.displayName = 'DeckStatusSummary';
-DeckStatusSummary.propTypes = {
-    status: PropTypes.object.isRequired
-};
 
 export default DeckStatusSummary;

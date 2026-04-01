@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import Clock from './Clock.jsx';
 import ClockPopup from './ClockPopup.jsx';
 
@@ -124,17 +123,5 @@ export function PlayerStatsBox({
 }
 
 PlayerStatsBox.displayName = 'PlayerStatsBox';
-PlayerStatsBox.propTypes = {
-    clockState: PropTypes.object,
-    firstPlayer: PropTypes.bool,
-    handSize: PropTypes.number,
-    otherPlayer: PropTypes.bool,
-    sendGameMessage: PropTypes.func,
-    showControls: PropTypes.bool,
-    size: PropTypes.string,
-    spectating: PropTypes.bool,
-    stats: PropTypes.object,
-    user: PropTypes.object
-};
 
 export default PlayerStatsBox;

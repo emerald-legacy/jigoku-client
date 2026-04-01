@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 function Input({
     children,
@@ -15,7 +14,7 @@ function Input({
 }) {
     return (
         <div className="form-group">
-            <label htmlFor={ name } className={ `${labelClass || ''} control-label` }>
+            <label htmlFor={ name } className={ `${labelClass || ""} control-label` }>
                 { label }
             </label>
             <div className={ fieldClass }>
@@ -38,18 +37,5 @@ function Input({
 }
 
 Input.displayName = 'Input';
-Input.propTypes = {
-    children: PropTypes.object,
-    fieldClass: PropTypes.string,
-    label: PropTypes.string,
-    labelClass: PropTypes.string,
-    name: PropTypes.string,
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func,
-    placeholder: PropTypes.string,
-    type: PropTypes.oneOf(['text', 'password']),
-    validationMessage: PropTypes.string,
-    value: PropTypes.string
-};
 
 export default Input;

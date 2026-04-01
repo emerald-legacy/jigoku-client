@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { format } from 'date-fns';
 
 function NewsItem({ icon, date, text }) {
@@ -11,10 +10,5 @@ function NewsItem({ icon, date, text }) {
 }
 
 NewsItem.displayName = 'NewsItem';
-NewsItem.propTypes = {
-    date: PropTypes.string,
-    icon: PropTypes.oneOf(['military', 'political']),
-    text: PropTypes.string
-};
 
 export default NewsItem;

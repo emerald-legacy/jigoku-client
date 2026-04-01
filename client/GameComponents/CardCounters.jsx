@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 import Counter from './Counter.jsx';
 import FateCounter from './FateCounter.jsx';
@@ -77,8 +76,5 @@ function CardCounters({ counters }) {
 }
 
 CardCounters.displayName = 'CardCounters';
-CardCounters.propTypes = {
-    counters: PropTypes.object.isRequired
-};
 
 export default CardCounters;

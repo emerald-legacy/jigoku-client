@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 import CardPile from './CardPile.jsx';
 
@@ -27,13 +26,5 @@ function AdditionalCardPile({ className, isMe, onMouseOut, onMouseOver, pile, sp
 }
 
 AdditionalCardPile.displayName = 'AdditionalCardPile';
-AdditionalCardPile.propTypes = {
-    className: PropTypes.string,
-    isMe: PropTypes.bool,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    pile: PropTypes.object,
-    spectating: PropTypes.bool
-};
 
 export default AdditionalCardPile;

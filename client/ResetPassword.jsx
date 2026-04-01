@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 
 import { connect } from 'react-redux';
@@ -143,12 +142,6 @@ export function InnerResetPassword({ id, token, navigate }) {
         </div>
     );
 }
-
-InnerResetPassword.propTypes = {
-    id: PropTypes.string,
-    navigate: PropTypes.func,
-    token: PropTypes.string
-};
 InnerResetPassword.displayName = 'ResetPassword';
 
 function mapStateToProps() {

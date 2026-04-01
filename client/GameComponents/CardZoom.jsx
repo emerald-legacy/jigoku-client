@@ -1,5 +1,4 @@
 import { memo } from 'react';
-import PropTypes from 'prop-types';
 
 function CardZoom({ cardName, imageUrl, orientation, show }) {
     let zoomClass = 'card-large';
@@ -21,11 +20,5 @@ function CardZoom({ cardName, imageUrl, orientation, show }) {
 }
 
 CardZoom.displayName = 'CardZoom';
-CardZoom.propTypes = {
-    cardName: PropTypes.string,
-    imageUrl: PropTypes.string,
-    orientation: PropTypes.oneOf(['horizontal', 'vertical']),
-    show: PropTypes.bool
-};
 
 export default memo(CardZoom);

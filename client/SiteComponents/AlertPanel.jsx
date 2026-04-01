@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { AlertTriangle, AlertCircle, Info, CheckCircle } from 'lucide-react';
 
 const typeConfig = {
@@ -23,12 +22,5 @@ function AlertPanel({ children, message, noIcon, title, type }) {
 }
 
 AlertPanel.displayName = 'AlertPanel';
-AlertPanel.propTypes = {
-    children: PropTypes.any,
-    message: PropTypes.string,
-    noIcon: PropTypes.bool,
-    title: PropTypes.string,
-    type: PropTypes.oneOf(['warning', 'info', 'success', 'error'])
-};
 
 export default AlertPanel;

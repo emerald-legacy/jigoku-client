@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 function ClockPopup({ clockName, mainTime, periods, timePeriod }) {
     return (
@@ -14,11 +13,5 @@ function ClockPopup({ clockName, mainTime, periods, timePeriod }) {
 }
 
 ClockPopup.displayName = 'ClockPopup';
-ClockPopup.propTypes = {
-    clockName: PropTypes.string,
-    mainTime: PropTypes.number,
-    periods: PropTypes.number,
-    timePeriod: PropTypes.number
-};
 
 export default ClockPopup;

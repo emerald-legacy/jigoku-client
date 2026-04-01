@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import GameModes from './GameModes';
 
@@ -253,13 +252,6 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
 }
 
 InnerNewGame.displayName = 'NewGame';
-InnerNewGame.propTypes = {
-    allowMelee: PropTypes.bool,
-    cancelNewGame: PropTypes.func,
-    defaultGameName: PropTypes.string,
-    loadDecks: PropTypes.func,
-    socket: PropTypes.object
-};
 
 function mapStateToProps(state) {
     return {

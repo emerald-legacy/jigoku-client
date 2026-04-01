@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import * as actions from './actions';
 
@@ -16,12 +15,6 @@ function InnerLink({ children, className, href, navigate }) {
 }
 
 InnerLink.displayName = 'Link';
-InnerLink.propTypes = {
-    children: PropTypes.node,
-    className: PropTypes.string,
-    href: PropTypes.string,
-    navigate: PropTypes.func
-};
 
 const mapStateToProps = (state, ownProps) => {
     return {

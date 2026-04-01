@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import StatusPopOver from './StatusPopOver.jsx';
@@ -182,11 +181,6 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
 }
 
 InnerDeckStatus.displayName = 'DeckStatus';
-InnerDeckStatus.propTypes = {
-    className: PropTypes.string,
-    deck: PropTypes.object.isRequired,
-    updateDeckStatus: PropTypes.func
-};
 
 function mapStateToProps() {
     return {};

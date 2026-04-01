@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -161,11 +160,6 @@ export function InnerLogin({ login, navigate, socket }) {
 }
 
 InnerLogin.displayName = 'Login';
-InnerLogin.propTypes = {
-    login: PropTypes.func,
-    navigate: PropTypes.func,
-    socket: PropTypes.object
-};
 
 function mapStateToProps(state) {
     return {

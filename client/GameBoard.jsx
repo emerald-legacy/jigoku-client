@@ -1,5 +1,4 @@
 import React, { createRef } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from '@reduxjs/toolkit';
 import Draggable from 'react-draggable';
@@ -905,20 +904,6 @@ export class InnerGameBoard extends React.Component {
 }
 
 InnerGameBoard.displayName = 'GameBoard';
-InnerGameBoard.propTypes = {
-    cardToZoom: PropTypes.object,
-    cards: PropTypes.object,
-    clearZoom: PropTypes.func,
-    closeGameSocket: PropTypes.func,
-    currentGame: PropTypes.object,
-    dispatch: PropTypes.func,
-    sendGameMessage: PropTypes.func,
-    setContextMenu: PropTypes.func,
-    socket: PropTypes.object,
-    user: PropTypes.object,
-    username: PropTypes.string,
-    zoomCard: PropTypes.func
-};
 
 function mapStateToProps(state) {
     return {

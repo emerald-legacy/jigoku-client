@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showCheckbox }) {
     const getStatusName = (status) => {
@@ -59,13 +58,5 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
 }
 
 DeckRow.displayName = 'DeckRow';
-DeckRow.propTypes = {
-    active: PropTypes.bool,
-    deck: PropTypes.object,
-    isSelected: PropTypes.bool,
-    onCheckboxChange: PropTypes.func,
-    onClick: PropTypes.func,
-    showCheckbox: PropTypes.bool
-};
 
 export default DeckRow;

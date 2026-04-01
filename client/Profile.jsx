@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -531,11 +530,6 @@ export function InnerProfile({ refreshUser, socket, user }) {
 }
 
 InnerProfile.displayName = 'Profile';
-InnerProfile.propTypes = {
-    refreshUser: PropTypes.func,
-    socket: PropTypes.object,
-    user: PropTypes.object
-};
 
 function mapStateToProps(state) {
     return {

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import PropTypes from 'prop-types';
 
 const formattedSeconds = (sec) =>
     (sec <= 0 ? '-' : '') +
@@ -117,15 +116,5 @@ function Clock({
 }
 
 Clock.displayName = 'Clock';
-Clock.propTypes = {
-    delayToStartClock: PropTypes.number,
-    mainTime: PropTypes.number,
-    manuallyPaused: PropTypes.bool,
-    mode: PropTypes.string,
-    periods: PropTypes.number,
-    secondsLeft: PropTypes.number,
-    stateId: PropTypes.number,
-    timePeriod: PropTypes.number
-};
 
 export default Clock;

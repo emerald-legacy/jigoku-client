@@ -1,5 +1,4 @@
 import { useRef, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import EmojiConvertor from 'emoji-js';
 import { CheckCircle, Info, AlertCircle, AlertTriangle } from 'lucide-react';
 import Avatar from '../Avatar.jsx';
@@ -225,11 +224,6 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
 }
 
 InnerMessages.displayName = 'Messages';
-InnerMessages.propTypes = {
-    messages: PropTypes.array,
-    onCardMouseOut: PropTypes.func,
-    onCardMouseOver: PropTypes.func
-};
 
 export default InnerMessages;
 export { InnerMessages };

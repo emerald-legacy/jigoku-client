@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 function Select({
     blankOption,
@@ -52,7 +51,7 @@ function Select({
 
     return (
         <div className="form-group">
-            <label htmlFor={ name } className={ `${labelClass || ''} control-label` }>
+            <label htmlFor={ name } className={ `${labelClass || ""} control-label` }>
                 { label }
             </label>
             <div className={ fieldClass }>
@@ -80,20 +79,5 @@ function Select({
 }
 
 Select.displayName = 'Select';
-Select.propTypes = {
-    blankOption: PropTypes.object,
-    button: PropTypes.object,
-    fieldClass: PropTypes.string,
-    label: PropTypes.string,
-    labelClass: PropTypes.string,
-    name: PropTypes.string,
-    nameKey: PropTypes.string,
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func,
-    options: PropTypes.array,
-    validationMessage: PropTypes.string,
-    value: PropTypes.string,
-    valueKey: PropTypes.string
-};
 
 export default Select;

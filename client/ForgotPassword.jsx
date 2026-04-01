@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
@@ -141,11 +140,6 @@ export function InnerForgotPassword() {
 }
 
 InnerForgotPassword.displayName = 'ForgotPassword';
-InnerForgotPassword.propTypes = {
-    login: PropTypes.func,
-    navigate: PropTypes.func,
-    socket: PropTypes.object
-};
 
 function mapStateToProps(state) {
     return {

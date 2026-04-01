@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 function CardMenu({ menu, onMenuItemClick }) {
     const handleMenuItemClick = (menuItem) => {
@@ -21,9 +20,5 @@ function CardMenu({ menu, onMenuItemClick }) {
 }
 
 CardMenu.displayName = 'CardMenu';
-CardMenu.propTypes = {
-    menu: PropTypes.array.isRequired,
-    onMenuItemClick: PropTypes.func
-};
 
 export default CardMenu;

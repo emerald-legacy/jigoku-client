@@ -1,7 +1,6 @@
-import PropTypes from 'prop-types';
 
 function Placeholder({ className: propsClassName, orientation = 'vertical', size }) {
-    let className = `panel placeholder ${propsClassName || ''}`;
+    let className = `panel placeholder ${propsClassName || ""}`;
 
     if(orientation === 'horizontal') {
         className += ' horizontal';
@@ -21,10 +20,5 @@ function Placeholder({ className: propsClassName, orientation = 'vertical', size
 }
 
 Placeholder.displayName = 'Placeholder';
-Placeholder.propTypes = {
-    className: PropTypes.string,
-    orientation: PropTypes.oneOf(['horizontal', 'bowed', 'vertical']),
-    size: PropTypes.string
-};
 
 export default Placeholder;

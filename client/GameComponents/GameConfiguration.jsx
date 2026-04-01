@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
 
 import Checkbox from '../FormComponents/Checkbox.jsx';
 
@@ -166,13 +165,5 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
 }
 
 GameConfiguration.displayName = 'GameConfiguration';
-GameConfiguration.propTypes = {
-    actionWindows: PropTypes.object,
-    onOptionSettingToggle: PropTypes.func,
-    onTimerSettingToggle: PropTypes.func,
-    onToggle: PropTypes.func,
-    optionSettings: PropTypes.object,
-    timerSettings: PropTypes.object
-};
 
 export default GameConfiguration;

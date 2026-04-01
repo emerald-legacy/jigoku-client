@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import AlertPanel from './SiteComponents/AlertPanel.jsx';
@@ -125,16 +124,6 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
 }
 
 InnerUserAdmin.displayName = 'UserAdmin';
-InnerUserAdmin.propTypes = {
-    apiError: PropTypes.string,
-    apiStatus: PropTypes.number,
-    clearUserStatus: PropTypes.func,
-    currentUser: PropTypes.object,
-    findUser: PropTypes.func,
-    loading: PropTypes.bool,
-    saveUser: PropTypes.func,
-    userSaved: PropTypes.bool
-};
 
 function mapStateToProps(state) {
     return {

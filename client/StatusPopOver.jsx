@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
 import ReactDOMServer from 'react-dom/server';
 
 function StatusPopOver({ children, show, status }) {
@@ -46,10 +45,5 @@ function StatusPopOver({ children, show, status }) {
 }
 
 StatusPopOver.displayName = 'StatusPopOver';
-StatusPopOver.propTypes = {
-    children: PropTypes.node.isRequired,
-    show: PropTypes.bool,
-    status: PropTypes.string
-};
 
 export default StatusPopOver;

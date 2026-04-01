@@ -1,6 +1,5 @@
 /* global __BUILD_VERSION__ */
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { X, Menu } from 'lucide-react';
@@ -127,13 +126,6 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }) {
 }
 
 InnerLobby.displayName = 'Lobby';
-InnerLobby.propTypes = {
-    bannerNotice: PropTypes.string,
-    loadNews: PropTypes.func,
-    loading: PropTypes.bool,
-    news: PropTypes.array,
-    users: PropTypes.array
-};
 
 function mapStateToProps(state) {
     return {

@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 function Avatar({ emailHash, float, forceDefault }) {
     let className = 'gravatar';
@@ -16,10 +15,5 @@ function Avatar({ emailHash, float, forceDefault }) {
 }
 
 Avatar.displayName = 'Avatar';
-Avatar.propTypes = {
-    emailHash: PropTypes.string,
-    float: PropTypes.bool,
-    forceDefault: PropTypes.bool
-};
 
 export default Avatar;

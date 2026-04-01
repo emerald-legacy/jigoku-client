@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { ArrowRight } from 'lucide-react';
 import { getCardImageUrl, getCardBackUrl } from '../cardImageUrl.js';
 
@@ -84,11 +83,5 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
 }
 
 AbilityTargeting.displayName = 'AbilityTargeting';
-AbilityTargeting.propTypes = {
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    source: PropTypes.object,
-    targets: PropTypes.array
-};
 
 export default AbilityTargeting;

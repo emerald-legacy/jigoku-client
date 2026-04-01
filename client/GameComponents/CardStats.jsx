@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, strengthSummary }) {
     const renderGroupedModifier = (groupedModifier) => {
@@ -82,12 +81,5 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
 }
 
 CardStats.displayName = 'CardStats';
-CardStats.propTypes = {
-    glorySummary: PropTypes.object,
-    militarySkillSummary: PropTypes.object,
-    politicalSkillSummary: PropTypes.object,
-    strengthSummary: PropTypes.object,
-    text: PropTypes.string
-};
 
 export default CardStats;

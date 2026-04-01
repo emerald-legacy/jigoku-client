@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import Avatar from '../Avatar.jsx';
 import Clock from './Clock.jsx';
 
@@ -112,16 +111,5 @@ export function PlayerStatsRow({
 }
 
 PlayerStatsRow.displayName = 'PlayerStatsRow';
-PlayerStatsRow.propTypes = {
-    clockState: PropTypes.object,
-    firstPlayer: PropTypes.bool,
-    handSize: PropTypes.number,
-    otherPlayer: PropTypes.bool,
-    sendGameMessage: PropTypes.func,
-    showControls: PropTypes.bool,
-    spectating: PropTypes.bool,
-    stats: PropTypes.object,
-    user: PropTypes.object
-};
 
 export default PlayerStatsRow;

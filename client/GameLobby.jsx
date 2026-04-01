@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import NewGame from './NewGame.jsx';
@@ -75,19 +74,6 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
 }
 
 InnerGameLobby.displayName = 'GameLobby';
-InnerGameLobby.propTypes = {
-    bannerNotice: PropTypes.string,
-    currentGame: PropTypes.object,
-    gameStats: PropTypes.object,
-    games: PropTypes.array,
-    isAdmin: PropTypes.bool,
-    loadGameStats: PropTypes.func,
-    newGame: PropTypes.bool,
-    passwordGame: PropTypes.object,
-    setContextMenu: PropTypes.func,
-    startNewGame: PropTypes.func,
-    username: PropTypes.string
-};
 
 function mapStateToProps(state) {
     return {

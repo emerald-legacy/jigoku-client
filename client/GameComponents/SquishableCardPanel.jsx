@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import Card from './Card.jsx';
 
@@ -127,20 +126,5 @@ function SquishableCardPanel({
 }
 
 SquishableCardPanel.displayName = 'SquishableCardPanel';
-SquishableCardPanel.propTypes = {
-    cardSize: PropTypes.string,
-    cards: PropTypes.array,
-    className: PropTypes.string,
-    isMe: PropTypes.bool,
-    maxCards: PropTypes.number,
-    onCardClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    showHand: PropTypes.bool,
-    source: PropTypes.string,
-    spectating: PropTypes.bool,
-    title: PropTypes.string,
-    username: PropTypes.string
-};
 
 export default SquishableCardPanel;

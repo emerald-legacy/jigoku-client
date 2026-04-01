@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import NewsItem from './NewsItem.jsx';
 
 function News({ news }) {
@@ -29,8 +28,5 @@ function News({ news }) {
 }
 
 News.displayName = 'News';
-News.propTypes = {
-    news: PropTypes.array
-};
 
 export default News;
