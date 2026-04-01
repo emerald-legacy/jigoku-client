@@ -241,7 +241,7 @@ function CardPile({
 
     const displayCardCount = cardCount || (cards ? cards.length : 0);
     if(displayCardCount === 0) {
-        className += ' panel';
+        className += " panel";
     }
     const headerText = title ? `${title} (${displayCardCount})` : '';
     const topCard = propsTopCard || (cards && cards[0]);
@@ -253,9 +253,9 @@ function CardPile({
     const displayTopCard = hiddenTopCard && !propsTopCard ? { facedown: true } : topCard;
 
     if(orientation === 'horizontal' || orientation === 'bowed') {
-        className += ' horizontal';
+        className += " horizontal";
     } else {
-        className += ' vertical';
+        className += " vertical";
     }
 
     return (

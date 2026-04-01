@@ -1,9 +1,9 @@
 
 function Avatar({ emailHash, float, forceDefault }) {
-    let className = 'gravatar';
+    let className = "gravatar";
 
     if(float) {
-        className += ' pull-left';
+        className += " pull-left";
     }
 
     return (

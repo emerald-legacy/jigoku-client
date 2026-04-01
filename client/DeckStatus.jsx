@@ -134,7 +134,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
     }, [clearValidationTimeout]);
 
     let statusName;
-    let className = 'deck-status';
+    let className = "deck-status";
 
     if(propsClassName) {
         className += ` ${propsClassName}`;
@@ -142,13 +142,13 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
 
     if(deckStatus.valid) {
         statusName = 'Valid';
-        className += ' valid';
+        className += " valid";
     } else if(deckStatus.valid === false) {
         statusName = 'Invalid';
-        className += ' invalid';
+        className += " invalid";
     } else {
         statusName = 'Validating';
-        className += ' casual-play';
+        className += " casual-play";
     }
 
     return (

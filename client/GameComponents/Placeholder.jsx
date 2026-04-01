@@ -3,9 +3,9 @@ function Placeholder({ className: propsClassName, orientation = 'vertical', size
     let className = `panel placeholder ${propsClassName || ""}`;
 
     if(orientation === 'horizontal') {
-        className += ' horizontal';
+        className += " horizontal";
     } else {
-        className += ' vertical';
+        className += " vertical";
     }
 
     if(size !== 'normal') {

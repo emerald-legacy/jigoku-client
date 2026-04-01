@@ -21,13 +21,13 @@ function StrongholdRow({
         return (
             <div
                 className={ `card-wrapper imperial-favor vertical ${cardSize} ${
-                    player && player.imperialFavor ? '' : 'hidden'
+                    player && player.imperialFavor ? "" : "hidden"
                 }` }
             >
                 { player && (
                     <img
                         className={ `card-image imperial-favor ${cardSize} ${
-                            player.imperialFavor ? '' : 'hidden'
+                            player.imperialFavor ? "" : "hidden"
                         } ` }
                         src={
                             '/img/' +

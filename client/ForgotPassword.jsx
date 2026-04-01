@@ -78,11 +78,11 @@ export function InnerForgotPassword() {
     ];
 
     const fieldsToRender = fields.map((field) => {
-        let className = 'form-group';
+        let className = "form-group";
         let validationMessage = null;
 
         if(validation[field.name]) {
-            className += ' has-error';
+            className += " has-error";
             validationMessage = <span className="help-block">{ validation[field.name] }</span>;
         }
 

@@ -83,13 +83,13 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
         }
 
         return cards?.map((card) => {
-            let className = '';
+            let className = "";
             if(needsSquish) {
-                className += ' squish';
+                className += " squish";
                 if(cardIndex++ === handLength) {
-                    className += ' tail';
+                    className += " tail";
                     if(attachmentOffset > (480 / (cardWidth * handLength))) {
-                        className += ' nohide';
+                        className += " nohide";
                     }
                 }
             }
@@ -112,8 +112,8 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
         }) || [];
     })();
 
-    let className = 'panel hand';
-    let titleBarClassName = 'hand-title-bar no-highlight';
+    let className = "panel hand";
+    let titleBarClassName = "hand-title-bar no-highlight";
 
     if(cardSize !== 'normal') {
         className += ` ${cardSize}`;
@@ -127,7 +127,7 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
     }
 
     if(needsSquish) {
-        className += ' squish';
+        className += " squish";
     }
 
     const handStyle = { width: `${handWidth}px` };

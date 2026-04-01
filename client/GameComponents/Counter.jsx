@@ -3,11 +3,11 @@ function Counter({ cancel, fade, name, shortName, value }) {
     let className = `counter ${name}`;
 
     if(cancel) {
-        className += ' cancel';
+        className += " cancel";
     }
 
     if(fade) {
-        className += ' fade-out';
+        className += " fade-out";
     }
 
     return (

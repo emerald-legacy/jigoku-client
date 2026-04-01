@@ -24,7 +24,7 @@ function Controls({
             </button>
             { showManualMode && (
                 <button
-                    className={ `btn btn-transparent ${manualModeEnabled ? 'manual' : 'auto'}` }
+                    className={ `btn btn-transparent ${manualModeEnabled ? "manual" : "auto"}` }
                     onClick={ onManualModeClick }
                 >
                     <Wrench size={ 16 } />

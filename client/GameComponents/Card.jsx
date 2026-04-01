@@ -136,13 +136,13 @@ function Card(props) {
         }
 
         if(targetRect.left + targetRect.width > pileRect.left - 10 && targetRect.left < pileRect.left + pileRect.width + 10) {
-            let dropTarget = '';
-            const pileClasses = nearestPile.className || '';
+            let dropTarget = "";
+            const pileClasses = nearestPile.className || "";
 
-            if(pileClasses.includes('hand')) {
-                dropTarget = 'hand';
-            } else if(pileClasses.includes('player-board')) {
-                dropTarget = 'play area';
+            if(pileClasses.includes("hand")) {
+                dropTarget = "hand";
+            } else if(pileClasses.includes("player-board")) {
+                dropTarget = "play area";
             } else {
                 const component = getReactComponentFromDOMNode(nearestPile);
                 if(component) {
@@ -307,7 +307,7 @@ function Card(props) {
             <CardPile
                 source='none'
                 title={ `${card.name}` }
-                className={ 'underneath' }
+                className="underneath"
                 cards={ cardPile }
                 onMouseOver={ onMouseOver }
                 onMouseOut={ onMouseOut }
@@ -363,7 +363,7 @@ function Card(props) {
                     id={ attachment.uuid }
                     source={ source }
                     card={ attachment }
-                    className={ 'attachment' }
+                    className="attachment"
                     wrapped={ false }
                     style={ { marginLeft: `${-1 * (index * attachmentOffset)}px`, marginTop: `${-1 * cardHeight - attachmentOffset * (attachment.bowed ? 1 : 0)}px`, zIndex: (cardLayer - index) } }
                     onMouseOver={ disableMouseOver ? null : () => handleMouseOver(attachment) }
@@ -392,7 +392,7 @@ function Card(props) {
             <CardPile
                 source='none'
                 title={ 'Underneath' }
-                className={ 'beside' }
+                className="beside"
                 cards={ underneathCards }
                 onMouseOver={ onMouseOver }
                 onMouseOut={ onMouseOut }

@@ -3,11 +3,11 @@ function FateCounter({ cancel, fade, name, value }) {
     let className = `fatecounter ${name}`;
 
     if(cancel) {
-        className += ' cancel';
+        className += " cancel";
     }
 
     if(fade) {
-        className += ' fade-out';
+        className += " fade-out";
     }
 
     return (

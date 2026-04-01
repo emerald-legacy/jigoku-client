@@ -136,7 +136,7 @@ function DeckSummary({ cards, deck, stats }) {
                     <div className="info-row row">
                         <span>Clan:</span>
                         { deck.faction ? (
-                            <span className={ 'pull-right' }>{ deck.faction.name }</span>
+                            <span className="pull-right">{ deck.faction.name }</span>
                         ) : null }
                     </div>
                     <div className="info-row row">

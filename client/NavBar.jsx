@@ -45,15 +45,15 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
 
     const renderMenuItem = (menuItem) => {
         if(menuItem.childItems) {
-            let className = 'dropdown';
+            let className = "dropdown";
             const isOpen = openDropdown === menuItem.name;
 
             if(menuItem.childItems.some(item => item.path === currentPath)) {
-                className += ' active';
+                className += " active";
             }
 
             if(isOpen) {
-                className += ' open';
+                className += " open";
             }
 
             const childItems = menuItem.childItems.map(item => (
@@ -74,7 +74,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
             );
         }
 
-        const active = menuItem.path === currentPath ? 'active' : '';
+        const active = menuItem.path === currentPath ? "active" : "";
 
         return <li key={ menuItem.name } className={ active }><Link href={ menuItem.path }>{ menuItem.name }</Link></li>;
     };
@@ -116,7 +116,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
                     <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
                     <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
                 </button>
-                <div id='navbar' className={ navbarCollapsed ? 'hidden md:flex md:items-center md:flex-1' : 'flex flex-col md:flex-row md:items-center md:flex-1 w-full md:w-auto' }>
+                <div id='navbar' className={ navbarCollapsed ? "hidden md:flex md:items-center md:flex-1" : "flex flex-col md:flex-row md:items-center md:flex-1 w-full md:w-auto" }>
                     <ul className="flex flex-col md:flex-row list-none m-0 p-0">
                         { leftMenuToRender }
                     </ul>

@@ -40,7 +40,7 @@ function DeckStatusSummary({ status }) {
     return (
         <ul className="deck-status-summary">
             { items.map((item, index) => (
-                <li className={ item.value ? 'valid' : 'invalid' } key={ index }>
+                <li className={ item.value ? "valid" : "invalid" } key={ index }>
                     { item.value ? <Check size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } /> : <X size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } /> }
                     { ` ${item.title}` }
                 </li>

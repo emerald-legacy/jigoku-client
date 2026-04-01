@@ -204,11 +204,11 @@ export function InnerRegister({ navigate, register, socket }) {
     ];
 
     const fieldsToRender = fields.map((field) => {
-        let className = 'form-group';
+        let className = "form-group";
         let validationElement = null;
 
         if(validation[field.name]) {
-            className += ' has-error';
+            className += " has-error";
             validationElement = (
                 <span className="help-block">{ validation[field.name] }</span>
             );

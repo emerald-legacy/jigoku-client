@@ -122,9 +122,9 @@ function Province({
     }
 
     if(orientation === 'horizontal' || orientation === 'bowed') {
-        className += ' horizontal';
+        className += " horizontal";
     } else {
-        className += ' vertical';
+        className += " vertical";
     }
 
     return (

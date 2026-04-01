@@ -96,7 +96,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
     let bgClassName = `ring-background tint-${ring.conflictType}${size ? ` ${size}` : ""}`;
     let svgClassName = `ring-svg tint-${ring.conflictType}${size ? ` ${size}` : ""}${ring.selected || ring.contested ? " contested" : ""}`;
     if(ring.unselectable) {
-        className += ' unselectable';
+        className += " unselectable";
         bgClassName += ' unselectable';
     }
 
@@ -105,7 +105,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
         (owner && (!ring.claimed || owner !== ring.claimedBy)) ||
         (!owner && ring.claimed)
     ) {
-        className += ' hidden';
+        className += " hidden";
         svgClassName += ' hidden';
         visible = false;
     }

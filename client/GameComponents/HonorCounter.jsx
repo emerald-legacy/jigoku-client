@@ -3,11 +3,11 @@ function HonorCounter({ cancel, fade, name, value }) {
     let className = `honorcounter ${name}`;
 
     if(cancel) {
-        className += ' cancel';
+        className += " cancel";
     }
 
     if(fade) {
-        className += ' fade-out';
+        className += " fade-out";
     }
 
     return (

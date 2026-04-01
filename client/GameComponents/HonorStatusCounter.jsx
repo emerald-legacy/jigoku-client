@@ -3,11 +3,11 @@ function HonorStatusCounter({ cancel, fade, name, honored, dishonored, tainted }
     let className = `honorstatuscounter ${name}`;
 
     if(cancel) {
-        className += ' cancel';
+        className += " cancel";
     }
 
     if(fade) {
-        className += ' fade-out';
+        className += " fade-out";
     }
 
     let totalProps = 0;

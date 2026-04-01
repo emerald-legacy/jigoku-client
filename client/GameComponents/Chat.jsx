@@ -40,7 +40,7 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
         }, 500);
     };
 
-    const classes = `chat${visible ? '' : ' collapsed'}`;
+    const classes = `chat${visible ? "" : " collapsed"}`;
 
     return (
         <div className={ classes }>

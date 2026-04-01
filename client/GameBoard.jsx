@@ -469,11 +469,11 @@ export class InnerGameBoard extends React.Component {
                 <div className="conflict-panel">
                     <div className="phase-display">
                         <span className={ conflictClass } >&nbsp;</span>
-                        { conflict.elements && conflict.elements.includes('fire') && <span className={ 'icon-element-fire' } >&nbsp;</span> }
-                        { conflict.elements && conflict.elements.includes('water') && <span className={ 'icon-element-water' } >&nbsp;</span> }
-                        { conflict.elements && conflict.elements.includes('earth') && <span className={ 'icon-element-earth' } >&nbsp;</span> }
-                        { conflict.elements && conflict.elements.includes('air') && <span className={ 'icon-element-air' } >&nbsp;</span> }
-                        { conflict.elements && conflict.elements.includes('void') && <span className={ 'icon-element-void' } /> }
+                        { conflict.elements && conflict.elements.includes('fire') && <span className="icon-element-fire">&nbsp;</span> }
+                        { conflict.elements && conflict.elements.includes('water') && <span className="icon-element-water">&nbsp;</span> }
+                        { conflict.elements && conflict.elements.includes('earth') && <span className="icon-element-earth">&nbsp;</span> }
+                        { conflict.elements && conflict.elements.includes('air') && <span className="icon-element-air">&nbsp;</span> }
+                        { conflict.elements && conflict.elements.includes('void') && <span className="icon-element-void" /> }
                     </div>
                 </div>
 
@@ -555,7 +555,7 @@ export class InnerGameBoard extends React.Component {
                 <img className="ring-attachments__ring-symbol" src={ `/img/military-${element}.png` } />
                 {
                     attachments.map((card, index) => {
-                        return (<div key={ card.uuid } className={ index !== 0 ? 'ring-attachment--stacked' : 'ring-attachment' } style={ {marginLeft: `${-1 * (index * attachmentOffset)}px`, zIndex: (cardLayer - index)} }>
+                        return (<div key={ card.uuid } className={ index !== 0 ? "ring-attachment--stacked" : "ring-attachment" } style={ {marginLeft: `${-1 * (index * attachmentOffset)}px`, zIndex: (cardLayer - index)} }>
                             <Card source='play area' card={ card } disableMouseOver={ card.facedown && !card.code }
                                 onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
                                 showStats={ false }
