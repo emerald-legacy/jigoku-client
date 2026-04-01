@@ -61,9 +61,9 @@ function GameStats({ stats }) {
                                 const isExpanded = expandedClan === clan;
 
                                 return (
-                                    <div key={ clan } className={ 'game-stats-clan-row' + (isExpanded ? ' expanded' : '') }>
+                                    <div key={ clan } className={ `game-stats-clan-row${isExpanded ? " expanded" : ""}` }>
                                         <div
-                                            className={ 'game-stats-clan' + (hasMatchups ? ' clickable' : '') }
+                                            className={ `game-stats-clan${hasMatchups ? " clickable" : ""}` }
                                             onClick={ hasMatchups ? () => toggleClan(clan) : undefined }
                                         >
                                             <img

@@ -28,7 +28,7 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
     const statusClass = getStatusClass(deck.status);
 
     return (
-        <div className={ `deck-row${active ? ' active' : ''}` } key={ deck.name } onClick={ onClick }>
+        <div className={ `deck-row${active ? " active" : ""}` } key={ deck.name } onClick={ onClick }>
             { showCheckbox && (
                 <div className="deck-row-checkbox" onClick={ (e) => e.stopPropagation() }>
                     <input

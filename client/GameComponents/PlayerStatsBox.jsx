@@ -29,18 +29,18 @@ export function PlayerStatsBox({
             <div className="state">
                 { showControls && (
                     <button
-                        className={ 'btn btn-stat ' + size }
+                        className={ `btn btn-stat ${size}` }
                         onClick={ () => sendUpdate(statToSet, 'down') }
                     >
                         <img src='/img/Minus.png' title='-' alt='-' />
                     </button>
                 ) }
-                <div className={ 'stat-image ' + size } style={ imageStyle } />
+                <div className={ `stat-image ${size}` } style={ imageStyle } />
                 <div>:</div>
-                <div className='stat-value'>{ getStatValueOrDefault(stat) }</div>
+                <div className="stat-value">{ getStatValueOrDefault(stat) }</div>
                 { showControls && (
                     <button
-                        className={ 'btn btn-stat ' + size }
+                        className={ `btn btn-stat ${size}` }
                         onClick={ () => sendUpdate(statToSet, 'up') }
                     >
                         <img src='/img/Plus.png' title='+' alt='+' />

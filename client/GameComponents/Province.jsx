@@ -85,17 +85,17 @@ function Province({
 
         if(attachmentCount > 0) {
             wrapperStyle = {
-                marginLeft: 4 + attachmentCount * attachmentOffset + 'px',
-                minHeight: cardHeight + totalTiers * attachmentOffset + 'px'
+                marginLeft: `${4 + attachmentCount * attachmentOffset}px`,
+                minHeight: `${cardHeight + totalTiers * attachmentOffset}px`
             };
         }
 
         return wrapperStyle;
     };
 
-    let className = 'panel province ' + size;
+    let className = `panel province ${size}`;
     const displayCardCount = cardCount || (cards ? cards.length : '0');
-    const headerText = title ? title + ' (' + displayCardCount + ')' : '';
+    const headerText = title ? `${title} (${displayCardCount})` : '';
 
     let provinceCard =
         propsProvinceCard || cards?.find((card) => card.isProvince);
@@ -118,7 +118,7 @@ function Province({
     }
 
     if(size !== 'normal') {
-        cardClassName += ' ' + size;
+        cardClassName += ` ${size}`;
     }
 
     if(orientation === 'horizontal' || orientation === 'bowed') {

@@ -1,10 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 
 const formattedSeconds = (sec) =>
-    (sec <= 0 ? '-' : '') +
-    Math.floor(Math.abs(sec) / 60) +
-    ':' +
-    ('0' + (Math.abs(sec) % 60)).slice(-2);
+    `${sec <= 0 ? '-' : ''}${Math.floor(Math.abs(sec) / 60)}:${String(Math.abs(sec) % 60).padStart(2, '0')}`;
 
 function Clock({
     delayToStartClock: propDelayToStartClock,
@@ -100,10 +97,7 @@ function Clock({
         return `${formattedSeconds(timeLeftInPeriod)} (${stage})`;
     };
 
-    let className = 'player-stats-row state clock';
-    if(mode !== 'stop') {
-        className += ' clock-active';
-    }
+    let className = `player-stats-row state clock${mode !== 'stop' ? " clock-active" : ""}`;
 
     return (
         <div className={ className }>

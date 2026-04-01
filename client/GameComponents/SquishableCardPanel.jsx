@@ -79,7 +79,7 @@ function SquishableCardPanel({
             let style = {};
             if(needsSquish) {
                 style = {
-                    left: left + 'px'
+                    left: `${left}px`
                 };
             }
 
@@ -111,8 +111,8 @@ function SquishableCardPanel({
     });
 
     const style = {
-        width: dimensions.width + 'px',
-        height: dimensions.height + 'px'
+        width: `${dimensions.width}px`,
+        height: `${dimensions.height}px`
     };
 
     return (

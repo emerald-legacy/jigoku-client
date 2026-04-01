@@ -53,7 +53,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
         // Filter out undefined, null, or negative counters
         const filteredCounters = {};
         for(const [key, counter] of Object.entries(counters)) {
-            if(counter !== undefined && counter !== null && counter.count >= 0) {
+            if(counter != null && counter.count >= 0) { // eslint-disable-line eqeqeq
                 filteredCounters[key] = counter;
             }
         }
@@ -92,15 +92,11 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
         size = 'small';
     }
 
-    let className = 'ring icon-element-' + ring.element + (size ? ' ' + size : '');
-    let bgClassName = 'ring-background tint-' + ring.conflictType + (size ? ' ' + size : '');
-    let svgClassName =
-        'ring-svg tint-' +
-        ring.conflictType +
-        (size ? ' ' + size : '') +
-        (ring.selected || ring.contested ? ' contested' : '');
+    let className = `ring icon-element-${ring.element}${size ? ` ${size}` : ""}`;
+    let bgClassName = `ring-background tint-${ring.conflictType}${size ? ` ${size}` : ""}`;
+    let svgClassName = `ring-svg tint-${ring.conflictType}${size ? ` ${size}` : ""}${ring.selected || ring.contested ? " contested" : ""}`;
     if(ring.unselectable) {
-        className = className + ' unselectable';
+        className += ' unselectable';
         bgClassName += ' unselectable';
     }
 
@@ -122,7 +118,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
 
     return (
         <div
-            className={ 'ring no-highlight' + (ring.unselectable ? ' unselectable' : '') }
+            className={ `ring no-highlight${ring.unselectable ? " unselectable" : ""}` }
             onClick={ (event) => handleClick(event, ring.element) }
             onMouseEnter={ () => setIsHovered(true) }
             onMouseLeave={ () => setIsHovered(false) }

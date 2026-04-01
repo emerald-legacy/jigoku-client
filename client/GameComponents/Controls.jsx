@@ -15,7 +15,7 @@ function Controls({
     return (
         <div className="controls panel">
             <button
-                className={ 'btn btn-transparent' + (showChatAlert ? ' with-alert' : '') }
+                className={ `btn btn-transparent${showChatAlert ? " with-alert" : ""}` }
                 onClick={ onToggleChatClick }
             >
                 <Menu size={ 16 } />
@@ -24,11 +24,11 @@ function Controls({
             </button>
             { showManualMode && (
                 <button
-                    className={ 'btn btn-transparent ' + (manualModeEnabled ? 'manual' : 'auto') }
+                    className={ `btn btn-transparent ${manualModeEnabled ? 'manual' : 'auto'}` }
                     onClick={ onManualModeClick }
                 >
                     <Wrench size={ 16 } />
-                    { laptopSize ? '' : ' Manual Mode ' + (manualModeEnabled ? ' Enabled' : 'Disabled') }
+                    { laptopSize ? '' : ` Manual Mode ${manualModeEnabled ? ' Enabled' : 'Disabled'}` }
                 </button>
             ) }
             <button className="btn btn-transparent" onClick={ onSettingsClick }>

@@ -44,7 +44,7 @@ export function loadDeck(deckId) {
             return !state.cards.decks?.some(deck => deck._id === deckId);
         },
         callAPI: async () => {
-            const response = await axios.get('/api/decks/' + deckId);
+            const response = await axios.get(`/api/decks/${deckId}`);
 
             if(response.data.deck) {
                 const gameMode = response.data.deck.format && response.data.deck.format.value ? response.data.deck.format.value : 'stronghold';
@@ -96,7 +96,7 @@ export function deleteDeck(deck) {
     return {
         types: ['DELETE_DECK', 'DECK_DELETED'],
         shouldCallAPI: () => true,
-        callAPI: () => axios.delete('/api/decks/' + deck._id).then(r => r.data)
+        callAPI: () => axios.delete(`/api/decks/${deck._id}`).then(r => r.data)
     };
 }
 
@@ -125,7 +125,7 @@ export function saveDeck(deck) {
         types: ['SAVE_DECK', 'DECK_SAVED'],
         shouldCallAPI: () => true,
         callAPI: () => {
-            const url = '/api/decks/' + (deck._id || '');
+            const url = `/api/decks/${deck._id || ''}`;
             const method = deck._id ? 'put' : 'post';
             return axios[method](url, { data: str }).then(r => r.data);
         }

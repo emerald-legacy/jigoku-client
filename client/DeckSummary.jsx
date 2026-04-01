@@ -66,11 +66,11 @@ function DeckSummary({ cards, deck, stats }) {
 
             for(const card of cardList) {
                 const cardKey = card.pack_id
-                    ? card.card.id + '-' + card.pack_id
+                    ? `${card.card.id}-${card.pack_id}`
                     : card.card.id;
                 cardElements.push(
                     <div key={ cardKey }>
-                        <span>{ card.count + 'x ' }</span>
+                        <span>{ `${card.count}x ` }</span>
                         <span
                             className="card-link"
                             onMouseOver={ (event) =>

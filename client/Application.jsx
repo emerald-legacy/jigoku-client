@@ -137,9 +137,9 @@ class App extends React.Component {
         });
 
         socket.on('handoff', server => {
-            let url = (server.protocol || 'https') + '://' + server.address;
+            let url = `${server.protocol || 'https'}://${server.address}`;
             if(server.port && server.port !== 80 && server.port !== 443) {
-                url += ':' + server.port;
+                url += `:${server.port}`;
             }
 
             this.props.onGameHandoffReceived(server);
@@ -148,10 +148,10 @@ class App extends React.Component {
                 this.props.closeGameSocket();
             }
 
-            this.props.gameSocketConnecting(url + '/' + server.name);
+            this.props.gameSocketConnecting(`${url}/${server.name}`);
 
             let gameSocket = io(url, {
-                path: '/' + server.name + '/socket.io',
+                path: `/${server.name}/socket.io`,
                 reconnection: true,
                 reconnectionDelay: 2000,
                 reconnectionDelayMax: 10000,
@@ -162,7 +162,7 @@ class App extends React.Component {
             });
 
             gameSocket.on('connect_error', (err) => {
-                toast.error('There was an error connecting to the game server: ' + err.message + '(' + err.description + ')', { description: 'Connect Error' });
+                toast.error(`There was an error connecting to the game server: ${err.message}(${err.description})`, { description: 'Connect Error' });
             });
 
             gameSocket.on('disconnect', () => {
@@ -174,7 +174,7 @@ class App extends React.Component {
             });
 
             gameSocket.io.on('reconnect_attempt', (attemptNumber) => {
-                toast.info('Attempt number ' + attemptNumber + ' to reconnect..', { description: 'Reconnecting' });
+                toast.info(`Attempt number ${attemptNumber} to reconnect..`, { description: 'Reconnecting' });
 
                 this.props.gameSocketReconnecting(attemptNumber);
             });
@@ -231,7 +231,7 @@ class App extends React.Component {
 
     getUrlParameter(name) {
         name = name.replace(/[[]/, '\\[').replace(/[\]]/, '\\]');
-        let regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        let regex = new RegExp(`[\\?&]${name}=([^&#]*)`);
         let results = regex.exec(location.search);
 
         return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));

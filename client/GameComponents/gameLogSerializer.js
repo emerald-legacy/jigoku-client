@@ -13,7 +13,7 @@ function fragmentToText(fragment) {
 
     if(typeof fragment === 'string') {
         if(iconsConflict.includes(fragment) || iconsElement.includes(fragment) || iconsClan.includes(fragment) || otherIcons.includes(fragment)) {
-            return '[' + fragment + ']';
+            return `[${fragment}]`;
         }
         return fragment;
     }
@@ -29,9 +29,9 @@ function fragmentToText(fragment) {
     if(fragment.alert) {
         const alertText = fragmentToText(fragment.alert.message);
         if(fragment.alert.type === 'endofround') {
-            return '--- ' + alertText + ' ---';
+            return `--- ${alertText} ---`;
         }
-        return '[' + fragment.alert.type.toUpperCase() + '] ' + alertText;
+        return `[${fragment.alert.type.toUpperCase()}] ${alertText}`;
     }
 
     if(fragment.message) {
@@ -44,7 +44,7 @@ function fragmentToText(fragment) {
 
     if(fragment.id) {
         if(fragment.type === 'ring') {
-            return 'the ' + fragment.element + ' ring';
+            return `the ${fragment.element} ring`;
         }
         if(fragment.type === 'player') {
             return fragment.name;
@@ -103,17 +103,15 @@ export function downloadGameLog(currentGame) {
     const url = URL.createObjectURL(blob);
 
     const now = new Date();
-    const date = now.getFullYear() +
-        '-' + String(now.getMonth() + 1).padStart(2, '0') +
-        '-' + String(now.getDate()).padStart(2, '0');
+    const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
     const sanitize = (s) => (s || '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
     const gameName = sanitize(log.metadata.gameName);
     const playerParts = log.metadata.players
-        .map((p) => sanitize(p.name) + '-' + sanitize(p.faction))
+        .map((p) => `${sanitize(p.name)}-${sanitize(p.faction)}`)
         .join('_vs_');
 
-    const filename = date + '_' + gameName + '_' + playerParts + '.json.gz';
+    const filename = `${date}_${gameName}_${playerParts}.json.gz`;
 
     const a = document.createElement('a');
     a.href = url;

@@ -98,8 +98,8 @@ function Card(props) {
     const onTouchMove = (event) => {
         event.preventDefault();
         const touch = event.targetTouches[0];
-        event.currentTarget.style.left = touch.screenX - 32 + 'px';
-        event.currentTarget.style.top = touch.screenY - 42 + 'px';
+        event.currentTarget.style.left = `${touch.screenX - 32}px`;
+        event.currentTarget.style.top = `${touch.screenY - 42}px`;
         event.currentTarget.style.position = 'fixed';
     };
 
@@ -156,8 +156,8 @@ function Card(props) {
         }
 
         if(touchStart) {
-            target.style.left = touchStart.left + 'px';
-            target.style.top = touchStart.top + 'px';
+            target.style.left = `${touchStart.left}px`;
+            target.style.top = `${touchStart.top}px`;
         }
         event.currentTarget.style.position = 'initial';
     };
@@ -224,7 +224,7 @@ function Card(props) {
         // Filter out undefined, null, or negative counters
         const filteredCounters = {};
         Object.entries(counters).forEach(([key, counter]) => {
-            if(counter !== undefined && counter !== null && !(typeof counter === 'number' && counter < 0)) {
+            if(counter != null && !(typeof counter === 'number' && counter < 0)) { // eslint-disable-line eqeqeq
                 filteredCounters[key] = counter;
             }
         });
@@ -244,7 +244,7 @@ function Card(props) {
             }
         }
         if(size !== 'normal') {
-            wrapperClassName += ' ' + size;
+            wrapperClassName += ` ${size}`;
         }
         if(isMe) {
             wrapperClassName += ' is-mine';
@@ -289,7 +289,7 @@ function Card(props) {
         });
 
         if(attachmentCount > 0) {
-            wrapperStyle = { marginLeft: (4 + attachmentCount * attachmentOffset) + 'px', minHeight: (cardHeight + totalTiers * attachmentOffset) + 'px', marginTop: cardPile ? '25px' : '0px' };
+            wrapperStyle = { marginLeft: `${4 + attachmentCount * attachmentOffset}px`, minHeight: `${cardHeight + totalTiers * attachmentOffset}px`, marginTop: cardPile ? '25px' : '0px' };
         } else if(source === 'play area') {
             wrapperStyle = { marginLeft: '4px', marginRight: '4px', marginTop: cardPile ? '25px' : '0px' };
         }
@@ -365,7 +365,7 @@ function Card(props) {
                     card={ attachment }
                     className={ 'attachment' }
                     wrapped={ false }
-                    style={ { marginLeft: (-1 * (index * attachmentOffset)) + 'px', marginTop: (-1 * cardHeight - attachmentOffset * (attachment.bowed ? 1 : 0)) + 'px', zIndex: (cardLayer - index) } }
+                    style={ { marginLeft: `${-1 * (index * attachmentOffset)}px`, marginTop: `${-1 * cardHeight - attachmentOffset * (attachment.bowed ? 1 : 0)}px`, zIndex: (cardLayer - index) } }
                     onMouseOver={ disableMouseOver ? null : () => handleMouseOver(attachment) }
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
                     onClick={ onClick }
@@ -535,11 +535,11 @@ function Card(props) {
         }
 
         if(size !== 'normal') {
-            cardClass += ' ' + size;
-            imageClass += ' ' + size;
+            cardClass += ` ${size}`;
+            imageClass += ` ${size}`;
         }
 
-        cardClass += ' card-type-' + card.type;
+        cardClass += ` card-type-${card.type}`;
 
         if(orientation === 'bowed' || card.bowed) {
             cardClass += ' horizontal';
@@ -575,7 +575,7 @@ function Card(props) {
         }
 
         if(className) {
-            cardClass += ' ' + className;
+            cardClass += ` ${className}`;
         }
 
         if(card.isConflict || source === 'conflict deck') {
@@ -637,7 +637,7 @@ function Card(props) {
 
     if(wrapped) {
         return (
-            <div className={ 'card-wrapper ' + getWrapper() } style={ Object.assign({}, style ? style : {}, getWrapperStyle()) }>
+            <div className={ `card-wrapper ${getWrapper()}` } style={ Object.assign({}, style ? style : {}, getWrapperStyle()) }>
                 { getCardElement() }
                 { getCardPileElement() }
                 { getAttachments() }
