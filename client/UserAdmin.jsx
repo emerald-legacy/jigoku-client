@@ -87,7 +87,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
             <div>
                 <h3>User details</h3>
 
-                <form className='form'>
+                <form className="form">
                     <dl>
                         <dt>Username:</dt><dd>{ currentUser.username }</dd>
                         <dt>Email:</dt><dd>{ currentUser.email }</dd>
@@ -96,7 +96,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
 
                     <h4>Permissions</h4>
                     { permissionsElements }
-                    <button type='button' className='btn btn-primary' onClick={ onSaveClick }>Save</button>
+                    <button type='button' className="btn btn-primary" onClick={ onSaveClick }>Save</button>
                 </form>
             </div>
         );
@@ -111,9 +111,9 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
             <div>
                 { notFoundMessage }
                 { successPanel }
-                <form className='form'>
+                <form className="form">
                     <Input name='username' label='Search for a user' value={ username } onChange={ onUsernameChange } placeholder='Enter username' />
-                    <button type='submit' className='btn btn-primary' onClick={ onFindClick }>Find</button>
+                    <button type='submit' className="btn btn-primary" onClick={ onFindClick }>Find</button>
                 </form>
 
                 { renderedUser }

@@ -6,8 +6,8 @@ function News({ news }) {
 
     if(!news || news.length === 0) {
         return (
-            <div className='news-container'>
-                <div className='military-container'>There is no site news at the moment</div>
+            <div className="news-container">
+                <div className="military-container">There is no site news at the moment</div>
             </div>
         );
     }
@@ -22,7 +22,7 @@ function News({ news }) {
     ));
 
     return (
-        <div className='news-container'>
+        <div className="news-container">
             { newsItems }
         </div>
     );

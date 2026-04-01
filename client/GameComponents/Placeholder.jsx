@@ -15,7 +15,7 @@ function Placeholder({ className: propsClassName, orientation = 'vertical', size
 
     return (
         <div className={ className }>
-            <div className='card-placeholder' />
+            <div className="card-placeholder" />
         </div>
     );
 }

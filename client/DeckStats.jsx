@@ -13,8 +13,8 @@ const reasonLabels = {
 function DeckStats({ stats }) {
     if(!stats) {
         return (
-            <div className='deck-stats'>
-                <div className='deck-stats-title'>No games recorded</div>
+            <div className="deck-stats">
+                <div className="deck-stats-title">No games recorded</div>
             </div>
         );
     }
@@ -24,8 +24,8 @@ function DeckStats({ stats }) {
 
     if(totalGames === 0) {
         return (
-            <div className='deck-stats'>
-                <div className='deck-stats-title'>No games recorded</div>
+            <div className="deck-stats">
+                <div className="deck-stats-title">No games recorded</div>
             </div>
         );
     }
@@ -50,16 +50,16 @@ function DeckStats({ stats }) {
         }));
 
     return (
-        <div className='deck-stats'>
-            <div className='deck-stats-title'>
+        <div className="deck-stats">
+            <div className="deck-stats-title">
                 Record: { totalWins }W / { totalLosses }L ({ winRate }%)
             </div>
             { clanEntries.length > 0 && (
-                <div className='deck-stats-clans'>
+                <div className="deck-stats-clans">
                     { clanEntries.map(({ clan, wins, losses }) => (
-                        <div key={ clan } className='deck-stats-clan'>
+                        <div key={ clan } className="deck-stats-clan">
                             <img
-                                className='deck-stats-clan-icon'
+                                className="deck-stats-clan-icon"
                                 src={ `/img/mons/${clan}.png` }
                                 title={ clan }
                             />
@@ -69,9 +69,9 @@ function DeckStats({ stats }) {
                 </div>
             ) }
             { reasonEntries.length > 0 && (
-                <div className='deck-stats-reasons'>
+                <div className="deck-stats-reasons">
                     { reasonEntries.map(({ key, label, wins, losses }) => (
-                        <span key={ key } className='deck-stats-reason'>
+                        <span key={ key } className="deck-stats-reason">
                             { label }: { wins }W { losses }L
                         </span>
                     )) }

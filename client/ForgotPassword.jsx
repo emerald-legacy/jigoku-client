@@ -84,16 +84,16 @@ export function InnerForgotPassword() {
 
         if(validation[field.name]) {
             className += ' has-error';
-            validationMessage = <span className='help-block'>{ validation[field.name] }</span>;
+            validationMessage = <span className="help-block">{ validation[field.name] }</span>;
         }
 
         return (
             <div key={ field.name } className={ className }>
-                <label htmlFor={ field.name } className='col-sm-2 control-label'>{ field.label }</label>
-                <div className='col-sm-6'>
+                <label htmlFor={ field.name } className="col-sm-2 control-label">{ field.label }</label>
+                <div className="col-sm-6">
                     <input
                         type={ field.inputType }
-                        className='form-control'
+                        className="form-control"
                         id={ field.name }
                         placeholder={ field.placeholder }
                         value={ field.name === 'username' ? username : '' }
@@ -107,33 +107,33 @@ export function InnerForgotPassword() {
     });
 
     if(success) {
-        return <div><div className='alert alert-success' role='alert'>{ success }</div></div>;
+        return <div><div className="alert alert-success" role='alert'>{ success }</div></div>;
     }
 
-    const errorBar = error ? <div className='alert alert-danger' role='alert'>{ error }</div> : null;
+    const errorBar = error ? <div className="alert alert-danger" role='alert'>{ error }</div> : null;
 
     return (
         <div>
             { errorBar }
             <AlertPanel type='info' message='To start the password recovery process, please enter your username and click the submit button.' />
-            <div className='col-sm-6 col-sm-offset-3'>
-                <div className='panel-title'>
+            <div className="col-sm-6 col-sm-offset-3">
+                <div className="panel-title">
                     Forgot password
                 </div>
-                <div className='panel'>
-                    <form className='form form-horizontal'>
+                <div className="panel">
+                    <form className="form form-horizontal">
                         { fieldsToRender }
-                        <div className='form-group'>
-                            <div className='col-sm-offset-2 col-sm-3'>
+                        <div className="form-group">
+                            <div className="col-sm-offset-2 col-sm-3">
                                 { submitting ? (
-                                    <button type='submit' className='btn btn-primary' disabled>Submitting...</button>
+                                    <button type='submit' className="btn btn-primary" disabled>Submitting...</button>
                                 ) : (
-                                    <button type='submit' className='btn btn-primary' onClick={ onSubmit }>Submit</button>
+                                    <button type='submit' className="btn btn-primary" onClick={ onSubmit }>Submit</button>
                                 ) }
                             </div>
                         </div>
                     </form>
-                    <p className='small text-muted'>This site is protected by reCAPTCHA and the Google <a href='https://policies.google.com/privacy'>Privacy Policy</a> and <a href='https://policies.google.com/terms'>Terms of Service</a> apply.</p>
+                    <p className="small text-muted">This site is protected by reCAPTCHA and the Google <a href='https://policies.google.com/privacy'>Privacy Policy</a> and <a href='https://policies.google.com/terms'>Terms of Service</a> apply.</p>
                 </div>
             </div>
         </div>

@@ -70,33 +70,33 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         const modeModifier = gameModeModifiers[game.gameMode] || '';
 
         return (
-            <div key={ game.id } className={ 'game-row' + (modeModifier ? ' ' + modeModifier : '') + (game.node && isAdmin ? ' ' + game.node : '') }>
-                <div className='game-row-header'>
-                    { (isAdmin || (game.started && game.owner === username)) ? <a href='#' className='game-row-remove' onClick={ (event) => removeGame(event, game) }><X size={ 14 } /></a> : null }
-                    { game.needsPassword ? <span className='game-badge game-badge-lock'>{ '\uD83D\uDD12' }</span> : null }
+            <div key={ game.id } className={ `game-row${modeModifier ? ` ${modeModifier}` : ""}${game.node && isAdmin ? ` ${game.node}` : ""}` }>
+                <div className="game-row-header">
+                    { (isAdmin || (game.started && game.owner === username)) ? <a href='#' className="game-row-remove" onClick={ (event) => removeGame(event, game) }><X size={ 14 } /></a> : null }
+                    { game.needsPassword ? <span className="game-badge game-badge-lock">{ '\uD83D\uDD12' }</span> : null }
                     { modeLabel ? <span className={ 'game-badge game-badge-mode' }>{ modeLabel }</span> : null }
-                    { game.gameType ? <span className={ 'game-badge game-badge-type-' + game.gameType }>{ game.gameType }</span> : null }
-                    { game.clocks && game.clocks.type !== 'none' ? <img src='/img/free-clock-icon-png.png' className='clock-icon' /> : null }
-                    <span className='game-row-name'>{ game.name }</span>
+                    { game.gameType ? <span className={ `game-badge game-badge-type-${game.gameType}` }>{ game.gameType }</span> : null }
+                    { game.clocks && game.clocks.type !== 'none' ? <img src='/img/free-clock-icon-png.png' className="clock-icon" /> : null }
+                    <span className="game-row-name">{ game.name }</span>
                 </div>
-                <div className='game-row-content'>
-                    <div className='game-row-players'>
+                <div className="game-row-content">
+                    <div className="game-row-players">
                         { players.map((player, i) => (
-                            <span key={ player.name } className='game-row-player'>
-                                { i > 0 && <span className='game-row-vs'>vs</span> }
+                            <span key={ player.name } className="game-row-player">
+                                { i > 0 && <span className="game-row-vs">vs</span> }
                                 <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } />
-                                <span className='player-name'>{ player.name }</span>
-                                <span className={ 'game-icon icon-clan-' + player.faction } />
+                                <span className="player-name">{ player.name }</span>
+                                <span className={ `game-icon icon-clan-${player.faction}` } />
                             </span>
                         )) }
-                        { playerCount === 0 && <span className='game-row-empty'>Waiting for players...</span> }
+                        { playerCount === 0 && <span className="game-row-empty">Waiting for players...</span> }
                     </div>
-                    <div className='game-row-buttons'>
+                    <div className="game-row-buttons">
                         { canWatch(game) ?
-                            <button className='btn btn-primary btn-sm' onClick={ (event) => watchGame(event, game) }>Watch</button> : null }
+                            <button className="btn btn-primary btn-sm" onClick={ (event) => watchGame(event, game) }>Watch</button> : null }
                         { (currentGame || playerCount === 2 || game.started) ?
                             null :
-                            <button className='btn btn-primary btn-sm' onClick={ (event) => joinGame(event, game) }>Join</button>
+                            <button className="btn btn-primary btn-sm" onClick={ (event) => joinGame(event, game) }>Join</button>
                         }
                     </div>
                 </div>
@@ -105,7 +105,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
     });
 
     return (
-        <div className='game-list'>
+        <div className="game-list">
             { gameList }
         </div>
     );

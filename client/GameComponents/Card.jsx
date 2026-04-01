@@ -414,7 +414,7 @@ function Card(props) {
         if(!card.order) {
             return null;
         }
-        return (<div className='card-order'>{ card.order }</div>);
+        return (<div className="card-order">{ card.order }</div>);
     };
 
     const shouldShowMenu = () => {
@@ -505,19 +505,19 @@ function Card(props) {
         }
 
         let linkIndex = 0;
-        const popupMenu = (<div>{ [<a className='btn btn-default' key={ linkIndex++ } onClick={ () => onPopupMenuItemClick() }>Select Card</a>] }</div>);
+        const popupMenu = (<div>{ [<a className="btn btn-default" key={ linkIndex++ } onClick={ () => onPopupMenuItemClick() }>Select Card</a>] }</div>);
 
         return (
-            <div className='popup'>
-                <div className='panel-title' onClick={ event => event.stopPropagation() }>
-                    <span className='text-center'>{ title }</span>
-                    <span className='pull-right'>
-                        <a className='close-button' onClick={ onCloseClickHandler }><X size={ 16 } /></a>
+            <div className="popup">
+                <div className="panel-title" onClick={ event => event.stopPropagation() }>
+                    <span className="text-center">{ title }</span>
+                    <span className="pull-right">
+                        <a className="close-button" onClick={ onCloseClickHandler }><X size={ 16 } /></a>
                     </span>
                 </div>
                 <div className={ popupClass } onClick={ event => event.stopPropagation() }>
                     { popupMenu }
-                    <div className='inner'>
+                    <div className="inner">
                         { cardList }
                     </div>
                     <div className={ arrowClass } />
@@ -616,7 +616,7 @@ function Card(props) {
                     draggable
                 >
                     <div>
-                        <span className='card-name'>{ card.name }</span>
+                        <span className="card-name">{ card.name }</span>
                         <img className={ imageClass } src={ !isFacedown() && !card.isToken ? getCardImagePath() : getCardBackUrl(cardBack) } />
                     </div>
                     <CardCounters counters={ getCountersForCard(card) } />

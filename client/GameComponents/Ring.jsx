@@ -76,14 +76,14 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
     const getIcon = () => {
         if(ring.conflictType === 'military') {
             return (
-                <span className='icon-military'>
-                    <span className='hide-text'>military</span>
+                <span className="icon-military">
+                    <span className="hide-text">military</span>
                 </span>
             );
         }
         return (
-            <span className='icon-political'>
-                <span className='hide-text'>political</span>
+            <span className="icon-political">
+                <span className="hide-text">political</span>
             </span>
         );
     };
@@ -139,9 +139,9 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
                 <CardMenu menu={ ring.menu } onMenuItemClick={ handleMenuItemClick } />
             ) : null }
             { shouldShowTooltip && ringEffect ? (
-                <div className='ring-tooltip'>
-                    <div className='ring-tooltip-title'>{ ring.element.charAt(0).toUpperCase() + ring.element.slice(1) }</div>
-                    <div className='ring-tooltip-text'>{ ringEffect }</div>
+                <div className="ring-tooltip">
+                    <div className="ring-tooltip-title">{ `${ring.element.charAt(0).toUpperCase()}${ring.element.slice(1)}` }</div>
+                    <div className="ring-tooltip-text">{ ringEffect }</div>
                 </div>
             ) : null }
         </div>

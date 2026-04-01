@@ -119,7 +119,7 @@ function SquishableCardPanel({
     return (
         <div className={ panelClassName } style={ style }>
             { title && (
-                <div className='panel-header'>{ `${title} (${cardElements.length})` }</div>
+                <div className="panel-header">{ `${title} (${cardElements.length})` }</div>
             ) }
             { cardElements }
         </div>

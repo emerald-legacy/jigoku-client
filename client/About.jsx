@@ -2,13 +2,13 @@ import Link from './Link.jsx';
 
 function About() {
     return (
-        <div className='col-xs-12 full-height relative'>
-            <div className='panel-title text-center'>
+        <div className="col-xs-12 full-height relative">
+            <div className="panel-title text-center">
                 About Jigoku Online - Help and information
             </div>
-            <div className='panel about-container'>
+            <div className="panel about-container">
                 <a
-                    className='btn btn-danger btn-lg pull-right'
+                    className="btn btn-danger btn-lg pull-right"
                     target='_blank'
                     rel='noopener noreferrer'
                     href='https://github.com/emerald-legacy/jigoku-client/issues'

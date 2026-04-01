@@ -26,7 +26,7 @@ const root = createRoot(container);
 const render = () => {
     root.render(
         <Provider store={ store }>
-            <div className='body'>
+            <div className="body">
                 <Toaster
                     position='top-right'
                     duration={ 4000 }

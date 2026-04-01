@@ -41,7 +41,7 @@ const TypeaheadInput = forwardRef(function TypeaheadInput(
     ) : null;
 
     return (
-        <div className='form-group'>
+        <div className="form-group">
             { labelElement }
             <div className={ fieldClass }>
                 <Typeahead
@@ -59,7 +59,7 @@ const TypeaheadInput = forwardRef(function TypeaheadInput(
                     onKeyDown={ onKeyDown }
                 />
                 { validationMessage ? (
-                    <span className='help-block'>{ validationMessage } </span>
+                    <span className="help-block">{ validationMessage } </span>
                 ) : null }
             </div>
             { children }

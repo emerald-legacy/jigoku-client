@@ -38,20 +38,20 @@ export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDe
         content = <AlertPanel message='The specified deck was not found' type='error' />;
     } else {
         content = (
-            <div className='row'>
-                <div className='col-sm-6'>
-                    <div className='panel-title text-center'>
+            <div className="row">
+                <div className="col-sm-6">
+                    <div className="panel-title text-center">
                         Deck Editor
                     </div>
-                    <div className='panel'>
+                    <div className="panel">
                         <DeckEditor mode='Save' onDeckSave={ handleEditDeck } />
                     </div>
                 </div>
-                <div className='col-sm-6'>
-                    <div className='panel-title text-center'>
+                <div className="col-sm-6">
+                    <div className="panel-title text-center">
                         { deck.name }
                     </div>
-                    <div className='panel'>
+                    <div className="panel">
                         <DeckSummary cards={ cards } deck={ deck } />
                     </div>
                 </div>

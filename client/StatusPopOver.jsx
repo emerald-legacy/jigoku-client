@@ -14,7 +14,7 @@ function StatusPopOver({ children, show, status }) {
 
     return (
         <span
-            className='status-popover-container'
+            className="status-popover-container"
             onMouseEnter={ () => setIsHovered(true) }
             onMouseLeave={ () => setIsHovered(false) }
             style={ { position: 'relative', cursor: 'pointer' } }
@@ -22,7 +22,7 @@ function StatusPopOver({ children, show, status }) {
             { status }
             { isHovered && (
                 <div
-                    className='popover bottom in'
+                    className="popover bottom in"
                     style={ {
                         display: 'block',
                         position: 'absolute',
@@ -34,9 +34,9 @@ function StatusPopOver({ children, show, status }) {
                         maxWidth: '300px'
                     } }
                 >
-                    <div className='arrow' style={ { left: '50%' } } />
+                    <div className="arrow" style={ { left: '50%' } } />
                     <div
-                        className='popover-content'
+                        className="popover-content"
                         dangerouslySetInnerHTML={ { __html: content } }
                     />
                 </div>

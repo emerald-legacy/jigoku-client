@@ -104,7 +104,7 @@ function StrongholdRow({
             <div className={ shClass }>
                 { thisPlayer && thisPlayer.role && thisPlayer.role.location ? (
                     <CardPile
-                        className='rolecard'
+                        className="rolecard"
                         source='role card'
                         cards={ [thisPlayer.role] }
                         topCard={ thisPlayer.role }
@@ -133,7 +133,7 @@ function StrongholdRow({
             { getStronghold(otherPlayer, isSkirmish) }
             { otherPlayer && otherPlayer.role && otherPlayer.role.location ? (
                 <CardPile
-                    className='rolecard'
+                    className="rolecard"
                     source='role card'
                     cards={ [otherPlayer.role] }
                     topCard={ otherPlayer.role }

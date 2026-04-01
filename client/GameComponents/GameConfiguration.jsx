@@ -65,20 +65,20 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
 
     return (
         <div>
-            <form className='form form-horizontal'>
-                <div className='panel-title'>
+            <form className="form form-horizontal">
+                <div className="panel-title">
                     Action window defaults
                 </div>
-                <div className='panel'>
-                    <div className='form-group'>
+                <div className="panel">
+                    <div className="form-group">
                         { windowsElements }
                     </div>
                 </div>
-                <div className='panel-title text-center'>
+                <div className="panel-title text-center">
                     Timed Interrupt Window
                 </div>
-                <div className='panel'>
-                    <div className='form-group'>
+                <div className="panel">
+                    <div className="form-group">
                         <Checkbox
                             name='timerSettings.events'
                             noGroup
@@ -97,11 +97,11 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
                         />
                     </div>
                 </div>
-                <div className='panel-title text-center'>
+                <div className="panel-title text-center">
                     Options
                 </div>
-                <div className='panel'>
-                    <div className='form-group'>
+                <div className="panel">
+                    <div className="form-group">
                         <Checkbox
                             name='optionSettings.markCardsUnselectable'
                             noGroup

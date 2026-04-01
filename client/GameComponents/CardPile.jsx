@@ -179,7 +179,7 @@ function CardPile({
                 { popupMenu.map((menuItem) => {
                     return (
                         <a
-                            className='btn btn-default'
+                            className="btn btn-default"
                             key={ linkIndex++ }
                             onClick={ () => onPopupMenuItemClick(menuItem) }
                         >
@@ -195,13 +195,13 @@ function CardPile({
                 <div className={ `popup ${isMe ? '' : 'opponent'}` }>
                     <div className='grip'>
                         <div
-                            className='panel-title'
+                            className="panel-title"
                             onClick={ (event) => event.stopPropagation() }
                         >
-                            <span className='text-center'>{ title }</span>
-                            <span className='pull-right'>
+                            <span className="text-center">{ title }</span>
+                            <span className="pull-right">
                                 <a
-                                    className='close-button'
+                                    className="close-button"
                                     onClick={ handleCloseClick }
                                 ><X size={ 16 } /></a>
                             </span>
@@ -212,7 +212,7 @@ function CardPile({
                         onClick={ (event) => event.stopPropagation() }
                     >
                         { popupMenuElement }
-                        <div className='inner'>{ cardList }</div>
+                        <div className="inner">{ cardList }</div>
                         <div className={ arrowClass } />
                     </div>
                 </div>
@@ -231,12 +231,12 @@ function CardPile({
             );
         });
 
-        return <div className='panel menu'>{ menuElements }</div>;
+        return <div className="panel menu">{ menuElements }</div>;
     };
 
-    let className = 'card-pile ' + (propsClassName || '');
+    let className = `card-pile ${propsClassName || ""}`;
     if(size !== 'normal') {
-        className += ' ' + size;
+        className += ` ${size}`;
     }
 
     const displayCardCount = cardCount || (cards ? cards.length : 0);
@@ -266,7 +266,7 @@ function CardPile({
             onDrop={ (event) => handleDragDrop(event, source) }
             onClick={ onCollectionClick }
         >
-            <div className='panel-header'>{ headerText }</div>
+            <div className="panel-header">{ headerText }</div>
             { displayTopCard ? (
                 <Card
                     card={ displayTopCard }
@@ -281,7 +281,7 @@ function CardPile({
                     size={ size }
                 />
             ) : (
-                <div className='card-placeholder' />
+                <div className="card-placeholder" />
             ) }
             { showMenu ? getMenu() : null }
             { getPopup() }

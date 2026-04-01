@@ -105,16 +105,16 @@ export function InnerResetPassword({ id, token, navigate }) {
 
         if(validation[field.name]) {
             className += ' has-error';
-            validationMessage = <span className='help-block'>{ validation[field.name] }</span>;
+            validationMessage = <span className="help-block">{ validation[field.name] }</span>;
         }
 
         return (
             <div key={ field.name } className={ className }>
-                <label htmlFor={ field.name } className='col-sm-2 control-label'>{ field.label }</label>
-                <div className='col-sm-3'>
+                <label htmlFor={ field.name } className="col-sm-2 control-label">{ field.label }</label>
+                <div className="col-sm-3">
                     <input
                         type={ field.inputType }
-                        className='form-control'
+                        className="form-control"
                         id={ field.name }
                         placeholder={ field.placeholder }
                         value={ field.value }
@@ -132,11 +132,11 @@ export function InnerResetPassword({ id, token, navigate }) {
     return (
         <div>
             { errorBar }
-            <form className='form form-horizontal'>
+            <form className="form form-horizontal">
                 { fieldsToRender }
-                <div className='form-group'>
-                    <div className='col-sm-offset-2 col-sm-3'>
-                        <button type='submit' className='btn btn-primary' onClick={ onSubmit }>Submit</button>
+                <div className="form-group">
+                    <div className="col-sm-offset-2 col-sm-3">
+                        <button type='submit' className="btn btn-primary" onClick={ onSubmit }>Submit</button>
                     </div>
                 </div>
             </form>

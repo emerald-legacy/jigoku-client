@@ -138,7 +138,7 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
 
     return (
         <div>
-            <div className='grip'>
+            <div className="grip">
                 <div className={ titleBarClassName } style={ titleBarStyle }>
                     { 'Hand (' + handCards.length + ')' }
                 </div>

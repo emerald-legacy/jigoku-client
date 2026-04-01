@@ -11,8 +11,8 @@ function CardZoom({ cardName, imageUrl, orientation, show }) {
     return (
         <div className={ zoomClass }>
             { show && cardName !== undefined ? (
-                <div className='card-zoomed shadow no-highlight'>
-                    <span className='card-name'>{ cardName }</span>
+                <div className="card-zoomed shadow no-highlight">
+                    <span className="card-name">{ cardName }</span>
                     <img src={ imageUrl } />
                 </div>
             ) : null }

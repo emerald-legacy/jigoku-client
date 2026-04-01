@@ -1,10 +1,10 @@
 function Community() {
     return (
-        <div className='col-xs-12 full-height relative'>
-            <div className='panel-title text-center'>
+        <div className="col-xs-12 full-height relative">
+            <div className="panel-title text-center">
                 Jigoku Online - Community Information
             </div>
-            <div className='panel about-container'>
+            <div className="panel about-container">
                 <h3>What is this page?</h3>
                 <p>This page is a shoutout to other works/resources in the L5R community.</p>
 

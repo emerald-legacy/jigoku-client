@@ -61,7 +61,7 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
         content = (
             <div>
                 { successPanel }
-                <table className='table table-striped'>
+                <table className="table table-striped">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -74,10 +74,10 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
                     </tbody>
                 </table>
 
-                <form className='form'>
+                <form className="form">
                     <TextArea name='newsText' label='Add news item' value={ newsText } onChange={ onNewsTextChange } />
 
-                    <button type='submit' className='btn btn-primary' onClick={ onAddNews }>Add</button>
+                    <button type='submit' className="btn btn-primary" onClick={ onAddNews }>Add</button>
                 </form>
             </div>
         );

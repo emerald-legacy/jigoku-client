@@ -11,7 +11,7 @@ function Checkbox({
     onChange
 }) {
     const checkBox = (
-        <div className={ 'checkbox ' + (fieldClass || '') }>
+        <div className={ `checkbox ${fieldClass || ''}` }>
             <label htmlFor={ name } className={ labelClass }>
                 <input
                     type='checkbox'
@@ -29,7 +29,7 @@ function Checkbox({
         return checkBox;
     }
 
-    return <div className='form-group'>{ checkBox }</div>;
+    return <div className="form-group">{ checkBox }</div>;
 }
 
 Checkbox.displayName = 'Checkbox';

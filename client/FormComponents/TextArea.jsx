@@ -14,14 +14,14 @@ function TextArea({
     value
 }) {
     return (
-        <div className='form-group'>
-            <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
+        <div className="form-group">
+            <label htmlFor={ name } className={ `${labelClass || ''} control-label` }>
                 { label }
             </label>
             <div className={ fieldClass }>
                 <textarea
                     rows={ rows }
-                    className='form-control'
+                    className="form-control"
                     id={ name }
                     placeholder={ placeholder }
                     value={ value }
@@ -29,7 +29,7 @@ function TextArea({
                     onBlur={ onBlur }
                 />
                 { validationMessage ? (
-                    <span className='help-block'>{ validationMessage } </span>
+                    <span className="help-block">{ validationMessage } </span>
                 ) : null }
             </div>
             { children }

@@ -209,15 +209,15 @@ export function InnerProfile({ refreshUser, socket, user }) {
     }
 
     return (
-        <div className='row profile full-height'>
-            <div className='col-sm-8 col-sm-offset-2 about-container'>
+        <div className="row profile full-height">
+            <div className="col-sm-8 col-sm-offset-2 about-container">
                 { errorMessage ? <AlertPanel type='error' message={ errorMessage } /> : null }
                 { successMessage ? <AlertPanel type='success' message={ successMessage } /> : null }
-                <form className='form form-horizontal'>
-                    <div className='panel-title'>
+                <form className="form form-horizontal">
+                    <div className="panel-title">
                         Profile
                     </div>
-                    <div className='panel'>
+                    <div className="panel">
                         <Input name='email' label='Email Address' labelClass='col-sm-4' fieldClass='col-sm-8' placeholder='Enter email address'
                             type='text' onChange={ (e) => handleChange('email', e) } value={ email }
                             onBlur={ verifyEmail } validationMessage={ validation.email } />
@@ -231,37 +231,37 @@ export function InnerProfile({ refreshUser, socket, user }) {
                             onChange={ (e) => setDisableGravatar(e.target.checked) } checked={ disableGravatar } />
                     </div>
                     <div>
-                        <div className='panel-title'>
+                        <div className="panel-title">
                             Action window defaults
                         </div>
-                        <div className='panel'>
-                            <p className='help-block small'>If an option is selected here, you will always be prompted if you want to take an action in that window.  If an option is not selected, you will receive no prompts for that window.  For some windows (e.g. dominance) this could mean the whole window is skipped.</p>
-                            <div className='form-group'>
+                        <div className="panel">
+                            <p className="help-block small">If an option is selected here, you will always be prompted if you want to take an action in that window.  If an option is not selected, you will receive no prompts for that window.  For some windows (e.g. dominance) this could mean the whole window is skipped.</p>
+                            <div className="form-group">
                                 { windowsElements }
                             </div>
                         </div>
-                        <div className='panel-title'>
+                        <div className="panel-title">
                             Timed Bluff Window
                         </div>
-                        <div className='panel'>
-                            <p className='help-block small'>Sometimes, it is useful to have the game prompt you to play an event, even when you can't play one, as it makes it more difficult for your opponent to deduce what you have in your hand. This 'bluff' window has a timer will count down.
+                        <div className="panel">
+                            <p className="help-block small">Sometimes, it is useful to have the game prompt you to play an event, even when you can't play one, as it makes it more difficult for your opponent to deduce what you have in your hand. This 'bluff' window has a timer will count down.
                             At the end of that timer, the window will automatically pass. This option controls the duration of the timer.  The timer will only show when you *don't* have an ability which can be used. The timer can be configure to show when events are played by your opponent, or
                             to show when there's a window to play an event which you don't currently have in your hand.</p>
-                            <div className='form-group'>
-                                <label className='col-sm-3 control-label'>Window timeout</label>
-                                <div className='col-sm-5'>
+                            <div className="form-group">
+                                <label className="col-sm-3 control-label">Window timeout</label>
+                                <div className="col-sm-5">
                                     <input type='range'
-                                        className='form-control'
+                                        className="form-control"
                                         value={ windowTimer }
                                         onChange={ handleSlideStop }
                                         step={ 1 }
                                         max={ 10 }
                                         min={ 0 } />
                                 </div>
-                                <div className='col-sm-2'>
-                                    <input className='form-control text-center' name='timer' value={ windowTimer } onChange={ handleSlideStop } />
+                                <div className="col-sm-2">
+                                    <input className="form-control text-center" name='timer' value={ windowTimer } onChange={ handleSlideStop } />
                                 </div>
-                                <label className='col-sm-1 control-label'>seconds</label>
+                                <label className="col-sm-1 control-label">seconds</label>
 
                                 <Checkbox name='timerSettings.events' noGroup label="Show timer for opponent's events" fieldClass='col-sm-6'
                                     onChange={ (e) => handleTimerSettingToggle('events', e) } checked={ timerSettings.events } />
@@ -269,11 +269,11 @@ export function InnerProfile({ refreshUser, socket, user }) {
                                     onChange={ (e) => handleTimerSettingToggle('eventsInDeck', e) } checked={ timerSettings.eventsInDeck } />
                             </div>
                         </div>
-                        <div className='panel-title'>
+                        <div className="panel-title">
                             Options
                         </div>
-                        <div className='panel'>
-                            <div className='form-group'>
+                        <div className="panel">
+                            <div className="form-group">
                                 <Checkbox
                                     name='optionSettings.markCardsUnselectable'
                                     noGroup
@@ -333,196 +333,196 @@ export function InnerProfile({ refreshUser, socket, user }) {
                         </div>
                     </div>
                     <div>
-                        <div className='panel-title'>
+                        <div className="panel-title">
                             Game Board Background
                         </div>
-                        <div className='panel'>
-                            <div className='row'>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('none') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'none' ? ' selected' : '') }
+                        <div className="panel">
+                            <div className="row">
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('none') }>
+                                    <img className={ `img-responsive${selectedBackground === 'none' ? ' selected' : ''}` }
                                         src='img/blank.png' />
-                                    <span className='bg-label'>None</span>
+                                    <span className="bg-label">None</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('CRAB') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'CRAB' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('CRAB') }>
+                                    <img className={ `img-responsive${selectedBackground === 'CRAB' ? ' selected' : ''}` }
                                         src='/img/bgs/crab.jpg' />
-                                    <span className='bg-label'>Crab</span>
+                                    <span className="bg-label">Crab</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('CRAB2') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'CRAB2' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('CRAB2') }>
+                                    <img className={ `img-responsive${selectedBackground === 'CRAB2' ? ' selected' : ''}` }
                                         src='/img/bgs/crab2.jpg' />
-                                    <span className='bg-label'>Crab 2</span>
+                                    <span className="bg-label">Crab 2</span>
                                 </div>
                             </div>
-                            <div className='row'>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('CRAB3') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'CRAB3' ? ' selected' : '') }
+                            <div className="row">
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('CRAB3') }>
+                                    <img className={ `img-responsive${selectedBackground === 'CRAB3' ? ' selected' : ''}` }
                                         src='/img/bgs/crab3.jpg' />
-                                    <span className='bg-label'>Crab 3</span>
+                                    <span className="bg-label">Crab 3</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('CRANE') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'CRANE' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('CRANE') }>
+                                    <img className={ `img-responsive${selectedBackground === 'CRANE' ? ' selected' : ''}` }
                                         src='/img/bgs/crane.jpg' />
-                                    <span className='bg-label'>Crane</span>
+                                    <span className="bg-label">Crane</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('CRANE2') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'CRANE2' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('CRANE2') }>
+                                    <img className={ `img-responsive${selectedBackground === 'CRANE2' ? ' selected' : ''}` }
                                         src='/img/bgs/crane2.jpg' />
-                                    <span className='bg-label'>Crane 2</span>
+                                    <span className="bg-label">Crane 2</span>
                                 </div>
                             </div>
-                            <div className='row'>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('CRANE3') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'CRANE3' ? ' selected' : '') }
+                            <div className="row">
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('CRANE3') }>
+                                    <img className={ `img-responsive${selectedBackground === 'CRANE3' ? ' selected' : ''}` }
                                         src='/img/bgs/crane3.jpg' />
-                                    <span className='bg-label'>Crane 3</span>
+                                    <span className="bg-label">Crane 3</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('CRANE4') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'CRANE4' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('CRANE4') }>
+                                    <img className={ `img-responsive${selectedBackground === 'CRANE4' ? ' selected' : ''}` }
                                         src='/img/bgs/crane4.jpg' />
-                                    <span className='bg-label'>Crane 4</span>
+                                    <span className="bg-label">Crane 4</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('DRAGON') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'DRAGON' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('DRAGON') }>
+                                    <img className={ `img-responsive${selectedBackground === 'DRAGON' ? ' selected' : ''}` }
                                         src='/img/bgs/dragon.jpg' />
-                                    <span className='bg-label'>Dragon</span>
+                                    <span className="bg-label">Dragon</span>
                                 </div>
                             </div>
-                            <div className='row'>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('DRAGON2') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'DRAGON2' ? ' selected' : '') }
+                            <div className="row">
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('DRAGON2') }>
+                                    <img className={ `img-responsive${selectedBackground === 'DRAGON2' ? ' selected' : ''}` }
                                         src='/img/bgs/dragon2.jpg' />
-                                    <span className='bg-label'>Dragon 2</span>
+                                    <span className="bg-label">Dragon 2</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('DRAGON3') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'DRAGON3' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('DRAGON3') }>
+                                    <img className={ `img-responsive${selectedBackground === 'DRAGON3' ? ' selected' : ''}` }
                                         src='/img/bgs/dragon3.jpg' />
-                                    <span className='bg-label'>Dragon 3</span>
+                                    <span className="bg-label">Dragon 3</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('LION') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'LION' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('LION') }>
+                                    <img className={ `img-responsive${selectedBackground === 'LION' ? ' selected' : ''}` }
                                         src='/img/bgs/lion.jpg' />
-                                    <span className='bg-label'>Lion</span>
+                                    <span className="bg-label">Lion</span>
                                 </div>
                             </div>
-                            <div className='row'>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('LION2') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'LION2' ? ' selected' : '') }
+                            <div className="row">
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('LION2') }>
+                                    <img className={ `img-responsive${selectedBackground === 'LION2' ? ' selected' : ''}` }
                                         src='/img/bgs/lion2.jpg' />
-                                    <span className='bg-label'>Lion 2</span>
+                                    <span className="bg-label">Lion 2</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('LION3') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'LION3' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('LION3') }>
+                                    <img className={ `img-responsive${selectedBackground === 'LION3' ? ' selected' : ''}` }
                                         src='/img/bgs/lion3.jpg' />
-                                    <span className='bg-label'>Lion 3</span>
+                                    <span className="bg-label">Lion 3</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('OTTER') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'OTTER' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('OTTER') }>
+                                    <img className={ `img-responsive${selectedBackground === 'OTTER' ? ' selected' : ''}` }
                                         src='/img/bgs/otter.jpg' />
-                                    <span className='bg-label'>Otter</span>
+                                    <span className="bg-label">Otter</span>
                                 </div>
                             </div>
-                            <div className='row'>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('PHOENIX') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'PHOENIX' ? ' selected' : '') }
+                            <div className="row">
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('PHOENIX') }>
+                                    <img className={ `img-responsive${selectedBackground === 'PHOENIX' ? ' selected' : ''}` }
                                         src='/img/bgs/phoenix.jpg' />
-                                    <span className='bg-label'>Phoenix</span>
+                                    <span className="bg-label">Phoenix</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('PHOENIX2') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'PHOENIX2' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('PHOENIX2') }>
+                                    <img className={ `img-responsive${selectedBackground === 'PHOENIX2' ? ' selected' : ''}` }
                                         src='/img/bgs/phoenix2.jpg' />
-                                    <span className='bg-label'>Phoenix 2</span>
+                                    <span className="bg-label">Phoenix 2</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('PHOENIX3') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'PHOENIX3' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('PHOENIX3') }>
+                                    <img className={ `img-responsive${selectedBackground === 'PHOENIX3' ? ' selected' : ''}` }
                                         src='/img/bgs/phoenix3.jpg' />
-                                    <span className='bg-label'>Phoenix 3</span>
+                                    <span className="bg-label">Phoenix 3</span>
                                 </div>
                             </div>
-                            <div className='row'>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('SCORPION') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'SCORPION' ? ' selected' : '') }
+                            <div className="row">
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('SCORPION') }>
+                                    <img className={ `img-responsive${selectedBackground === 'SCORPION' ? ' selected' : ''}` }
                                         src='/img/bgs/scorpion.jpg' />
-                                    <span className='bg-label'>Scorpion</span>
+                                    <span className="bg-label">Scorpion</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('SCORPION2') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'SCORPION2' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('SCORPION2') }>
+                                    <img className={ `img-responsive${selectedBackground === 'SCORPION2' ? ' selected' : ''}` }
                                         src='/img/bgs/scorpion2.jpg' />
-                                    <span className='bg-label'>Scorpion 2</span>
+                                    <span className="bg-label">Scorpion 2</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('SCORPION3') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'SCORPION3' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('SCORPION3') }>
+                                    <img className={ `img-responsive${selectedBackground === 'SCORPION3' ? ' selected' : ''}` }
                                         src='/img/bgs/scorpion3.jpg' />
-                                    <span className='bg-label'>Scorpion 3</span>
+                                    <span className="bg-label">Scorpion 3</span>
                                 </div>
                             </div>
-                            <div className='row'>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('UNICORN') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'UNICORN' ? ' selected' : '') }
+                            <div className="row">
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('UNICORN') }>
+                                    <img className={ `img-responsive${selectedBackground === 'UNICORN' ? ' selected' : ''}` }
                                         src='/img/bgs/unicorn.jpg' />
-                                    <span className='bg-label'>Unicorn</span>
+                                    <span className="bg-label">Unicorn</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('UNICORN2') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'UNICORN2' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('UNICORN2') }>
+                                    <img className={ `img-responsive${selectedBackground === 'UNICORN2' ? ' selected' : ''}` }
                                         src='/img/bgs/unicorn2.jpg' />
-                                    <span className='bg-label'>Unicorn 2</span>
+                                    <span className="bg-label">Unicorn 2</span>
                                 </div>
-                                <div className='col-sm-4' onClick={ () => handleBackgroundClick('UNICORN3') }>
-                                    <img className={ 'img-responsive' + (selectedBackground === 'UNICORN3' ? ' selected' : '') }
+                                <div className="col-sm-4" onClick={ () => handleBackgroundClick('UNICORN3') }>
+                                    <img className={ `img-responsive${selectedBackground === 'UNICORN3' ? ' selected' : ''}` }
                                         src='/img/bgs/unicorn3.jpg' />
-                                    <span className='bg-label'>Unicorn 3</span>
+                                    <span className="bg-label">Unicorn 3</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div>
-                        <div className='panel-title'>
+                        <div className="panel-title">
                             Card Image Size
                         </div>
-                        <div className='panel'>
-                            <div className='row'>
-                                <div className='col-xs-12'>
-                                    <div className='card-settings' onClick={ () => handleCardClick('small') }>
-                                        <div className={ 'card small vertical' + (selectedCardSize === 'small' ? ' selected' : '') }>
-                                            <img className='card small vertical'
+                        <div className="panel">
+                            <div className="row">
+                                <div className="col-xs-12">
+                                    <div className="card-settings" onClick={ () => handleCardClick('small') }>
+                                        <div className={ `card small vertical${selectedCardSize === 'small' ? ' selected' : ''}` }>
+                                            <img className="card small vertical"
                                                 src='img/cards/dynastycardback.png' />
                                         </div>
-                                        <span className='bg-label'>Small</span>
+                                        <span className="bg-label">Small</span>
                                     </div>
-                                    <div className='card-settings' onClick={ () => handleCardClick('normal') }>
-                                        <div className={ 'card vertical' + (selectedCardSize === 'normal' ? ' selected' : '') }>
-                                            <img className='card vertical'
+                                    <div className="card-settings" onClick={ () => handleCardClick('normal') }>
+                                        <div className={ `card vertical${selectedCardSize === 'normal' ? ' selected' : ''}` }>
+                                            <img className="card vertical"
                                                 src='img/cards/dynastycardback.png' />
                                         </div>
-                                        <span className='bg-label'>Normal</span>
+                                        <span className="bg-label">Normal</span>
                                     </div>
-                                    <div className='card-settings' onClick={ () => handleCardClick('large') }>
-                                        <div className={ 'card vertical large' + (selectedCardSize === 'large' ? ' selected' : '') }>
-                                            <img className='card-image large vertical'
+                                    <div className="card-settings" onClick={ () => handleCardClick('large') }>
+                                        <div className={ `card vertical large${selectedCardSize === 'large' ? ' selected' : ''}` }>
+                                            <img className="card-image large vertical"
                                                 src='/img/cards/dynastycardback.png' />
                                         </div>
-                                        <span className='bg-label'>Large</span>
+                                        <span className="bg-label">Large</span>
                                     </div>
-                                    <div className='card-settings' onClick={ () => handleCardClick('x-large') }>
-                                        <div className={ 'card vertical x-large' + (selectedCardSize === 'x-large' ? ' selected' : '') }>
-                                            <img className='card-image x-large vertical'
+                                    <div className="card-settings" onClick={ () => handleCardClick('x-large') }>
+                                        <div className={ `card vertical x-large${selectedCardSize === 'x-large' ? ' selected' : ''}` }>
+                                            <img className="card-image x-large vertical"
                                                 src='img/cards/dynastycardback.png' />
                                         </div>
-                                        <span className='bg-label'>Extra-Large</span>
+                                        <span className="bg-label">Extra-Large</span>
                                     </div>
-                                    <div className='card-settings' onClick={ () => handleCardClick('xxl') }>
-                                        <div className={ 'card vertical xxl' + (selectedCardSize === 'xxl' ? ' selected' : '') }>
-                                            <img className='card-image xxl vertical'
+                                    <div className="card-settings" onClick={ () => handleCardClick('xxl') }>
+                                        <div className={ `card vertical xxl${selectedCardSize === 'xxl' ? ' selected' : ''}` }>
+                                            <img className="card-image xxl vertical"
                                                 src='img/cards/dynastycardback.png' />
                                         </div>
-                                        <span className='bg-label'>XXL</span>
+                                        <span className="bg-label">XXL</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div className='col-sm-offset-10 col-sm-2'>
-                        <button className='btn btn-primary' type='button' disabled={ loading } onClick={ handleSaveClick }>Save</button>
+                    <div className="col-sm-offset-10 col-sm-2">
+                        <button className="btn btn-primary" type='button' disabled={ loading } onClick={ handleSaveClick }>Save</button>
                     </div>
                 </form>
             </div>

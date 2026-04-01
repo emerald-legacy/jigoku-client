@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 function ClockPopup({ clockName, mainTime, periods, timePeriod }) {
     return (
-        <div className='clock--popup'>
+        <div className="clock--popup">
             <div>{ clockName }</div>
             <ul>
                 { mainTime ? <li>Main Time (Minutes): { mainTime / 60 }</li> : null }

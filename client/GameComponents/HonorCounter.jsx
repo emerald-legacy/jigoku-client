@@ -14,7 +14,7 @@ function HonorCounter({ cancel, fade, name, value }) {
     return (
         <div key={ name } className={ className }>
             <img src='/img/Honor.png' title='Honor' alt='Honor' />
-            <div className='honorcountertext'>{ value }</div>
+            <div className="honorcountertext">{ value }</div>
         </div>
     );
 }

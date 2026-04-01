@@ -1,10 +1,10 @@
 function Formats() {
     return (
-        <div className='col-xs-12 full-height relative'>
-            <div className='panel-title text-center'>
+        <div className="col-xs-12 full-height relative">
+            <div className="panel-title text-center">
                 Jigoku Online - Game Formats
             </div>
-            <div className='panel about-container'>
+            <div className="panel about-container">
                 <h2>What are the game formats?</h2>
                 <p>During it's life, Legend of the Five Rings accumulated a few different game formats.</p>
 

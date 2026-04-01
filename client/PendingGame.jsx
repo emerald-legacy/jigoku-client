@@ -112,20 +112,20 @@ export function InnerPendingGame({
 
         if(player && player.deck && player.deck.selected) {
             if(playerIsMe) {
-                deck = <span className='deck-selection clickable' onClick={ handleSelectDeckClick }>{ player.deck.name }</span>;
+                deck = <span className="deck-selection clickable" onClick={ handleSelectDeckClick }>{ player.deck.name }</span>;
             } else {
-                deck = <span className='deck-selection'>Deck Selected</span>;
+                deck = <span className="deck-selection">Deck Selected</span>;
             }
 
             status = <DeckStatus deck={ player.deck } />;
         } else if(player && playerIsMe) {
-            selectLink = <span className='card-link' onClick={ handleSelectDeckClick }>Select deck...</span>;
+            selectLink = <span className="card-link" onClick={ handleSelectDeckClick }>Select deck...</span>;
         }
 
         return (
-            <div className='player-row' key={ player.name }>
+            <div className="player-row" key={ player.name }>
                 <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } />
-                <span className='player-row-name'>{ player.name }</span>
+                <span className="player-row-name">{ player.name }</span>
                 { deck }
                 { status }
                 { selectLink }
@@ -237,20 +237,20 @@ export function InnerPendingGame({
 
     const popup = (
         <div
-            className={ `modal fade ${showModal ? 'in' : ''}` }
+            className={ `modal fade ${showModal ? "in" : ""}` }
             style={ { display: showModal ? 'block' : 'none' } }
             tabIndex='-1'
             role='dialog'
             onClick={ handleModalClick }
         >
-            <div className='modal-dialog' role='document'>
-                <div className='modal-content deck-select-modal'>
-                    <div className='deck-select-header'>
-                        <span className='deck-select-title'>Select Deck</span>
-                        <button type='button' className='deck-select-close' aria-label='Close' onClick={ () => setShowModal(false) }>&times;</button>
+            <div className="modal-dialog" role='document'>
+                <div className="modal-content deck-select-modal">
+                    <div className="deck-select-header">
+                        <span className="deck-select-title">Select Deck</span>
+                        <button type='button' className="deck-select-close" aria-label='Close' onClick={ () => setShowModal(false) }>&times;</button>
                     </div>
-                    <div className='modal-body'>
-                        <div className='deck-select-list'>
+                    <div className="modal-body">
+                        <div className="deck-select-list">
                             { renderedDecks }
                         </div>
                     </div>
@@ -259,7 +259,7 @@ export function InnerPendingGame({
         </div>
     );
 
-    const backdrop = showModal ? <div className='modal-backdrop fade in' onClick={ () => setShowModal(false) } /> : null;
+    const backdrop = showModal ? <div className="modal-backdrop fade in" onClick={ () => setShowModal(false) } /> : null;
 
     return (
         <div>
@@ -267,24 +267,24 @@ export function InnerPendingGame({
                 <source src='/sound/charge.mp3' type='audio/mpeg' />
                 <source src='/sound/charge.ogg' type='audio/ogg' />
             </audio>
-            <div className='panel-title text-center'>
+            <div className="panel-title text-center">
                 { currentGame.name }
             </div>
-            <div className='panel'>
-                <div className='row-flex-box'>
-                    <div className='column-flex-box'>
-                        <div className='btn-group'>
-                            <button className='btn btn-primary' disabled={ !isGameReady() || connecting || waiting } onClick={ handleStartClick }>Start</button>
-                            <button className='btn btn-primary' onClick={ handleLeaveClick }>Leave</button>
+            <div className="panel">
+                <div className="row-flex-box">
+                    <div className="column-flex-box">
+                        <div className="btn-group">
+                            <button className="btn btn-primary" disabled={ !isGameReady() || connecting || waiting } onClick={ handleStartClick }>Start</button>
+                            <button className="btn btn-primary" onClick={ handleLeaveClick }>Leave</button>
                         </div>
-                        <div className='game-status'>{ getGameStatus() }</div>
+                        <div className="game-status">{ getGameStatus() }</div>
                     </div>
-                    <div className='column-flex-box'>
+                    <div className="column-flex-box">
                         <div>
-                            { 'Spectators allowed: ' + (game.allowSpectators ? 'Yes' : 'No') }
+                            { `Spectators allowed: ${game.allowSpectators ? 'Yes' : 'No'}` }
                         </div>
                         <div>
-                            { game.allowSpectators ? 'Spectators can chat: ' + (game.spectatorSquelch ? 'No' : 'Yes') : null }
+                            { game.allowSpectators ? `Spectators can chat: ${game.spectatorSquelch ? 'No' : 'Yes'}` : null }
                         </div>
                         <div>
                             { getClock() }
@@ -292,29 +292,29 @@ export function InnerPendingGame({
                     </div>
                 </div>
             </div>
-            <div className='panel-title text-center'>
+            <div className="panel-title text-center">
                 Players
             </div>
-            <div className='players panel'>
+            <div className="players panel">
                 { currentGame.players && Object.values(currentGame.players).map(player => getPlayerStatus(player)) }
             </div>
-            <div className='panel-title text-center'>
+            <div className="panel-title text-center">
                 Spectators ({ currentGame.spectators.length })
             </div>
-            <div className='spectators panel'>
+            <div className="spectators panel">
                 { currentGame.spectators.map(spectator => (
                     <div key={ spectator.name }>{ spectator.name }</div>
                 )) }
             </div>
-            <div className='panel-title text-center'>
+            <div className="panel-title text-center">
                 Chat</div>
-            <div className='chat-box panel'>
-                <div className='message-list' ref={ messagePanelRef }>
+            <div className="chat-box panel">
+                <div className="message-list" ref={ messagePanelRef }>
                     <Messages messages={ currentGame.messages } onCardMouseOver={ handleMouseOver } onCardMouseOut={ handleMouseOver } />
                 </div>
-                <form className='form form-horizontal'>
-                    <div className='form-group'>
-                        <input className='form-control' type='text' placeholder='Enter a message...' value={ message }
+                <form className="form form-horizontal">
+                    <div className="form-group">
+                        <input className="form-control" type='text' placeholder='Enter a message...' value={ message }
                             onKeyPress={ handleKeyPress } onChange={ handleChange } />
                     </div>
                 </form>

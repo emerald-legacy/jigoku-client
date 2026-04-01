@@ -197,7 +197,7 @@ function ActivePlayerPrompt({
             const option = (
                 <button
                     key={ button.command + buttonIndex.toString() }
-                    className='btn btn-default'
+                    className="btn btn-default"
                     onClick={ clickCallback }
                     onMouseOver={ (event) => handleMouseOver(event, button.card) }
                     onMouseOut={ (event) => handleMouseOut(event, button.card) }
@@ -259,7 +259,7 @@ function ActivePlayerPrompt({
 
     let promptTitleElement = null;
     if(promptTitle) {
-        promptTitleElement = <div className='menu-pane-source'>{ promptTitle }</div>;
+        promptTitleElement = <div className="menu-pane-source">{ promptTitle }</div>;
     }
 
     let timer = null;
@@ -267,8 +267,8 @@ function ActivePlayerPrompt({
         timer = (
             <div>
                 <span>Auto passing in { timeLeft }...</span>
-                <div className='progress'>
-                    <div className='progress-bar progress-bar-success' role='progressbar' style={ { width: timerClass } } />
+                <div className="progress">
+                    <div className="progress-bar progress-bar-success" role='progressbar' style={ { width: timerClass } } />
                 </div>
             </div>
         );
@@ -278,15 +278,15 @@ function ActivePlayerPrompt({
         <Draggable handle='.grip' bounds={ activePromptBounds } defaultPosition={ getDefaultPosition() }>
             <div className='no-highlight'>
                 { timer }
-                <div className='grip'>
                     <div className={ 'phase-indicator ' + phase } onClick={ onTitleClick }>
+                <div className="grip">
                         { phase } phase
                     </div>
                 </div>
                 { promptTitleElement }
-                <div className='menu-pane'>
-                    <div className='panel'>
-                        <div className='menu-pane-title'>{ title }</div>
+                <div className="menu-pane">
+                    <div className="panel">
+                        <div className="menu-pane-title">{ title }</div>
                         { renderedControls }
                         { renderedButtons }
                     </div>

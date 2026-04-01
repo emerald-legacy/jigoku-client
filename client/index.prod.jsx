@@ -72,7 +72,7 @@ if(typeof user !== 'undefined') {
 
 render(
     <Provider store={ store }>
-        <div className='body'>
+        <div className="body">
             <Toaster
                 position='top-right'
                 duration={ 4000 }

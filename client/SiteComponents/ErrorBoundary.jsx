@@ -35,7 +35,7 @@ class ErrorBoundary extends React.Component {
     render() {
         if(this.state.error) {
             return (
-                <div className='alert alert-danger'>
+                <div className="alert alert-danger">
                     <p>{ this.props.message }</p>
                     <p>An error has been logged. Please try refreshing the page.</p>
 

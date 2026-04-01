@@ -16,40 +16,40 @@ const noop = () => {};
 
 function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJumpToStart, onJumpToEnd, onStepBack, onStepForward, onTogglePlay, onSpeedChange, onReset }) {
     return (
-        <div className='replay-bar'>
-            <div className='replay-controls'>
-                <button className='btn btn-transparent' onClick={ onJumpToStart } disabled={ currentIndex === 0 } title='Jump to start'>
+        <div className="replay-bar">
+            <div className="replay-controls">
+                <button className="btn btn-transparent" onClick={ onJumpToStart } disabled={ currentIndex === 0 } title='Jump to start'>
                     <SkipBack size={ 14 } />
                 </button>
-                <button className='btn btn-transparent' onClick={ onStepBack } disabled={ currentIndex === 0 } title='Step back'>
+                <button className="btn btn-transparent" onClick={ onStepBack } disabled={ currentIndex === 0 } title='Step back'>
                     <ChevronLeft size={ 14 } />
                 </button>
-                <button className='btn btn-transparent' onClick={ onTogglePlay } title={ isPlaying ? 'Pause' : 'Play' }>
+                <button className="btn btn-transparent" onClick={ onTogglePlay } title={ isPlaying ? 'Pause' : 'Play' }>
                     { isPlaying ? <Pause size={ 14 } /> : <Play size={ 14 } /> }
                 </button>
-                <button className='btn btn-transparent' onClick={ onStepForward } disabled={ currentIndex >= totalStates - 1 } title='Step forward'>
+                <button className="btn btn-transparent" onClick={ onStepForward } disabled={ currentIndex >= totalStates - 1 } title='Step forward'>
                     <ChevronRight size={ 14 } />
                 </button>
-                <button className='btn btn-transparent' onClick={ onJumpToEnd } disabled={ currentIndex >= totalStates - 1 } title='Jump to end'>
+                <button className="btn btn-transparent" onClick={ onJumpToEnd } disabled={ currentIndex >= totalStates - 1 } title='Jump to end'>
                     <SkipForward size={ 14 } />
                 </button>
-                <div className='replay-speed'>
+                <div className="replay-speed">
                     { speeds.map((s, i) => (
                         <button
                             key={ s.label }
-                            className={ 'btn btn-transparent' + (i === speedIndex ? ' active' : '') }
+                            className={ `btn btn-transparent${i === speedIndex ? " active" : ""}` }
                             onClick={ () => onSpeedChange(i) }
                         >
                             { s.label }
                         </button>
                     )) }
                 </div>
-                <span className='replay-progress'>
+                <span className="replay-progress">
                     { currentIndex + 1 } / { totalStates }
                 </span>
             </div>
-            <div className='replay-actions'>
-                <button className='btn btn-default btn-sm' onClick={ onReset }>Load File</button>
+            <div className="replay-actions">
+                <button className="btn btn-default btn-sm" onClick={ onReset }>Load File</button>
             </div>
         </div>
     );
@@ -182,7 +182,7 @@ function GameReplay() {
 
     if(!logData) {
         return (
-            <div className='replay-container'>
+            <div className="replay-container">
                 <div
                     className={ 'replay-upload' + (dragOver ? ' drag-over' : '') }
                     onDrop={ handleDrop }
@@ -190,13 +190,13 @@ function GameReplay() {
                     onDragLeave={ handleDragLeave }
                     onClick={ () => fileInputRef.current?.click() }
                 >
-                    <div className='replay-upload-icon'>
+                    <div className="replay-upload-icon">
                         <Upload size={ 48 } />
                     </div>
-                    <div className='replay-upload-text'>
+                    <div className="replay-upload-text">
                         Drop a game log file here, or click to browse
                     </div>
-                    <div className='replay-upload-hint'>
+                    <div className="replay-upload-hint">
                         Accepts .json.gz or .json files
                     </div>
                     <input
@@ -207,7 +207,7 @@ function GameReplay() {
                         onChange={ handleFileInput }
                     />
                 </div>
-                { error && <div className='replay-error'>{ error }</div> }
+                { error && <div className="replay-error">{ error }</div> }
             </div>
         );
     }
@@ -233,8 +233,8 @@ function GameReplay() {
         + (metadata.winner ? ' — Winner: ' + metadata.winner : '');
 
     return (
-        <div className='replay-mode'>
-            <div className='replay-navbar-info'>
+        <div className="replay-mode">
+            <div className="replay-navbar-info">
                 { metadata.gameName } — { metaText }
             </div>
             <InnerGameBoard

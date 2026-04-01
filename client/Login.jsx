@@ -111,16 +111,16 @@ export function InnerLogin({ login, navigate, socket }) {
 
         if(validation[field.name]) {
             className += ' has-error';
-            validationMessage = <span className='help-block'>{ validation[field.name] }</span>;
+            validationMessage = <span className="help-block">{ validation[field.name] }</span>;
         }
 
         return (
             <div key={ field.name } className={ className }>
-                <label htmlFor={ field.name } className='col-sm-2 control-label'>{ field.label }</label>
-                <div className='col-sm-8'>
+                <label htmlFor={ field.name } className="col-sm-2 control-label">{ field.label }</label>
+                <div className="col-sm-8">
                     <input
                         type={ field.inputType }
-                        className='form-control'
+                        className="form-control"
                         id={ field.name }
                         placeholder={ field.placeholder }
                         value={ field.value }
@@ -136,22 +136,22 @@ export function InnerLogin({ login, navigate, socket }) {
     const errorBar = error ? <AlertPanel type='error' message={ error } /> : null;
 
     return (
-        <div className='col-sm-6 col-sm-offset-3'>
+        <div className="col-sm-6 col-sm-offset-3">
             { errorBar }
-            <div className='panel-title'>
+            <div className="panel-title">
                 Login
             </div>
-            <div className='panel'>
-                <form className='form form-horizontal'>
+            <div className="panel">
+                <form className="form form-horizontal">
                     { fieldsToRender }
-                    <div className='form-group'>
-                        <div className='col-sm-offset-2 col-sm-10'>
+                    <div className="form-group">
+                        <div className="col-sm-offset-2 col-sm-10">
                             <Link href='/forgot'>Forgot your password?</Link>
                         </div>
                     </div>
-                    <div className='form-group'>
-                        <div className='col-sm-offset-2 col-sm-3'>
-                            <button type='submit' className='btn btn-primary' onClick={ onLogin }>Login</button>
+                    <div className="form-group">
+                        <div className="col-sm-offset-2 col-sm-3">
+                            <button type='submit' className="btn btn-primary" onClick={ onLogin }>Login</button>
                         </div>
                     </div>
                 </form>

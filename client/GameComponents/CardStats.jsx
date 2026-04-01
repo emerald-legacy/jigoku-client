@@ -12,10 +12,10 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
             amountDisplay = '-';
         }
         return (
-            <div className='stat-line' key={ groupedModifier[0].name }>
-                <div className='stat-sign'>{ sign }</div>
-                <div className='stat-amount'>{ amountDisplay }</div>
-                <div className='stat-name'>{ groupedModifier[0].name }</div>
+            <div className="stat-line" key={ groupedModifier[0].name }>
+                <div className="stat-sign">{ sign }</div>
+                <div className="stat-amount">{ amountDisplay }</div>
+                <div className="stat-name">{ groupedModifier[0].name }</div>
             </div>
         );
     };
@@ -34,45 +34,45 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
     };
 
     return (
-        <div className='panel menu card--stats '>
+        <div className="panel menu card--stats ">
             { militarySkillSummary && (
-                <div className='stat-container'>
-                    <div className='stat-total'>
-                        <span className='icon-military stat--type-icon' />
-                        <span className='stat-value'>{ militarySkillSummary.stat }</span>
+                <div className="stat-container">
+                    <div className="stat-total">
+                        <span className="icon-military stat--type-icon" />
+                        <span className="stat-value">{ militarySkillSummary.stat }</span>
                     </div>
-                    <div className='stat-specifics'>
+                    <div className="stat-specifics">
                         { renderModifiers(militarySkillSummary.modifiers) }
                     </div>
                 </div>
             ) }
             { politicalSkillSummary && (
-                <div className='stat-container'>
-                    <div className='stat-total'>
-                        <span className='icon-political stat--type-icon' />
-                        <span className='stat-value'>{ politicalSkillSummary.stat }</span>
+                <div className="stat-container">
+                    <div className="stat-total">
+                        <span className="icon-political stat--type-icon" />
+                        <span className="stat-value">{ politicalSkillSummary.stat }</span>
                     </div>
-                    <div className='stat-specifics'>
+                    <div className="stat-specifics">
                         { renderModifiers(politicalSkillSummary.modifiers) }
                     </div>
                 </div>
             ) }
             { glorySummary && (
-                <div className='stat-container'>
-                    <div className='stat-total'>
-                        <img className='icon-glory stat--type-icon' src='/img/glory.png' />
-                        <span className='stat-value'>{ glorySummary.stat }</span>
+                <div className="stat-container">
+                    <div className="stat-total">
+                        <img className="icon-glory stat--type-icon" src='/img/glory.png' />
+                        <span className="stat-value">{ glorySummary.stat }</span>
                     </div>
-                    <div className='stat-specifics'>{ renderModifiers(glorySummary.modifiers) }</div>
+                    <div className="stat-specifics">{ renderModifiers(glorySummary.modifiers) }</div>
                 </div>
             ) }
             { strengthSummary && (
-                <div className='stat-container'>
-                    <div className='stat-total'>
-                        <span className='stat--type-label'>STR</span>
-                        <span className='stat-value'>{ strengthSummary.stat }</span>
+                <div className="stat-container">
+                    <div className="stat-total">
+                        <span className="stat--type-label">STR</span>
+                        <span className="stat-value">{ strengthSummary.stat }</span>
                     </div>
-                    <div className='stat-specifics'>
+                    <div className="stat-specifics">
                         { renderModifiers(strengthSummary.modifiers) }
                     </div>
                 </div>

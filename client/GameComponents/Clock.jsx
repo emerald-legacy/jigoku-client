@@ -109,7 +109,7 @@ function Clock({
     return (
         <div className={ className }>
             <span>
-                <img src='/img/free-clock-icon-png.png' className='clock-icon' />
+                <img src='/img/free-clock-icon-png.png' className="clock-icon" />
             </span>
             { getFormattedClock() }
         </div>

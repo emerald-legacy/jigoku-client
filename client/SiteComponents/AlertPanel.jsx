@@ -15,7 +15,7 @@ function AlertPanel({ children, message, noIcon, title, type }) {
     return (
         <div className={ config.alertClass || 'alert' } role='alert'>
             { noIcon || !IconComponent ? null : <IconComponent size={ 16 } aria-hidden='true' style={ { display: 'inline', verticalAlign: 'text-bottom' } } /> }
-            { title ? <span className='sr-only'>{ title }</span> : null }
+            { title ? <span className="sr-only">{ title }</span> : null }
             &nbsp;{ message }
             &nbsp;{ children }
         </div>

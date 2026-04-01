@@ -27,12 +27,12 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
     const renderSimpleCard = useCallback((card) => {
         return (
             <div
-                className='target-card vertical'
+                className="target-card vertical"
                 onMouseOut={ (event) => handleMouseOut(event, card) }
                 onMouseOver={ (event) => handleMouseOver(event, card) }
             >
                 <img
-                    className='target-card-image vertical'
+                    className="target-card-image vertical"
                     alt={ card.name }
                     src={ getCardImagePath(card) }
                 />
@@ -42,9 +42,9 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
 
     const renderSimpleRing = useCallback((ring) => {
         return (
-            <div className='ring-prompt'>
-                <div className='ring no-highlight'>
-                    <div className={ 'ring icon-element-' + ring.element + ' large' } />
+            <div className="ring-prompt">
+                <div className="ring no-highlight">
+                    <div className={ `ring icon-element-${ring.element} large` } />
                 </div>
             </div>
         );
@@ -52,7 +52,7 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
 
     const renderStringChoice = useCallback((string) => {
         return (
-            <div className='target-card vertical'>
+            <div className="target-card vertical">
                 { string }
             </div>
         );
@@ -75,9 +75,9 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
     }
 
     return (
-        <div className='prompt-control-targeting'>
+        <div className="prompt-control-targeting">
             { sourceElement }
-            { targetCards && targetCards.length > 0 ? <span className='targeting-arrow'><ArrowRight size={ 16 } /></span> : null }
+            { targetCards && targetCards.length > 0 ? <span className="targeting-arrow"><ArrowRight size={ 16 } /></span> : null }
             { targetCards && targetCards.length > 0 ? targetCards : null }
         </div>
     );

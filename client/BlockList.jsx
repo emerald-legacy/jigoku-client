@@ -74,7 +74,7 @@ export function InnerBlockList({
             <tr key={ blockedUser }>
                 <td>{ blockedUser }</td>
                 <td>
-                    <a href='#' className='btn' onClick={ (e) => onRemoveClick(blockedUser, e) }>
+                    <a href='#' className="btn" onClick={ (e) => onRemoveClick(blockedUser, e) }>
                         <X size={ 16 } />
                     </a>
                 </td>
@@ -84,7 +84,7 @@ export function InnerBlockList({
         const table = (!blockList || blockList.length === 0) ? (
             <div>No users currently blocked</div>
         ) : (
-            <table className='table table-striped blocklist'>
+            <table className="table table-striped blocklist">
                 <thead>
                     <tr>
                         <th>Username</th>
@@ -98,22 +98,22 @@ export function InnerBlockList({
         );
 
         content = (
-            <div className='col-sm-8 col-sm-offset-2 full-height'>
-                <div className='about-container'>
+            <div className="col-sm-8 col-sm-offset-2 full-height">
+                <div className="about-container">
                     { successPanel }
 
-                    <form className='form form-horizontal'>
-                        <div className='panel-title text-center'>
+                    <form className="form form-horizontal">
+                        <div className="panel-title text-center">
                             Block list
                         </div>
-                        <div className='panel'>
+                        <div className="panel">
                             <p>
                                 It can sometimes become necessary to prevent someone joining your games,
                                 or stop seeing their messages, or both. Users on this list will not be
                                 able to join your games, and you will not see their chat messages or their games.
                             </p>
 
-                            <div className='form-group'>
+                            <div className="form-group">
                                 <Input
                                     name='blockee'
                                     label='Username'
@@ -125,7 +125,7 @@ export function InnerBlockList({
                                     value={ username }
                                     noGroup
                                 />
-                                <button className='btn btn-primary col-sm-1' onClick={ onAddClick }>Add</button>
+                                <button className="btn btn-primary col-sm-1" onClick={ onAddClick }>Add</button>
                             </div>
 
                             <h3>Users Blocked</h3>

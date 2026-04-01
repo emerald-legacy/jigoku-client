@@ -14,7 +14,7 @@ function CardMenu({ menu, onMenuItemClick }) {
     ));
 
     return (
-        <div className='panel menu'>
+        <div className="panel menu">
             { menuItems }
         </div>
     );

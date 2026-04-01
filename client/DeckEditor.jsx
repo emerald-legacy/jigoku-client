@@ -373,17 +373,17 @@ export function InnerDeckEditor({
             role='dialog'
             onClick={ handleModalClick }
         >
-            <div className='modal-dialog' role='document'>
-                <div className='modal-content deck-select-modal'>
-                    <div className='deck-select-header'>
-                        <span className='deck-select-title'>Import from EmeraldDB</span>
-                        <button type='button' className='deck-select-close' aria-label='Close' onClick={ () => setShowModal(false) }>&times;</button>
+            <div className="modal-dialog" role='document'>
+                <div className="modal-content deck-select-modal">
+                    <div className="deck-select-header">
+                        <span className="deck-select-title">Import from EmeraldDB</span>
+                        <button type='button' className="deck-select-close" aria-label='Close' onClick={ () => setShowModal(false) }>&times;</button>
                     </div>
-                    <div className='deck-import-body'>
-                        <p className='deck-import-hint'>Paste the permalink URL from EmeraldDB:</p>
-                        <div className='deck-import-row'>
+                    <div className="deck-import-body">
+                        <p className="deck-import-hint">Paste the permalink URL from EmeraldDB:</p>
+                        <div className="deck-import-row">
                             <input
-                                className='form-control'
+                                className="form-control"
                                 name='importUrl'
                                 placeholder='https://www.emeralddb.org/decks/...'
                                 type='text'
@@ -392,7 +392,7 @@ export function InnerDeckEditor({
                                 onKeyPress={ handleImportKeyPress }
                                 autoFocus
                             />
-                            <button className='btn btn-primary' onClick={ handleImportDeck }>Import</button>
+                            <button className="btn btn-primary" onClick={ handleImportDeck }>Import</button>
                         </div>
                     </div>
                 </div>
@@ -400,15 +400,15 @@ export function InnerDeckEditor({
         </div>
     );
 
-    const backdrop = showModal ? <div className='modal-backdrop fade in' onClick={ () => setShowModal(false) } /> : null;
+    const backdrop = showModal ? <div className="modal-backdrop fade in" onClick={ () => setShowModal(false) } /> : null;
 
     return (
         <div>
             { popup }
             { backdrop }
-            <span className='btn btn-primary' onClick={ handleImportDeckClick }>Import deck</span>
+            <span className="btn btn-primary" onClick={ handleImportDeckClick }>Import deck</span>
             <p>Either type the cards manually into the box below, add the cards one by one using the card box and autocomplete or for best results, copy the permalink url from <a href='https://www.emeralddb.org' target='_blank' rel='noreferrer'>Emerald DB</a> and paste it into the popup from clicking the &quot;Import Deck&quot; button.</p>
-            <form className='form form-horizontal'>
+            <form className="form form-horizontal">
                 <Input name='deckName' label='Deck Name' labelClass='col-sm-3' fieldClass='col-sm-9' placeholder='Deck Name'
                     type='text' onChange={ (e) => handleChange('name', e) } value={ deck.name } />
                 <Select name='format' label='Format' labelClass='col-sm-3' fieldClass='col-sm-9' options={ formatsArray }
@@ -423,16 +423,16 @@ export function InnerDeckEditor({
                     onChange={ handleAddCardChange }>
                     <Input name='numcards' type='text' label='Num' labelClass='col-sm-1' fieldClass='col-sm-2'
                         value={ numberToAdd.toString() } onChange={ handleNumberToAddChange }>
-                        <div className='col-sm-1'>
-                            <button className='btn btn-primary add-card-button' onClick={ handleAddCard }>Add</button>
+                        <div className="col-sm-1">
+                            <button className="btn btn-primary add-card-button" onClick={ handleAddCard }>Add</button>
                         </div>
                     </Input>
                 </Typeahead>
                 <TextArea label='Cards' labelClass='col-sm-3' fieldClass='col-sm-9' rows='10' value={ cardList }
                     onChange={ handleCardListChange } />
-                <div className='form-group'>
-                    <div className='col-sm-offset-3 col-sm-8'>
-                        <button type='submit' className='btn btn-primary' onClick={ handleSaveClick }>Save Deck</button>
+                <div className="form-group">
+                    <div className="col-sm-offset-3 col-sm-8">
+                        <button type='submit' className="btn btn-primary" onClick={ handleSaveClick }>Save Deck</button>
                     </div>
                 </div>
             </form>

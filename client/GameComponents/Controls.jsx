@@ -14,7 +14,7 @@ function Controls({
     const laptopSize = window.innerWidth <= 1366;
 
     return (
-        <div className='controls panel'>
+        <div className="controls panel">
             <button
                 className={ 'btn btn-transparent' + (showChatAlert ? ' with-alert' : '') }
                 onClick={ onToggleChatClick }
@@ -32,12 +32,12 @@ function Controls({
                     { laptopSize ? '' : ' Manual Mode ' + (manualModeEnabled ? ' Enabled' : 'Disabled') }
                 </button>
             ) }
-            <button className='btn btn-transparent' onClick={ onSettingsClick }>
+            <button className="btn btn-transparent" onClick={ onSettingsClick }>
                 <Settings size={ 16 } />
                 { laptopSize ? '' : ' Settings' }
             </button>
             { showDownloadLog && (
-                <button className='btn btn-transparent' onClick={ onDownloadLogClick }>
+                <button className="btn btn-transparent" onClick={ onDownloadLogClick }>
                     <Download size={ 16 } />
                     { laptopSize ? '' : ' Game Log' }
                 </button>

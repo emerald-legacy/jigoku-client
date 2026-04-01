@@ -136,7 +136,7 @@ function Province({
             onDrop={ (event) => handleDragDrop(event, source) }
             style={ provinceCard ? { ...getWrapperStyle(provinceCard) } : {} }
         >
-            <div className='panel-header'>{ headerText }</div>
+            <div className="panel-header">{ headerText }</div>
             { provinceCard ? (
                 <Card
                     id={ provinceCard.uuid }

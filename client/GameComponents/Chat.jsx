@@ -45,7 +45,7 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
 
     return (
         <div className={ classes }>
-            <div className='messages panel' ref={ messagePanelRef } onScroll={ handleScroll }>
+            <div className="messages panel" ref={ messagePanelRef } onScroll={ handleScroll }>
                 <Messages
                     messages={ messages }
                     onCardMouseOver={ onMouseOver }
@@ -54,7 +54,7 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
             </div>
             <form>
                 <input
-                    className='form-control'
+                    className="form-control"
                     placeholder='Chat...'
                     onKeyPress={ handleKeyPress }
                     onChange={ handleChange }

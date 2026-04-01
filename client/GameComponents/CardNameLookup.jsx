@@ -25,7 +25,7 @@ function CardNameLookup({ cards, onCardSelected }) {
                 type='button'
                 disabled={ !cardName }
                 onClick={ onDoneClick }
-                className='btn btn-primary'
+                className="btn btn-primary"
             >
                 Done
             </button>

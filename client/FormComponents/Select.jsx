@@ -51,14 +51,14 @@ function Select({
         : {};
 
     return (
-        <div className='form-group'>
-            <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
+        <div className="form-group">
+            <label htmlFor={ name } className={ `${labelClass || ''} control-label` }>
                 { label }
             </label>
             <div className={ fieldClass }>
                 <select
                     style={ selectStyle }
-                    className='form-control'
+                    className="form-control"
                     id={ name }
                     value={ value }
                     onChange={ handleChange }
@@ -67,10 +67,10 @@ function Select({
                     { optionElements }
                 </select>
                 { validationMessage ? (
-                    <span className='help-block'>{ validationMessage } </span>
+                    <span className="help-block">{ validationMessage } </span>
                 ) : null }
                 { button ? (
-                    <button className='btn btn-default select-button' onClick={ button.onClick }>
+                    <button className="btn btn-default select-button" onClick={ button.onClick }>
                         { button.text }
                     </button>
                 ) : null }

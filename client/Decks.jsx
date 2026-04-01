@@ -137,16 +137,16 @@ export function InnerDecks({
         let deckInfo = null;
         if(selectedDeck) {
             deckInfo = (
-                <div className='col-sm-7'>
-                    <div className='panel-title text-center'>
+                <div className="col-sm-7">
+                    <div className="panel-title text-center">
                         { selectedDeck.name }
                     </div>
-                    <div className='panel'>
-                        <div className='btn-group'>
-                            <button className='btn btn-primary' onClick={ handleEditClick }>Edit</button>
-                            <button className='btn btn-primary' onClick={ handleDeleteClick }>Delete</button>
+                    <div className="panel">
+                        <div className="btn-group">
+                            <button className="btn btn-primary" onClick={ handleEditClick }>Edit</button>
+                            <button className="btn btn-primary" onClick={ handleDeleteClick }>Delete</button>
                             { showDelete && (
-                                <button className='btn btn-danger' onClick={ handleConfirmDeleteClick }>Delete</button>
+                                <button className="btn btn-danger" onClick={ handleConfirmDeleteClick }>Delete</button>
                             ) }
                         </div>
                         <DeckSummary deck={ selectedDeck } cards={ cards } stats={ deckStats && selectedDeck ? deckStats[selectedDeck._id] : undefined } />
@@ -156,34 +156,34 @@ export function InnerDecks({
         }
 
         content = (
-            <div className='full-height'>
+            <div className="full-height">
                 { successPanel }
                 { limitWarning }
-                <div className='row h-full'>
-                    <div className='col-sm-5 full-height relative'>
-                        <div className='panel-title text-center'>
+                <div className="row h-full">
+                    <div className="col-sm-5 full-height relative">
+                        <div className="panel-title text-center">
                         Your decks ({ deckCount } / 50)
                         </div>
-                        <div className='panel deck-list-container'>
-                            <div className='btn-group'>
+                        <div className="panel deck-list-container">
+                            <div className="btn-group">
                                 { isAtLimit ? (
-                                    <button className='btn btn-primary' disabled title='Maximum deck limit reached'>New Deck</button>
+                                    <button className="btn btn-primary" disabled title='Maximum deck limit reached'>New Deck</button>
                                 ) : (
-                                    <Link className='btn btn-primary' href='/decks/add'>New Deck</Link>
+                                    <Link className="btn btn-primary" href='/decks/add'>New Deck</Link>
                                 ) }
                                 { selectedDeckIds.length > 0 && (
-                                    <button className='btn btn-danger' onClick={ handleDeleteSelectedClick }>
+                                    <button className="btn btn-danger" onClick={ handleDeleteSelectedClick }>
                                     Delete Selected ({ selectedDeckIds.length })
                                     </button>
                                 ) }
                                 { showDeleteSelected && (
-                                    <button className='btn btn-danger' onClick={ handleConfirmDeleteSelectedClick }>
+                                    <button className="btn btn-danger" onClick={ handleConfirmDeleteSelectedClick }>
                                     Confirm Delete
                                     </button>
                                 ) }
                             </div>
                             { decks && decks.length > 0 && (
-                                <div className='checkbox' style={ { marginTop: '10px', marginBottom: '10px' } }>
+                                <div className="checkbox" style={ { marginTop: '10px', marginBottom: '10px' } }>
                                     <label>
                                         <input
                                             type='checkbox'
@@ -194,7 +194,7 @@ export function InnerDecks({
                                     </label>
                                 </div>
                             ) }
-                            <div className='deck-list' style={ { top: decks && decks.length > 0 ? '95px' : '55px' } }>
+                            <div className="deck-list" style={ { top: decks && decks.length > 0 ? '95px' : '55px' } }>
                                 { !decks || decks.length === 0 ? 'You have no decks, try adding one.' : deckList }
                             </div>
                         </div>

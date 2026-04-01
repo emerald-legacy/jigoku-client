@@ -87,7 +87,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                     switch(fragment.alert.type) {
                         case 'endofround':
                             return (
-                                <div className='separator' key={ index++ }>
+                                <div className="separator" key={ index++ }>
                                     <hr />
                                     { alertMessage }
                                     <hr />
@@ -95,7 +95,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                             );
                         case 'success':
                             return (
-                                <div className='alert alert-success' key={ index++ }>
+                                <div className="alert alert-success" key={ index++ }>
                                     <CheckCircle size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } />
                                     &nbsp;
                                     { alertMessage }
@@ -103,7 +103,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                             );
                         case 'info':
                             return (
-                                <div className='alert alert-info' key={ index++ }>
+                                <div className="alert alert-info" key={ index++ }>
                                     <Info size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } />
                                     &nbsp;
                                     { alertMessage }
@@ -111,7 +111,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                             );
                         case 'danger':
                             return (
-                                <div className='alert alert-danger' key={ index++ }>
+                                <div className="alert alert-danger" key={ index++ }>
                                     <AlertCircle size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } />
                                     &nbsp;
                                     { alertMessage }
@@ -119,7 +119,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                             );
                         case 'warning':
                             return (
-                                <div className='alert alert-warning' key={ index++ }>
+                                <div className="alert alert-warning" key={ index++ }>
                                     <AlertTriangle size={ 14 } style={ { display: 'inline', verticalAlign: 'text-bottom' } } />
                                     &nbsp;
                                     { alertMessage }
@@ -154,7 +154,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                     return (
                         <span
                             key={ index++ }
-                            className='card-link'
+                            className="card-link"
                             onMouseOver={ () => handleMouseOver(fragment) }
                             onMouseOut={ () => handleMouseOut(fragment) }
                         >

@@ -33,22 +33,22 @@ export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordG
 
     return (
         <div>
-            <div className='col-sm-12'>
+            <div className="col-sm-12">
                 <h3>Enter the password for { passwordGame.name }</h3>
             </div>
-            <div className='col-sm-5 game-password'>
-                <input className='form-control' type='password' onChange={ onPasswordChange } value={ password } />
+            <div className="col-sm-5 game-password">
+                <input className="form-control" type='password' onChange={ onPasswordChange } value={ password } />
             </div>
-            <div className='row' />
+            <div className="row" />
             { passwordError ? (
-                <div className='col-sm-6'>
+                <div className="col-sm-6">
                     <AlertPanel type='error' message={ passwordError } />
                 </div>
             ) : null }
-            <div className='col-sm-12'>
-                <div className='btn-group'>
-                    <button className='btn btn-primary' onClick={ onJoinClick }>{ passwordJoinType }</button>
-                    <button className='btn btn-primary' onClick={ onCancelClick }>Cancel</button>
+            <div className="col-sm-12">
+                <div className="btn-group">
+                    <button className="btn btn-primary" onClick={ onJoinClick }>{ passwordJoinType }</button>
+                    <button className="btn btn-primary" onClick={ onCancelClick }>Cancel</button>
                 </div>
             </div>
         </div>
