@@ -1,4 +1,4 @@
-const GameModes = require('./GameModes');
+import GameModes from './GameModes.js';
 
 const restrictedList = {
     version: '14',
@@ -86,4 +86,4 @@ class RestrictedList {
     }
 }
 
-module.exports = RestrictedList;
+export default RestrictedList;

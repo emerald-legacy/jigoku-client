@@ -18,7 +18,7 @@ async function runServer() {
         res.json({ nodes: lobby.getStatus() });
     });
 
-    const httpServer = server.init();
+    const httpServer = await server.init();
     lobby = new Lobby(httpServer, { config: config, db: database });
 
     server.run();

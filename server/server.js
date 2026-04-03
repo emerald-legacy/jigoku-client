@@ -50,7 +50,7 @@ class Server {
         this.userService = new UserService(database);
     }
 
-    init() {
+    async init() {
         // Security headers with Helmet v7
         app.use(
             // @ts-ignore - helmet v7 types
@@ -125,41 +125,29 @@ class Server {
             });
         });
 
-        let useWebpackDev = false;
+        let useViteDev = false;
         if(this.isDeveloping) {
             try {
-                const webpack = require('webpack');
-                const webpackConfig = require('../webpack.config.js');
-                const webpackDevMiddleware = require('webpack-dev-middleware');
-                const webpackHotMiddleware = require('webpack-hot-middleware');
-
-                /** @type {any} */
-                const wpConfig = webpackConfig;
-                const compiler = webpack(wpConfig);
-                const middleware = webpackDevMiddleware(compiler, {
-                    publicPath: webpackConfig.output.publicPath
+                const { createServer } = await import('vite');
+                const vite = await createServer({
+                    server: { middlewareMode: true },
+                    appType: 'custom'
                 });
-
-                app.use(middleware);
-                app.use(webpackHotMiddleware(compiler, {
-                    log: false,
-                    path: '/__webpack_hmr',
-                    heartbeat: 2000
-                }));
-                useWebpackDev = true;
+                app.use(vite.middlewares);
+                useViteDev = true;
             } catch(err) {
-                logger.info('Webpack not available, serving pre-built bundle from public/');
+                logger.info('Vite not available, serving pre-built bundle from public/');
             }
         }
 
-        // Load webpack manifest for production cache-busted filenames
+        // Load Vite manifest for production cache-busted filenames
         let manifest = {};
-        if(!useWebpackDev) {
+        if(!useViteDev) {
             try {
-                const manifestPath = path.join(__dirname, '..', 'public', 'manifest.json');
+                const manifestPath = path.join(__dirname, '..', 'public', '.vite', 'manifest.json');
                 manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
             } catch(err) {
-                logger.warn('Could not load manifest.json, falling back to default filenames');
+                logger.warn('Could not load .vite/manifest.json, falling back to default filenames');
             }
         }
 
@@ -184,13 +172,23 @@ class Server {
                 authReq.user = userWithoutBlockList;
             }
 
+            // Extract asset paths from Vite manifest
+            const entry = manifest['client/index.jsx'] || {};
+            const bundleJs = entry.file ? '/' + entry.file : '/assets/index.js';
+            const cssFiles = (entry.css || []).map(f => '/' + f);
+            const preloadJs = (entry.imports || [])
+                .map(key => manifest[key]?.file)
+                .filter(Boolean)
+                .map(f => '/' + f);
+
             res.render('index', {
                 basedir: path.join(__dirname, '..', 'views'),
                 user: Settings.getUserWithDefaultsSet(authReq.user),
                 token: token,
-                production: !useWebpackDev,
-                vendorsJs: manifest['vendors.js'] || '/vendors.min.js',
-                bundleJs: manifest['main.js'] || '/bundle.min.js',
+                production: !useViteDev,
+                bundleJs: bundleJs,
+                cssFiles: cssFiles,
+                preloadJs: preloadJs,
                 cardImageVersion: cardImageVersion
             });
         });

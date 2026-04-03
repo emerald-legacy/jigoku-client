@@ -1,4 +1,4 @@
-const GameModes = require('./GameModes');
+import GameModes from './GameModes.js';
 
 const bannedList = {
     version: '15',
@@ -125,4 +125,4 @@ class BannedList {
     }
 }
 
-module.exports = BannedList;
+export default BannedList;

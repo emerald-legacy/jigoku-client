@@ -1,4 +1,3 @@
-/* global __BUILD_VERSION__ */
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 

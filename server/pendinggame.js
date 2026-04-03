@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 const logger = require('./log.js');
 const GameChat = require('./game/gamechat.js');
-const GameModes = require('../client/GameModes.js');
+const GameModes = require('../client/GameModes.js').default;
 
 class PendingGame {
     constructor(owner, details) {

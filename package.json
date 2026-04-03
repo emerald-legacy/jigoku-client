@@ -8,7 +8,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint server/ client/ --ext=js --ext=jsx",
-    "build": "cross-env NODE_ENV=production webpack --config webpack.config.production.js"
+    "build": "vite build"
   },
   "repository": {
     "type": "git",
@@ -62,7 +62,6 @@
   "devDependencies": {
     "@babel/core": "7.29.0",
     "@babel/eslint-parser": "7.28.6",
-    "@babel/preset-env": "7.29.0",
     "@babel/preset-react": "7.28.5",
     "@eslint/js": "9.39.2",
     "@redux-devtools/extension": "3.3.0",
@@ -75,22 +74,15 @@
     "@vitejs/plugin-react": "5.1.4",
     "@vitest/coverage-v8": "4.0.18",
     "ajv": "8.18.0",
-    "babel-loader": "10.0.0",
     "babel-plugin-react-compiler": "1.0.0",
-    "core-js": "3.48.0",
-    "cross-env": "10.1.0",
-    "css-loader": "7.1.4",
     "emoji-js": "3.9.0",
     "eslint": "9.39.2",
     "eslint-plugin-react": "7.37.5",
     "eslint-plugin-react-hooks": "7.0.1",
     "globals": "17.3.0",
-    "html-webpack-plugin": "5.6.6",
     "jsdom": "28.1.0",
     "less": "4.5.1",
-    "less-loader": "12.3.1",
     "postcss": "8.5.8",
-    "postcss-loader": "8.2.1",
     "react": "19.2.4",
     "react-bootstrap-typeahead": "6.4.1",
     "react-dom": "19.2.4",
@@ -99,17 +91,10 @@
     "redux": "5.0.1",
     "socket.io-client": "4.8.3",
     "sonner": "2.0.7",
-    "style-loader": "4.0.0",
     "tailwindcss": "4.2.1",
-    "terser-webpack-plugin": "5.4.0",
     "typescript": "5.9.3",
-    "vitest": "4.0.18",
-    "webpack": "5.105.3",
-    "webpack-cli": "6.0.1",
-    "webpack-dev-middleware": "7.4.5",
-    "webpack-dev-server": "5.2.3",
-    "webpack-hot-middleware": "2.26.1",
-    "webpack-manifest-plugin": "6.0.1"
+    "vite": "7.3.1",
+    "vitest": "4.0.18"
   },
   "volta": {
     "node": "22.13.0"

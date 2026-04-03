@@ -6,4 +6,4 @@ const GameModes = Object.freeze({
     Skirmish: 'skirmish'
 });
 
-module.exports = GameModes;
+export default GameModes;

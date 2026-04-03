@@ -4,12 +4,12 @@ const jwt = require('jsonwebtoken');
 const { parseISO, differenceInSeconds } = require('date-fns');
 
 const logger = require('./log.js');
-const version = new Date(require('../version.js'));
+const version = new Date(require('../version.js').default);
 const PendingGame = require('./pendinggame.js');
 const GameRouter = require('./gamerouter.js');
 const DeckService = require('./services/DeckService.js');
 const CardService = require('./services/CardService.js');
-const validateDeck = require('../client/deck-validator.js'); // XXX Move this to a common location
+const validateDeck = require('../client/deck-validator.js').default;
 const Settings = require('./settings.js');
 const GetShadowlandsSummonables = require('./shadowLandsHelper.js');
 

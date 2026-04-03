@@ -12,7 +12,7 @@ COPY . .
 ARG BUILD_VERSION=LOCAL
 ENV BUILD_VERSION=$BUILD_VERSION
 
-# Build webpack bundle and remove dev dependencies
+# Build client bundle and remove dev dependencies
 RUN mkdir -p server/logs public/img/cards && npm run build && npm prune --omit=dev
 
 # Production stage

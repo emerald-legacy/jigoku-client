@@ -1,5 +1,5 @@
-const axios = require('axios').default;
-const GameModes = require('./GameModes');
+import axios from 'axios';
+import GameModes from './GameModes.js';
 
 class ValidatorCache {
 
@@ -98,7 +98,7 @@ class DeckValidator {
     }
 }
 
-module.exports = async function validateDeck(deck, options) {
+export default async function validateDeck(deck, options) {
     options = Object.assign({ includeExtendedStatus: true }, options);
 
     let validator = new DeckValidator(options.packs, options.gameMode);
@@ -111,4 +111,4 @@ module.exports = async function validateDeck(deck, options) {
     }
 
     return result;
-};
+}

@@ -1,5 +1,5 @@
-/*global user, authToken */
-import React from 'react';
+import './tailwind.css';
+import '../less/site.less';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { Toaster } from 'sonner';
@@ -16,8 +16,8 @@ window.onpopstate = function(e) {
     store.dispatch(navigate(e.target.location.pathname));
 };
 
-if(typeof user !== 'undefined') {
-    store.dispatch(login(user, authToken, user.admin));
+if(typeof window.user !== 'undefined') {
+    store.dispatch(login(window.user, window.authToken, window.user.admin));
 }
 
 const container = document.getElementById('component');
@@ -39,12 +39,5 @@ const render = () => {
         </Provider>
     );
 };
-
-// Hot module replacement for development
-if(process.env.NODE_ENV !== 'production' && module.hot) {
-    module.hot.accept('./Application.jsx', () => {
-        setTimeout(render);
-    });
-}
 
 render();
