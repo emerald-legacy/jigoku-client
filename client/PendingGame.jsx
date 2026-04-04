@@ -77,7 +77,7 @@ export function InnerPendingGame({
         if(messagePanelRef.current) {
             messagePanelRef.current.scrollTop = 999999;
         }
-    });
+    }, [currentGame?.messages]);
 
     const isGameReady = () => {
         if(!currentGame?.players) {

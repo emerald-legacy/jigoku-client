@@ -94,15 +94,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         }, 1000);
     };
 
-    // Initial mount - get deck status
-    useEffect(() => {
-        if(deck) {
-            getDeckStatusAsync(deck);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // Handle deck changes
+    // Handle deck changes (including initial mount when prevDeck is null)
     useEffect(() => {
         if(!deck) {
             return;
@@ -131,7 +123,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         return () => {
             clearValidationTimeout();
         };
-    }, [clearValidationTimeout]);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     let statusName;
     let className = "deck-status";
