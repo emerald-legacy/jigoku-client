@@ -76,9 +76,10 @@ function mergeHiddenInfo(state, hiddenInfo) {
 
         merged.players[playerName] = { ...player };
 
-        // Replace facedown hand cards with revealed data
-        if(info.hand && player.hand) {
-            merged.players[playerName].hand = player.hand.map((card, i) => {
+        // Replace facedown hand cards with revealed data (hand lives at cardPiles.hand)
+        if(info.hand && player.cardPiles?.hand) {
+            merged.players[playerName].cardPiles = { ...player.cardPiles };
+            merged.players[playerName].cardPiles.hand = player.cardPiles.hand.map((card, i) => {
                 if(card.facedown && info.hand[i]) {
                     return { ...card, ...info.hand[i], facedown: false };
                 }
