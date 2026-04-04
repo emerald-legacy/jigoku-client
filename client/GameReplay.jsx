@@ -54,6 +54,58 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJu
     );
 }
 
+/**
+ * Replace facedown hand/province cards with actual card data from the hidden info sidecar.
+ * The hidden info contains { [playerName]: { hand: [...], provinces: { one: [...], ... } } }
+ * where each card has { id, name, uuid }.
+ */
+function mergeHiddenInfo(state, hiddenInfo) {
+    if(!state.players || !hiddenInfo) {
+        return state;
+    }
+
+    const merged = { ...state, players: { ...state.players } };
+
+    for(const [playerName, info] of Object.entries(hiddenInfo)) {
+        const player = merged.players[playerName];
+        if(!player) {
+            continue;
+        }
+
+        merged.players[playerName] = { ...player };
+
+        // Replace facedown hand cards with revealed data
+        if(info.hand && player.hand) {
+            merged.players[playerName].hand = player.hand.map((card, i) => {
+                if(card.facedown && info.hand[i]) {
+                    return { ...card, ...info.hand[i], facedown: false, revealed: true };
+                }
+                return card;
+            });
+        }
+
+        // Replace facedown province cards with revealed data
+        if(info.provinces && player.provinces) {
+            const provinceKeys = ['one', 'two', 'three', 'four'];
+            merged.players[playerName].provinces = { ...player.provinces };
+            for(const key of provinceKeys) {
+                const provinceCards = player.provinces[key];
+                const hiddenCards = info.provinces[key];
+                if(provinceCards && hiddenCards) {
+                    merged.players[playerName].provinces[key] = provinceCards.map((card, i) => {
+                        if(card.facedown && hiddenCards[i]) {
+                            return { ...card, ...hiddenCards[i], facedown: false, revealed: true };
+                        }
+                        return card;
+                    });
+                }
+            }
+        }
+    }
+
+    return merged;
+}
+
 function GameReplay() {
     const [logData, setLogData] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -197,10 +249,13 @@ function GameReplay() {
     }
 
     const entry = logData.replayData[currentIndex];
-    const currentState = {
+    const baseState = {
         ...entry.state,
         messages: entry.accumulatedMessages || []
     };
+
+    // Merge hidden info (opponent's hand cards + facedown provinces) into displayed state
+    const currentState = entry.hiddenInfo ? mergeHiddenInfo(baseState, entry.hiddenInfo) : baseState;
 
     const metadata = logData.metadata;
     const playerNames = metadata.players.map((p) => p.name);
