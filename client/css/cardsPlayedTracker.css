@@ -1,0 +1,15 @@
+.cards-played-tracker__container {
+    margin-left: 0.2rem;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+}
+
+.cards-played-tracker {
+    display: flex;
+    align-items: center;
+}
+
+.cards-played-tracker__count {
+    font-size: 1.5em;
+}

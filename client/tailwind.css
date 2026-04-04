@@ -1,3 +1,39 @@
+/* Converted from LESS — order matches original site.less import chain */
+@import "./css/icons.css";
+@import "./css/application.css";
+@import "./css/common.css";
+@import "./css/chat.css";
+@import "./css/deckbuilder.css";
+@import "./css/gamelist.css";
+/* gameboard */
+@import "./css/gameboard/general.css";
+@import "./css/gameboard/right-pane.css";
+@import "./css/gameboard/sidebar.css";
+@import "./css/gameboard/sidebar/rings.css";
+@import "./css/gameboard/honor-fan.css";
+@import "./css/gameboard/province-deck.css";
+@import "./css/gameboard/player-stats.css";
+@import "./css/gameboard/hand.css";
+@import "./css/gameboard/menu.css";
+@import "./css/gameboard/play-area.css";
+@import "./css/gameboard/placeholder.css";
+@import "./css/gameboard/province.css";
+@import "./css/gameboard/draw.css";
+@import "./css/gameboard/card-pile.css";
+@import "./css/gameboard/discard.css";
+@import "./css/gameboard/imperial-favor.css";
+@import "./css/gameboard/skirmish-stronghold.css";
+@import "./css/gameboard/arrows.css";
+@import "./css/gameboard/conflict.css";
+@import "./css/gameboard/clock-popup.css";
+/* end gameboard */
+@import "./css/cards.css";
+@import "./css/cardStats.css";
+@import "./css/ringAttachments.css";
+@import "./css/cardsPlayedTracker.css";
+@import "./css/replay.css";
+@import "./css/site.css";
+
 @import "tailwindcss";
 @source "../client/**/*.{jsx,js}";
 
@@ -16,6 +52,62 @@
     --color-navbar-bg: rgba(34, 34, 34, 0.75);
     --color-header-bg: rgba(77, 153, 0, 0.9);
     --color-header-border: rgba(71, 58, 56, 0.95);
+    --color-military-icon: #ca9c81;
+    --color-military-text: #743e3e;
+    --color-military-ring: #BB3e3e;
+    --color-political-icon: #b2bccd;
+    --color-political-text: #41658a;
+    --color-political-ring: #3065BB;
+    --color-dupe: rgba(0, 128, 0, 0.85);
+    --color-power: rgba(0, 0, 128, 0.85);
+    --color-strength: rgba(128, 0, 0, 0.85);
+    --color-venom: rgba(29, 145, 163, 0.85);
+    --color-table-bg-accent: rgba(51, 102, 0, 0.45);
+}
+
+:root {
+    /* Card dimensions */
+    --card-width: 64px;
+    --card-height: 84px;
+    --card-sm-width: 51.2px;
+    --card-sm-height: 67.2px;
+    --card-lg-width: 89.6px;
+    --card-lg-height: 117.6px;
+    --card-xl-width: 128px;
+    --card-xl-height: 168px;
+    --card-xxl-width: 160px;
+    --card-xxl-height: 210px;
+
+    /* Layout */
+    --chat-width: 410px;
+    --center-bar-height: 90px;
+    --center-bar-sm-height: 50px;
+    --sidebar-width: 125px;
+    --sidebar-sm-width: 100px;
+    --scrollbar-width: 20px;
+    --screen-lg-min: 1200px;
+
+    /* Attachment offsets */
+    --attachment-offset: 13px;
+    --attachment-offset-sm: 10.4px;
+    --attachment-offset-lg: 18.2px;
+    --attachment-offset-xl: 26px;
+    --attachment-offset-xxl: 32.5px;
+    --province-attachment-offset: 13px;
+
+    /* Ring dimensions */
+    --ring-height: 1em;
+    --ring-width: 1em;
+
+    /* Z-index layers */
+    --layer-cards: 45;
+    --layer-pile-header: 55;
+    --layer-card-collection: 100;
+    --layer-prompt: 110;
+    --layer-card-menu: 120;
+    --layer-chat: 800;
+    --layer-popups: 1031;
+    --layer-top: 9999;
 }
 
 @layer components {
@@ -170,4 +262,76 @@
 
     /* Typeahead CSS */
     @import "react-bootstrap-typeahead/css/Typeahead.css";
+}
+
+/* Preflight overrides — must come AFTER @import "tailwindcss" to beat preflight */
+*, *:before, *:after {
+    box-sizing: border-box;
+}
+
+img, svg {
+    display: inline;
+    vertical-align: middle;
+}
+
+hr {
+    border: none;
+    border-top: 2px solid rgba(255, 255, 255, 0.3);
+    margin: 5px 0;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+p {
+    margin: 0 0 10px;
+}
+
+.about-container, .panel-body {
+    & ul, & ol {
+        list-style: revert;
+        margin: revert;
+        padding: revert;
+    }
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    padding-top: 0;
+    height: 100%;
+    width: 100%;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+}
+
+h1 {
+    font-size: 24px;
+    color: white;
+}
+
+h3 {
+    font-size: 18px;
+}
+
+h4 {
+    font-size: 14px;
+}
+
+a {
+    color: var(--color-primary);
+    text-decoration: none;
+
+    &:hover {
+        color: var(--color-info);
+        text-decoration: none;
+    }
+
+    &.btn {
+        color: white;
+    }
 }

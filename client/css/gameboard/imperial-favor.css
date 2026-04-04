@@ -1,0 +1,33 @@
+.imperial-favor {
+    border-radius: 6px;
+    height: var(--card-height);
+    width: var(--card-width);
+    position: relative;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+
+    &.small {
+        height: var(--card-sm-height);
+        width: var(--card-sm-width);
+    }
+
+    &.large {
+        height: var(--card-lg-height);
+        width: var(--card-lg-width);
+    }
+
+    &.x-large {
+        height: var(--card-xl-height);
+        width: var(--card-xl-width);
+    }
+
+    &.xxl {
+        height: var(--card-xxl-height);
+        width: var(--card-xxl-width);
+    }
+
+    &.hidden {
+        display: none;
+    }
+}

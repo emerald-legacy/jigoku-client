@@ -1,0 +1,147 @@
+.img-responsive {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.body, .container, #component {
+    height: 100%;
+}
+
+.container {
+    max-width: 1170px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 16px;
+}
+
+.full-height {
+    height: 100%;
+}
+
+.bg {
+    padding-top: 40px;
+    background-image: url("/img/bgs/main.jpg");
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+/* Shared bg-board properties */
+[class^="bg-board-"], [class*=" bg-board-"] {
+    min-height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.bg-board-default { background-image: url("/img/bgs/main.jpg"); }
+.bg-board-crab { background-image: url("/img/bgs/crab.jpg"); }
+.bg-board-crane { background-image: url("/img/bgs/crane.jpg"); }
+.bg-board-dragon { background-image: url("/img/bgs/dragon.jpg"); }
+.bg-board-lion { background-image: url("/img/bgs/lion.jpg"); }
+.bg-board-phoenix { background-image: url("/img/bgs/phoenix.jpg"); }
+.bg-board-scorpion { background-image: url("/img/bgs/scorpion.jpg"); }
+.bg-board-unicorn { background-image: url("/img/bgs/unicorn.jpg"); }
+.bg-board-crab2 { background-image: url("/img/bgs/crab2.jpg"); }
+.bg-board-crab3 { background-image: url("/img/bgs/crab3.jpg"); }
+.bg-board-crane2 { background-image: url("/img/bgs/crane2.jpg"); }
+.bg-board-crane3 { background-image: url("/img/bgs/crane3.jpg"); }
+.bg-board-crane4 { background-image: url("/img/bgs/crane4.jpg"); }
+.bg-board-dragon2 { background-image: url("/img/bgs/dragon2.jpg"); }
+.bg-board-dragon3 { background-image: url("/img/bgs/dragon3.jpg"); }
+.bg-board-lion2 { background-image: url("/img/bgs/lion2.jpg"); }
+.bg-board-lion3 { background-image: url("/img/bgs/lion3.jpg"); }
+.bg-board-phoenix2 { background-image: url("/img/bgs/phoenix2.jpg"); }
+.bg-board-phoenix3 { background-image: url("/img/bgs/phoenix3.jpg"); }
+.bg-board-scorpion2 { background-image: url("/img/bgs/scorpion2.jpg"); }
+.bg-board-scorpion3 { background-image: url("/img/bgs/scorpion3.jpg"); }
+.bg-board-unicorn2 { background-image: url("/img/bgs/unicorn2.jpg"); }
+.bg-board-unicorn3 { background-image: url("/img/bgs/unicorn3.jpg"); }
+.bg-board-otter { background-image: url("/img/bgs/otter.jpg"); }
+
+.flex-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+.about-container {
+    overflow-y: auto;
+}
+
+.rbt-input {
+    & > div {
+        width: 100%;
+
+        & > div {
+            width: 100%;
+
+            & > input {
+                width: 100% !important;
+            }
+        }
+    }
+}
+
+.btn-transparent {
+    background-color: transparent;
+}
+
+.discord-grid {
+    display: flex;
+    flex-direction: row;
+}
+
+.discord-grid-cell {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0px;
+    padding: 0px 10px;
+    border-left: 1px solid rgba(255, 255, 255, .3);
+    border-right: 1px solid rgba(255, 255, 255, .3);
+}
+
+.discord-label {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    column-gap: 5px;
+}
+
+.discord-server-icon {
+    margin-top: 5px;
+    height: 24px;
+    width: 24px;
+    border-radius: 50%;
+}
+
+.emerald-legacy-panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.emerald-legacy-logo {
+    align-self: center;
+    margin-top: 20px;
+    height: 83px;
+    width: 320px;
+}
+
+.lobby-version {
+    color: white;
+    font-size: 0.75em;
+    padding: 0;
+    margin: -5px 0 5px;
+    display: block;
+    text-align: center;
+}

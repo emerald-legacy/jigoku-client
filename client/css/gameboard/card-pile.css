@@ -1,0 +1,188 @@
+.card-placeholder {
+    border-radius: 6px;
+}
+
+.card-pile {
+    padding: 0px;
+    border-radius: 6px;
+    margin-left: 5px;
+    margin-right: 5px;
+    position: relative;
+
+    &.small {
+        &.vertical {
+            height: var(--card-sm-height);
+            min-width: var(--card-sm-width);
+
+            & .card-placeholder {
+                height: var(--card-sm-height);
+                width: var(--card-sm-width);
+            }
+        }
+
+        &.horizontal {
+            height: var(--card-sm-width);
+            width: var(--card-sm-height);
+
+            & .card-placeholder {
+                height: var(--card-sm-width);
+                width: var(--card-sm-height);
+            }
+        }
+    }
+
+    &.large {
+        &.vertical {
+            height: var(--card-lg-height);
+            min-width: var(--card-lg-width);
+
+            & .card-placeholder {
+                height: var(--card-lg-height);
+                width: var(--card-lg-width);
+            }
+        }
+
+        &.horizontal {
+            height: var(--card-lg-width);
+            width: var(--card-lg-height);
+
+            & .card-placeholder {
+                height: var(--card-lg-width);
+                width: var(--card-lg-height);
+            }
+        }
+    }
+
+    &.x-large {
+        &.vertical {
+            height: var(--card-xl-height);
+            min-width: var(--card-xl-width);
+
+            & .card-placeholder {
+                height: var(--card-xl-height);
+                width: var(--card-xl-width);
+            }
+        }
+
+        &.horizontal {
+            height: var(--card-xl-width);
+            width: var(--card-xl-height);
+
+            & .card-placeholder {
+                height: var(--card-xl-width);
+                width: var(--card-xl-height);
+            }
+        }
+    }
+
+    &.xxl {
+        &.vertical {
+            height: var(--card-xxl-height);
+            min-width: var(--card-xxl-width);
+
+            & .card-placeholder {
+                height: var(--card-xxl-height);
+                width: var(--card-xxl-width);
+            }
+        }
+
+        &.horizontal {
+            height: var(--card-xxl-width);
+            width: var(--card-xxl-height);
+
+            & .card-placeholder {
+                height: var(--card-xxl-width);
+                width: var(--card-xxl-height);
+            }
+        }
+    }
+
+    &.vertical {
+        height: var(--card-height);
+        min-width: var(--card-width);
+
+        & .card-placeholder {
+            height: var(--card-height);
+            width: var(--card-width);
+        }
+    }
+
+    &.horizontal {
+        height: var(--card-width);
+        width: var(--card-height);
+
+        & .card-placeholder {
+            height: var(--card-width);
+            width: var(--card-height);
+        }
+    }
+
+    &.panel {
+        top: 0px;
+    }
+
+    & .popup {
+        position: absolute;
+        left: 0;
+        bottom: 95px;
+
+        & .inner {
+            width: 400px;
+        }
+    }
+
+    & .opponent {
+        bottom: -25px;
+        left: 100px;
+    }
+
+    &.underneath {
+        margin-left: 0;
+        margin-top: calc(-1 * (var(--card-height) + var(--card-height) / 5));
+        position: absolute;
+
+        &.small {
+            margin-top: calc(-1 * (var(--card-sm-height) + var(--card-sm-height) / 5));
+        }
+
+        &.large {
+            margin-top: calc(-1 * (var(--card-lg-height) + var(--card-lg-height) / 5));
+        }
+
+        &.x-large {
+            margin-top: calc(-1 * (var(--card-xl-height) + var(--card-xl-height) / 5));
+        }
+
+        &.xxl {
+            margin-top: calc(-1 * (var(--card-xxl-height) + var(--card-xxl-height) / 5));
+        }
+    }
+
+    &.beside {
+        margin-left: calc(-1 * var(--card-width) / 2);
+        margin-top: calc(-1 * var(--card-height));
+        position: absolute;
+        z-index: 25;
+
+        &.small {
+            margin-top: calc(-1 * (var(--card-sm-height) + var(--card-sm-height) / 5));
+        }
+
+        &.large {
+            margin-top: calc(-1 * (var(--card-lg-height) + var(--card-lg-height) / 5));
+        }
+
+        &.x-large {
+            margin-top: calc(-1 * (var(--card-xl-height) + var(--card-xl-height) / 5));
+        }
+
+        &.xxl {
+            margin-top: calc(-1 * (var(--card-xxl-height) + var(--card-xxl-height) / 5));
+        }
+    }
+}
+
+.player-home-row .card-pile.horizontal {
+    margin-bottom: auto;
+    margin-top: auto;
+}

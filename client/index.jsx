@@ -1,5 +1,4 @@
 import './tailwind.css';
-import '../less/site.less';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { Toaster } from 'sonner';

@@ -1,0 +1,160 @@
+.replay-container {
+    max-width: 100%;
+    padding: 10px;
+}
+
+.replay-upload {
+    border: 2px dashed var(--color-primary);
+    border-radius: 8px;
+    padding: 60px 20px;
+    text-align: center;
+    cursor: pointer;
+    margin: 40px auto;
+    max-width: 600px;
+    color: white;
+
+    &:hover, &.drag-over {
+        border-color: white;
+        background: rgba(255, 255, 255, 0.05);
+    }
+}
+
+.replay-upload-icon {
+    margin-bottom: 10px;
+    opacity: 0.7;
+}
+
+.replay-upload-text {
+    font-size: 16px;
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.replay-upload-hint {
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+.replay-error {
+    color: var(--color-danger);
+    text-align: center;
+    margin-top: 10px;
+}
+
+.replay-mode {
+    & .inset-pane {
+        display: none;
+    }
+
+    & .modal-backdrop {
+        display: none;
+    }
+
+    & .settings-popup {
+        display: none;
+    }
+
+    & .right-side .chat form {
+        display: none;
+    }
+
+    & .right-side .controls > .btn {
+        display: none;
+    }
+
+    & .right-side .controls {
+        justify-content: flex-start;
+        flex-wrap: wrap;
+        width: var(--chat-width);
+        right: 4px;
+    }
+
+    & .right-side .chat .messages {
+        bottom: 5px;
+    }
+}
+
+.replay-navbar-info {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10001;
+    font-size: 12px;
+    color: white;
+    padding: 0 16px;
+    white-space: nowrap;
+    pointer-events: none;
+    line-height: 40px;
+    height: 40px;
+}
+
+.replay-bar {
+    width: 100%;
+}
+
+.replay-controls {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px 0;
+
+    & .btn {
+        position: relative;
+        vertical-align: middle;
+        padding: 3px 6px;
+
+        &:hover svg {
+            color: #fff;
+        }
+
+        &:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+    }
+
+    & svg {
+        color: var(--color-primary);
+    }
+}
+
+.replay-speed {
+    display: flex;
+    gap: 2px;
+    margin-left: 6px;
+
+    & .btn {
+        font-size: 10px;
+        padding: 2px 5px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 3px;
+
+        &.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+    }
+}
+
+.replay-progress {
+    font-size: 11px;
+    opacity: 0.6;
+    margin-left: 6px;
+}
+
+.replay-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2px 0;
+
+    & .btn {
+        font-size: 11px;
+
+        & svg {
+            color: inherit;
+            margin-right: 3px;
+        }
+    }
+}
