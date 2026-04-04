@@ -28,7 +28,7 @@ import Unauthorised from "./Unauthorised.jsx";
 import UserAdmin from "./UserAdmin.jsx";
 import BlockList from "./BlockList.jsx";
 import GameReplay from "./GameReplay.jsx";
-import { startRecording, recordState, clearRecording } from "./gameStateRecorder.js";
+import { startRecording, recordState, setHiddenInfo, clearRecording } from "./gameStateRecorder.js";
 
 import { toast } from "sonner";
 
@@ -199,6 +199,10 @@ class App extends React.Component {
                 }
                 recordState(game);
                 this.props.receiveGameState(game, this.props.username);
+            });
+
+            gameSocket.on("hiddeninfo", data => {
+                setHiddenInfo(data);
             });
 
             gameSocket.on("cleargamestate", () => {

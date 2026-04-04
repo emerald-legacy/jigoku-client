@@ -54,6 +54,64 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJu
     );
 }
 
+/**
+ * Merge hidden info into a replay state snapshot.
+ *
+ * - Hand cards: revealed face-up (facedown: false)
+ * - Province cards (type 'province'): card data added but kept facedown (visible on hover only)
+ * - Dynasty cards on provinces: left untouched (never revealed)
+ */
+function mergeHiddenInfo(state, hiddenInfo) {
+    if(!state.players || !hiddenInfo) {
+        return state;
+    }
+
+    const merged = { ...state, players: { ...state.players } };
+
+    for(const [playerName, info] of Object.entries(hiddenInfo)) {
+        const player = merged.players[playerName];
+        if(!player) {
+            continue;
+        }
+
+        merged.players[playerName] = { ...player };
+
+        // Replace facedown hand cards with revealed data (hand lives at cardPiles.hand)
+        if(info.hand && player.cardPiles?.hand) {
+            merged.players[playerName].cardPiles = { ...player.cardPiles };
+            merged.players[playerName].cardPiles.hand = player.cardPiles.hand.map((card, i) => {
+                if(card.facedown && info.hand[i]) {
+                    return { ...card, ...info.hand[i], facedown: false };
+                }
+                return card;
+            });
+        }
+
+        // For province cards (type 'province' only): add card data but keep facedown
+        // so they appear as card backs on the board but show the real card on hover/zoom.
+        // Dynasty cards (characters/holdings) on provinces are left untouched.
+        if(info.provinces && player.provinces) {
+            const provinceKeys = ["one", "two", "three", "four"];
+            merged.players[playerName].provinces = { ...player.provinces };
+            for(const key of provinceKeys) {
+                const provinceCards = player.provinces[key];
+                const hiddenCards = info.provinces[key];
+                if(provinceCards && hiddenCards) {
+                    merged.players[playerName].provinces[key] = provinceCards.map((card, i) => {
+                        if(card.facedown && hiddenCards[i] && hiddenCards[i].type === "province") {
+                            // Add id/name/packId so hover zoom shows the card, but keep facedown
+                            return { ...card, id: hiddenCards[i].id, name: hiddenCards[i].name, packId: hiddenCards[i].packId };
+                        }
+                        return card;
+                    });
+                }
+            }
+        }
+    }
+
+    return merged;
+}
+
 function GameReplay() {
     const [logData, setLogData] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -197,14 +255,18 @@ function GameReplay() {
     }
 
     const entry = logData.replayData[currentIndex];
-    const currentState = {
+    const baseState = {
         ...entry.state,
         messages: entry.accumulatedMessages || []
     };
 
+    // Merge hidden info (opponent's hand cards + facedown provinces) into displayed state
+    const currentState = entry.hiddenInfo ? mergeHiddenInfo(baseState, entry.hiddenInfo) : baseState;
+
     const metadata = logData.metadata;
     const playerNames = metadata.players.map((p) => p.name);
-    const username = playerNames[0] || "__replay_spectator__";
+    // Use the downloading player as the perspective (bottom of board), fall back to first player
+    const username = metadata.downloadedBy || playerNames[0] || "__replay_spectator__";
 
     const replayUser = {
         settings: {

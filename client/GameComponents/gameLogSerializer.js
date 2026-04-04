@@ -1,5 +1,5 @@
 import { gzipSync, gunzipSync, strToU8, strFromU8 } from "fflate";
-import { getRecording } from "../gameStateRecorder.js";
+import { getRecording, getHiddenInfo } from "../gameStateRecorder.js";
 
 const iconsConflict = ["military", "political"];
 const iconsElement = ["air", "earth", "fire", "water", "void"];
@@ -69,7 +69,7 @@ function messageToText(message) {
     return fragmentToText(message);
 }
 
-export function buildGameLog(currentGame) {
+export function buildGameLog(currentGame, downloadedBy) {
     const players = Object.values(currentGame.players).map((p) => ({
         name: p.name,
         faction: p.faction?.name || p.faction?.value || "unknown"
@@ -79,24 +79,32 @@ export function buildGameLog(currentGame) {
     const plainText = lines.filter((line) => line.length > 0).join("\n");
 
     const replayData = getRecording();
+    const hiddenInfo = getHiddenInfo();
+
+    let version = 1;
+    if(replayData.length > 0) {
+        version = hiddenInfo.length > 0 ? 3 : 2;
+    }
 
     return {
-        version: replayData.length > 0 ? 2 : 1,
+        version,
         metadata: {
             gameName: currentGame.name,
             gameMode: currentGame.gameMode,
             winner: currentGame.winner || null,
             date: new Date().toISOString(),
-            players: players
+            players: players,
+            downloadedBy: downloadedBy || null
         },
         plainText: plainText,
         messages: currentGame.messages,
-        replayData: replayData.length > 0 ? replayData : undefined
+        replayData: replayData.length > 0 ? replayData : undefined,
+        hiddenInfo: hiddenInfo.length > 0 ? hiddenInfo : undefined
     };
 }
 
-export function downloadGameLog(currentGame) {
-    const log = buildGameLog(currentGame);
+export function downloadGameLog(currentGame, downloadedBy) {
+    const log = buildGameLog(currentGame, downloadedBy);
     const json = JSON.stringify(log);
     const compressed = gzipSync(strToU8(json));
     const blob = new Blob([compressed], { type: "application/gzip" });
@@ -140,7 +148,8 @@ export function parseGameLog(arrayBuffer) {
 
     if(log.replayData && log.replayData.length > 0) {
         let accumulated = [];
-        for(const entry of log.replayData) {
+        for(let i = 0; i < log.replayData.length; i++) {
+            const entry = log.replayData[i];
             const state = entry.state;
             if(state.newMessages && accumulated.length > 0) {
                 accumulated = accumulated.concat(state.messages || []);
@@ -150,7 +159,14 @@ export function parseGameLog(arrayBuffer) {
             entry.accumulatedMessages = [...accumulated];
             delete state.messages;
             delete state.newMessages;
+
+            // Attach hidden info snapshot to each replay entry if available
+            if(log.hiddenInfo && log.hiddenInfo[i]) {
+                entry.hiddenInfo = log.hiddenInfo[i];
+            }
         }
+        // Remove top-level hiddenInfo after distributing to entries
+        delete log.hiddenInfo;
     }
 
     return log;

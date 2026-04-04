@@ -1,4 +1,5 @@
 let recording = [];
+let hiddenInfo = [];
 let isRecording = false;
 
 export function startRecording() {
@@ -6,6 +7,7 @@ export function startRecording() {
         return;
     }
     recording = [];
+    hiddenInfo = [];
     isRecording = true;
 }
 
@@ -20,11 +22,20 @@ export function recordState(gameState) {
     });
 }
 
+export function setHiddenInfo(data) {
+    hiddenInfo = data;
+}
+
 export function getRecording() {
     return recording;
 }
 
+export function getHiddenInfo() {
+    return hiddenInfo;
+}
+
 export function clearRecording() {
     recording = [];
+    hiddenInfo = [];
     isRecording = false;
 }
