@@ -98,8 +98,8 @@ function mergeHiddenInfo(state, hiddenInfo) {
                 if(provinceCards && hiddenCards) {
                     merged.players[playerName].provinces[key] = provinceCards.map((card, i) => {
                         if(card.facedown && hiddenCards[i] && hiddenCards[i].type === 'province') {
-                            // Add id/name so hover zoom shows the card, but keep facedown
-                            return { ...card, id: hiddenCards[i].id, name: hiddenCards[i].name };
+                            // Add id/name/packId so hover zoom shows the card, but keep facedown
+                            return { ...card, id: hiddenCards[i].id, name: hiddenCards[i].name, packId: hiddenCards[i].packId };
                         }
                         return card;
                     });

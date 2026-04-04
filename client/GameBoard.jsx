@@ -31,6 +31,7 @@ export class InnerGameBoard extends React.Component {
 
         this.modalRef = createRef();
         this.draggableRef = createRef();
+        this.opponentDraggableRef = createRef();
 
         this.onMouseOut = this.onMouseOut.bind(this);
         this.onMouseOver = this.onMouseOver.bind(this);
@@ -678,6 +679,46 @@ export class InnerGameBoard extends React.Component {
         }
     }
 
+    getOpponentHand(otherPlayer) {
+        if(!otherPlayer || !otherPlayer.cardPiles.hand) {
+            return null;
+        }
+
+        // Only show opponent hand if it has revealed cards (replay with hidden info)
+        const hasRevealedCards = otherPlayer.cardPiles.hand.some(c => !c.facedown && c.id);
+        if(!hasRevealedCards) {
+            return null;
+        }
+
+        let defaultPosition = {
+            x: (window.innerWidth / 2) - 240,
+            y: 50
+        };
+
+        var handBounds = {
+            left: 0,
+            right: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 490,
+            top: 0,
+            bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 160
+        };
+
+        return (<Draggable handle='.grip'
+            nodeRef={ this.opponentDraggableRef }
+            bounds={ handBounds }
+            defaultPosition={ defaultPosition } >
+            <div ref={ this.opponentDraggableRef } className="player-home-row-container opponent-hand-container">
+                <PlayerHand
+                    cards={ otherPlayer.cardPiles.hand }
+                    isMe={ true }
+                    onCardClick={ this.onCardClick }
+                    onDragDrop={ this.onDragDrop }
+                    onMouseOut={ this.onMouseOut }
+                    onMouseOver={ this.onMouseOver }
+                    cardSize={ this.props.user.settings.cardSize } />
+            </div>
+        </Draggable>);
+    }
+
     render() {
         if(!this.props.currentGame) {
             return <div>Waiting for server...</div>;
@@ -746,6 +787,7 @@ export class InnerGameBoard extends React.Component {
                 { backdrop }
                 { this.getPrompt(thisPlayer) }
                 { this.getPlayerHand(thisPlayer) }
+                { this.getOpponentHand(otherPlayer) }
                 { /* Disabled: status in sidebar
                     !thisPlayer.optionSettings.showStatusInSidebar &&
                     <div className="player-stats-row">
