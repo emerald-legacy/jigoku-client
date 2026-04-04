@@ -4,31 +4,31 @@ import { bindActionCreators } from "@reduxjs/toolkit";
 import { connect } from "react-redux";
 import { io } from "socket.io-client";
 
-import Login from './Login.jsx';
-import Logout from './Logout.jsx';
-import Register from './Register.jsx';
-import Lobby from './Lobby.jsx';
-import Decks from './Decks.jsx';
-import AddDeck from './AddDeck.jsx';
-import EditDeck from './EditDeck.jsx';
-import NotFound from './NotFound.jsx';
-import ErrorBoundary from './SiteComponents/ErrorBoundary.jsx';
-import NavBar from './NavBar.jsx';
-import GameLobby from './GameLobby.jsx';
-import GameBoard from './GameBoard.jsx';
-import HowToPlay from './HowToPlay.jsx';
-import About from './About.jsx';
-import Community from './Community.jsx';
-import Formats from './Formats.jsx';
-import ForgotPassword from './ForgotPassword.jsx';
-import ResetPassword from './ResetPassword.jsx';
-import Profile from './Profile.jsx';
-import NewsAdmin from './NewsAdmin.jsx';
-import Unauthorised from './Unauthorised.jsx';
-import UserAdmin from './UserAdmin.jsx';
-import BlockList from './BlockList.jsx';
-import GameReplay from './GameReplay.jsx';
-import { startRecording, recordState, setHiddenInfo, clearRecording } from './gameStateRecorder.js';
+import Login from "./Login.jsx";
+import Logout from "./Logout.jsx";
+import Register from "./Register.jsx";
+import Lobby from "./Lobby.jsx";
+import Decks from "./Decks.jsx";
+import AddDeck from "./AddDeck.jsx";
+import EditDeck from "./EditDeck.jsx";
+import NotFound from "./NotFound.jsx";
+import ErrorBoundary from "./SiteComponents/ErrorBoundary.jsx";
+import NavBar from "./NavBar.jsx";
+import GameLobby from "./GameLobby.jsx";
+import GameBoard from "./GameBoard.jsx";
+import HowToPlay from "./HowToPlay.jsx";
+import About from "./About.jsx";
+import Community from "./Community.jsx";
+import Formats from "./Formats.jsx";
+import ForgotPassword from "./ForgotPassword.jsx";
+import ResetPassword from "./ResetPassword.jsx";
+import Profile from "./Profile.jsx";
+import NewsAdmin from "./NewsAdmin.jsx";
+import Unauthorised from "./Unauthorised.jsx";
+import UserAdmin from "./UserAdmin.jsx";
+import BlockList from "./BlockList.jsx";
+import GameReplay from "./GameReplay.jsx";
+import { startRecording, recordState, setHiddenInfo, clearRecording } from "./gameStateRecorder.js";
 
 import { toast } from "sonner";
 
@@ -201,11 +201,11 @@ class App extends React.Component {
                 this.props.receiveGameState(game, this.props.username);
             });
 
-            gameSocket.on('hiddeninfo', data => {
+            gameSocket.on("hiddeninfo", data => {
                 setHiddenInfo(data);
             });
 
-            gameSocket.on('cleargamestate', () => {
+            gameSocket.on("cleargamestate", () => {
                 clearRecording();
                 this.props.clearGameState();
             });

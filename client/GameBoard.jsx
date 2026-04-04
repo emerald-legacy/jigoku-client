@@ -702,14 +702,14 @@ export class InnerGameBoard extends React.Component {
             bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 160
         };
 
-        return (<Draggable handle='.grip'
+        return (<Draggable handle=".grip"
             nodeRef={ this.opponentDraggableRef }
             bounds={ handBounds }
             defaultPosition={ defaultPosition } >
             <div ref={ this.opponentDraggableRef } className="player-home-row-container opponent-hand-container">
                 <PlayerHand
                     cards={ otherPlayer.cardPiles.hand }
-                    isMe={ true }
+                    isMe
                     onCardClick={ this.onCardClick }
                     onDragDrop={ this.onDragDrop }
                     onMouseOut={ this.onMouseOut }

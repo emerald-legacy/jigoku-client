@@ -91,14 +91,14 @@ function mergeHiddenInfo(state, hiddenInfo) {
         // so they appear as card backs on the board but show the real card on hover/zoom.
         // Dynasty cards (characters/holdings) on provinces are left untouched.
         if(info.provinces && player.provinces) {
-            const provinceKeys = ['one', 'two', 'three', 'four'];
+            const provinceKeys = ["one", "two", "three", "four"];
             merged.players[playerName].provinces = { ...player.provinces };
             for(const key of provinceKeys) {
                 const provinceCards = player.provinces[key];
                 const hiddenCards = info.provinces[key];
                 if(provinceCards && hiddenCards) {
                     merged.players[playerName].provinces[key] = provinceCards.map((card, i) => {
-                        if(card.facedown && hiddenCards[i] && hiddenCards[i].type === 'province') {
+                        if(card.facedown && hiddenCards[i] && hiddenCards[i].type === "province") {
                             // Add id/name/packId so hover zoom shows the card, but keep facedown
                             return { ...card, id: hiddenCards[i].id, name: hiddenCards[i].name, packId: hiddenCards[i].packId };
                         }
@@ -266,7 +266,7 @@ function GameReplay() {
     const metadata = logData.metadata;
     const playerNames = metadata.players.map((p) => p.name);
     // Use the downloading player as the perspective (bottom of board), fall back to first player
-    const username = metadata.downloadedBy || playerNames[0] || '__replay_spectator__';
+    const username = metadata.downloadedBy || playerNames[0] || "__replay_spectator__";
 
     const replayUser = {
         settings: {

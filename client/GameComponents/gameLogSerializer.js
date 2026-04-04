@@ -1,5 +1,5 @@
-import { gzipSync, gunzipSync, strToU8, strFromU8 } from 'fflate';
-import { getRecording, getHiddenInfo } from '../gameStateRecorder.js';
+import { gzipSync, gunzipSync, strToU8, strFromU8 } from "fflate";
+import { getRecording, getHiddenInfo } from "../gameStateRecorder.js";
 
 const iconsConflict = ["military", "political"];
 const iconsElement = ["air", "earth", "fire", "water", "void"];
