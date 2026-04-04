@@ -33,7 +33,8 @@ module.exports = [
                 ...globals.browser,
                 ...globals.node,
                 ...globals.es2020,
-                grecaptcha: "readonly"
+                grecaptcha: "readonly",
+                __BUILD_VERSION__: "readonly"
             }
         },
         settings: {
