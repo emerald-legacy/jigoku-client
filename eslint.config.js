@@ -44,7 +44,7 @@ module.exports = [
         rules: {
             // React rules
             ...react.configs.recommended.rules,
-            "react/prop-types": "warn",
+            "react/prop-types": "off",
             "react/no-string-refs": "warn",
             "react/no-deprecated": "warn",
             "react/display-name": "warn",
