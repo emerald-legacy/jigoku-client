@@ -1,12 +1,14 @@
 import PropTypes from 'prop-types';
-import { Menu, AlertCircle, Wrench, Settings } from 'lucide-react';
+import { Menu, AlertCircle, Wrench, Settings, Download } from 'lucide-react';
 
 function Controls({
     manualModeEnabled,
+    onDownloadLogClick,
     onManualModeClick,
     onSettingsClick,
     onToggleChatClick,
     showChatAlert,
+    showDownloadLog,
     showManualMode
 }) {
     const laptopSize = window.innerWidth <= 1366;
@@ -34,6 +36,12 @@ function Controls({
                 <Settings size={ 16 } />
                 { laptopSize ? '' : ' Settings' }
             </button>
+            { showDownloadLog && (
+                <button className='btn btn-transparent' onClick={ onDownloadLogClick }>
+                    <Download size={ 16 } />
+                    { laptopSize ? '' : ' Game Log' }
+                </button>
+            ) }
         </div>
     );
 }
@@ -41,10 +49,12 @@ function Controls({
 Controls.displayName = 'Controls';
 Controls.propTypes = {
     manualModeEnabled: PropTypes.bool,
+    onDownloadLogClick: PropTypes.func,
     onManualModeClick: PropTypes.func,
     onSettingsClick: PropTypes.func,
     onToggleChatClick: PropTypes.func,
     showChatAlert: PropTypes.bool,
+    showDownloadLog: PropTypes.bool,
     showManualMode: PropTypes.bool
 };
 

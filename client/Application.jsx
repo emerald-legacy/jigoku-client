@@ -28,6 +28,8 @@ import NewsAdmin from './NewsAdmin.jsx';
 import Unauthorised from './Unauthorised.jsx';
 import UserAdmin from './UserAdmin.jsx';
 import BlockList from './BlockList.jsx';
+import GameReplay from './GameReplay.jsx';
+import { startRecording, recordState, clearRecording } from './gameStateRecorder.js';
 
 import { toast } from 'sonner';
 
@@ -120,10 +122,14 @@ class App extends React.Component {
         });
 
         socket.on('gamestate', game => {
+            if(game.started) {
+                recordState(game);
+            }
             this.props.receiveGameState(game, this.props.username);
         });
 
         socket.on('cleargamestate', () => {
+            clearRecording();
             this.props.clearGameState();
         });
 
@@ -189,10 +195,15 @@ class App extends React.Component {
             });
 
             gameSocket.on('gamestate', game => {
+                if(game.started && !game.winner) {
+                    startRecording();
+                }
+                recordState(game);
                 this.props.receiveGameState(game, this.props.username);
             });
 
             gameSocket.on('cleargamestate', () => {
+                clearRecording();
                 this.props.clearGameState();
             });
         });
@@ -254,6 +265,7 @@ class App extends React.Component {
         let leftMenu = [
             { name: 'Decks', path: '/decks' },
             { name: 'Play', path: '/play' },
+            { name: 'Replay', path: '/replay' },
             {
                 name: 'Help', childItems: [
                     { name: 'How To Play', path: '/how-to-play' },
@@ -386,6 +398,9 @@ class App extends React.Component {
                 break;
             case '/blocklist':
                 component = <BlockList />;
+                break;
+            case '/replay':
+                component = <GameReplay />;
                 break;
             default:
                 component = <NotFound />;
