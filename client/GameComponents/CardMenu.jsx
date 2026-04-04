@@ -19,6 +19,6 @@ function CardMenu({ menu, onMenuItemClick }) {
     );
 }
 
-CardMenu.displayName = 'CardMenu';
+CardMenu.displayName = "CardMenu";
 
 export default CardMenu;

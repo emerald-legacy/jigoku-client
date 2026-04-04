@@ -1,27 +1,27 @@
 /*eslint no-console: 0*/
 
-const db = require('./db.js');
+const db = require("./db.js");
 
-const GameService = require('./services/GameService.js');
-const config = require('config');
+const GameService = require("./services/GameService.js");
+const config = require("config");
 
 async function runStats() {
     const args = process.argv.slice(2);
 
     if(args.length < 2) {
-        console.error('Must provide start and end date');
+        console.error("Must provide start and end date");
         process.exit(1);
     }
 
     await db.connect(config.dbPath);
     const gameService = new GameService(db.getDb());
 
-    console.info('Running stats between', args[0], 'and', args[1]);
+    console.info("Running stats between", args[0], "and", args[1]);
 
     const games = await gameService.getAllGames(args[0], args[1]);
     let rejected = { singlePlayer: 0, noWinner: 0 };
 
-    console.info('' + games.length, 'total games');
+    console.info("" + games.length, "total games");
 
     let players = {};
     let factions = {};
@@ -55,7 +55,7 @@ async function runStats() {
             }
 
             if(!factionAlliances[player.faction + player.agenda]) {
-                factionAlliances[player.faction + player.agenda] = { name: player.faction + ' / ' + player.agenda, wins: 0, losses: 0 };
+                factionAlliances[player.faction + player.agenda] = { name: player.faction + " / " + player.agenda, wins: 0, losses: 0 };
             }
 
             var playerStat = players[player.name];
@@ -121,28 +121,28 @@ async function runStats() {
         .sort((a, b) => b.winRate - a.winRate)
         .slice(0, 10);
 
-    console.info('### Top 10\n\nName | Number of wins\n----|----------------');
+    console.info("### Top 10\n\nName | Number of wins\n----|----------------");
 
     winners.forEach(winner => {
-        console.info(winner.name, ' | ', winner.wins);
+        console.info(winner.name, " | ", winner.wins);
     });
 
-    console.info('### Top 10 by winrate\n\nName | Number of wins | Number of losses | Win Rate\n----|-------------|------------------|--------');
+    console.info("### Top 10 by winrate\n\nName | Number of wins | Number of losses | Win Rate\n----|-------------|------------------|--------");
 
     winRateStats.forEach(winner => {
-        console.info(winner.name, ' | ', winner.wins, ' | ', winner.losses, ' | ', winner.winRate + '%');
+        console.info(winner.name, " | ", winner.wins, " | ", winner.losses, " | ", winner.winRate + "%");
     });
 
-    console.info('### Faction win rates\n\nFaction | Number of wins | Number of losses | Win Rate\n----|-------------|------------------|--------');
+    console.info("### Faction win rates\n\nFaction | Number of wins | Number of losses | Win Rate\n----|-------------|------------------|--------");
 
     factionWinRateStats.forEach(winner => {
-        console.info(winner.name, ' | ', winner.wins, ' | ', winner.losses, ' | ', winner.winRate + '%');
+        console.info(winner.name, " | ", winner.wins, " | ", winner.losses, " | ", winner.winRate + "%");
     });
 
-    console.info('### Faction/Alliance combination win rates\n\nFaction/Alliance | Number of wins | Number of losses | Win Rate\n----|-------------|------------------|--------');
+    console.info("### Faction/Alliance combination win rates\n\nFaction/Alliance | Number of wins | Number of losses | Win Rate\n----|-------------|------------------|--------");
 
     factionAllianceWinRateStats.forEach(winner => {
-        console.info(winner.name, ' | ', winner.wins, ' | ', winner.losses, ' | ', winner.winRate + '%');
+        console.info(winner.name, " | ", winner.wins, " | ", winner.losses, " | ", winner.winRate + "%");
     });
 
     console.info(rejected);
@@ -151,6 +151,6 @@ async function runStats() {
 runStats()
     .then(() => db.close())
     .catch(err => {
-        console.error('Error running stats:', err);
+        console.error("Error running stats:", err);
         db.close();
     });

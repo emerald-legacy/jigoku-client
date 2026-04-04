@@ -1,5 +1,5 @@
-import { ArrowRight } from 'lucide-react';
-import { getCardImageUrl, getCardBackUrl } from '../cardImageUrl.js';
+import { ArrowRight } from "lucide-react";
+import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl.js";
 
 function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
     const handleMouseOver = (event, card) => {
@@ -16,7 +16,7 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
 
     const getCardImagePath = (card) => {
         if(!card.id) {
-            const backFile = `${card.isDynasty ? 'dynasty' : card.isConflict ? 'conflict' : 'province'}cardback.jpg`;
+            const backFile = `${card.isDynasty ? "dynasty" : card.isConflict ? "conflict" : "province"}cardback.jpg`;
             return getCardBackUrl(backFile);
         }
         return getCardImageUrl(card.id, card.packId);
@@ -57,9 +57,9 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
     };
 
     const targetCards = targets?.map((target, index) => {
-        if(target.type === 'select') {
+        if(target.type === "select") {
             return <span key={ index }>{ renderStringChoice(target.name) }</span>;
-        } else if(target.type === 'ring') {
+        } else if(target.type === "ring") {
             return <span key={ index }>{ renderSimpleRing(target) }</span>;
         }
         return <span key={ index }>{ renderSimpleCard(target) }</span>;
@@ -67,7 +67,7 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
 
     let sourceElement;
     if(source.type) {
-        sourceElement = source.type === 'ring' ? renderSimpleRing(source) : renderSimpleCard(source);
+        sourceElement = source.type === "ring" ? renderSimpleRing(source) : renderSimpleCard(source);
     } else {
         sourceElement = renderStringChoice(source.name);
     }
@@ -81,6 +81,6 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
     );
 }
 
-AbilityTargeting.displayName = 'AbilityTargeting';
+AbilityTargeting.displayName = "AbilityTargeting";
 
 export default AbilityTargeting;

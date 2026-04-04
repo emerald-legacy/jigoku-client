@@ -12,12 +12,12 @@ function FateCounter({ cancel, fade, name, value }) {
 
     return (
         <div key={ name } className={ className }>
-            <img src='/img/Fate.png' title='Fate' alt='Fate' />
+            <img src="/img/Fate.png" title="Fate" alt="Fate" />
             <div className="fatecountertext">{ value }</div>
         </div>
     );
 }
 
-FateCounter.displayName = 'FateCounter';
+FateCounter.displayName = "FateCounter";
 
 export default FateCounter;

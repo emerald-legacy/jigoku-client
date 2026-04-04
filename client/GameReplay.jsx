@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
-import { Upload, SkipBack, ChevronLeft, Play, Pause, ChevronRight, SkipForward } from 'lucide-react';
-import { InnerGameBoard } from './GameBoard.jsx';
-import { parseGameLog } from './GameComponents/gameLogSerializer.js';
+import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
+import { Upload, SkipBack, ChevronLeft, Play, Pause, ChevronRight, SkipForward } from "lucide-react";
+import { InnerGameBoard } from "./GameBoard.jsx";
+import { parseGameLog } from "./GameComponents/gameLogSerializer.js";
 
 const speeds = [
-    { label: '0.5x', delay: 2000 },
-    { label: '1x', delay: 1000 },
-    { label: '2x', delay: 500 },
-    { label: '4x', delay: 250 }
+    { label: "0.5x", delay: 2000 },
+    { label: "1x", delay: 1000 },
+    { label: "2x", delay: 500 },
+    { label: "4x", delay: 250 }
 ];
 
 const noop = () => {};
@@ -17,19 +17,19 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJu
     return (
         <div className="replay-bar">
             <div className="replay-controls">
-                <button className="btn btn-transparent" onClick={ onJumpToStart } disabled={ currentIndex === 0 } title='Jump to start'>
+                <button className="btn btn-transparent" onClick={ onJumpToStart } disabled={ currentIndex === 0 } title="Jump to start">
                     <SkipBack size={ 14 } />
                 </button>
-                <button className="btn btn-transparent" onClick={ onStepBack } disabled={ currentIndex === 0 } title='Step back'>
+                <button className="btn btn-transparent" onClick={ onStepBack } disabled={ currentIndex === 0 } title="Step back">
                     <ChevronLeft size={ 14 } />
                 </button>
-                <button className="btn btn-transparent" onClick={ onTogglePlay } title={ isPlaying ? 'Pause' : 'Play' }>
+                <button className="btn btn-transparent" onClick={ onTogglePlay } title={ isPlaying ? "Pause" : "Play" }>
                     { isPlaying ? <Pause size={ 14 } /> : <Play size={ 14 } /> }
                 </button>
-                <button className="btn btn-transparent" onClick={ onStepForward } disabled={ currentIndex >= totalStates - 1 } title='Step forward'>
+                <button className="btn btn-transparent" onClick={ onStepForward } disabled={ currentIndex >= totalStates - 1 } title="Step forward">
                     <ChevronRight size={ 14 } />
                 </button>
-                <button className="btn btn-transparent" onClick={ onJumpToEnd } disabled={ currentIndex >= totalStates - 1 } title='Jump to end'>
+                <button className="btn btn-transparent" onClick={ onJumpToEnd } disabled={ currentIndex >= totalStates - 1 } title="Jump to end">
                     <SkipForward size={ 14 } />
                 </button>
                 <div className="replay-speed">
@@ -71,7 +71,7 @@ function GameReplay() {
 
     useEffect(() => {
         if(logData) {
-            const el = document.querySelector('.replay-mode .right-side .controls');
+            const el = document.querySelector(".replay-mode .right-side .controls");
             if(el) {
                 setPortalTarget(el);
             }
@@ -107,7 +107,7 @@ function GameReplay() {
             try {
                 const log = parseGameLog(e.target.result);
                 if(!log.replayData || log.replayData.length === 0) {
-                    setError('This log file does not contain replay data. Only logs downloaded after a game with replay recording will work.');
+                    setError("This log file does not contain replay data. Only logs downloaded after a game with replay recording will work.");
                     return;
                 }
                 setLogData(log);
@@ -185,9 +185,9 @@ function GameReplay() {
                     </div>
                     <input
                         ref={ fileInputRef }
-                        type='file'
-                        accept='.json,.gz,.json.gz'
-                        style={ { display: 'none' } }
+                        type="file"
+                        accept=".json,.gz,.json.gz"
+                        style={ { display: "none" } }
                         onChange={ handleFileInput }
                     />
                 </div>
@@ -204,17 +204,17 @@ function GameReplay() {
 
     const metadata = logData.metadata;
     const playerNames = metadata.players.map((p) => p.name);
-    const username = playerNames[0] || '__replay_spectator__';
+    const username = playerNames[0] || "__replay_spectator__";
 
     const replayUser = {
         settings: {
-            cardSize: 'normal',
+            cardSize: "normal",
             optionSettings: {}
         }
     };
 
-    const metaText = metadata.players.map((p) => `${p.name} (${p.faction})`).join(' vs ')
-        + (metadata.winner ? ` — Winner: ${metadata.winner}` : '');
+    const metaText = metadata.players.map((p) => `${p.name} (${p.faction})`).join(" vs ")
+        + (metadata.winner ? ` — Winner: ${metadata.winner}` : "");
 
     return (
         <div className="replay-mode">
@@ -255,6 +255,6 @@ function GameReplay() {
     );
 }
 
-GameReplay.displayName = 'GameReplay';
+GameReplay.displayName = "GameReplay";
 
 export default GameReplay;

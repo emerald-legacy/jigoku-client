@@ -1,14 +1,14 @@
 
-function Placeholder({ className: propsClassName, orientation = 'vertical', size }) {
+function Placeholder({ className: propsClassName, orientation = "vertical", size }) {
     let className = `panel placeholder ${propsClassName || ""}`;
 
-    if(orientation === 'horizontal') {
+    if(orientation === "horizontal") {
         className += " horizontal";
     } else {
         className += " vertical";
     }
 
-    if(size !== 'normal') {
+    if(size !== "normal") {
         className += ` ${size}`;
     }
 
@@ -19,6 +19,6 @@ function Placeholder({ className: propsClassName, orientation = 'vertical', size
     );
 }
 
-Placeholder.displayName = 'Placeholder';
+Placeholder.displayName = "Placeholder";
 
 export default Placeholder;

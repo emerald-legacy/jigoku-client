@@ -1,5 +1,5 @@
-import { Typeahead } from 'react-bootstrap-typeahead';
-import { useRef, useImperativeHandle, forwardRef } from 'react';
+import { Typeahead } from "react-bootstrap-typeahead";
+import { useRef, useImperativeHandle, forwardRef } from "react";
 
 const TypeaheadInput = forwardRef(function TypeaheadInput(
     {
@@ -66,6 +66,6 @@ const TypeaheadInput = forwardRef(function TypeaheadInput(
     );
 });
 
-TypeaheadInput.displayName = 'TypeAhead';
+TypeaheadInput.displayName = "TypeAhead";
 
 export default TypeaheadInput;

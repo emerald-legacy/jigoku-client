@@ -1,31 +1,31 @@
-import { useState } from 'react';
-import axios from 'axios';
+import { useState } from "react";
+import axios from "axios";
 
-import { connect } from 'react-redux';
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
+import { connect } from "react-redux";
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 export function InnerResetPassword({ id, token, navigate }) {
-    const [password, setPassword] = useState('');
-    const [password1, setPassword1] = useState('');
+    const [password, setPassword] = useState("");
+    const [password1, setPassword1] = useState("");
     const [validation, setValidation] = useState({});
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
 
     const verifyPassword = (isSubmitting, currentPassword, currentPassword1) => {
         const newValidation = { ...validation };
-        delete newValidation['password'];
+        delete newValidation["password"];
 
         if(currentPassword.length < 6) {
-            newValidation['password'] = 'The password you specify must be at least 6 characters long';
+            newValidation["password"] = "The password you specify must be at least 6 characters long";
         }
 
         if(isSubmitting && !currentPassword1) {
-            newValidation['password'] = 'Please enter your password again';
+            newValidation["password"] = "Please enter your password again";
         }
 
         if(currentPassword && currentPassword1 && currentPassword !== currentPassword1) {
-            newValidation['password'] = 'The passwords you have specified do not match';
+            newValidation["password"] = "The passwords you have specified do not match";
         }
 
         setValidation(newValidation);
@@ -35,28 +35,28 @@ export function InnerResetPassword({ id, token, navigate }) {
     const onSubmit = async (event) => {
         event.preventDefault();
 
-        setError('');
+        setError("");
 
         // Do synchronous validation
         const newValidation = {};
         if(password.length < 6) {
-            newValidation['password'] = 'The password you specify must be at least 6 characters long';
+            newValidation["password"] = "The password you specify must be at least 6 characters long";
         }
         if(!password1) {
-            newValidation['password'] = 'Please enter your password again';
+            newValidation["password"] = "Please enter your password again";
         }
         if(password && password1 && password !== password1) {
-            newValidation['password'] = 'The passwords you have specified do not match';
+            newValidation["password"] = "The passwords you have specified do not match";
         }
         setValidation(newValidation);
 
-        if(Object.values(newValidation).some((message) => message && message !== '')) {
-            setError('There was an error in one or more fields, please see below, correct the error and try again');
+        if(Object.values(newValidation).some((message) => message && message !== "")) {
+            setError("There was an error in one or more fields, please see below, correct the error and try again");
             return;
         }
 
         try {
-            const response = await axios.post('/api/account/password-reset-finish', {
+            const response = await axios.post("/api/account/password-reset-finish", {
                 id: id,
                 token: token,
                 newPassword: password
@@ -67,31 +67,31 @@ export function InnerResetPassword({ id, token, navigate }) {
                 return;
             }
 
-            navigate('/login');
+            navigate("/login");
         } catch{
-            setError('Could not communicate with the server.  Please try again later.');
+            setError("Could not communicate with the server.  Please try again later.");
         }
     };
 
     if(!id || !token) {
-        return <AlertPanel type='error' message='This page is not intended to be viewed directly.  Please click on the link in your email to reset your password' />;
+        return <AlertPanel type="error" message="This page is not intended to be viewed directly.  Please click on the link in your email to reset your password" />;
     }
 
     const fields = [
         {
-            name: 'password',
-            label: 'New Password',
-            placeholder: 'Password',
-            inputType: 'password',
+            name: "password",
+            label: "New Password",
+            placeholder: "Password",
+            inputType: "password",
             value: password,
             onChange: setPassword,
             blurCallback: () => verifyPassword(false, password, password1)
         },
         {
-            name: 'password1',
-            label: 'New Password (again)',
-            placeholder: 'Password (again)',
-            inputType: 'password',
+            name: "password1",
+            label: "New Password (again)",
+            placeholder: "Password (again)",
+            inputType: "password",
             value: password1,
             onChange: setPassword1,
             blurCallback: () => verifyPassword(false, password, password1)
@@ -126,7 +126,7 @@ export function InnerResetPassword({ id, token, navigate }) {
         );
     });
 
-    const errorBar = error ? <AlertPanel type='error' message={ error } /> : null;
+    const errorBar = error ? <AlertPanel type="error" message={ error } /> : null;
 
     return (
         <div>
@@ -135,14 +135,14 @@ export function InnerResetPassword({ id, token, navigate }) {
                 { fieldsToRender }
                 <div className="form-group">
                     <div className="col-sm-offset-2 col-sm-3">
-                        <button type='submit' className="btn btn-primary" onClick={ onSubmit }>Submit</button>
+                        <button type="submit" className="btn btn-primary" onClick={ onSubmit }>Submit</button>
                     </div>
                 </div>
             </form>
         </div>
     );
 }
-InnerResetPassword.displayName = 'ResetPassword';
+InnerResetPassword.displayName = "ResetPassword";
 
 function mapStateToProps() {
     return {};

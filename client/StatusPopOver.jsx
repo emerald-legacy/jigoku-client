@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import ReactDOMServer from 'react-dom/server';
+import { useState } from "react";
+import ReactDOMServer from "react-dom/server";
 
 function StatusPopOver({ children, show, status }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -16,24 +16,24 @@ function StatusPopOver({ children, show, status }) {
             className="status-popover-container"
             onMouseEnter={ () => setIsHovered(true) }
             onMouseLeave={ () => setIsHovered(false) }
-            style={ { position: 'relative', cursor: 'pointer' } }
+            style={ { position: "relative", cursor: "pointer" } }
         >
             { status }
             { isHovered && (
                 <div
                     className="popover bottom in"
                     style={ {
-                        display: 'block',
-                        position: 'absolute',
-                        top: '100%',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
+                        display: "block",
+                        position: "absolute",
+                        top: "100%",
+                        left: "50%",
+                        transform: "translateX(-50%)",
                         zIndex: 1060,
-                        minWidth: '200px',
-                        maxWidth: '300px'
+                        minWidth: "200px",
+                        maxWidth: "300px"
                     } }
                 >
-                    <div className="arrow" style={ { left: '50%' } } />
+                    <div className="arrow" style={ { left: "50%" } } />
                     <div
                         className="popover-content"
                         dangerouslySetInnerHTML={ { __html: content } }
@@ -44,6 +44,6 @@ function StatusPopOver({ children, show, status }) {
     );
 }
 
-StatusPopOver.displayName = 'StatusPopOver';
+StatusPopOver.displayName = "StatusPopOver";
 
 export default StatusPopOver;

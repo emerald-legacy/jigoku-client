@@ -1,30 +1,30 @@
-import { useState } from 'react';
-import axios from 'axios';
-import { connect } from 'react-redux';
+import { useState } from "react";
+import axios from "axios";
+import { connect } from "react-redux";
 
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
-import * as actions from './actions';
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import * as actions from "./actions";
 
 export function InnerRegister({ navigate, register, socket }) {
-    const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [password1, setPassword1] = useState('');
+    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [password1, setPassword1] = useState("");
     const [validation, setValidation] = useState({});
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
 
     const verifyUsername = (isSubmitting, currentUsername = username) => {
         const newValidation = { ...validation };
-        delete newValidation['username'];
+        delete newValidation["username"];
 
         if(currentUsername.length < 3 || currentUsername.length > 15) {
-            newValidation['username'] =
-                'Username must be between 3 and 15 characters long';
+            newValidation["username"] =
+                "Username must be between 3 and 15 characters long";
         }
 
         if(!/^[A-Z0-9_-]+$/i.test(currentUsername)) {
-            newValidation['username'] =
-                'Usernames must only use the characters a-z, 0-9, _ and -';
+            newValidation["username"] =
+                "Usernames must only use the characters a-z, 0-9, _ and -";
         }
 
         if(isSubmitting) {
@@ -32,10 +32,10 @@ export function InnerRegister({ navigate, register, socket }) {
         }
 
         axios
-            .post('/api/account/check-username', { username: currentUsername })
+            .post("/api/account/check-username", { username: currentUsername })
             .then((response) => {
                 if(response.data.message) {
-                    newValidation['username'] = response.data.message;
+                    newValidation["username"] = response.data.message;
                 }
             })
             .finally(() => {
@@ -47,10 +47,10 @@ export function InnerRegister({ navigate, register, socket }) {
 
     const verifyEmail = (currentEmail = email) => {
         const newValidation = { ...validation };
-        delete newValidation['email'];
+        delete newValidation["email"];
 
         if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(currentEmail)) {
-            newValidation['email'] = 'Please enter a valid email address';
+            newValidation["email"] = "Please enter a valid email address";
         }
 
         return newValidation;
@@ -58,15 +58,15 @@ export function InnerRegister({ navigate, register, socket }) {
 
     const verifyPassword = (isSubmitting, currentPassword = password, currentPassword1 = password1) => {
         const newValidation = { ...validation };
-        delete newValidation['password'];
+        delete newValidation["password"];
 
         if(currentPassword.length < 6) {
-            newValidation['password'] =
-                'The password you specify must be at least 6 characters long';
+            newValidation["password"] =
+                "The password you specify must be at least 6 characters long";
         }
 
         if(isSubmitting && !currentPassword1) {
-            newValidation['password'] = 'Please enter your password again';
+            newValidation["password"] = "Please enter your password again";
         }
 
         if(
@@ -74,8 +74,8 @@ export function InnerRegister({ navigate, register, socket }) {
             currentPassword1 &&
             currentPassword !== currentPassword1
         ) {
-            newValidation['password'] =
-                'The passwords you have specified do not match';
+            newValidation["password"] =
+                "The passwords you have specified do not match";
         }
 
         return newValidation;
@@ -99,55 +99,55 @@ export function InnerRegister({ navigate, register, socket }) {
     const onRegister = (event) => {
         event.preventDefault();
 
-        setError('');
+        setError("");
 
         // Validate all fields synchronously
         let combinedValidation = {};
 
         // Check email
         if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-            combinedValidation['email'] = 'Please enter a valid email address';
+            combinedValidation["email"] = "Please enter a valid email address";
         }
 
         // Check password
         if(password.length < 6) {
-            combinedValidation['password'] =
-                'The password you specify must be at least 6 characters long';
+            combinedValidation["password"] =
+                "The password you specify must be at least 6 characters long";
         }
         if(!password1) {
-            combinedValidation['password'] = 'Please enter your password again';
+            combinedValidation["password"] = "Please enter your password again";
         }
         if(password && password1 && password !== password1) {
-            combinedValidation['password'] =
-                'The passwords you have specified do not match';
+            combinedValidation["password"] =
+                "The passwords you have specified do not match";
         }
 
         // Check username
         if(username.length < 3 || username.length > 15) {
-            combinedValidation['username'] =
-                'Username must be between 3 and 15 characters long';
+            combinedValidation["username"] =
+                "Username must be between 3 and 15 characters long";
         }
         if(!/^[A-Z0-9_-]+$/i.test(username)) {
-            combinedValidation['username'] =
-                'Usernames must only use the characters a-z, 0-9, _ and -';
+            combinedValidation["username"] =
+                "Usernames must only use the characters a-z, 0-9, _ and -";
         }
 
         setValidation(combinedValidation);
 
         // Check if any validation errors exist
         const hasErrors = Object.values(combinedValidation).some(
-            (message) => message && message !== ''
+            (message) => message && message !== ""
         );
 
         if(hasErrors) {
             setError(
-                'There was an error in one or more fields, please see below, correct the error and try again'
+                "There was an error in one or more fields, please see below, correct the error and try again"
             );
             return;
         }
 
         axios
-            .post('/api/account/register', { username, password, email })
+            .post("/api/account/register", { username, password, email })
             .then((response) => {
                 const data = response.data;
                 if(!data.success) {
@@ -156,47 +156,47 @@ export function InnerRegister({ navigate, register, socket }) {
                 }
 
                 register(data.user, data.token);
-                socket.emit('authenticate', data.token);
-                navigate('/');
+                socket.emit("authenticate", data.token);
+                navigate("/");
             })
             .catch(() => {
-                setError('Could not communicate with the server.  Please try again later.');
+                setError("Could not communicate with the server.  Please try again later.");
             });
     };
 
     const fields = [
         {
-            name: 'username',
-            label: 'Username',
-            placeholder: 'Username',
-            inputType: 'text',
+            name: "username",
+            label: "Username",
+            placeholder: "Username",
+            inputType: "text",
             blurCallback: handleUsernameBlur,
             value: username,
             onChange: (e) => setUsername(e.target.value)
         },
         {
-            name: 'email',
-            label: 'email Address',
-            placeholder: 'email Address',
-            inputType: 'email',
+            name: "email",
+            label: "email Address",
+            placeholder: "email Address",
+            inputType: "email",
             blurCallback: handleEmailBlur,
             value: email,
             onChange: (e) => setEmail(e.target.value)
         },
         {
-            name: 'password',
-            label: 'Password',
-            placeholder: 'Password',
-            inputType: 'password',
+            name: "password",
+            label: "Password",
+            placeholder: "Password",
+            inputType: "password",
             blurCallback: handlePasswordBlur,
             value: password,
             onChange: (e) => setPassword(e.target.value)
         },
         {
-            name: 'password1',
-            label: 'Password (again)',
-            placeholder: 'Password (again)',
-            inputType: 'password',
+            name: "password1",
+            label: "Password (again)",
+            placeholder: "Password (again)",
+            inputType: "password",
             blurCallback: handlePasswordBlur,
             value: password1,
             onChange: (e) => setPassword1(e.target.value)
@@ -235,7 +235,7 @@ export function InnerRegister({ navigate, register, socket }) {
         );
     });
 
-    const errorBar = error ? <AlertPanel type='error' message={ error } /> : null;
+    const errorBar = error ? <AlertPanel type="error" message={ error } /> : null;
 
     return (
         <div className="col-sm-6 col-sm-offset-3">
@@ -247,7 +247,7 @@ export function InnerRegister({ navigate, register, socket }) {
                     <div className="form-group">
                         <div className="col-sm-offset-4 col-sm-3">
                             <button
-                                type='submit'
+                                type="submit"
                                 className="btn btn-primary"
                                 onClick={ onRegister }
                             >
@@ -261,7 +261,7 @@ export function InnerRegister({ navigate, register, socket }) {
     );
 }
 
-InnerRegister.displayName = 'Register';
+InnerRegister.displayName = "Register";
 
 function mapStateToProps(state) {
     return {

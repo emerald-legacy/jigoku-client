@@ -1,10 +1,10 @@
-import { useState, useRef, useEffect } from 'react';
-import Messages from './Messages.jsx';
+import { useState, useRef, useEffect } from "react";
+import Messages from "./Messages.jsx";
 
 function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
     const messagePanelRef = useRef(null);
     const [canScroll, setCanScroll] = useState(true);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         if(canScroll && messagePanelRef.current) {
@@ -17,9 +17,9 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
     };
 
     const handleKeyPress = (event) => {
-        if(event.key === 'Enter') {
+        if(event.key === "Enter") {
             sendMessage(message);
-            setMessage('');
+            setMessage("");
 
             event.preventDefault();
         }
@@ -54,7 +54,7 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
             <form>
                 <input
                     className="form-control"
-                    placeholder='Chat...'
+                    placeholder="Chat..."
                     onKeyPress={ handleKeyPress }
                     onChange={ handleChange }
                     value={ message }
@@ -64,6 +64,6 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
     );
 }
 
-Chat.displayName = 'Chat';
+Chat.displayName = "Chat";
 
 export default Chat;

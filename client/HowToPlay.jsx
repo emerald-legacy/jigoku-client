@@ -1,4 +1,4 @@
-import Link from './Link.jsx';
+import Link from "./Link.jsx";
 
 function HowToPlay() {
     return (
@@ -8,30 +8,30 @@ function HowToPlay() {
                 <p>
                     This guide is aimed at players familiar with the Legend of the Five Rings:
                     The Card Game who want to start playing online using the Jigoku Online
-                    platform. If you are new to this cardgame in general, there is a{ ' ' }
+                    platform. If you are new to this cardgame in general, there is a{ " " }
                     <a
-                        href='https://www.youtube.com/watch?v=wTtjYzq4T54'
-                        target='_blank'
-                        rel='noopener noreferrer'
+                        href="https://www.youtube.com/watch?v=wTtjYzq4T54"
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         helpful tutorial video
                     </a>
-                    , a{ ' ' }
+                    , a{ " " }
                     <a
-                        href='https://images-cdn.fantasyflightgames.com/filer_public/74/46/7446c964-613e-4c01-8902-199257c5d4af/l5c01_learntoplay_web.pdf'
-                        target='_blank'
-                        rel='noopener noreferrer'
+                        href="https://images-cdn.fantasyflightgames.com/filer_public/74/46/7446c964-613e-4c01-8902-199257c5d4af/l5c01_learntoplay_web.pdf"
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         Learn To Play guide
                     </a>
-                    , and a{ ' ' }
+                    , and a{ " " }
                     <a
-                        href='https://www.emeralddb.org/rules/emerald'
-                        target='_blank'
-                        rel='noopener noreferrer'
+                        href="https://www.emeralddb.org/rules/emerald"
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         Rules Reference Guide
-                    </a>{ ' ' }
+                    </a>{ " " }
                     to help you out.
                 </p>
 
@@ -39,53 +39,53 @@ function HowToPlay() {
 
                 <ul className="htp-main-list">
                     <li>
-                        <a href='#decks'>Adding Decks</a>
+                        <a href="#decks">Adding Decks</a>
                     </li>
                     <li>
-                        <a href='#profile'>Profile Options</a>
+                        <a href="#profile">Profile Options</a>
                     </li>
                     <ul className="htp-sub-list">
                         <li>
-                            <a href='#action'>Action Windows</a>
+                            <a href="#action">Action Windows</a>
                         </li>
                         <li>
-                            <a href='#timed'>Timed Interrupt Window</a>
+                            <a href="#timed">Timed Interrupt Window</a>
                         </li>
                     </ul>
                     <li>
-                        <a href='#mmode'>Manual Mode</a>
+                        <a href="#mmode">Manual Mode</a>
                     </li>
                     <li>
-                        <a href='#commands'>Manual Commands</a>
+                        <a href="#commands">Manual Commands</a>
                     </li>
                     <li>
-                        <a href='#conceding'>About Stats, Conceding and Leaving Games</a>
+                        <a href="#conceding">About Stats, Conceding and Leaving Games</a>
                     </li>
                 </ul>
 
-                <h3 id='decks'>Adding Decks</h3>
+                <h3 id="decks">Adding Decks</h3>
                 <p>
                     Start by making sure you have created an account and are logged in. You must
                     be logged in to add decks and spectate or play games. Jigoku Online has a
-                    functional <Link href='/decks'>Deckbuilder</Link>, although most people use
-                    the more fully featured{ ' ' }
-                    <a target='_blank' rel='noopener noreferrer' href='https://www.emeralddb.org/'>
+                    functional <Link href="/decks">Deckbuilder</Link>, although most people use
+                    the more fully featured{ " " }
+                    <a target="_blank" rel="noopener noreferrer" href="https://www.emeralddb.org/">
                         Emerald DB
-                    </a>{ ' ' }
+                    </a>{ " " }
                     deckbuilder to build their decks. After building your deck on FiveRingsDB,
                     copy the Permalink URL, paste it into popup window in the deckbuilder that is
                     brought up when you click 'Import Deck'. You are now ready to start playing.
-                    Head over to the <Link href='/play'>Play</Link> section to create, join or
+                    Head over to the <Link href="/play">Play</Link> section to create, join or
                     watch games.
                 </p>
 
-                <h3 id='profile'>Profile Options</h3>
+                <h3 id="profile">Profile Options</h3>
                 <p>
-                    Clicking your <Link href='/profile'>Profile</Link> at the top right of the
+                    Clicking your <Link href="/profile">Profile</Link> at the top right of the
                     page allows you to tailor certain aspects of gameplay to your wishes.
                 </p>
 
-                <h4 id='action'>Action Windows</h4>
+                <h4 id="action">Action Windows</h4>
                 <p>
                     Legend of the Five Rings has quite a large number of phases and their
                     associated action windows, a number of which are not used regularly by all
@@ -96,7 +96,7 @@ function HowToPlay() {
                     you'll be prompted or not.
                 </p>
 
-                <h4 id='timed'>Timed Interrupt Window</h4>
+                <h4 id="timed">Timed Interrupt Window</h4>
                 <p>
                     The combination of automated gameplay and the ability to play reactions or
                     interrupts from hand has the potential to "leak" information about what your
@@ -119,7 +119,7 @@ function HowToPlay() {
                     use the aforementioned cards, but only when you actually have them.
                 </p>
 
-                <h3 id='mmode'>Manual Mode</h3>
+                <h3 id="mmode">Manual Mode</h3>
                 <p>
                     Most of the cards should be implemented, but if things go wrong, or someone
                     misclicks, or you really hate automation, you can switch on Manual Mode by
@@ -145,7 +145,7 @@ function HowToPlay() {
                     conflict opportunities for the turn.
                 </p>
 
-                <h3 id='commands'>Manual Commands</h3>
+                <h3 id="commands">Manual Commands</h3>
                 <p>
                     The following manual commands have been implemented in order to allow for a
                     smoother gameplay experience:
@@ -181,7 +181,7 @@ function HowToPlay() {
                     <li>/manual - Activate or deactivate manual mode (see above).</li>
                 </ul>
 
-                <h3 id='conceding'>About Stats, Conceding, and Leaving Games</h3>
+                <h3 id="conceding">About Stats, Conceding, and Leaving Games</h3>
                 <p>
                     Jigoku Online does not rank and/or match players by skill level in any way.
                     There are three categories (beginner, casual and competitive) to be chosen
@@ -199,6 +199,6 @@ function HowToPlay() {
     );
 }
 
-HowToPlay.displayName = 'How To Play';
+HowToPlay.displayName = "How To Play";
 
 export default HowToPlay;

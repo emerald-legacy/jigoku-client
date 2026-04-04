@@ -1,5 +1,5 @@
-import Avatar from '../Avatar.jsx';
-import Clock from './Clock.jsx';
+import Avatar from "../Avatar.jsx";
+import Clock from "./Clock.jsx";
 
 export function PlayerStatsRow({
     clockState,
@@ -13,7 +13,7 @@ export function PlayerStatsRow({
     user
 }) {
     const sendUpdate = (type, direction) => {
-        sendGameMessage('changeStat', type, direction === 'up' ? 1 : -1);
+        sendGameMessage("changeStat", type, direction === "up" ? 1 : -1);
     };
 
     const getStatValueOrDefault = (stat) => {
@@ -31,9 +31,9 @@ export function PlayerStatsRow({
                 { showControls && (
                     <button
                         className="btn btn-stat"
-                        onClick={ () => sendUpdate(statToSet, 'down') }
+                        onClick={ () => sendUpdate(statToSet, "down") }
                     >
-                        <img src='/img/Minus.png' title='-' alt='-' />
+                        <img src="/img/Minus.png" title="-" alt="-" />
                     </button>
                 ) }
                 <div className="stat-image" style={ imageStyle }>
@@ -42,9 +42,9 @@ export function PlayerStatsRow({
                 { showControls && (
                     <button
                         className="btn btn-stat"
-                        onClick={ () => sendUpdate(statToSet, 'up') }
+                        onClick={ () => sendUpdate(statToSet, "up") }
                     >
-                        <img src='/img/Plus.png' title='+' alt='+' />
+                        <img src="/img/Plus.png" title="+" alt="+" />
                     </button>
                 ) }
             </div>
@@ -53,13 +53,13 @@ export function PlayerStatsRow({
 
     const playerAvatar = (
         <div className="player-avatar state">
-            <Avatar emailHash={ user ? user.emailHash : 'unknown' } />
-            <b>{ user ? user.username : 'Noone' }</b>
+            <Avatar emailHash={ user ? user.emailHash : "unknown" } />
+            <b>{ user ? user.username : "Noone" }</b>
         </div>
     );
 
     const clock =
-        !clockState || clockState.mode === 'off' ? null : (
+        !clockState || clockState.mode === "off" ? null : (
             <div className="state">
                 <Clock
                     secondsLeft={ clockState.timeLeft }
@@ -72,14 +72,14 @@ export function PlayerStatsRow({
     return (
         <div className="panel player-stats no-highlight">
             { playerAvatar }
-            { getButton('fate', 'Fate') }
-            { getButton('honor', 'Honor') }
+            { getButton("fate", "Fate") }
+            { getButton("honor", "Honor") }
             { firstPlayer && (
                 <div className="state first-player-state">
                     <img
                         className="first-player-indicator"
-                        src='/img/first-player.png'
-                        title='First Player'
+                        src="/img/first-player.png"
+                        title="First Player"
                     />
                 </div>
             ) }
@@ -90,17 +90,17 @@ export function PlayerStatsRow({
             ) }
             <div className="state">
                 <div className="conflicts-remaining">
-                    Conflicts Remaining: { getStatValueOrDefault('conflictsRemaining') }
-                    { getStatValueOrDefault('politicalRemaining') > 0 ? (
+                    Conflicts Remaining: { getStatValueOrDefault("conflictsRemaining") }
+                    { getStatValueOrDefault("politicalRemaining") > 0 ? (
                         <span className="icon-political" />
                     ) : null }
-                    { getStatValueOrDefault('politicalRemaining') > 1 ? (
+                    { getStatValueOrDefault("politicalRemaining") > 1 ? (
                         <span className="icon-political" />
                     ) : null }
-                    { getStatValueOrDefault('militaryRemaining') > 0 ? (
+                    { getStatValueOrDefault("militaryRemaining") > 0 ? (
                         <span className="icon-military" />
                     ) : null }
-                    { getStatValueOrDefault('militaryRemaining') > 1 ? (
+                    { getStatValueOrDefault("militaryRemaining") > 1 ? (
                         <span className="icon-military" />
                     ) : null }
                 </div>
@@ -110,6 +110,6 @@ export function PlayerStatsRow({
     );
 }
 
-PlayerStatsRow.displayName = 'PlayerStatsRow';
+PlayerStatsRow.displayName = "PlayerStatsRow";
 
 export default PlayerStatsRow;

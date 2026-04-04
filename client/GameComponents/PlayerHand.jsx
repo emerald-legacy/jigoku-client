@@ -1,25 +1,25 @@
-import Card from './Card.jsx';
-import { tryParseJSON } from '../util.js';
+import Card from "./Card.jsx";
+import { tryParseJSON } from "../util.js";
 
 const EMPTY_STYLE = {};
 
 function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut, onMouseOver }) {
     const handleDragOver = (event) => {
-        event.target.classList.add('highlight-panel');
+        event.target.classList.add("highlight-panel");
         event.preventDefault();
     };
 
     const handleDragLeave = (event) => {
-        event.target.classList.remove('highlight-panel');
+        event.target.classList.remove("highlight-panel");
     };
 
     const handleDragDrop = (event, target) => {
         event.stopPropagation();
         event.preventDefault();
 
-        event.target.classList.remove('highlight-panel');
+        event.target.classList.remove("highlight-panel");
 
-        const cardData = event.dataTransfer.getData('Text');
+        const cardData = event.dataTransfer.getData("Text");
 
         if(!cardData) {
             return;
@@ -37,13 +37,13 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
 
     const getCardWidth = () => {
         switch(cardSize) {
-            case 'small':
+            case "small":
                 return 65 * 0.8;
-            case 'large':
+            case "large":
                 return 65 * 1.4;
-            case 'x-large':
+            case "x-large":
                 return 65 * 2;
-            case 'normal':
+            case "normal":
             default:
                 return 65;
         }
@@ -53,10 +53,10 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
 
     let maxWidth;
     switch(cardSize) {
-        case 'small':
-        case 'large':
-        case 'x-large':
-        case 'xxl':
+        case "small":
+        case "large":
+        case "x-large":
+        case "xxl":
             maxWidth = cardWidth * 7.5;
             break;
         default:
@@ -71,13 +71,13 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
         let attachmentOffset = 13;
 
         switch(cardSize) {
-            case 'large':
+            case "large":
                 attachmentOffset *= 1.4;
                 break;
-            case 'small':
+            case "small":
                 attachmentOffset *= 0.8;
                 break;
-            case 'x-large':
+            case "x-large":
                 attachmentOffset *= 2;
                 break;
         }
@@ -101,7 +101,7 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
                     className={ className }
                     style={ EMPTY_STYLE }
                     disableMouseOver={ !isMe }
-                    source='hand'
+                    source="hand"
                     onMouseOver={ onMouseOver }
                     onMouseOut={ onMouseOut }
                     onClick={ onCardClick }
@@ -115,7 +115,7 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
     let className = "panel hand";
     let titleBarClassName = "hand-title-bar no-highlight";
 
-    if(cardSize !== 'normal') {
+    if(cardSize !== "normal") {
         className += ` ${cardSize}`;
         titleBarClassName += ` ${cardSize}`;
     }
@@ -145,7 +145,7 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
                 style={ handStyle }
                 onDragLeave={ handleDragLeave }
                 onDragOver={ handleDragOver }
-                onDrop={ (event) => handleDragDrop(event, 'hand') }
+                onDrop={ (event) => handleDragDrop(event, "hand") }
             >
                 { handCards }
             </div>
@@ -153,6 +153,6 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
     );
 }
 
-PlayerHand.displayName = 'PlayerHand';
+PlayerHand.displayName = "PlayerHand";
 
 export default PlayerHand;

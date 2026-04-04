@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import DeckStatus from './DeckStatus.jsx';
-import DeckStats from './DeckStats.jsx';
-import { getCardImageUrl, preferredPackId } from './cardImageUrl.js';
+import DeckStatus from "./DeckStatus.jsx";
+import DeckStats from "./DeckStats.jsx";
+import { getCardImageUrl, preferredPackId } from "./cardImageUrl.js";
 
 function DeckSummary({ cards, deck, stats }) {
     const [cardToShow, setCardToShow] = useState(undefined);
@@ -23,7 +23,7 @@ function DeckSummary({ cards, deck, stats }) {
 
     const getCardImagePath = (card, packId) => {
         if(!card) {
-            return '';
+            return "";
         }
         const effectivePackId = packId || preferredPackId(card, formatValue);
         return getCardImageUrl(card.id, effectivePackId);
@@ -49,7 +49,7 @@ function DeckSummary({ cards, deck, stats }) {
         for(const card of combinedCards) {
             let type = card.card.type;
 
-            if(type === 'character' || type === 'event') {
+            if(type === "character" || type === "event") {
                 type = card.card.side + ` ${type}`;
             }
             if(!groupedCards[type]) {
@@ -150,7 +150,7 @@ function DeckSummary({ cards, deck, stats }) {
                     <div className="info-row row">
                         <span>Format:</span>
                         <span className="pull-right">
-                            { deck.format ? deck.format.name : 'Emerald' }
+                            { deck.format ? deck.format.name : "Emerald" }
                         </span>
                     </div>
                     <div className="info-row row">
@@ -171,7 +171,7 @@ function DeckSummary({ cards, deck, stats }) {
                     </div>
                 </div>
                 <div className="col-xs-2 col-sm-3 no-x-padding">
-                    { deck.alliance && deck.alliance.value !== 'none' ? (
+                    { deck.alliance && deck.alliance.value !== "none" ? (
                         <img
                             className="deck-alliance-mon img-responsive"
                             src={ `/img/mons/${deck.alliance.value}.png` }
@@ -187,6 +187,6 @@ function DeckSummary({ cards, deck, stats }) {
     );
 }
 
-DeckSummary.displayName = 'DeckSummary';
+DeckSummary.displayName = "DeckSummary";
 
 export default DeckSummary;

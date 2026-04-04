@@ -1,20 +1,20 @@
-import React, { useState, useRef, memo } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useRef, memo } from "react";
+import { X } from "lucide-react";
 
-import CardMenu from './CardMenu.jsx';
-import CardStats from './CardStats.jsx';
-import CardCounters from './CardCounters.jsx';
-import CardPile from './CardPile.jsx';
-import { getCardImageUrl, getCardBackUrl } from '../cardImageUrl.js';
+import CardMenu from "./CardMenu.jsx";
+import CardStats from "./CardStats.jsx";
+import CardCounters from "./CardCounters.jsx";
+import CardPile from "./CardPile.jsx";
+import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl.js";
 
 const shortNames = {
-    honor: 'H',
-    stand: 'T',
-    poison: 'O',
-    gold: 'G',
-    valarmorghulis: 'V',
-    betrayal: 'B',
-    vengeance: 'N'
+    honor: "H",
+    stand: "T",
+    poison: "O",
+    gold: "G",
+    valarmorghulis: "V",
+    betrayal: "B",
+    vengeance: "N"
 };
 
 // Native implementation of finding nearest element matching selector
@@ -62,7 +62,7 @@ function Card(props) {
         onMenuItemClick,
         onMouseOut,
         onMouseOver,
-        orientation = 'vertical',
+        orientation = "vertical",
         player,
         popupLocation,
         showStats,
@@ -92,7 +92,7 @@ function Card(props) {
 
     const onCardDragStart = (event, cardData, sourceArea) => {
         const dragData = { card: cardData, source: sourceArea };
-        event.dataTransfer.setData('Text', JSON.stringify(dragData));
+        event.dataTransfer.setData("Text", JSON.stringify(dragData));
     };
 
     const onTouchMove = (event) => {
@@ -100,12 +100,12 @@ function Card(props) {
         const touch = event.targetTouches[0];
         event.currentTarget.style.left = `${touch.screenX - 32}px`;
         event.currentTarget.style.top = `${touch.screenY - 42}px`;
-        event.currentTarget.style.position = 'fixed';
+        event.currentTarget.style.position = "fixed";
     };
 
     const getReactComponentFromDOMNode = (dom) => {
         for(const key in dom) {
-            if(key.indexOf('__reactInternalInstance$') === 0) {
+            if(key.indexOf("__reactInternalInstance$") === 0) {
                 const compInternals = dom[key]._currentElement;
                 const compWrapper = compInternals._owner;
                 const comp = compWrapper._instance;
@@ -123,7 +123,7 @@ function Card(props) {
     const onTouchEnd = (event) => {
         const target = event.currentTarget;
         const targetRect = target.getBoundingClientRect();
-        const nearestPile = findNearestElement(target, '.card-pile, .hand, .player-board');
+        const nearestPile = findNearestElement(target, ".card-pile, .hand, .player-board");
 
         if(!nearestPile) {
             return;
@@ -159,7 +159,7 @@ function Card(props) {
             target.style.left = `${touchStart.left}px`;
             target.style.top = `${touchStart.top}px`;
         }
-        event.currentTarget.style.position = 'initial';
+        event.currentTarget.style.position = "initial";
     };
 
     const handleClick = (event, cardData) => {
@@ -201,17 +201,17 @@ function Card(props) {
             statusFlag *= 5;
         }
 
-        counters['card-fate'] = cardData.fate ? { count: cardData.fate, fade: cardData.type === 'attachment', shortName: 'F' } : undefined;
-        counters['card-honor'] = cardData.honor ? { count: cardData.honor, fade: cardData.type === 'attachment', shortName: 'H' } : undefined;
+        counters["card-fate"] = cardData.fate ? { count: cardData.fate, fade: cardData.type === "attachment", shortName: "F" } : undefined;
+        counters["card-honor"] = cardData.honor ? { count: cardData.honor, fade: cardData.type === "attachment", shortName: "H" } : undefined;
         if(statusFlag > 1) {
-            counters['card-status'] = { count: statusFlag, fade: cardData.type === 'attachment', shortName: 'Hd' };
+            counters["card-status"] = { count: statusFlag, fade: cardData.type === "attachment", shortName: "Hd" };
         } else {
-            counters['card-status'] = undefined;
+            counters["card-status"] = undefined;
         }
 
         if(cardData.tokens) {
             Object.entries(cardData.tokens).forEach(([key, token]) => {
-                counters[key] = { count: token, fade: cardData.type === 'attachment', shortName: shortNames[key] };
+                counters[key] = { count: token, fade: cardData.type === "attachment", shortName: shortNames[key] };
             });
         }
 
@@ -224,7 +224,7 @@ function Card(props) {
         // Filter out undefined, null, or negative counters
         const filteredCounters = {};
         Object.entries(counters).forEach(([key, counter]) => {
-            if(counter != null && !(typeof counter === 'number' && counter < 0)) { // eslint-disable-line eqeqeq
+            if(counter != null && !(typeof counter === "number" && counter < 0)) { // eslint-disable-line eqeqeq
                 filteredCounters[key] = counter;
             }
         });
@@ -233,21 +233,21 @@ function Card(props) {
     };
 
     const getWrapper = () => {
-        let wrapperClassName = '';
-        if(source === 'play area') {
-            wrapperClassName += ' at-home';
+        let wrapperClassName = "";
+        if(source === "play area") {
+            wrapperClassName += " at-home";
         }
         if(card.inConflict) {
-            wrapperClassName += ' conflict';
+            wrapperClassName += " conflict";
             if(!declaring) {
-                wrapperClassName += ' activeCombatant';
+                wrapperClassName += " activeCombatant";
             }
         }
-        if(size !== 'normal') {
+        if(size !== "normal") {
             wrapperClassName += ` ${size}`;
         }
         if(isMe) {
-            wrapperClassName += ' is-mine';
+            wrapperClassName += " is-mine";
         }
 
         return wrapperClassName;
@@ -261,25 +261,25 @@ function Card(props) {
         const cardPile = player && card && player.cardPiles[card.uuid];
 
         switch(size) {
-            case 'large':
+            case "large":
                 attachmentOffset *= 1.4;
                 cardHeight *= 1.4;
                 break;
-            case 'small':
+            case "small":
                 attachmentOffset *= 0.8;
                 cardHeight *= 0.8;
                 break;
-            case 'x-large':
+            case "x-large":
                 attachmentOffset *= 2;
                 cardHeight *= 2;
                 break;
-            case 'xxl':
+            case "xxl":
                 attachmentOffset *= 2.5;
                 cardHeight *= 2.5;
                 break;
         }
 
-        const attachmentCount = source === 'play area' && card.attachments ? card.attachments.length : 0;
+        const attachmentCount = source === "play area" && card.attachments ? card.attachments.length : 0;
         const attachments = card.attachments || [];
         let totalTiers = 0;
         attachments.forEach(attachment => {
@@ -289,9 +289,9 @@ function Card(props) {
         });
 
         if(attachmentCount > 0) {
-            wrapperStyle = { marginLeft: `${4 + attachmentCount * attachmentOffset}px`, minHeight: `${cardHeight + totalTiers * attachmentOffset}px`, marginTop: cardPile ? '25px' : '0px' };
-        } else if(source === 'play area') {
-            wrapperStyle = { marginLeft: '4px', marginRight: '4px', marginTop: cardPile ? '25px' : '0px' };
+            wrapperStyle = { marginLeft: `${4 + attachmentCount * attachmentOffset}px`, minHeight: `${cardHeight + totalTiers * attachmentOffset}px`, marginTop: cardPile ? "25px" : "0px" };
+        } else if(source === "play area") {
+            wrapperStyle = { marginLeft: "4px", marginRight: "4px", marginTop: cardPile ? "25px" : "0px" };
         }
 
         return wrapperStyle;
@@ -305,14 +305,14 @@ function Card(props) {
 
         return (
             <CardPile
-                source='none'
+                source="none"
                 title={ `${card.name}` }
                 className="underneath"
                 cards={ cardPile }
                 onMouseOver={ onMouseOver }
                 onMouseOut={ onMouseOut }
                 onCardClick={ onClick }
-                popupLocation='top'
+                popupLocation="top"
                 showPopup
                 onDragDrop={ onDragDrop }
                 topCard={ cardPile[0] }
@@ -324,8 +324,8 @@ function Card(props) {
     };
 
     const getAttachments = () => {
-        const provinces = ['province 1', 'province 2', 'province 3', 'province 4', 'stronghold province'];
-        if(source !== 'play area' && !provinces.includes(source)) {
+        const provinces = ["province 1", "province 2", "province 3", "province 4", "stronghold province"];
+        if(source !== "play area" && !provinces.includes(source)) {
             return null;
         }
 
@@ -333,19 +333,19 @@ function Card(props) {
         let cardHeight = 84;
         let cardLayer = 45;
         switch(size) {
-            case 'large':
+            case "large":
                 attachmentOffset *= 1.4;
                 cardHeight *= 1.4;
                 break;
-            case 'small':
+            case "small":
                 attachmentOffset *= 0.8;
                 cardHeight *= 0.8;
                 break;
-            case 'x-large':
+            case "x-large":
                 attachmentOffset *= 2;
                 cardHeight *= 2;
                 break;
-            case 'xxl':
+            case "xxl":
                 attachmentOffset *= 2.5;
                 cardHeight *= 2.5;
                 break;
@@ -390,14 +390,14 @@ function Card(props) {
 
         return (
             <CardPile
-                source='none'
-                title={ 'Underneath' }
+                source="none"
+                title={ "Underneath" }
                 className="beside"
                 cards={ underneathCards }
                 onMouseOver={ onMouseOver }
                 onMouseOut={ onMouseOut }
                 onCardClick={ onClick }
-                popupLocation='top'
+                popupLocation="top"
                 showPopup
                 isMe={ isMe }
                 onDragDrop={ onDragDrop }
@@ -479,7 +479,7 @@ function Card(props) {
                     onMouseOut={ onMouseOut }
                     onClick={ () => onPopupCardClick(displayCard) }
                     onDragDrop={ onDragDrop }
-                    orientation={ orientation === 'bowed' ? 'vertical' : orientation }
+                    orientation={ orientation === "bowed" ? "vertical" : orientation }
                     size={ size }
                 />
             );
@@ -489,18 +489,18 @@ function Card(props) {
             return null;
         }
 
-        let popupClass = 'panel';
-        let arrowClass = 'arrow lg';
+        let popupClass = "panel";
+        let arrowClass = "arrow lg";
 
-        if(popupLocation === 'top') {
-            popupClass += ' our-side';
-            arrowClass += ' down';
+        if(popupLocation === "top") {
+            popupClass += " our-side";
+            arrowClass += " down";
         } else {
-            arrowClass += ' up';
+            arrowClass += " up";
         }
 
-        if(orientation === 'horizontal') {
-            arrowClass = 'arrow lg left';
+        if(orientation === "horizontal") {
+            arrowClass = "arrow lg left";
         }
 
         let linkIndex = 0;
@@ -526,73 +526,73 @@ function Card(props) {
     };
 
     const getCardElement = () => {
-        let cardClass = 'card';
-        let imageClass = 'card-image';
-        let cardBack = 'cardback.png';
+        let cardClass = "card";
+        let imageClass = "card-image";
+        let cardBack = "cardback.png";
 
         if(!card) {
             return <div />;
         }
 
-        if(size !== 'normal') {
+        if(size !== "normal") {
             cardClass += ` ${size}`;
             imageClass += ` ${size}`;
         }
 
         cardClass += ` card-type-${card.type}`;
 
-        if(orientation === 'bowed' || card.bowed) {
-            cardClass += ' horizontal';
-            imageClass += ' vertical bowed';
+        if(orientation === "bowed" || card.bowed) {
+            cardClass += " horizontal";
+            imageClass += " vertical bowed";
         } else if(card.isBroken) {
-            cardClass += ' vertical';
-            imageClass += ' vertical broken';
+            cardClass += " vertical";
+            imageClass += " vertical broken";
         } else {
-            cardClass += ' vertical';
-            imageClass += ' vertical';
+            cardClass += " vertical";
+            imageClass += " vertical";
         }
 
         if(card.unselectable) {
-            cardClass += ' unselectable';
+            cardClass += " unselectable";
         }
 
         if(card.selected) {
-            cardClass += ' selected';
+            cardClass += " selected";
         } else if(card.selectable) {
-            cardClass += ' selectable';
+            cardClass += " selectable";
         } else if(card.inDanger) {
-            cardClass += ' in-danger';
+            cardClass += " in-danger";
         } else if(card.saved) {
-            cardClass += ' saved';
+            cardClass += " saved";
         } else if(card.inConflict) {
-            cardClass += ' conflict';
+            cardClass += " conflict";
         } else if(card.covert) {
-            cardClass += ' covert';
+            cardClass += " covert";
         } else if(card.controlled) {
-            cardClass += ' controlled';
+            cardClass += " controlled";
         } else if(card.new) {
-            cardClass += ' new';
+            cardClass += " new";
         }
 
         if(className) {
             cardClass += ` ${className}`;
         }
 
-        if(card.isConflict || source === 'conflict deck') {
-            cardBack = 'conflictcardback.png';
-        } else if(card.isDynasty || source === 'dynasty deck') {
-            cardBack = 'dynastycardback.png';
-        } else if(card.isProvince || source === 'province deck') {
-            cardBack = 'provincecardback.png';
+        if(card.isConflict || source === "conflict deck") {
+            cardBack = "conflictcardback.png";
+        } else if(card.isDynasty || source === "dynasty deck") {
+            cardBack = "dynastycardback.png";
+        } else if(card.isProvince || source === "province deck") {
+            cardBack = "provincecardback.png";
         } else {
-            cardBack = 'cardback.png';
+            cardBack = "cardback.png";
         }
 
         const cardPile = player && card && player.cardPiles[card.uuid];
 
-        let frameClassName = 'card-frame';
+        let frameClassName = "card-frame";
         if(cardPile) {
-            frameClassName += ' card-pile-frame';
+            frameClassName += " card-pile-frame";
         }
 
         return (
@@ -650,6 +650,6 @@ function Card(props) {
 }
 
 const MemoCard = memo(Card);
-MemoCard.displayName = 'Card';
+MemoCard.displayName = "Card";
 
 export default MemoCard;

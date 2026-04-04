@@ -1,4 +1,4 @@
-import Link from './Link.jsx';
+import Link from "./Link.jsx";
 
 function About() {
     return (
@@ -9,9 +9,9 @@ function About() {
             <div className="panel about-container">
                 <a
                     className="btn btn-danger btn-lg pull-right"
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    href='https://github.com/emerald-legacy/jigoku-client/issues'
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    href="https://github.com/emerald-legacy/jigoku-client/issues"
                 >
                     Report Problems
                 </a>
@@ -24,14 +24,14 @@ function About() {
 
                 <h3>That's pretty cool! But how does any of this work?</h3>
                 <p>
-                    Head on over to the <Link href='/how-to-play'>How To Play guide</Link> for a
+                    Head on over to the <Link href="/how-to-play">How To Play guide</Link> for a
                     thorough explanation.
                 </p>
 
                 <h3>Everyone has a shiny avatar, how do I get one?</h3>
                 <p>
-                    This is handled by the good people at{ ' ' }
-                    <a href='http://gravatar.com' target='_blank' rel='noopener noreferrer'>
+                    This is handled by the good people at{ " " }
+                    <a href="http://gravatar.com" target="_blank" rel="noopener noreferrer">
                         Gravatar
                     </a>
                     . Sign up there with the same email address you did there and it should
@@ -47,19 +47,19 @@ function About() {
                     are made by artists of Emerald Legacy, they also appear on our cards.
                 </p>
                 <p>
-                    The tokens used for Spirit of the River are by{ ' ' }
+                    The tokens used for Spirit of the River are by{ " " }
                     <a
-                        href='https://www.dojocreativedesign.com/l5r-cardgame'
-                        target='_blank'
-                        rel='noopener noreferrer'
+                        href="https://www.dojocreativedesign.com/l5r-cardgame"
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         David Robotham
                     </a>
-                    . He has a selection of L5R related merchandise, check it out{ ' ' }
+                    . He has a selection of L5R related merchandise, check it out{ " " }
                     <a
-                        href='https://www.dojocreativedesign.com/shop'
-                        target='_blank'
-                        rel='noopener noreferrer'
+                        href="https://www.dojocreativedesign.com/shop"
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         here
                     </a>
@@ -67,7 +67,7 @@ function About() {
                 </p>
                 <p>
                     Don't want to be distracted by beautiful art during your games? In-game
-                    backgrounds can be disabled from your <Link href='/profile'>Profile</Link>.
+                    backgrounds can be disabled from your <Link href="/profile">Profile</Link>.
                 </p>
 
                 <h3>Can I help?</h3>
@@ -75,23 +75,23 @@ function About() {
                     Sure! The project is all written in Javascript. The server is node.js and the
                     client is React.js. The source code can be found in the&nbsp;
                     <a
-                        target='_blank'
-                        rel='noopener noreferrer'
-                        href='http://github.com/emerald-legacy/jigoku-client'
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href="http://github.com/emerald-legacy/jigoku-client"
                     >
                         GitHub Repository
                     </a>
                     . Check out the code and instructions on there on how to get started and hack
                     away! See the card implementation status list above to have a look at what
-                    needs to be done. If you want to join the dev Discord, there's a link on the{ ' ' }
-                    <Link href='/community'>Community</Link> page.
+                    needs to be done. If you want to join the dev Discord, there's a link on the{ " " }
+                    <Link href="/community">Community</Link> page.
                 </p>
 
                 <h3>Support the Project</h3>
                 <p>
                     If you enjoy the site and want to help keep it running, you can support
-                    us on{ ' ' }
-                    <a target='_blank' rel='noopener noreferrer' href='https://patreon.com/emeraldlegacy'>
+                    us on{ " " }
+                    <a target="_blank" rel="noopener noreferrer" href="https://patreon.com/emeraldlegacy">
                         Patreon
                     </a>
                     . All contributions go towards hosting and server costs.
@@ -124,6 +124,6 @@ function About() {
     );
 }
 
-About.displayName = 'About';
+About.displayName = "About";
 
 export default About;

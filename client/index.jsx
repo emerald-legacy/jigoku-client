@@ -1,11 +1,11 @@
-import './tailwind.css';
-import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import { Toaster } from 'sonner';
-import configureStore from './configureStore';
-import { navigate, login } from './actions';
-import Application from './Application.jsx';
-import ErrorBoundary from './SiteComponents/ErrorBoundary.jsx';
+import "./tailwind.css";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { Toaster } from "sonner";
+import configureStore from "./configureStore";
+import { navigate, login } from "./actions";
+import Application from "./Application.jsx";
+import ErrorBoundary from "./SiteComponents/ErrorBoundary.jsx";
 
 const store = configureStore();
 
@@ -15,11 +15,11 @@ window.onpopstate = function(e) {
     store.dispatch(navigate(e.target.location.pathname));
 };
 
-if(typeof window.user !== 'undefined') {
+if(typeof window.user !== "undefined") {
     store.dispatch(login(window.user, window.authToken, window.user.admin));
 }
 
-const container = document.getElementById('component');
+const container = document.getElementById("component");
 const root = createRoot(container);
 
 const render = () => {
@@ -27,11 +27,11 @@ const render = () => {
         <Provider store={ store }>
             <div className="body">
                 <Toaster
-                    position='top-right'
+                    position="top-right"
                     duration={ 4000 }
                     richColors
                 />
-                <ErrorBoundary message={ 'We\'re sorry, a critical error has occurred in the client and we\'re unable to show you anything. Please try refreshing your browser after filling out a report.' }>
+                <ErrorBoundary message={ "We're sorry, a critical error has occurred in the client and we're unable to show you anything. Please try refreshing your browser after filling out a report." }>
                     <Application />
                 </ErrorBoundary>
             </div>

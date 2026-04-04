@@ -1,6 +1,6 @@
-import { configureStore } from '@reduxjs/toolkit';
-import rootReducer from './reducers';
-import callAPIMiddleware from './middleware/api-middleware.js';
+import { configureStore } from "@reduxjs/toolkit";
+import rootReducer from "./reducers";
+import callAPIMiddleware from "./middleware/api-middleware.js";
 
 export default function createStore(initialState) {
     const store = configureStore({

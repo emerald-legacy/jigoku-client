@@ -1,19 +1,19 @@
-import { useState } from 'react';
-import { connect } from 'react-redux';
+import { useState } from "react";
+import { connect } from "react-redux";
 
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
-import * as actions from './actions';
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import * as actions from "./actions";
 
 export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordGame, passwordJoinType, socket }) {
-    const [password, setPassword] = useState('');
+    const [password, setPassword] = useState("");
 
     const onJoinClick = (event) => {
         event.preventDefault();
 
-        if(passwordJoinType === 'Join') {
-            socket.emit('joingame', passwordGame.id, password);
-        } else if(passwordJoinType === 'Watch') {
-            socket.emit('watchgame', passwordGame.id, password);
+        if(passwordJoinType === "Join") {
+            socket.emit("joingame", passwordGame.id, password);
+        } else if(passwordJoinType === "Watch") {
+            socket.emit("watchgame", passwordGame.id, password);
         }
     };
 
@@ -36,12 +36,12 @@ export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordG
                 <h3>Enter the password for { passwordGame.name }</h3>
             </div>
             <div className="col-sm-5 game-password">
-                <input className="form-control" type='password' onChange={ onPasswordChange } value={ password } />
+                <input className="form-control" type="password" onChange={ onPasswordChange } value={ password } />
             </div>
             <div className="row" />
             { passwordError ? (
                 <div className="col-sm-6">
-                    <AlertPanel type='error' message={ passwordError } />
+                    <AlertPanel type="error" message={ passwordError } />
                 </div>
             ) : null }
             <div className="col-sm-12">
@@ -54,7 +54,7 @@ export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordG
     );
 }
 
-InnerPasswordGame.displayName = 'PasswordGame';
+InnerPasswordGame.displayName = "PasswordGame";
 
 function mapStateToProps(state) {
     return {

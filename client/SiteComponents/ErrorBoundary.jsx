@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 class ErrorBoundary extends React.Component {
     constructor(props) {
@@ -20,7 +20,7 @@ class ErrorBoundary extends React.Component {
 
     componentDidCatch(error, info) {
         this.setState({ error });
-        console.error('React Error Boundary caught an error:', error, info);
+        console.error("React Error Boundary caught an error:", error, info);
     }
 
     onReturnClick(event) {
@@ -28,7 +28,7 @@ class ErrorBoundary extends React.Component {
         event.stopPropagation();
 
         this.setState({error: null});
-        this.props.navigate('/');
+        this.props.navigate("/");
     }
 
     render() {
@@ -39,7 +39,7 @@ class ErrorBoundary extends React.Component {
                     <p>An error has been logged. Please try refreshing the page.</p>
 
                     { this.props.navigate &&
-                        <p>Click <a href='#' onClick={ this.onReturnClick }>here</a> to clear the error and return to the home page</p> }
+                        <p>Click <a href="#" onClick={ this.onReturnClick }>here</a> to clear the error and return to the home page</p> }
                 </div>
             );
         }
@@ -48,6 +48,6 @@ class ErrorBoundary extends React.Component {
     }
 }
 
-ErrorBoundary.displayName = 'ErrorBoundary';
+ErrorBoundary.displayName = "ErrorBoundary";
 
 export default ErrorBoundary;

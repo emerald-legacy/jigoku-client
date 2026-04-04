@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
-import { connect } from 'react-redux';
+import { useState, useEffect, useRef } from "react";
+import { connect } from "react-redux";
 
-import StatusPopOver from './StatusPopOver.jsx';
-import validateDeck from './deck-validator.js';
-import * as actions from './actions';
+import StatusPopOver from "./StatusPopOver.jsx";
+import validateDeck from "./deck-validator.js";
+import * as actions from "./actions";
 
 export function InnerDeckStatus({ className: propsClassName, deck, updateDeckStatus }) {
     const [deckStatus, setDeckStatus] = useState({});
@@ -12,17 +12,17 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
 
     const getDeckHash = (deckToHash) => {
         if(!deckToHash) {
-            return '';
+            return "";
         }
 
         // Create a simple hash of the deck contents
         const parts = [];
         const arrays = [
-            { name: 's', arr: deckToHash.stronghold },
-            { name: 'r', arr: deckToHash.role },
-            { name: 'p', arr: deckToHash.provinceCards },
-            { name: 'd', arr: deckToHash.dynastyCards },
-            { name: 'c', arr: deckToHash.conflictCards }
+            { name: "s", arr: deckToHash.stronghold },
+            { name: "r", arr: deckToHash.role },
+            { name: "p", arr: deckToHash.provinceCards },
+            { name: "d", arr: deckToHash.dynastyCards },
+            { name: "c", arr: deckToHash.conflictCards }
         ];
 
         for(const { name, arr } of arrays) {
@@ -35,7 +35,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
             }
         }
 
-        return parts.sort().join('|');
+        return parts.sort().join("|");
     };
 
     const hasDeckContentChanged = (oldDeck, newDeck) => {
@@ -59,12 +59,12 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         }
         setDeckStatus({
             valid: undefined,
-            extendedStatus: ['Querying Validation Server']
+            extendedStatus: ["Querying Validation Server"]
         });
         const gameMode =
             targetDeck.format && targetDeck.format.value
                 ? targetDeck.format.value
-                : 'stronghold';
+                : "stronghold";
         const status = await validateDeck(targetDeck, {
             includeExtendedStatus: true,
             gameMode
@@ -123,7 +123,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         return () => {
             clearValidationTimeout();
         };
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []);
 
     let statusName;
     let className = "deck-status";
@@ -133,13 +133,13 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
     }
 
     if(deckStatus.valid) {
-        statusName = 'Valid';
+        statusName = "Valid";
         className += " valid";
     } else if(deckStatus.valid === false) {
-        statusName = 'Invalid';
+        statusName = "Invalid";
         className += " invalid";
     } else {
-        statusName = 'Validating';
+        statusName = "Validating";
         className += " casual-play";
     }
 
@@ -163,7 +163,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
     );
 }
 
-InnerDeckStatus.displayName = 'DeckStatus';
+InnerDeckStatus.displayName = "DeckStatus";
 
 function mapStateToProps() {
     return {};

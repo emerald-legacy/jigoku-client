@@ -2,26 +2,26 @@
 function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showCheckbox }) {
     const getStatusName = (status) => {
         if(!status) {
-            return 'Validating';
+            return "Validating";
         }
         if(status.valid) {
-            return 'Valid';
+            return "Valid";
         } else if(status.valid === false) {
-            return 'Invalid';
+            return "Invalid";
         }
-        return 'Validating';
+        return "Validating";
     };
 
     const getStatusClass = (status) => {
         if(!status) {
-            return 'casual-play';
+            return "casual-play";
         }
         if(status.valid) {
-            return 'valid';
+            return "valid";
         } else if(status.valid === false) {
-            return 'invalid';
+            return "invalid";
         }
-        return 'casual-play';
+        return "casual-play";
     };
 
     const deckStatus = getStatusName(deck.status);
@@ -32,7 +32,7 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
             { showCheckbox && (
                 <div className="deck-row-checkbox" onClick={ (e) => e.stopPropagation() }>
                     <input
-                        type='checkbox'
+                        type="checkbox"
                         checked={ isSelected }
                         onChange={ () => onCheckboxChange(deck._id) }
                     />
@@ -57,6 +57,6 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
     );
 }
 
-DeckRow.displayName = 'DeckRow';
+DeckRow.displayName = "DeckRow";
 
 export default DeckRow;

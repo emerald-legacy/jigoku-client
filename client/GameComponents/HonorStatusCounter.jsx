@@ -20,14 +20,14 @@ function HonorStatusCounter({ cancel, fade, name, honored, dishonored, tainted }
 
     return (
         <div key={ name } className={ className }>
-            { honored ? <img src='/img/honor-stone.png' title='Honored' alt='Honored' /> : null }
-            { dishonored ? <img src='/img/dishonor-stone.png' title='Dishonored' alt='Dishonored' /> : null }
+            { honored ? <img src="/img/honor-stone.png" title="Honored" alt="Honored" /> : null }
+            { dishonored ? <img src="/img/dishonor-stone.png" title="Dishonored" alt="Dishonored" /> : null }
             { totalProps > 1 ? <div className="honorstatusspacer" /> : null }
-            { tainted ? <img src='/img/tainted-stone.png' title='Tainted' alt='Tainted' /> : null }
+            { tainted ? <img src="/img/tainted-stone.png" title="Tainted" alt="Tainted" /> : null }
         </div>
     );
 }
 
-HonorStatusCounter.displayName = 'HonorStatusCounter';
+HonorStatusCounter.displayName = "HonorStatusCounter";
 
 export default HonorStatusCounter;

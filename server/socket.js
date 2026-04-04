@@ -1,6 +1,6 @@
-const logger = require('./log.js');
-const EventEmitter = require('events');
-const jwt = require('jsonwebtoken');
+const logger = require("./log.js");
+const EventEmitter = require("events");
+const jwt = require("jsonwebtoken");
 
 class Socket extends EventEmitter {
     constructor(socket, options = {}) {
@@ -10,9 +10,9 @@ class Socket extends EventEmitter {
         this.user = socket.request.user;
         this.config = options.config;
 
-        socket.on('error', this.onError.bind(this));
-        socket.on('authenticate', this.onAuthenticate.bind(this));
-        socket.on('disconnect', this.onDisconnect.bind(this));
+        socket.on("error", this.onError.bind(this));
+        socket.on("authenticate", this.onAuthenticate.bind(this));
+        socket.on("disconnect", this.onDisconnect.bind(this));
     }
 
     get id() {
@@ -62,12 +62,12 @@ class Socket extends EventEmitter {
 
             this.socket.request.user = user;
             this.user = user;
-            this.emit('authenticate', this, user);
+            this.emit("authenticate", this, user);
         });
     }
 
     onDisconnect(reason) {
-        this.emit('disconnect', this, reason);
+        this.emit("disconnect", this, reason);
     }
 
     onError(err) {

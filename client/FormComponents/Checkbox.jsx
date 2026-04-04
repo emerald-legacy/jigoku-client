@@ -13,7 +13,7 @@ function Checkbox({
         <div className={ `checkbox ${fieldClass || ""}` }>
             <label htmlFor={ name } className={ labelClass }>
                 <input
-                    type='checkbox'
+                    type="checkbox"
                     id={ name }
                     checked={ checked }
                     onChange={ onChange }
@@ -31,6 +31,6 @@ function Checkbox({
     return <div className="form-group">{ checkBox }</div>;
 }
 
-Checkbox.displayName = 'Checkbox';
+Checkbox.displayName = "Checkbox";
 
 export default Checkbox;

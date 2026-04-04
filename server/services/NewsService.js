@@ -1,6 +1,6 @@
 class NewsService {
     constructor(db) {
-        this.news = db.collection('news');
+        this.news = db.collection("news");
     }
 
     async getRecentNewsItems(options) {

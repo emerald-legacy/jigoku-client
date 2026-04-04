@@ -2,13 +2,13 @@
 function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, strengthSummary }) {
     const renderGroupedModifier = (groupedModifier) => {
         const amount = groupedModifier.reduce((total, modifier) => total + modifier.amount, 0);
-        let sign = '';
-        let amountDisplay = '';
+        let sign = "";
+        let amountDisplay = "";
         if(!Number.isNaN(amount)) {
-            sign = amount < 0 ? '-' : '+';
-            amountDisplay = amount.toString().replace('-', '');
+            sign = amount < 0 ? "-" : "+";
+            amountDisplay = amount.toString().replace("-", "");
         } else {
-            amountDisplay = '-';
+            amountDisplay = "-";
         }
         return (
             <div className="stat-line" key={ groupedModifier[0].name }>
@@ -59,7 +59,7 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
             { glorySummary && (
                 <div className="stat-container">
                     <div className="stat-total">
-                        <img className="icon-glory stat--type-icon" src='/img/glory.png' />
+                        <img className="icon-glory stat--type-icon" src="/img/glory.png" />
                         <span className="stat-value">{ glorySummary.stat }</span>
                     </div>
                     <div className="stat-specifics">{ renderModifiers(glorySummary.modifiers) }</div>
@@ -80,6 +80,6 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
     );
 }
 
-CardStats.displayName = 'CardStats';
+CardStats.displayName = "CardStats";
 
 export default CardStats;

@@ -1,9 +1,9 @@
-const { v1: uuidv1 } = require('uuid');
-const bcrypt = require('bcrypt');
+const { v1: uuidv1 } = require("uuid");
+const bcrypt = require("bcrypt");
 
-const logger = require('./log.js');
-const GameChat = require('./game/gamechat.js');
-const GameModes = require('../client/GameModes.js').default;
+const logger = require("./log.js");
+const GameChat = require("./game/gamechat.js");
+const GameModes = require("../client/GameModes.js").default;
 
 class PendingGame {
     constructor(owner, details) {
@@ -126,11 +126,11 @@ class PendingGame {
         if(this.password) {
             bcrypt.compare(password, this.password, (err, valid) => {
                 if(err) {
-                    return callback(new Error('Bad password'), 'Incorrect game password');
+                    return callback(new Error("Bad password"), "Incorrect game password");
                 }
 
                 if(!valid) {
-                    return callback(new Error('Bad password'), 'Incorrect game password');
+                    return callback(new Error("Bad password"), "Incorrect game password");
                 }
 
                 this.addPlayer(id, user);
@@ -146,7 +146,7 @@ class PendingGame {
 
     watch(id, user, password, callback) {
         if(!this.allowSpectators) {
-            callback(new Error('Join not permitted'));
+            callback(new Error("Join not permitted"));
 
             return;
         }
@@ -158,22 +158,22 @@ class PendingGame {
         if(this.password) {
             bcrypt.compare(password, this.password, (err, valid) => {
                 if(err) {
-                    return callback(new Error('Bad password'), 'Incorrect game password');
+                    return callback(new Error("Bad password"), "Incorrect game password");
                 }
 
                 if(!valid) {
-                    return callback(new Error('Bad password'), 'Incorrect game password');
+                    return callback(new Error("Bad password"), "Incorrect game password");
                 }
 
                 this.addSpectator(id, user);
 
-                this.addMessage('{0} has joined the game as a spectator', user.username);
+                this.addMessage("{0} has joined the game as a spectator", user.username);
                 callback();
             });
         } else {
             this.addSpectator(id, user);
 
-            this.addMessage('{0} has joined the game as a spectator', user.username);
+            this.addMessage("{0} has joined the game as a spectator", user.username);
 
             callback();
         }
@@ -186,7 +186,7 @@ class PendingGame {
         }
 
         if(!this.started) {
-            this.addMessage('{0} has left the game', playerName);
+            this.addMessage("{0} has left the game", playerName);
         }
 
         if(this.players[playerName]) {
@@ -209,7 +209,7 @@ class PendingGame {
         }
 
         if(!this.started) {
-            this.addMessage('{0} has disconnected', playerName);
+            this.addMessage("{0} has disconnected", playerName);
         }
 
         if(this.players[playerName]) {
@@ -227,7 +227,7 @@ class PendingGame {
             return;
         }
 
-        this.addMessage('{0} {1}', player, message);
+        this.addMessage("{0} {1}", player, message);
     }
 
     selectDeck(playerName, deck) {

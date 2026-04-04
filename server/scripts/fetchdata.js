@@ -1,46 +1,46 @@
 /*eslint no-console:0 */
-const fs = require('fs');
-const { Readable } = require('stream');
-const { pipeline } = require('stream/promises');
-const db = require('../db.js');
-const path = require('path');
-const sharp = require('sharp');
+const fs = require("fs");
+const { Readable } = require("stream");
+const { pipeline } = require("stream/promises");
+const db = require("../db.js");
+const path = require("path");
+const sharp = require("sharp");
 
-const CardService = require('../services/CardService.js');
+const CardService = require("../services/CardService.js");
 
 const args = process.argv.slice(2);
 const env = args[0];
-const forceDownload = args.includes('--force') || args.includes('-f');
+const forceDownload = args.includes("--force") || args.includes("-f");
 
 // Parse --cycle flag: only download images for packs in this cycle (e.g. emerald-legacy)
-const cycleIndex = args.indexOf('--cycle');
+const cycleIndex = args.indexOf("--cycle");
 const cycleFilter = cycleIndex !== -1 ? args[cycleIndex + 1] : null;
 
 // Parse --packs flag: comma-separated list of pack IDs to limit image downloads
-const packsIndex = args.indexOf('--packs');
+const packsIndex = args.indexOf("--packs");
 const packFilter = packsIndex !== -1 && args[packsIndex + 1]
-    ? new Set(args[packsIndex + 1].split(','))
+    ? new Set(args[packsIndex + 1].split(","))
     : null;
 
-if(env !== 'live' && env !== 'playtest') {
+if(env !== "live" && env !== "playtest") {
     console.error(
-        'Must pass parameter with valid environment. The options are `live` or `playtest`'
+        "Must pass parameter with valid environment. The options are `live` or `playtest`"
     );
-    console.error('Usage: node fetchdata.js <live|playtest> [--force] [--cycle cycle-id] [--packs pack1,pack2,...]');
-    console.error('  --force, -f: Re-download existing images');
-    console.error('  --cycle: Only download images for packs in this cycle (e.g. emerald-legacy)');
-    console.error('  --packs: Only download images for these pack IDs (comma-separated)');
+    console.error("Usage: node fetchdata.js <live|playtest> [--force] [--cycle cycle-id] [--packs pack1,pack2,...]");
+    console.error("  --force, -f: Re-download existing images");
+    console.error("  --cycle: Only download images for packs in this cycle (e.g. emerald-legacy)");
+    console.error("  --packs: Only download images for these pack IDs (comma-separated)");
     process.exit(1);
 }
 
 if(forceDownload) {
-    console.log('Force download enabled - will re-download existing images');
+    console.log("Force download enabled - will re-download existing images");
 }
 
 const apiUrl =
-    env === 'playtest'
-        ? 'https://beta-emeralddb.herokuapp.com/api/'
-        : 'https://www.emeralddb.org/api/';
+    env === "playtest"
+        ? "https://beta-emeralddb.herokuapp.com/api/"
+        : "https://www.emeralddb.org/api/";
 
 async function apiRequest(apiPath) {
     const response = await fetch(apiUrl + apiPath);
@@ -50,7 +50,7 @@ async function apiRequest(apiPath) {
     return response.json();
 }
 
-const dbPath = process.env.DB_PATH || 'mongodb://127.0.0.1:27017/jigoku';
+const dbPath = process.env.DB_PATH || "mongodb://127.0.0.1:27017/jigoku";
 let cardService;
 
 async function downloadFile(url, destPath, timeout = 30000) {
@@ -73,8 +73,8 @@ async function downloadFile(url, destPath, timeout = 30000) {
 }
 
 async function downloadWithRetry(url, dest, filename, maxRetries = 3) {
-    const isPng = url.toLowerCase().endsWith('.png');
-    const tempFilename = isPng ? filename.replace('.jpg', '.png') : filename;
+    const isPng = url.toLowerCase().endsWith(".png");
+    const tempFilename = isPng ? filename.replace(".jpg", ".png") : filename;
     const tempPath = path.join(dest, tempFilename);
     const finalPath = path.join(dest, filename);
 
@@ -140,7 +140,7 @@ async function resolvePackFilter() {
 
     // If --cycle is set, fetch packs from API and add matching pack IDs
     if(cycleFilter) {
-        const packs = await apiRequest('packs');
+        const packs = await apiRequest("packs");
         const cyclePacks = packs.filter(p => p.cycle_id === cycleFilter);
         if(cyclePacks.length === 0) {
             console.warn(`Warning: no packs found for cycle "${cycleFilter}"`);
@@ -151,12 +151,12 @@ async function resolvePackFilter() {
             for(const pack of cyclePacks) {
                 filter.add(pack.id);
             }
-            console.log(`Cycle "${cycleFilter}" resolved to ${cyclePacks.length} packs: ${cyclePacks.map(p => p.id).join(', ')}`);
+            console.log(`Cycle "${cycleFilter}" resolved to ${cyclePacks.length} packs: ${cyclePacks.map(p => p.id).join(", ")}`);
         }
     }
 
     if(filter) {
-        console.log('Pack filter active - only downloading images for:', [...filter].join(', '));
+        console.log("Pack filter active - only downloading images for:", [...filter].join(", "));
     }
 
     return filter;
@@ -164,17 +164,17 @@ async function resolvePackFilter() {
 
 async function fetchCards(imagePackFilter) {
     try {
-        const cards = await apiRequest('cards');
+        const cards = await apiRequest("cards");
         await cardService.replaceCards(cards);
-        console.info(cards.length + ' cards fetched');
+        console.info(cards.length + " cards fetched");
 
         const imageDir = path.join(
             __dirname,
-            '..',
-            '..',
-            'public',
-            'img',
-            'cards'
+            "..",
+            "..",
+            "public",
+            "img",
+            "cards"
         );
         fs.mkdirSync(imageDir, { recursive: true });
 
@@ -185,7 +185,7 @@ async function fetchCards(imagePackFilter) {
         const failedCards = [];
         const convertedCards = [];
 
-        console.log('Starting image downloads (10 parallel)...');
+        console.log("Starting image downloads (10 parallel)...");
 
         // Build list of download tasks for ALL versions of each card
         const downloadTasks = [];
@@ -219,7 +219,7 @@ async function fetchCards(imagePackFilter) {
                 const imageSrc = version.image_url;
 
                 // Naming scheme: always {card.id}-{pack_id}.jpg
-                const filename = card.id + '-' + version.pack_id + '.jpg';
+                const filename = card.id + "-" + version.pack_id + ".jpg";
 
                 const imagePath = path.join(imageDir, filename);
 
@@ -260,7 +260,7 @@ async function fetchCards(imagePackFilter) {
             }
         }
 
-        console.log('\n=== Download Summary ===');
+        console.log("\n=== Download Summary ===");
         console.log(`Total cards: ${cards.length}`);
         console.log(`Total versions: ${totalVersions}`);
         console.log(`Downloaded: ${downloaded}`);
@@ -269,14 +269,14 @@ async function fetchCards(imagePackFilter) {
         console.log(`Failed: ${failed}`);
 
         if(convertedCards.length > 0) {
-            console.log('\n=== Converted from PNG ===');
+            console.log("\n=== Converted from PNG ===");
             convertedCards.forEach(c => {
                 console.log(`${c.filename} - ${c.name}`);
             });
         }
 
         if(failedCards.length > 0) {
-            console.log('\n=== Failed Downloads ===');
+            console.log("\n=== Failed Downloads ===");
             failedCards.slice(0, 20).forEach(c => {
                 console.log(`${c.filename} (${c.name}): ${c.error}`);
             });
@@ -286,25 +286,25 @@ async function fetchCards(imagePackFilter) {
         }
 
         // Write version file for cache busting
-        const versionPath = path.join(imageDir, 'version.json');
+        const versionPath = path.join(imageDir, "version.json");
         const version = { timestamp: Date.now() };
         fs.writeFileSync(versionPath, JSON.stringify(version));
-        console.log('Wrote image version file:', version.timestamp);
+        console.log("Wrote image version file:", version.timestamp);
 
         return cards;
     } catch(error) {
-        console.error('Unable to fetch cards:', error.message);
+        console.error("Unable to fetch cards:", error.message);
         console.error(error.stack);
     }
 }
 
 async function fetchPacks() {
     try {
-        const packs = await apiRequest('packs');
+        const packs = await apiRequest("packs");
         await cardService.replacePacks(packs);
-        console.info(packs.length + ' packs fetched');
+        console.info(packs.length + " packs fetched");
     } catch(error) {
-        console.error('Unable to fetch packs:', error.message);
+        console.error("Unable to fetch packs:", error.message);
     }
 }
 
@@ -318,7 +318,7 @@ async function main() {
 }
 
 main().catch(err => {
-    console.error('Fatal error:', err);
+    console.error("Fatal error:", err);
     db.close();
     process.exit(1);
 });

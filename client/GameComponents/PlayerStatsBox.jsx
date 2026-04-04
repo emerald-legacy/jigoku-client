@@ -1,5 +1,5 @@
-import Clock from './Clock.jsx';
-import ClockPopup from './ClockPopup.jsx';
+import Clock from "./Clock.jsx";
+import ClockPopup from "./ClockPopup.jsx";
 
 export function PlayerStatsBox({
     clockState,
@@ -12,7 +12,7 @@ export function PlayerStatsBox({
     stats
 }) {
     const sendUpdate = (type, direction) => {
-        sendGameMessage('changeStat', type, direction === 'up' ? 1 : -1);
+        sendGameMessage("changeStat", type, direction === "up" ? 1 : -1);
     };
 
     const getStatValueOrDefault = (stat) => {
@@ -30,9 +30,9 @@ export function PlayerStatsBox({
                 { showControls && (
                     <button
                         className={ `btn btn-stat ${size}` }
-                        onClick={ () => sendUpdate(statToSet, 'down') }
+                        onClick={ () => sendUpdate(statToSet, "down") }
                     >
-                        <img src='/img/Minus.png' title='-' alt='-' />
+                        <img src="/img/Minus.png" title="-" alt="-" />
                     </button>
                 ) }
                 <div className={ `stat-image ${size}` } style={ imageStyle } />
@@ -41,19 +41,19 @@ export function PlayerStatsBox({
                 { showControls && (
                     <button
                         className={ `btn btn-stat ${size}` }
-                        onClick={ () => sendUpdate(statToSet, 'up') }
+                        onClick={ () => sendUpdate(statToSet, "up") }
                     >
-                        <img src='/img/Plus.png' title='+' alt='+' />
+                        <img src="/img/Plus.png" title="+" alt="+" />
                     </button>
                 ) }
             </div>
         );
     };
 
-    const handImageStyle = { backgroundImage: 'url(/img/conflictcard.png)' };
+    const handImageStyle = { backgroundImage: "url(/img/conflictcard.png)" };
 
     const clock =
-        !clockState || clockState.mode === 'off' ? null : (
+        !clockState || clockState.mode === "off" ? null : (
             <div className="state clock-frame">
                 <Clock
                     delayToStartClock={ clockState.delayToStartClock }
@@ -80,8 +80,8 @@ export function PlayerStatsBox({
                 <div className="state first-player-state">
                     <img
                         className={ `first-player-indicator${firstPlayer ? "" : " hidden"}` }
-                        src='/img/first-player.png'
-                        title='First Player'
+                        src="/img/first-player.png"
+                        title="First Player"
                     />
                 </div>
             </div>
@@ -89,18 +89,18 @@ export function PlayerStatsBox({
             <div className="stats-row">
                 <div className="state">
                     <div className="conflicts-remaining">
-                        Conflicts: { getStatValueOrDefault('conflictsRemaining') }
+                        Conflicts: { getStatValueOrDefault("conflictsRemaining") }
                         <div>
-                            { getStatValueOrDefault('politicalRemaining') > 0 ? (
+                            { getStatValueOrDefault("politicalRemaining") > 0 ? (
                                 <span className="icon-political" />
                             ) : null }
-                            { getStatValueOrDefault('politicalRemaining') > 1 ? (
+                            { getStatValueOrDefault("politicalRemaining") > 1 ? (
                                 <span className="icon-political" />
                             ) : null }
-                            { getStatValueOrDefault('militaryRemaining') > 0 ? (
+                            { getStatValueOrDefault("militaryRemaining") > 0 ? (
                                 <span className="icon-military" />
                             ) : null }
-                            { getStatValueOrDefault('militaryRemaining') > 1 ? (
+                            { getStatValueOrDefault("militaryRemaining") > 1 ? (
                                 <span className="icon-military" />
                             ) : null }
                         </div>
@@ -115,13 +115,13 @@ export function PlayerStatsBox({
                         <div className="stat-value">{ handSize }</div>
                     </div>
                 </div>
-                <div className="stats-row">{ getButton('fate', 'Fate') }</div>
-                <div className="stats-row">{ getButton('honor', 'Honor') }</div>
+                <div className="stats-row">{ getButton("fate", "Fate") }</div>
+                <div className="stats-row">{ getButton("honor", "Honor") }</div>
             </div>
         </div>
     );
 }
 
-PlayerStatsBox.displayName = 'PlayerStatsBox';
+PlayerStatsBox.displayName = "PlayerStatsBox";
 
 export default PlayerStatsBox;

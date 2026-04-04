@@ -6,13 +6,13 @@ function Select({
     label,
     labelClass,
     name,
-    nameKey = 'name',
+    nameKey = "name",
     onBlur,
     onChange,
     options,
     validationMessage,
     value,
-    valueKey = 'value'
+    valueKey = "value"
 }) {
     const handleChange = (event) => {
         const selectedValue = options?.find(
@@ -27,7 +27,7 @@ function Select({
         const blankValue = blankOption[valueKey];
         const blankName = blankOption[nameKey];
         optionElements.push(
-            <option key='default' value={ blankValue }>
+            <option key="default" value={ blankValue }>
                 { blankName }
             </option>
         );
@@ -46,7 +46,7 @@ function Select({
     }
 
     const selectStyle = button
-        ? { display: 'inline-block', width: '67%' }
+        ? { display: "inline-block", width: "67%" }
         : {};
 
     return (
@@ -78,6 +78,6 @@ function Select({
     );
 }
 
-Select.displayName = 'Select';
+Select.displayName = "Select";
 
 export default Select;

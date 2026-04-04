@@ -1,12 +1,12 @@
 
-const clanOrder = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
+const clanOrder = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
 const reasonLabels = {
-    conquest: 'Conquest',
-    dishonor: 'Dishonor',
-    honor: 'Honor',
-    concede: 'Concession',
-    other: 'Other'
+    conquest: "Conquest",
+    dishonor: "Dishonor",
+    honor: "Honor",
+    concede: "Concession",
+    other: "Other"
 };
 
 function DeckStats({ stats }) {
@@ -80,6 +80,6 @@ function DeckStats({ stats }) {
     );
 }
 
-DeckStats.displayName = 'DeckStats';
+DeckStats.displayName = "DeckStats";
 
 export default DeckStats;

@@ -1,10 +1,10 @@
-import { memo } from 'react';
+import { memo } from "react";
 
 function CardZoom({ cardName, imageUrl, orientation, show }) {
-    let zoomClass = 'card-large';
+    let zoomClass = "card-large";
 
-    if(orientation === 'horizontal') {
-        zoomClass += '-horizontal';
+    if(orientation === "horizontal") {
+        zoomClass += "-horizontal";
     }
 
     return (
@@ -19,6 +19,6 @@ function CardZoom({ cardName, imageUrl, orientation, show }) {
     );
 }
 
-CardZoom.displayName = 'CardZoom';
+CardZoom.displayName = "CardZoom";
 
 export default memo(CardZoom);

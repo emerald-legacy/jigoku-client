@@ -1,8 +1,8 @@
-import { useState, useRef, useEffect } from 'react';
-import Draggable from 'react-draggable';
+import { useState, useRef, useEffect } from "react";
+import Draggable from "react-draggable";
 
-import AbilityTargeting from './AbilityTargeting.jsx';
-import CardNameLookup from './CardNameLookup.jsx';
+import AbilityTargeting from "./AbilityTargeting.jsx";
+import CardNameLookup from "./CardNameLookup.jsx";
 
 // Deep equality check for objects
 function isEqual(a, b) {
@@ -12,7 +12,7 @@ function isEqual(a, b) {
     if(a === null || a === undefined || b === null || b === undefined) {
         return false;
     }
-    if(typeof a !== 'object' || typeof b !== 'object') {
+    if(typeof a !== "object" || typeof b !== "object") {
         return a === b;
     }
 
@@ -62,7 +62,7 @@ function ActivePlayerPrompt({
 }) {
     const [showTimer, setShowTimer] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
-    const [timerClass, setTimerClass] = useState('100%');
+    const [timerClass, setTimerClass] = useState("100%");
     const [timerCancelled, setTimerCancelled] = useState(false);
 
     const timerRef = useRef({ started: null, timerTime: 0 });
@@ -116,7 +116,7 @@ function ActivePlayerPrompt({
 
             timerHandleRef.current = handle;
             setShowTimer(true);
-            setTimerClass('100%');
+            setTimerClass("100%");
         }
 
         return () => {
@@ -221,7 +221,7 @@ function ActivePlayerPrompt({
 
         return controls.map((control, index) => {
             switch(control.type) {
-                case 'targeting':
+                case "targeting":
                     return (
                         <AbilityTargeting
                             key={ index }
@@ -231,7 +231,7 @@ function ActivePlayerPrompt({
                             targets={ control.targets }
                         />
                     );
-                case 'card-name':
+                case "card-name":
                     return (
                         <CardNameLookup
                             key={ index }
@@ -268,14 +268,14 @@ function ActivePlayerPrompt({
             <div>
                 <span>Auto passing in { timeLeft }...</span>
                 <div className="progress">
-                    <div className="progress-bar progress-bar-success" role='progressbar' style={ { width: timerClass } } />
+                    <div className="progress-bar progress-bar-success" role="progressbar" style={ { width: timerClass } } />
                 </div>
             </div>
         );
     }
 
     return (
-        <Draggable handle='.grip' bounds={ activePromptBounds } defaultPosition={ getDefaultPosition() } nodeRef={ draggableRef }>
+        <Draggable handle=".grip" bounds={ activePromptBounds } defaultPosition={ getDefaultPosition() } nodeRef={ draggableRef }>
             <div ref={ draggableRef } className="no-highlight">
                 { timer }
                 <div className="grip">
@@ -296,6 +296,6 @@ function ActivePlayerPrompt({
     );
 }
 
-ActivePlayerPrompt.displayName = 'ActivePlayerPrompt';
+ActivePlayerPrompt.displayName = "ActivePlayerPrompt";
 
 export default ActivePlayerPrompt;

@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useState, useEffect } from "react";
+import { connect } from "react-redux";
 
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
-import DeckSummary from './DeckSummary.jsx';
-import Link from './Link.jsx';
-import DeckRow from './DeckRow.jsx';
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import DeckSummary from "./DeckSummary.jsx";
+import Link from "./Link.jsx";
+import DeckRow from "./DeckRow.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 export function InnerDecks({
     apiError,
@@ -49,7 +49,7 @@ export function InnerDecks({
 
     const handleEditClick = (event) => {
         event.preventDefault();
-        navigate('/decks/edit');
+        navigate("/decks/edit");
     };
 
     const handleConfirmDeleteClick = (event) => {
@@ -97,7 +97,7 @@ export function InnerDecks({
     if(loading) {
         content = <div>Loading decks from the server...</div>;
     } else if(apiError) {
-        content = <AlertPanel type='error' message={ apiError } />;
+        content = <AlertPanel type="error" message={ apiError } />;
     } else {
         const deckCount = decks ? decks.length : 0;
         const isAtLimit = deckCount >= 50;
@@ -106,18 +106,18 @@ export function InnerDecks({
         let limitWarning = null;
         if(isAtLimit) {
             limitWarning = (
-                <AlertPanel type='warning' message='You have reached the maximum limit of 50 decks. Please delete some decks before creating new ones.' />
+                <AlertPanel type="warning" message="You have reached the maximum limit of 50 decks. Please delete some decks before creating new ones." />
             );
         } else if(isNearLimit) {
             limitWarning = (
-                <AlertPanel type='info' message={ `You have ${deckCount} out of 50 decks. Consider deleting unused decks.` } />
+                <AlertPanel type="info" message={ `You have ${deckCount} out of 50 decks. Consider deleting unused decks.` } />
             );
         }
 
         let successPanel = null;
         if(deckDeleted) {
             successPanel = (
-                <AlertPanel message='Deck deleted successfully' type='success' />
+                <AlertPanel message="Deck deleted successfully" type="success" />
             );
         }
 
@@ -166,9 +166,9 @@ export function InnerDecks({
                         <div className="panel deck-list-container">
                             <div className="btn-group">
                                 { isAtLimit ? (
-                                    <button className="btn btn-primary" disabled title='Maximum deck limit reached'>New Deck</button>
+                                    <button className="btn btn-primary" disabled title="Maximum deck limit reached">New Deck</button>
                                 ) : (
-                                    <Link className="btn btn-primary" href='/decks/add'>New Deck</Link>
+                                    <Link className="btn btn-primary" href="/decks/add">New Deck</Link>
                                 ) }
                                 { selectedDeckIds.length > 0 && (
                                     <button className="btn btn-danger" onClick={ handleDeleteSelectedClick }>
@@ -182,10 +182,10 @@ export function InnerDecks({
                                 ) }
                             </div>
                             { decks && decks.length > 0 && (
-                                <div className="checkbox" style={ { marginTop: '10px', marginBottom: '10px' } }>
+                                <div className="checkbox" style={ { marginTop: "10px", marginBottom: "10px" } }>
                                     <label>
                                         <input
-                                            type='checkbox'
+                                            type="checkbox"
                                             checked={ selectedDeckIds.length === decks.length }
                                             onChange={ handleToggleSelectAll }
                                         />
@@ -193,8 +193,8 @@ export function InnerDecks({
                                     </label>
                                 </div>
                             ) }
-                            <div className="deck-list" style={ { top: decks && decks.length > 0 ? '95px' : '55px' } }>
-                                { !decks || decks.length === 0 ? 'You have no decks, try adding one.' : deckList }
+                            <div className="deck-list" style={ { top: decks && decks.length > 0 ? "95px" : "55px" } }>
+                                { !decks || decks.length === 0 ? "You have no decks, try adding one." : deckList }
                             </div>
                         </div>
                     </div>
@@ -207,7 +207,7 @@ export function InnerDecks({
     return content;
 }
 
-InnerDecks.displayName = 'Decks';
+InnerDecks.displayName = "Decks";
 
 function mapStateToProps(state) {
     return {

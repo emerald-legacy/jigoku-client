@@ -1,18 +1,18 @@
-const fs = require('fs');
-const path = require('path');
-const _ = require('underscore');
+const fs = require("fs");
+const path = require("path");
+const _ = require("underscore");
 
-const {matchCardByNameAndPack} = require('./cardutil.js');
+const {matchCardByNameAndPack} = require("./cardutil.js");
 
-const PathToSubModulePacks = path.join(__dirname, '../../fiveringsdb-data/json/Card');
+const PathToSubModulePacks = path.join(__dirname, "../../fiveringsdb-data/json/Card");
 
-const defaultFaction = 'phoenix';
-const defaultRole = 'seeker-of-water';
-const defaultStronghold = 'city-of-the-open-hand';
+const defaultFaction = "phoenix";
+const defaultRole = "seeker-of-water";
+const defaultStronghold = "city-of-the-open-hand";
 const minProvince = 5;
-const provinceFiller = 'shameful-display';
-const dynastyFiller = 'adept-of-the-waves';
-const conflictFiller = 'supernatural-storm';
+const provinceFiller = "shameful-display";
+const dynastyFiller = "adept-of-the-waves";
+const conflictFiller = "supernatural-storm";
 const dynastyBuffer = 8; // buffer decks to prevent re-shuffling
 const conflictBuffer = 8; // buffer decks to prevent re-shuffling
 
@@ -32,7 +32,7 @@ class DeckBuilder {
     loadCards(directory) {
         var cards = {};
 
-        var jsonCards = fs.readdirSync(directory).filter(file => file.endsWith('.json'));
+        var jsonCards = fs.readdirSync(directory).filter(file => file.endsWith(".json"));
 
         _.each(jsonCards, file => {
             var cardsInPack = require(path.join(PathToSubModulePacks, file));
@@ -172,11 +172,11 @@ class DeckBuilder {
 
         return {
             faction: { value: faction },
-            stronghold: _.filter(cardCounts, count => count.card.type === 'stronghold'),
-            role: _.filter(cardCounts, count => count.card.type === 'role'),
-            conflictCards: _.filter(cardCounts, count => count.card.side === 'conflict'),
-            dynastyCards: _.filter(cardCounts, count => count.card.side === 'dynasty'),
-            provinceCards: _.filter(cardCounts, count => count.card.type === 'province')
+            stronghold: _.filter(cardCounts, count => count.card.type === "stronghold"),
+            role: _.filter(cardCounts, count => count.card.type === "role"),
+            conflictCards: _.filter(cardCounts, count => count.card.side === "conflict"),
+            dynastyCards: _.filter(cardCounts, count => count.card.side === "dynasty"),
+            provinceCards: _.filter(cardCounts, count => count.card.type === "province")
         };
     }
 
@@ -192,7 +192,7 @@ class DeckBuilder {
         }
 
         if(cardsByName.length > 1) {
-            var matchingLabels = _.map(cardsByName, card => `${card.name} (${card.pack_code})`).join('\n');
+            var matchingLabels = _.map(cardsByName, card => `${card.name} (${card.pack_code})`).join("\n");
             throw new Error(`Multiple cards match the name ${idOrLabelOrName}. Use one of these instead:\n${matchingLabels}`);
         }
 

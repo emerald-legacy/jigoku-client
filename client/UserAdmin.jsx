@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useState, useEffect } from "react";
+import { connect } from "react-redux";
 
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
-import Input from './FormComponents/Input.jsx';
-import Checkbox from './FormComponents/Checkbox.jsx';
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import Input from "./FormComponents/Input.jsx";
+import Checkbox from "./FormComponents/Checkbox.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 const defaultPermissions = {
     canEditNews: false,
@@ -13,13 +13,13 @@ const defaultPermissions = {
 };
 
 const permissionsList = [
-    { name: 'canEditNews', label: 'News Editor' },
-    { name: 'canManageUsers', label: 'User Manager' }
+    { name: "canEditNews", label: "News Editor" },
+    { name: "canManageUsers", label: "User Manager" }
 ];
 
 export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUser, findUser, loading, saveUser, userSaved }) {
     const [permissions, setPermissions] = useState(currentUser ? (currentUser.permissions || defaultPermissions) : defaultPermissions);
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState("");
 
     useEffect(() => {
         setPermissions(currentUser ? (currentUser.permissions || defaultPermissions) : defaultPermissions);
@@ -61,11 +61,11 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
 
     if(userSaved) {
         successPanel = (
-            <AlertPanel message='User saved successfully' type='success' />
+            <AlertPanel message="User saved successfully" type="success" />
         );
     }
 
-    const notFoundMessage = apiStatus === 404 ? <AlertPanel type='warning' message='No users found' /> : null;
+    const notFoundMessage = apiStatus === 404 ? <AlertPanel type="warning" message="No users found" /> : null;
 
     let renderedUser = null;
 
@@ -75,8 +75,8 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
                 key={ permission.name }
                 name={ `permissions.${permission.name}` }
                 label={ permission.label }
-                fieldClass='col-sm-offset-3 col-sm-4'
-                type='checkbox'
+                fieldClass="col-sm-offset-3 col-sm-4"
+                type="checkbox"
                 onChange={ (e) => onPermissionToggle(permission.name, e) }
                 checked={ permissions[permission.name] }
             />
@@ -95,7 +95,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
 
                     <h4>Permissions</h4>
                     { permissionsElements }
-                    <button type='button' className="btn btn-primary" onClick={ onSaveClick }>Save</button>
+                    <button type="button" className="btn btn-primary" onClick={ onSaveClick }>Save</button>
                 </form>
             </div>
         );
@@ -104,15 +104,15 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
     if(loading) {
         content = <div>Searching for user...</div>;
     } else if(apiError && apiStatus !== 404) {
-        content = <AlertPanel type='error' message={ apiError } />;
+        content = <AlertPanel type="error" message={ apiError } />;
     } else {
         content = (
             <div>
                 { notFoundMessage }
                 { successPanel }
                 <form className="form">
-                    <Input name='username' label='Search for a user' value={ username } onChange={ onUsernameChange } placeholder='Enter username' />
-                    <button type='submit' className="btn btn-primary" onClick={ onFindClick }>Find</button>
+                    <Input name="username" label="Search for a user" value={ username } onChange={ onUsernameChange } placeholder="Enter username" />
+                    <button type="submit" className="btn btn-primary" onClick={ onFindClick }>Find</button>
                 </form>
 
                 { renderedUser }
@@ -123,7 +123,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
     return content;
 }
 
-InnerUserAdmin.displayName = 'UserAdmin';
+InnerUserAdmin.displayName = "UserAdmin";
 
 function mapStateToProps(state) {
     return {

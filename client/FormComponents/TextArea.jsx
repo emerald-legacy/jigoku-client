@@ -36,6 +36,6 @@ function TextArea({
     );
 }
 
-TextArea.displayName = 'TextArea';
+TextArea.displayName = "TextArea";
 
 export default TextArea;

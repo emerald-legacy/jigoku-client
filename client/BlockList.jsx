@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useState, useEffect } from "react";
+import { connect } from "react-redux";
 
-import { X } from 'lucide-react';
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
-import Input from './FormComponents/Input.jsx';
+import { X } from "lucide-react";
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import Input from "./FormComponents/Input.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 export function InnerBlockList({
     addBlockListEntry,
@@ -19,7 +19,7 @@ export function InnerBlockList({
     removeBlockListEntry,
     user
 }) {
-    const [username, setUsername] = useState('');
+    const [username, setUsername] = useState("");
 
     useEffect(() => {
         loadBlockList(user);
@@ -52,13 +52,13 @@ export function InnerBlockList({
 
     if(blockListAdded) {
         successPanel = (
-            <AlertPanel message='Block list entry added successfully' type='success' />
+            <AlertPanel message="Block list entry added successfully" type="success" />
         );
     }
 
     if(blockListDeleted) {
         successPanel = (
-            <AlertPanel message='Block list entry removed successfully' type='success' />
+            <AlertPanel message="Block list entry removed successfully" type="success" />
         );
     }
 
@@ -67,13 +67,13 @@ export function InnerBlockList({
     if(loading) {
         content = <div>Loading block list from the server...</div>;
     } else if(apiError) {
-        content = <AlertPanel type='error' message={ apiError } />;
+        content = <AlertPanel type="error" message={ apiError } />;
     } else {
         const blockListRows = blockList && blockList.map((blockedUser) => (
             <tr key={ blockedUser }>
                 <td>{ blockedUser }</td>
                 <td>
-                    <a href='#' className="btn" onClick={ (e) => onRemoveClick(blockedUser, e) }>
+                    <a href="#" className="btn" onClick={ (e) => onRemoveClick(blockedUser, e) }>
                         <X size={ 16 } />
                     </a>
                 </td>
@@ -114,12 +114,12 @@ export function InnerBlockList({
 
                             <div className="form-group">
                                 <Input
-                                    name='blockee'
-                                    label='Username'
-                                    labelClass='col-sm-4'
-                                    fieldClass='col-sm-4'
-                                    placeholder='Enter username to block'
-                                    type='text'
+                                    name="blockee"
+                                    label="Username"
+                                    labelClass="col-sm-4"
+                                    fieldClass="col-sm-4"
+                                    placeholder="Enter username to block"
+                                    type="text"
                                     onChange={ onUsernameChange }
                                     value={ username }
                                     noGroup
@@ -139,7 +139,7 @@ export function InnerBlockList({
     return content;
 }
 
-InnerBlockList.displayName = 'BlockList';
+InnerBlockList.displayName = "BlockList";
 
 function mapStateToProps(state) {
     return {

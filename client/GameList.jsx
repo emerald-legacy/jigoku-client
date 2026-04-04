@@ -1,24 +1,24 @@
-import { connect } from 'react-redux';
-import { toast } from 'sonner';
-import GameModes from './GameModes';
+import { connect } from "react-redux";
+import { toast } from "sonner";
+import GameModes from "./GameModes";
 
-import { X } from 'lucide-react';
-import Avatar from './Avatar.jsx';
-import * as actions from './actions';
+import { X } from "lucide-react";
+import Avatar from "./Avatar.jsx";
+import * as actions from "./actions";
 
 const gameModeLabels = {
-    [GameModes.Skirmish]: 'SKIRMISH',
-    [GameModes.Stronghold]: 'IMPERIAL',
-    [GameModes.Emerald]: 'EMERALD',
-    [GameModes.Obsidian]: 'OBSIDIAN',
-    [GameModes.Sanctuary]: 'SANCTUARY'
+    [GameModes.Skirmish]: "SKIRMISH",
+    [GameModes.Stronghold]: "IMPERIAL",
+    [GameModes.Emerald]: "EMERALD",
+    [GameModes.Obsidian]: "OBSIDIAN",
+    [GameModes.Sanctuary]: "SANCTUARY"
 };
 
 const gameModeModifiers = {
-    [GameModes.Skirmish]: 'skirmish',
-    [GameModes.Stronghold]: 'imperial',
-    [GameModes.Obsidian]: 'obsidian',
-    [GameModes.Sanctuary]: 'sanctuary'
+    [GameModes.Skirmish]: "skirmish",
+    [GameModes.Stronghold]: "imperial",
+    [GameModes.Obsidian]: "obsidian",
+    [GameModes.Sanctuary]: "sanctuary"
 };
 
 export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, socket, username }) {
@@ -26,14 +26,14 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         event.preventDefault();
 
         if(!username) {
-            toast.error('Please login before trying to join a game');
+            toast.error("Please login before trying to join a game");
             return;
         }
 
         if(game.needsPassword) {
-            joinPasswordGame(game, 'Join');
+            joinPasswordGame(game, "Join");
         } else {
-            socket.emit('joingame', game.id);
+            socket.emit("joingame", game.id);
         }
     };
 
@@ -45,36 +45,36 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         event.preventDefault();
 
         if(!username) {
-            toast.error('Please login before trying to watch a game');
+            toast.error("Please login before trying to watch a game");
             return;
         }
 
         if(game.needsPassword) {
-            joinPasswordGame(game, 'Watch');
+            joinPasswordGame(game, "Watch");
         } else {
-            socket.emit('watchgame', game.id);
+            socket.emit("watchgame", game.id);
         }
     };
 
     const removeGame = (event, game) => {
         event.preventDefault();
-        socket.emit('removegame', game.id);
+        socket.emit("removegame", game.id);
     };
 
     const gameList = games?.map((game) => {
         const players = game.players ? Object.values(game.players) : [];
         const playerCount = players.length;
         const modeLabel = gameModeLabels[game.gameMode];
-        const modeModifier = gameModeModifiers[game.gameMode] || '';
+        const modeModifier = gameModeModifiers[game.gameMode] || "";
 
         return (
             <div key={ game.id } className={ `game-row${modeModifier ? ` ${modeModifier}` : ""}${game.node && isAdmin ? ` ${game.node}` : ""}` }>
                 <div className="game-row-header">
-                    { (isAdmin || (game.started && game.owner === username)) ? <a href='#' className="game-row-remove" onClick={ (event) => removeGame(event, game) }><X size={ 14 } /></a> : null }
-                    { game.needsPassword ? <span className="game-badge game-badge-lock">{ '\uD83D\uDD12' }</span> : null }
+                    { (isAdmin || (game.started && game.owner === username)) ? <a href="#" className="game-row-remove" onClick={ (event) => removeGame(event, game) }><X size={ 14 } /></a> : null }
+                    { game.needsPassword ? <span className="game-badge game-badge-lock">{ "\uD83D\uDD12" }</span> : null }
                     { modeLabel ? <span className="game-badge game-badge-mode">{ modeLabel }</span> : null }
                     { game.gameType ? <span className={ `game-badge game-badge-type-${game.gameType}` }>{ game.gameType }</span> : null }
-                    { game.clocks && game.clocks.type !== 'none' ? <img src='/img/free-clock-icon-png.png' className="clock-icon" /> : null }
+                    { game.clocks && game.clocks.type !== "none" ? <img src="/img/free-clock-icon-png.png" className="clock-icon" /> : null }
                     <span className="game-row-name">{ game.name }</span>
                 </div>
                 <div className="game-row-content">
@@ -109,7 +109,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
     );
 }
 
-InnerGameList.displayName = 'GameList';
+InnerGameList.displayName = "GameList";
 
 function mapStateToProps(state) {
     return {

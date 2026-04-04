@@ -1,16 +1,16 @@
 export default function(state = {}, action) {
     switch(action.type) {
-        case 'REFRESH_USER':
+        case "REFRESH_USER":
             return Object.assign({}, state, {
                 user: action.user,
                 username: action.user.username,
                 token: action.token
             });
-        case 'RECEIVE_BLOCKLIST':
+        case "RECEIVE_BLOCKLIST":
             return Object.assign({}, state, {
                 blockList: action.response.blockList
             });
-        case 'BLOCKLIST_ADDED':
+        case "BLOCKLIST_ADDED":
             var addedState = Object.assign({}, state, {
                 blockListAdded: true
             });
@@ -18,7 +18,7 @@ export default function(state = {}, action) {
             addedState.blockList.push(action.response.username);
 
             return addedState;
-        case 'BLOCKLIST_DELETED':
+        case "BLOCKLIST_DELETED":
             var blockList = state.blockList.filter(user => {
                 return user !== action.response.username;
             });
@@ -27,7 +27,7 @@ export default function(state = {}, action) {
                 blockListDeleted: true,
                 blockList: blockList
             });
-        case 'CLEAR_BLOCKLIST_STATUS':
+        case "CLEAR_BLOCKLIST_STATUS":
             return Object.assign({}, state, {
                 blockListAdded: false,
                 blockListDeleted: false

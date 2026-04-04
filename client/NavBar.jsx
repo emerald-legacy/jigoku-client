@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { ChevronDown } from 'lucide-react';
+import { useState, useRef, useEffect } from "react";
+import { connect } from "react-redux";
+import { ChevronDown } from "lucide-react";
 
-import Link from './Link.jsx';
-import Avatar from './Avatar.jsx';
+import Link from "./Link.jsx";
+import Avatar from "./Avatar.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMenu, title }) {
     const [showPopup, setShowPopup] = useState(undefined);
@@ -39,8 +39,8 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
             }
         };
 
-        document.addEventListener('click', handleClickOutside);
-        return () => document.removeEventListener('click', handleClickOutside);
+        document.addEventListener("click", handleClickOutside);
+        return () => document.removeEventListener("click", handleClickOutside);
     }, [openDropdown]);
 
     const renderMenuItem = (menuItem) => {
@@ -62,10 +62,10 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
 
             return (
                 <li key={ menuItem.name } className={ className } ref={ dropdownRef }>
-                    <a href='#' className="dropdown-toggle" role='button' aria-haspopup='true' aria-expanded={ isOpen }
+                    <a href="#" className="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded={ isOpen }
                         onClick={ (e) => handleDropdownToggle(menuItem.name, e) }>
                         { menuItem.avatar ? <Avatar emailHash={ menuItem.emailHash } forceDefault={ menuItem.disableGravatar } /> : null }
-                        { menuItem.name } <ChevronDown size={ 12 } style={ { display: 'inline', verticalAlign: 'middle' } } />
+                        { menuItem.name } <ChevronDown size={ 12 } style={ { display: "inline", verticalAlign: "middle" } } />
                     </a>
                     <ul className="dropdown-menu">
                         { childItems }
@@ -85,12 +85,12 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
     const numGamesElement = numGames !== undefined ? <li><span>{ `${numGames} Games` }</span></li> : null;
 
     const contextMenu = context?.map(menuItem => (
-        <li key={ menuItem.text } style={ { position: 'relative' } }
+        <li key={ menuItem.text } style={ { position: "relative" } }
             onMouseOver={ () => onMenuItemMouseOver(menuItem) }
             onMouseOut={ onMenuItemMouseOut }
         >
             <a
-                href='javascript:void(0)'
+                href="javascript:void(0)"
                 onClick={ menuItem.onClick ? (event) => {
                     event.preventDefault();
                     menuItem.onClick();
@@ -105,18 +105,18 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
     return (
         <nav className="navbar navbar-inverse no-highlight">
             <div className="max-w-[1170px] mx-auto px-4 flex items-center flex-wrap text-sm">
-                <Link href='/' className="text-gray-400 font-bold text-sm py-2 leading-tight mr-2">{ title }</Link>
+                <Link href="/" className="text-gray-400 font-bold text-sm py-2 leading-tight mr-2">{ title }</Link>
                 <button className="md:hidden p-2 text-gray-400 ml-auto"
-                    type='button'
+                    type="button"
                     aria-expanded={ !navbarCollapsed }
-                    aria-controls='navbar'
+                    aria-controls="navbar"
                     onClick={ handleNavbarToggle }>
                     <span className="sr-only">Toggle Navigation</span>
                     <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
                     <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
                     <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
                 </button>
-                <div id='navbar' className={ navbarCollapsed ? "hidden md:flex md:items-center md:flex-1" : "flex flex-col md:flex-row md:items-center md:flex-1 w-full md:w-auto" }>
+                <div id="navbar" className={ navbarCollapsed ? "hidden md:flex md:items-center md:flex-1" : "flex flex-col md:flex-row md:items-center md:flex-1 w-full md:w-auto" }>
                     <ul className="flex flex-col md:flex-row list-none m-0 p-0">
                         { leftMenuToRender }
                     </ul>
@@ -131,7 +131,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
     );
 }
 
-InnerNavBar.displayName = 'NavBar';
+InnerNavBar.displayName = "NavBar";
 
 function mapStateToProps(state) {
     return {

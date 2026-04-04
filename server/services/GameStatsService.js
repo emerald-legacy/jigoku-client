@@ -1,14 +1,14 @@
-const logger = require('../log.js');
+const logger = require("../log.js");
 
-const allClans = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
-const statModes = ['all', 'stronghold', 'emerald', 'sanctuary'];
+const allClans = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
+const statModes = ["all", "stronghold", "emerald", "sanctuary"];
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
 function normalizeClan(faction) {
     if(!faction) {
         return null;
     }
-    return faction.toLowerCase().replace(/\s*clan\s*/i, '').trim();
+    return faction.toLowerCase().replace(/\s*clan\s*/i, "").trim();
 }
 
 function emptyBucket() {
@@ -96,7 +96,7 @@ function recordGame(bucket, game, players) {
 
 class GameStatsService {
     constructor(db) {
-        this.games = db.collection('games');
+        this.games = db.collection("games");
         this.cache = null;
         this.cacheTime = 0;
         this.ensureIndexes();

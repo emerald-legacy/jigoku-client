@@ -12,6 +12,6 @@ function ClockPopup({ clockName, mainTime, periods, timePeriod }) {
     );
 }
 
-ClockPopup.displayName = 'ClockPopup';
+ClockPopup.displayName = "ClockPopup";
 
 export default ClockPopup;

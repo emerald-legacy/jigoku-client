@@ -1,9 +1,9 @@
-import { useState, useRef, memo } from 'react';
-import Draggable from 'react-draggable';
-import { X } from 'lucide-react';
+import { useState, useRef, memo } from "react";
+import Draggable from "react-draggable";
+import { X } from "lucide-react";
 
-import Card from './Card.jsx';
-import { tryParseJSON } from '../util.js';
+import Card from "./Card.jsx";
+import { tryParseJSON } from "../util.js";
 
 function CardPile({
     cardCount,
@@ -22,7 +22,7 @@ function CardPile({
     onMouseOut,
     onMouseOver,
     onTouchMove,
-    orientation = 'vertical',
+    orientation = "vertical",
     popupLocation,
     popupMenu,
     size,
@@ -91,21 +91,21 @@ function CardPile({
     };
 
     const onDragOver = (event) => {
-        event.target.classList.add('highlight-panel');
+        event.target.classList.add("highlight-panel");
         event.preventDefault();
     };
 
     const onDragLeave = (event) => {
-        event.target.classList.remove('highlight-panel');
+        event.target.classList.remove("highlight-panel");
     };
 
     const handleDragDrop = (event, target) => {
         event.stopPropagation();
         event.preventDefault();
 
-        event.target.classList.remove('highlight-panel');
+        event.target.classList.remove("highlight-panel");
 
-        const card = event.dataTransfer.getData('Text');
+        const card = event.dataTransfer.getData("Text");
 
         if(!card) {
             return;
@@ -148,7 +148,7 @@ function CardPile({
                     onTouchMove={ onTouchMove }
                     onClick={ () => handleCardClick(card) }
                     onDragDrop={ onDragDrop }
-                    orientation={ orientation === 'bowed' ? 'vertical' : orientation }
+                    orientation={ orientation === "bowed" ? "vertical" : orientation }
                     size={ size }
                 />
             );
@@ -158,18 +158,18 @@ function CardPile({
             return null;
         }
 
-        let popupClass = 'panel';
-        let arrowClass = 'arrow lg';
+        let popupClass = "panel";
+        let arrowClass = "arrow lg";
 
-        if(popupLocation === 'top') {
-            popupClass += ' our-side';
-            arrowClass += ' down';
+        if(popupLocation === "top") {
+            popupClass += " our-side";
+            arrowClass += " down";
         } else {
-            arrowClass += ' up';
+            arrowClass += " up";
         }
 
-        if(orientation === 'horizontal') {
-            arrowClass = 'arrow lg left';
+        if(orientation === "horizontal") {
+            arrowClass = "arrow lg left";
         }
 
         let linkIndex = 0;
@@ -191,7 +191,7 @@ function CardPile({
         ) : null;
 
         return (
-            <Draggable handle='.grip' cancel='.close-button' nodeRef={ draggableRef }>
+            <Draggable handle=".grip" cancel=".close-button" nodeRef={ draggableRef }>
                 <div ref={ draggableRef } className={ `popup ${isMe ? "" : "opponent"}` }>
                     <div className="grip">
                         <div
@@ -235,7 +235,7 @@ function CardPile({
     };
 
     let className = `card-pile ${propsClassName || ""}`;
-    if(size !== 'normal') {
+    if(size !== "normal") {
         className += ` ${size}`;
     }
 
@@ -243,16 +243,16 @@ function CardPile({
     if(displayCardCount === 0) {
         className += " panel";
     }
-    const headerText = title ? `${title} (${displayCardCount})` : '';
+    const headerText = title ? `${title} (${displayCardCount})` : "";
     const topCard = propsTopCard || (cards && cards[0]);
     const cardOrientation =
-        orientation === 'horizontal' && topCard && topCard.facedown
-            ? 'bowed'
+        orientation === "horizontal" && topCard && topCard.facedown
+            ? "bowed"
             : orientation;
 
     const displayTopCard = hiddenTopCard && !propsTopCard ? { facedown: true } : topCard;
 
-    if(orientation === 'horizontal' || orientation === 'bowed') {
+    if(orientation === "horizontal" || orientation === "bowed") {
         className += " horizontal";
     } else {
         className += " vertical";
@@ -289,6 +289,6 @@ function CardPile({
     );
 }
 
-CardPile.displayName = 'CardPile';
+CardPile.displayName = "CardPile";
 
 export default memo(CardPile);

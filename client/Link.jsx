@@ -1,5 +1,5 @@
-import { connect } from 'react-redux';
-import * as actions from './actions';
+import { connect } from "react-redux";
+import * as actions from "./actions";
 
 function InnerLink({ children, className, href, navigate }) {
     const onClick = (event) => {
@@ -14,7 +14,7 @@ function InnerLink({ children, className, href, navigate }) {
     );
 }
 
-InnerLink.displayName = 'Link';
+InnerLink.displayName = "Link";
 
 const mapStateToProps = (state, ownProps) => {
     return {

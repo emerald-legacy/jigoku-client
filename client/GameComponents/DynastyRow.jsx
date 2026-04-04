@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import AdditionalCardPile from './AdditionalCardPile.jsx';
-import Card from './Card.jsx';
-import CardPile from './CardPile.jsx';
-import Province from './Province.jsx';
-import { tryParseJSON } from '../util.js';
+import AdditionalCardPile from "./AdditionalCardPile.jsx";
+import Card from "./Card.jsx";
+import CardPile from "./CardPile.jsx";
+import Province from "./Province.jsx";
+import { tryParseJSON } from "../util.js";
 
 function DynastyRow({
     additionalPiles,
@@ -44,21 +44,21 @@ function DynastyRow({
     const [showDynastyMenu, setShowDynastyMenu] = useState(false);
 
     const handleDragOver = (event) => {
-        event.target.classList.add('highlight-panel');
+        event.target.classList.add("highlight-panel");
         event.preventDefault();
     };
 
     const handleDragLeave = (event) => {
-        event.target.classList.remove('highlight-panel');
+        event.target.classList.remove("highlight-panel");
     };
 
     const handleDragDrop = (event, target) => {
         event.stopPropagation();
         event.preventDefault();
 
-        event.target.classList.remove('highlight-panel');
+        event.target.classList.remove("highlight-panel");
 
-        const card = event.dataTransfer.getData('Text');
+        const card = event.dataTransfer.getData("Text");
 
         if(!card) {
             return;
@@ -151,7 +151,7 @@ function DynastyRow({
     if(!additionalPiles) {
         additionalPilesElements = [];
     } else {
-        const piles = Object.values(additionalPiles).filter(pile => pile.cards.length > 0 && pile.area === 'player row');
+        const piles = Object.values(additionalPiles).filter(pile => pile.cards.length > 0 && pile.area === "player row");
         let index = 0;
         additionalPilesElements = piles.map(pile => (
             <AdditionalCardPile
@@ -167,26 +167,26 @@ function DynastyRow({
     }
 
     const conflictDeckMenu = [
-        { text: 'Show', handler: handleShowConflictDeckClick, showPopup: true },
-        { text: 'Shuffle', handler: handleConflictShuffleClick }
+        { text: "Show", handler: handleShowConflictDeckClick, showPopup: true },
+        { text: "Shuffle", handler: handleConflictShuffleClick }
     ];
 
     const dynastyDeckMenu = [
-        { text: 'Show', handler: handleShowDynastyDeckClick, showPopup: true },
-        { text: 'Shuffle', handler: handleDynastyShuffleClick }
+        { text: "Show", handler: handleShowDynastyDeckClick, showPopup: true },
+        { text: "Shuffle", handler: handleDynastyShuffleClick }
     ];
 
     const conflictDeckPopupMenu = [
-        { text: 'Close', handler: handleConflictCloseClick },
-        { text: 'Close and Shuffle', handler: handleConflictCloseAndShuffleClick }
+        { text: "Close", handler: handleConflictCloseClick },
+        { text: "Close and Shuffle", handler: handleConflictCloseAndShuffleClick }
     ];
 
     const dynastyDeckPopupMenu = [
-        { text: 'Close', handler: handleDynastyCloseClick },
-        { text: 'Close and Shuffle', handler: handleDynastyCloseAndShuffleClick }
+        { text: "Close", handler: handleDynastyCloseClick },
+        { text: "Close and Shuffle", handler: handleDynastyCloseAndShuffleClick }
     ];
 
-    const popupLocation = isMe || spectating ? 'top' : 'bottom';
+    const popupLocation = isMe || spectating ? "top" : "bottom";
 
     if(isMe || (spectating && !otherPlayer)) {
         return (
@@ -195,8 +195,8 @@ function DynastyRow({
                     <div className="left-decks">
                         <CardPile
                             className="dynasty discard pile"
-                            title='Dynasty Discard'
-                            source='dynasty discard pile'
+                            title="Dynasty Discard"
+                            source="dynasty discard pile"
                             cards={ dynastyDiscardPile }
                             onMouseOver={ onMouseOver }
                             onMouseOut={ onMouseOut }
@@ -207,13 +207,13 @@ function DynastyRow({
                         />
                         <CardPile
                             className="dynasty draw"
-                            title='Dynasty'
-                            source='dynasty deck'
+                            title="Dynasty"
+                            source="dynasty deck"
                             cards={ dynastyDeck }
                             onMouseOver={ onMouseOver }
                             onMouseOut={ onMouseOut }
                             onCardClick={ onCardClick }
-                            popupLocation='top'
+                            popupLocation="top"
                             disableMenu={ spectating || !isMe || !manualMode }
                             onDragDrop={ onDragDrop }
                             menu={ dynastyDeckMenu }
@@ -225,21 +225,21 @@ function DynastyRow({
                         />
                     </div>
                     <div className="province-row">
-                        <Province isMe={ isMe } source='province 1' cards={ province1Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onDragDrop={ onDragDrop } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
-                        <Province isMe={ isMe } source='province 2' cards={ province2Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onDragDrop={ onDragDrop } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
-                        <Province isMe={ isMe } source='province 3' cards={ province3Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onDragDrop={ onDragDrop } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
-                        { !isSkirmish ? <Province isMe={ isMe } source='province 4' cards={ province4Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onDragDrop={ onDragDrop } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } /> : null }
+                        <Province isMe={ isMe } source="province 1" cards={ province1Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onDragDrop={ onDragDrop } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
+                        <Province isMe={ isMe } source="province 2" cards={ province2Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onDragDrop={ onDragDrop } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
+                        <Province isMe={ isMe } source="province 3" cards={ province3Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onDragDrop={ onDragDrop } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
+                        { !isSkirmish ? <Province isMe={ isMe } source="province 4" cards={ province4Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onDragDrop={ onDragDrop } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } /> : null }
                     </div>
                     <div className="right-decks">
                         <CardPile
                             className="conflict draw"
-                            title='Conflict'
-                            source='conflict deck'
+                            title="Conflict"
+                            source="conflict deck"
                             cards={ conflictDeck }
                             onMouseOver={ onMouseOver }
                             onMouseOut={ onMouseOut }
                             onCardClick={ onCardClick }
-                            popupLocation='top'
+                            popupLocation="top"
                             disableMenu={ spectating || !isMe || !manualMode }
                             onDragDrop={ onDragDrop }
                             menu={ conflictDeckMenu }
@@ -251,8 +251,8 @@ function DynastyRow({
                         />
                         <CardPile
                             className="conflict discard pile"
-                            title='Conflict Discard'
-                            source='conflict discard pile'
+                            title="Conflict Discard"
+                            source="conflict discard pile"
                             cards={ conflictDiscardPile }
                             onMouseOver={ onMouseOver }
                             onMouseOut={ onMouseOut }
@@ -263,8 +263,8 @@ function DynastyRow({
                         />
                         <CardPile
                             className="removed-from-game-pile discard"
-                            title='Removed From Game'
-                            source='removed from game'
+                            title="Removed From Game"
+                            source="removed from game"
                             cards={ removedFromGame }
                             onMouseOver={ onMouseOver }
                             onMouseOut={ onMouseOut }
@@ -285,8 +285,8 @@ function DynastyRow({
                 <div className="left-decks">
                     <CardPile
                         className="removed-from-game-pile discard"
-                        title='Removed From Game'
-                        source='removed from game'
+                        title="Removed From Game"
+                        source="removed from game"
                         cards={ removedFromGame }
                         onMouseOver={ onMouseOver }
                         onMouseOut={ onMouseOut }
@@ -297,8 +297,8 @@ function DynastyRow({
                     />
                     <CardPile
                         className="conflict discard pile"
-                        title='Conflict Discard'
-                        source='conflict discard pile'
+                        title="Conflict Discard"
+                        source="conflict discard pile"
                         cards={ conflictDiscardPile }
                         onMouseOver={ onMouseOver }
                         onMouseOut={ onMouseOut }
@@ -309,13 +309,13 @@ function DynastyRow({
                     />
                     <CardPile
                         className="conflict deck"
-                        title='Conflict'
-                        source='conflict deck'
+                        title="Conflict"
+                        source="conflict deck"
                         cards={ conflictDeck }
                         onMouseOver={ onMouseOver }
                         onMouseOut={ onMouseOut }
                         onCardClick={ onCardClick }
-                        popupLocation='top'
+                        popupLocation="top"
                         disableMenu
                         hiddenTopCard={ !conflictDeckTopCard }
                         onDragDrop={ onDragDrop }
@@ -327,21 +327,21 @@ function DynastyRow({
                     />
                 </div>
                 <div className="province-row">
-                    { !isSkirmish ? <Province isMe={ isMe } source='province 4' cards={ province4Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } /> : null }
-                    <Province isMe={ isMe } source='province 3' cards={ province3Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
-                    <Province isMe={ isMe } source='province 2' cards={ province2Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
-                    <Province isMe={ isMe } source='province 1' cards={ province1Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
+                    { !isSkirmish ? <Province isMe={ isMe } source="province 4" cards={ province4Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } /> : null }
+                    <Province isMe={ isMe } source="province 3" cards={ province3Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
+                    <Province isMe={ isMe } source="province 2" cards={ province2Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
+                    <Province isMe={ isMe } source="province 1" cards={ province1Cards } onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onCardClick={ onCardClick } size={ cardSize } onMenuItemClick={ onMenuItemClick } popupLocation={ popupLocation } />
                 </div>
                 <div className="left-decks">
                     <CardPile
                         className="dynasty draw"
-                        title='Dynasty'
-                        source='dynasty deck'
+                        title="Dynasty"
+                        source="dynasty deck"
                         cards={ dynastyDeck }
                         onMouseOver={ onMouseOver }
                         onMouseOut={ onMouseOut }
                         onCardClick={ onCardClick }
-                        popupLocation='top'
+                        popupLocation="top"
                         disableMenu
                         onDragDrop={ onDragDrop }
                         menu={ dynastyDeckMenu }
@@ -353,8 +353,8 @@ function DynastyRow({
                     />
                     <CardPile
                         className="dynasty discard pile"
-                        title='Dynasty Discard'
-                        source='dynasty discard pile'
+                        title="Dynasty Discard"
+                        source="dynasty discard pile"
                         cards={ dynastyDiscardPile }
                         onMouseOver={ onMouseOver }
                         onMouseOut={ onMouseOut }
@@ -369,6 +369,6 @@ function DynastyRow({
     );
 }
 
-DynastyRow.displayName = 'DynastyRow';
+DynastyRow.displayName = "DynastyRow";
 
 export default DynastyRow;

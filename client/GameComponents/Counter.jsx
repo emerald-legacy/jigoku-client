@@ -18,6 +18,6 @@ function Counter({ cancel, fade, name, shortName, value }) {
     );
 }
 
-Counter.displayName = 'Counter';
+Counter.displayName = "Counter";
 
 export default Counter;

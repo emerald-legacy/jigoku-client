@@ -1,24 +1,24 @@
-import { useState } from 'react';
-import axios from 'axios';
-import { connect } from 'react-redux';
+import { useState } from "react";
+import axios from "axios";
+import { connect } from "react-redux";
 
-import Link from './Link.jsx';
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
+import Link from "./Link.jsx";
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 export function InnerLogin({ login, navigate, socket }) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
     const [validation, setValidation] = useState({});
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
 
     const verifyUsername = () => {
         const newValidation = { ...validation };
-        delete newValidation['username'];
+        delete newValidation["username"];
 
-        if(!username || username === '') {
-            newValidation['username'] = 'Please enter your username';
+        if(!username || username === "") {
+            newValidation["username"] = "Please enter your username";
         }
 
         setValidation(newValidation);
@@ -27,10 +27,10 @@ export function InnerLogin({ login, navigate, socket }) {
 
     const verifyPassword = () => {
         const newValidation = { ...validation };
-        delete newValidation['password'];
+        delete newValidation["password"];
 
-        if(!password || password === '') {
-            newValidation['password'] = 'Please enter your password';
+        if(!password || password === "") {
+            newValidation["password"] = "Please enter your password";
         }
 
         setValidation(newValidation);
@@ -40,25 +40,25 @@ export function InnerLogin({ login, navigate, socket }) {
     const onLogin = async (event) => {
         event.preventDefault();
 
-        setError('');
+        setError("");
 
         // Do synchronous validation to avoid stale state issues
         const newValidation = {};
-        if(!username || username === '') {
-            newValidation['username'] = 'Please enter your username';
+        if(!username || username === "") {
+            newValidation["username"] = "Please enter your username";
         }
-        if(!password || password === '') {
-            newValidation['password'] = 'Please enter your password';
+        if(!password || password === "") {
+            newValidation["password"] = "Please enter your password";
         }
         setValidation(newValidation);
 
-        if(Object.values(newValidation).some((message) => message && message !== '')) {
-            setError('Please complete both fields and try again');
+        if(Object.values(newValidation).some((message) => message && message !== "")) {
+            setError("Please complete both fields and try again");
             return;
         }
 
         try {
-            const response = await axios.post('/api/account/login', {
+            const response = await axios.post("/api/account/login", {
                 username: username,
                 password: password
             });
@@ -70,34 +70,34 @@ export function InnerLogin({ login, navigate, socket }) {
 
             login(response.data.user, response.data.token);
             if(socket) {
-                socket.emit('authenticate', response.data.token);
+                socket.emit("authenticate", response.data.token);
             }
 
-            navigate('/');
+            navigate("/");
         } catch(err) {
             if(err.response && err.response.status === 401) {
-                setError('Invalid Username/password');
+                setError("Invalid Username/password");
             } else {
-                setError('Could not communicate with the server.  Please try again later.');
+                setError("Could not communicate with the server.  Please try again later.");
             }
         }
     };
 
     const fields = [
         {
-            name: 'username',
-            label: 'Username',
-            placeholder: 'Username',
-            inputType: 'text',
+            name: "username",
+            label: "Username",
+            placeholder: "Username",
+            inputType: "text",
             value: username,
             onChange: setUsername,
             blurCallback: verifyUsername
         },
         {
-            name: 'password',
-            label: 'Password',
-            placeholder: 'Password',
-            inputType: 'password',
+            name: "password",
+            label: "Password",
+            placeholder: "Password",
+            inputType: "password",
             value: password,
             onChange: setPassword,
             blurCallback: verifyPassword
@@ -132,7 +132,7 @@ export function InnerLogin({ login, navigate, socket }) {
         );
     });
 
-    const errorBar = error ? <AlertPanel type='error' message={ error } /> : null;
+    const errorBar = error ? <AlertPanel type="error" message={ error } /> : null;
 
     return (
         <div className="col-sm-6 col-sm-offset-3">
@@ -145,12 +145,12 @@ export function InnerLogin({ login, navigate, socket }) {
                     { fieldsToRender }
                     <div className="form-group">
                         <div className="col-sm-offset-2 col-sm-10">
-                            <Link href='/forgot'>Forgot your password?</Link>
+                            <Link href="/forgot">Forgot your password?</Link>
                         </div>
                     </div>
                     <div className="form-group">
                         <div className="col-sm-offset-2 col-sm-3">
-                            <button type='submit' className="btn btn-primary" onClick={ onLogin }>Login</button>
+                            <button type="submit" className="btn btn-primary" onClick={ onLogin }>Login</button>
                         </div>
                     </div>
                 </form>
@@ -159,7 +159,7 @@ export function InnerLogin({ login, navigate, socket }) {
     );
 }
 
-InnerLogin.displayName = 'Login';
+InnerLogin.displayName = "Login";
 
 function mapStateToProps(state) {
     return {

@@ -1,4 +1,4 @@
-import { Menu, AlertCircle, Wrench, Settings, Download } from 'lucide-react';
+import { Menu, AlertCircle, Wrench, Settings, Download } from "lucide-react";
 
 function Controls({
     manualModeEnabled,
@@ -19,7 +19,7 @@ function Controls({
                 onClick={ onToggleChatClick }
             >
                 <Menu size={ 16 } />
-                { laptopSize ? '' : ' Toggle Chat' }
+                { laptopSize ? "" : " Toggle Chat" }
                 { showChatAlert && <AlertCircle size={ 16 } /> }
             </button>
             { showManualMode && (
@@ -28,23 +28,23 @@ function Controls({
                     onClick={ onManualModeClick }
                 >
                     <Wrench size={ 16 } />
-                    { laptopSize ? '' : ` Manual Mode ${manualModeEnabled ? ' Enabled' : 'Disabled'}` }
+                    { laptopSize ? "" : ` Manual Mode ${manualModeEnabled ? " Enabled" : "Disabled"}` }
                 </button>
             ) }
             <button className="btn btn-transparent" onClick={ onSettingsClick }>
                 <Settings size={ 16 } />
-                { laptopSize ? '' : ' Settings' }
+                { laptopSize ? "" : " Settings" }
             </button>
             { showDownloadLog && (
                 <button className="btn btn-transparent" onClick={ onDownloadLogClick }>
                     <Download size={ 16 } />
-                    { laptopSize ? '' : ' Game Log' }
+                    { laptopSize ? "" : " Game Log" }
                 </button>
             ) }
         </div>
     );
 }
 
-Controls.displayName = 'Controls';
+Controls.displayName = "Controls";
 
 export default Controls;

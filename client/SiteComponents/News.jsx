@@ -1,7 +1,7 @@
-import NewsItem from './NewsItem.jsx';
+import NewsItem from "./NewsItem.jsx";
 
 function News({ news }) {
-    const icons = ['military', 'political'];
+    const icons = ["military", "political"];
 
     if(!news || news.length === 0) {
         return (
@@ -27,6 +27,6 @@ function News({ news }) {
     );
 }
 
-News.displayName = 'News';
+News.displayName = "News";
 
 export default News;

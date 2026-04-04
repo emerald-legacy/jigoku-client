@@ -1,9 +1,9 @@
-const logger = require('../log.js');
-const { toObjectId } = require('../db.js');
+const logger = require("../log.js");
+const { toObjectId } = require("../db.js");
 
 class DeckService {
     constructor(db) {
-        this.decks = db.collection('decks');
+        this.decks = db.collection("decks");
     }
 
     async getById(id) {
@@ -11,7 +11,7 @@ class DeckService {
             return await this.decks.findOne({ _id: toObjectId(id) });
         } catch(err) {
             logger.error(`Unable to fetch deck ${id}: ${err}`);
-            throw new Error('Unable to fetch deck ' + id);
+            throw new Error("Unable to fetch deck " + id);
         }
     }
 
@@ -19,7 +19,7 @@ class DeckService {
         const query = { username: userName };
 
         if(options.format) {
-            query['format.value'] = options.format;
+            query["format.value"] = options.format;
         }
 
         return this.decks.find(query).sort({ lastUpdated: -1 }).toArray();

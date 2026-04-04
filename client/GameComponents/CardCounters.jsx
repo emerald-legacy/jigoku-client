@@ -1,8 +1,8 @@
 
-import Counter from './Counter.jsx';
-import FateCounter from './FateCounter.jsx';
-import HonorCounter from './HonorCounter.jsx';
-import HonorStatusCounter from './HonorStatusCounter.jsx';
+import Counter from "./Counter.jsx";
+import FateCounter from "./FateCounter.jsx";
+import HonorCounter from "./HonorCounter.jsx";
+import HonorStatusCounter from "./HonorStatusCounter.jsx";
 
 function CardCounters({ counters }) {
     const counterKeys = Object.keys(counters);
@@ -10,11 +10,11 @@ function CardCounters({ counters }) {
         return null;
     }
 
-    let countersClass = 'counters ignore-mouse-events';
+    let countersClass = "counters ignore-mouse-events";
 
     const counterDivs = counterKeys.map((key) => {
         const counter = counters[key];
-        if(key === 'card-fate' || key === 'ring-fate') {
+        if(key === "card-fate" || key === "ring-fate") {
             return (
                 <FateCounter
                     key={ key }
@@ -27,7 +27,7 @@ function CardCounters({ counters }) {
             );
         }
 
-        if(key === 'card-honor' || key === 'honor') {
+        if(key === "card-honor" || key === "honor") {
             return (
                 <HonorCounter
                     key={ key }
@@ -40,7 +40,7 @@ function CardCounters({ counters }) {
             );
         }
 
-        if(key === 'card-status' && counter.count > 1) {
+        if(key === "card-status" && counter.count > 1) {
             return (
                 <HonorStatusCounter
                     key={ key }
@@ -69,12 +69,12 @@ function CardCounters({ counters }) {
     });
 
     if(counterKeys.length > 3) {
-        countersClass += ' many-counters';
+        countersClass += " many-counters";
     }
 
     return <div className={ countersClass }>{ counterDivs }</div>;
 }
 
-CardCounters.displayName = 'CardCounters';
+CardCounters.displayName = "CardCounters";
 
 export default CardCounters;

@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useState, useEffect } from "react";
+import { connect } from "react-redux";
 
-import NewGame from './NewGame.jsx';
-import GameList from './GameList.jsx';
-import GameStats from './GameStats.jsx';
-import PendingGame from './PendingGame.jsx';
-import PasswordGame from './PasswordGame.jsx';
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
+import NewGame from "./NewGame.jsx";
+import GameList from "./GameList.jsx";
+import GameStats from "./GameStats.jsx";
+import PendingGame from "./PendingGame.jsx";
+import PasswordGame from "./PasswordGame.jsx";
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, newGame, passwordGame, loadGameStats, setContextMenu, startNewGame, username }) {
     const [errorMessage, setErrorMessage] = useState(undefined);
@@ -33,7 +33,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
         event.preventDefault();
 
         if(!username) {
-            setErrorMessage('Please login before trying to start a new game');
+            setErrorMessage("Please login before trying to start a new game");
             return;
         }
 
@@ -50,8 +50,8 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
 
     return (
         <div className="full-height">
-            { bannerNotice ? <AlertPanel type='error' message={ bannerNotice } /> : null }
-            { errorMessage ? <AlertPanel type='error' message={ errorMessage } /> : null }
+            { bannerNotice ? <AlertPanel type="error" message={ bannerNotice } /> : null }
+            { errorMessage ? <AlertPanel type="error" message={ errorMessage } /> : null }
 
             <div className="row h-full">
                 <div className="col-sm-7 full-height relative">
@@ -73,7 +73,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
     );
 }
 
-InnerGameLobby.displayName = 'GameLobby';
+InnerGameLobby.displayName = "GameLobby";
 
 function mapStateToProps(state) {
     return {

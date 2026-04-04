@@ -1,5 +1,5 @@
-import classNames from 'classnames';
-import Card from './Card.jsx';
+import classNames from "classnames";
+import Card from "./Card.jsx";
 
 function SquishableCardPanel({
     cardSize,
@@ -30,11 +30,11 @@ function SquishableCardPanel({
 
     const getCardSizeMultiplier = () => {
         switch(cardSize) {
-            case 'small':
+            case "small":
                 return 0.8;
-            case 'large':
+            case "large":
                 return 1.4;
-            case 'x-large':
+            case "x-large":
                 return 2;
         }
         return 1;
@@ -105,8 +105,8 @@ function SquishableCardPanel({
     const needsSquish = cards && cards.length > maxCards;
     const cardElements = getCards(needsSquish);
 
-    const panelClassName = classNames('squishable-card-panel', className, {
-        [cardSize]: cardSize !== 'normal',
+    const panelClassName = classNames("squishable-card-panel", className, {
+        [cardSize]: cardSize !== "normal",
         squish: needsSquish
     });
 
@@ -125,6 +125,6 @@ function SquishableCardPanel({
     );
 }
 
-SquishableCardPanel.displayName = 'SquishableCardPanel';
+SquishableCardPanel.displayName = "SquishableCardPanel";
 
 export default SquishableCardPanel;

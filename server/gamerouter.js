@@ -1,10 +1,10 @@
-const { WebSocketServer } = require('ws');
-const logger = require('./log.js');
-const db = require('./db.js');
-const EventEmitter = require('events');
-const GameService = require('./services/GameService.js');
-const GameStatsService = require('./services/GameStatsService.js');
-const DeckStatsService = require('./services/DeckStatsService.js');
+const { WebSocketServer } = require("ws");
+const logger = require("./log.js");
+const db = require("./db.js");
+const EventEmitter = require("events");
+const GameService = require("./services/GameService.js");
+const GameStatsService = require("./services/GameStatsService.js");
+const DeckStatsService = require("./services/DeckStatsService.js");
 
 const ONE_SECOND = 1000;
 const FIFTEEN_SECONDS = 15 * ONE_SECOND;
@@ -31,12 +31,12 @@ class GameRouter extends EventEmitter {
         this.wss = new WebSocketServer({ port });
         logger.info(`GameRouter listening on ws://0.0.0.0:${port}`);
 
-        this.wss.on('connection', (ws, req) => {
-            const parsed = new URL(req.url, 'http://localhost');
-            const identity = parsed.searchParams.get('identity');
+        this.wss.on("connection", (ws, req) => {
+            const parsed = new URL(req.url, "http://localhost");
+            const identity = parsed.searchParams.get("identity");
 
             if(!identity) {
-                logger.error('WebSocket connection without identity, closing');
+                logger.error("WebSocket connection without identity, closing");
                 ws.close();
                 return;
             }
@@ -44,16 +44,16 @@ class GameRouter extends EventEmitter {
             logger.info(`Game node connected: ${identity}`);
             this.connections.set(identity, ws);
 
-            ws.on('message', (data) => {
+            ws.on("message", (data) => {
                 this.onMessage(identity, data);
             });
 
-            ws.on('close', () => {
+            ws.on("close", () => {
                 logger.info(`Game node disconnected: ${identity}`);
                 this.connections.delete(identity);
             });
 
-            ws.on('error', (err) => {
+            ws.on("error", (err) => {
                 logger.error(`WebSocket error from ${identity}: ${err.message}`);
             });
         });
@@ -64,7 +64,7 @@ class GameRouter extends EventEmitter {
         var node = this.getNextAvailableGameNode();
 
         if(!node) {
-            logger.error('Could not find new node for game');
+            logger.error("Could not find new node for game");
             return;
         }
         logger.info(`starting game on node ${node.identity}`);
@@ -73,12 +73,12 @@ class GameRouter extends EventEmitter {
 
         node.numGames++;
 
-        this.sendCommand(node.identity, 'STARTGAME', game);
+        this.sendCommand(node.identity, "STARTGAME", game);
         return node;
     }
 
     addSpectator(game, user) {
-        this.sendCommand(game.node.identity, 'SPECTATOR', { game: game, user: user });
+        this.sendCommand(game.node.identity, "SPECTATOR", { game: game, user: user });
     }
 
     getNextAvailableGameNode() {
@@ -104,7 +104,7 @@ class GameRouter extends EventEmitter {
 
     getNodeStatus() {
         return Object.values(this.workers).map(worker => {
-            return { name: worker.identity, numGames: worker.numGames, status: worker.disabled ? 'disabled' : 'active', version: worker.version };
+            return { name: worker.identity, numGames: worker.numGames, status: worker.disabled ? "disabled" : "active", version: worker.version };
         });
     }
 
@@ -136,7 +136,7 @@ class GameRouter extends EventEmitter {
             return;
         }
 
-        this.sendCommand(game.node.identity, 'CONNECTFAILED', { gameId: game.id, username: username });
+        this.sendCommand(game.node.identity, "CONNECTFAILED", { gameId: game.id, username: username });
     }
 
     closeGame(game) {
@@ -144,7 +144,7 @@ class GameRouter extends EventEmitter {
             return;
         }
 
-        this.sendCommand(game.node.identity, 'CLOSEGAME', { gameId: game.id });
+        this.sendCommand(game.node.identity, "CLOSEGAME", { gameId: game.id });
     }
 
     // Events
@@ -163,24 +163,24 @@ class GameRouter extends EventEmitter {
         }
 
         switch(message.command) {
-            case 'HEARTBEAT':
+            case "HEARTBEAT":
                 logger.debug(`received HEARTBEAT from ${identityStr}`);
                 if(!worker) {
-                    logger.info('Unknown node %s sent heartbeat, requesting registration', identityStr);
-                    this.sendCommand(identityStr, 'REGISTER');
+                    logger.info("Unknown node %s sent heartbeat, requesting registration", identityStr);
+                    this.sendCommand(identityStr, "REGISTER");
                 }
                 break;
-            case 'PONG':
+            case "PONG":
                 logger.debug(`received PONG from ${identityStr}`);
                 if(worker) {
                     worker.pingSent = undefined;
                 } else {
-                    logger.error('PONG received for unknown worker');
+                    logger.error("PONG received for unknown worker");
                 }
                 break;
-            case 'HELLO':
+            case "HELLO":
                 logger.info(`received HELLO from ${identityStr}`);
-                this.emit('onWorkerStarted', identityStr);
+                this.emit("onWorkerStarted", identityStr);
                 this.workers[identityStr] = {
                     identity: identityStr,
                     maxGames: message.arg.maxGames,
@@ -188,22 +188,22 @@ class GameRouter extends EventEmitter {
                     address: message.arg.address,
                     port: message.arg.port,
                     protocol: message.arg.protocol,
-                    version: message.arg.version || 'unknown'
+                    version: message.arg.version || "unknown"
                 };
                 worker = this.workers[identityStr];
 
-                this.emit('onNodeReconnected', identityStr, message.arg.games);
+                this.emit("onNodeReconnected", identityStr, message.arg.games);
 
                 worker.numGames = Object.keys(message.arg.games).length;
 
                 break;
-            case 'GAMEWIN':
+            case "GAMEWIN":
                 logger.info(`received GAMEWIN from ${identityStr}`);
                 this.gameService.update(message.arg.game);
                 this.gameStatsService.invalidateCache();
                 this.updateDeckStats(message.arg.game);
                 break;
-            case 'GAMECLOSED':
+            case "GAMECLOSED":
                 logger.info(`received GAMECLOSED from ${identityStr}`);
                 if(worker) {
                     worker.numGames--;
@@ -211,16 +211,16 @@ class GameRouter extends EventEmitter {
                     logger.error(`Got close game for non existent worker ${identity}`);
                 }
 
-                this.emit('onGameClosed', message.arg.game);
+                this.emit("onGameClosed", message.arg.game);
 
                 break;
-            case 'PLAYERLEFT':
+            case "PLAYERLEFT":
                 logger.info(`received PLAYERLEFT from ${identityStr}`);
                 if(!message.arg.spectator) {
                     this.gameService.update(message.arg.game);
                 }
 
-                this.emit('onPlayerLeft', message.arg.gameId, message.arg.player);
+                this.emit("onPlayerLeft", message.arg.gameId, message.arg.player);
 
                 break;
         }
@@ -240,7 +240,7 @@ class GameRouter extends EventEmitter {
                 return null;
             }
             // Handle "Crab Clan" -> "crab", or already lowercase "crab" -> "crab"
-            return faction.toLowerCase().replace(/\s*clan\s*/i, '').trim();
+            return faction.toLowerCase().replace(/\s*clan\s*/i, "").trim();
         };
 
         for(const player of game.players) {
@@ -265,7 +265,7 @@ class GameRouter extends EventEmitter {
 
     // Internal methods
     sendCommand(identity, command, arg) {
-        const logLevel = (command === 'PING') ? 'debug' : 'info';
+        const logLevel = (command === "PING") ? "debug" : "info";
         logger[logLevel](`sending ${command} to ${identity}`);
 
         const ws = this.connections.get(identity);
@@ -289,11 +289,11 @@ class GameRouter extends EventEmitter {
             if(worker.pingSent && currentTime - worker.pingSent > pingTimeout) {
                 logger.info(`worker ${worker.identity} timed out`);
                 delete this.workers[worker.identity];
-                this.emit('onWorkerTimedOut', worker.identity);
+                this.emit("onWorkerTimedOut", worker.identity);
             } else if(!worker.pingSent) {
                 if(currentTime - worker.lastMessage > pingTimeout) {
                     worker.pingSent = currentTime;
-                    this.sendCommand(worker.identity, 'PING');
+                    this.sendCommand(worker.identity, "PING");
                 }
             }
         });

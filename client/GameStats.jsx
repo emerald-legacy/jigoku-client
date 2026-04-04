@@ -1,16 +1,16 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-const clanOrder = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
+const clanOrder = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
 const tabs = [
-    { key: 'all', label: 'All' },
-    { key: 'emerald', label: 'Emerald' },
-    { key: 'sanctuary', label: 'Sanctuary' },
-    { key: 'stronghold', label: 'Imperial' }
+    { key: "all", label: "All" },
+    { key: "emerald", label: "Emerald" },
+    { key: "sanctuary", label: "Sanctuary" },
+    { key: "stronghold", label: "Imperial" }
 ];
 
 function GameStats({ stats }) {
-    const [activeTab, setActiveTab] = useState('all');
+    const [activeTab, setActiveTab] = useState("all");
     const [expandedClan, setExpandedClan] = useState(null);
 
     if(!stats) {
@@ -74,7 +74,7 @@ function GameStats({ stats }) {
                                             <span>{ data.gamesPlayed } played</span>
                                             <span className="game-stats-clan-wins">{ data.wins }W</span>
                                             { hasMatchups && (
-                                                <span className="game-stats-expand">{ isExpanded ? '\u25B2' : '\u25BC' }</span>
+                                                <span className="game-stats-expand">{ isExpanded ? "\u25B2" : "\u25BC" }</span>
                                             ) }
                                         </div>
                                         { isExpanded && data.matchups && (
@@ -103,7 +103,7 @@ function GameStats({ stats }) {
                         { modeStats.mostSuccessfulClans && modeStats.mostSuccessfulClans.length > 0 && (
                             <div className="game-stats-best">
                                 <div className="game-stats-best-label">
-                                    { activeTab === 'stronghold' ? 'In favor with the Emperor' : 'In favor with the Empress' }
+                                    { activeTab === "stronghold" ? "In favor with the Emperor" : "In favor with the Empress" }
                                 </div>
                                 <div className="game-stats-best-clans">
                                     { modeStats.mostSuccessfulClans.map(({ clan, winRate }) => (
@@ -128,6 +128,6 @@ function GameStats({ stats }) {
     );
 }
 
-GameStats.displayName = 'GameStats';
+GameStats.displayName = "GameStats";
 
 export default GameStats;

@@ -7,6 +7,6 @@ function HonorFan({ size, value }) {
     );
 }
 
-HonorFan.displayName = 'HonorFan';
+HonorFan.displayName = "HonorFan";
 
 export default HonorFan;
