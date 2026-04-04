@@ -404,7 +404,7 @@ export class InnerGameBoard extends React.Component {
 
     onDownloadLogClick() {
         if(this.props.currentGame) {
-            downloadGameLog(this.props.currentGame);
+            downloadGameLog(this.props.currentGame, this.props.username);
         }
     }
 

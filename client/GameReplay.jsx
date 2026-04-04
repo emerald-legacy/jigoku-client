@@ -55,9 +55,11 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJu
 }
 
 /**
- * Replace facedown hand/province cards with actual card data from the hidden info sidecar.
- * The hidden info contains { [playerName]: { hand: [...], provinces: { one: [...], ... } } }
- * where each card has { id, name, uuid }.
+ * Merge hidden info into a replay state snapshot.
+ *
+ * - Hand cards: revealed face-up (facedown: false)
+ * - Province cards (type 'province'): card data added but kept facedown (visible on hover only)
+ * - Dynasty cards on provinces: left untouched (never revealed)
  */
 function mergeHiddenInfo(state, hiddenInfo) {
     if(!state.players || !hiddenInfo) {
@@ -78,13 +80,15 @@ function mergeHiddenInfo(state, hiddenInfo) {
         if(info.hand && player.hand) {
             merged.players[playerName].hand = player.hand.map((card, i) => {
                 if(card.facedown && info.hand[i]) {
-                    return { ...card, ...info.hand[i], facedown: false, revealed: true };
+                    return { ...card, ...info.hand[i], facedown: false };
                 }
                 return card;
             });
         }
 
-        // Replace facedown province cards with revealed data
+        // For province cards (type 'province' only): add card data but keep facedown
+        // so they appear as card backs on the board but show the real card on hover/zoom.
+        // Dynasty cards (characters/holdings) on provinces are left untouched.
         if(info.provinces && player.provinces) {
             const provinceKeys = ['one', 'two', 'three', 'four'];
             merged.players[playerName].provinces = { ...player.provinces };
@@ -93,8 +97,9 @@ function mergeHiddenInfo(state, hiddenInfo) {
                 const hiddenCards = info.provinces[key];
                 if(provinceCards && hiddenCards) {
                     merged.players[playerName].provinces[key] = provinceCards.map((card, i) => {
-                        if(card.facedown && hiddenCards[i]) {
-                            return { ...card, ...hiddenCards[i], facedown: false, revealed: true };
+                        if(card.facedown && hiddenCards[i] && hiddenCards[i].type === 'province') {
+                            // Add id/name so hover zoom shows the card, but keep facedown
+                            return { ...card, id: hiddenCards[i].id, name: hiddenCards[i].name };
                         }
                         return card;
                     });
@@ -259,7 +264,8 @@ function GameReplay() {
 
     const metadata = logData.metadata;
     const playerNames = metadata.players.map((p) => p.name);
-    const username = playerNames[0] || "__replay_spectator__";
+    // Use the downloading player as the perspective (bottom of board), fall back to first player
+    const username = metadata.downloadedBy || playerNames[0] || '__replay_spectator__';
 
     const replayUser = {
         settings: {

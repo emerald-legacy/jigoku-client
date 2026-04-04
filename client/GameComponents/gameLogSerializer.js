@@ -69,7 +69,7 @@ function messageToText(message) {
     return fragmentToText(message);
 }
 
-export function buildGameLog(currentGame) {
+export function buildGameLog(currentGame, downloadedBy) {
     const players = Object.values(currentGame.players).map((p) => ({
         name: p.name,
         faction: p.faction?.name || p.faction?.value || "unknown"
@@ -93,7 +93,8 @@ export function buildGameLog(currentGame) {
             gameMode: currentGame.gameMode,
             winner: currentGame.winner || null,
             date: new Date().toISOString(),
-            players: players
+            players: players,
+            downloadedBy: downloadedBy || null
         },
         plainText: plainText,
         messages: currentGame.messages,
@@ -102,8 +103,8 @@ export function buildGameLog(currentGame) {
     };
 }
 
-export function downloadGameLog(currentGame) {
-    const log = buildGameLog(currentGame);
+export function downloadGameLog(currentGame, downloadedBy) {
+    const log = buildGameLog(currentGame, downloadedBy);
     const json = JSON.stringify(log);
     const compressed = gzipSync(strToU8(json));
     const blob = new Blob([compressed], { type: "application/gzip" });
