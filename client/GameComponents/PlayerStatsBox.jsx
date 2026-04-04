@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
-import Clock from './Clock.jsx';
-import ClockPopup from './ClockPopup.jsx';
+import Clock from "./Clock.jsx";
+import ClockPopup from "./ClockPopup.jsx";
 
 export function PlayerStatsBox({
     clockState,
@@ -13,7 +12,7 @@ export function PlayerStatsBox({
     stats
 }) {
     const sendUpdate = (type, direction) => {
-        sendGameMessage('changeStat', type, direction === 'up' ? 1 : -1);
+        sendGameMessage("changeStat", type, direction === "up" ? 1 : -1);
     };
 
     const getStatValueOrDefault = (stat) => {
@@ -27,35 +26,35 @@ export function PlayerStatsBox({
         const imageStyle = { backgroundImage: `url(/img/${name}.png)` };
 
         return (
-            <div className='state'>
+            <div className="state">
                 { showControls && (
                     <button
-                        className={ 'btn btn-stat ' + size }
-                        onClick={ () => sendUpdate(statToSet, 'down') }
+                        className={ `btn btn-stat ${size}` }
+                        onClick={ () => sendUpdate(statToSet, "down") }
                     >
-                        <img src='/img/Minus.png' title='-' alt='-' />
+                        <img src="/img/Minus.png" title="-" alt="-" />
                     </button>
                 ) }
-                <div className={ 'stat-image ' + size } style={ imageStyle } />
+                <div className={ `stat-image ${size}` } style={ imageStyle } />
                 <div>:</div>
-                <div className='stat-value'>{ getStatValueOrDefault(stat) }</div>
+                <div className="stat-value">{ getStatValueOrDefault(stat) }</div>
                 { showControls && (
                     <button
-                        className={ 'btn btn-stat ' + size }
-                        onClick={ () => sendUpdate(statToSet, 'up') }
+                        className={ `btn btn-stat ${size}` }
+                        onClick={ () => sendUpdate(statToSet, "up") }
                     >
-                        <img src='/img/Plus.png' title='+' alt='+' />
+                        <img src="/img/Plus.png" title="+" alt="+" />
                     </button>
                 ) }
             </div>
         );
     };
 
-    const handImageStyle = { backgroundImage: 'url(/img/conflictcard.png)' };
+    const handImageStyle = { backgroundImage: "url(/img/conflictcard.png)" };
 
     const clock =
-        !clockState || clockState.mode === 'off' ? null : (
-            <div className='state clock-frame'>
+        !clockState || clockState.mode === "off" ? null : (
+            <div className="state clock-frame">
                 <Clock
                     delayToStartClock={ clockState.delayToStartClock }
                     manuallyPaused={ clockState.manuallyPaused }
@@ -76,65 +75,53 @@ export function PlayerStatsBox({
         );
 
     return (
-        <div className={ 'player-stats' + (otherPlayer ? '' : ' our-side') }>
-            <div className='stats-row'>
-                <div className='state first-player-state'>
+        <div className={ `player-stats${otherPlayer ? "" : " our-side"}` }>
+            <div className="stats-row">
+                <div className="state first-player-state">
                     <img
-                        className={ 'first-player-indicator' + (firstPlayer ? '' : ' hidden') }
-                        src='/img/first-player.png'
-                        title='First Player'
+                        className={ `first-player-indicator${firstPlayer ? "" : " hidden"}` }
+                        src="/img/first-player.png"
+                        title="First Player"
                     />
                 </div>
             </div>
-            <div className='stats-row'>{ clock }</div>
-            <div className='stats-row'>
-                <div className='state'>
-                    <div className='conflicts-remaining'>
-                        Conflicts: { getStatValueOrDefault('conflictsRemaining') }
+            <div className="stats-row">{ clock }</div>
+            <div className="stats-row">
+                <div className="state">
+                    <div className="conflicts-remaining">
+                        Conflicts: { getStatValueOrDefault("conflictsRemaining") }
                         <div>
-                            { getStatValueOrDefault('politicalRemaining') > 0 ? (
-                                <span className='icon-political' />
+                            { getStatValueOrDefault("politicalRemaining") > 0 ? (
+                                <span className="icon-political" />
                             ) : null }
-                            { getStatValueOrDefault('politicalRemaining') > 1 ? (
-                                <span className='icon-political' />
+                            { getStatValueOrDefault("politicalRemaining") > 1 ? (
+                                <span className="icon-political" />
                             ) : null }
-                            { getStatValueOrDefault('militaryRemaining') > 0 ? (
-                                <span className='icon-military' />
+                            { getStatValueOrDefault("militaryRemaining") > 0 ? (
+                                <span className="icon-military" />
                             ) : null }
-                            { getStatValueOrDefault('militaryRemaining') > 1 ? (
-                                <span className='icon-military' />
+                            { getStatValueOrDefault("militaryRemaining") > 1 ? (
+                                <span className="icon-military" />
                             ) : null }
                         </div>
                     </div>
                 </div>
             </div>
-            <div className='player-stats__resources'>
-                <div className='stats-row'>
-                    <div className='state'>
-                        <div className={ 'stat-image ' + size } style={ handImageStyle } />
+            <div className="player-stats__resources">
+                <div className="stats-row">
+                    <div className="state">
+                        <div className={ `stat-image ${size}` } style={ handImageStyle } />
                         <div>:</div>
-                        <div className='stat-value'>{ handSize }</div>
+                        <div className="stat-value">{ handSize }</div>
                     </div>
                 </div>
-                <div className='stats-row'>{ getButton('fate', 'Fate') }</div>
-                <div className='stats-row'>{ getButton('honor', 'Honor') }</div>
+                <div className="stats-row">{ getButton("fate", "Fate") }</div>
+                <div className="stats-row">{ getButton("honor", "Honor") }</div>
             </div>
         </div>
     );
 }
 
-PlayerStatsBox.displayName = 'PlayerStatsBox';
-PlayerStatsBox.propTypes = {
-    clockState: PropTypes.object,
-    firstPlayer: PropTypes.bool,
-    handSize: PropTypes.number,
-    otherPlayer: PropTypes.bool,
-    sendGameMessage: PropTypes.func,
-    showControls: PropTypes.bool,
-    size: PropTypes.string,
-    spectating: PropTypes.bool,
-    stats: PropTypes.object,
-    user: PropTypes.object
-};
+PlayerStatsBox.displayName = "PlayerStatsBox";
 
 export default PlayerStatsBox;

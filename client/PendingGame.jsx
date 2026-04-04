@@ -1,14 +1,13 @@
-import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useState, useRef, useEffect } from "react";
+import { connect } from "react-redux";
 
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
-import DeckRow from './DeckRow.jsx';
-import Messages from './GameComponents/Messages.jsx';
-import Avatar from './Avatar.jsx';
-import DeckStatus from './DeckStatus.jsx';
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import DeckRow from "./DeckRow.jsx";
+import Messages from "./GameComponents/Messages.jsx";
+import Avatar from "./Avatar.jsx";
+import DeckStatus from "./DeckStatus.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 export function InnerPendingGame({
     apiError,
@@ -30,7 +29,7 @@ export function InnerPendingGame({
 
     const [playerCount, setPlayerCount] = useState(1);
     const [playSound, setPlaySound] = useState(true);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState("");
     const [decksLoading, setDecksLoading] = useState(true);
     const [waiting, setWaiting] = useState(false);
     const [filteredDecks, setFilteredDecks] = useState([]);
@@ -39,12 +38,12 @@ export function InnerPendingGame({
     // Handle Escape key to close modal
     useEffect(() => {
         const handleEscape = (event) => {
-            if(event.key === 'Escape' && showModal) {
+            if(event.key === "Escape" && showModal) {
                 setShowModal(false);
             }
         };
-        document.addEventListener('keydown', handleEscape);
-        return () => document.removeEventListener('keydown', handleEscape);
+        document.addEventListener("keydown", handleEscape);
+        return () => document.removeEventListener("keydown", handleEscape);
     }, [showModal]);
 
     useEffect(() => {
@@ -78,9 +77,9 @@ export function InnerPendingGame({
         if(messagePanelRef.current) {
             messagePanelRef.current.scrollTop = 999999;
         }
-    });
+    }, [currentGame?.messages]);
 
-    const isGameReady = useCallback(() => {
+    const isGameReady = () => {
         if(!currentGame?.players) {
             return false;
         }
@@ -91,19 +90,19 @@ export function InnerPendingGame({
         }
 
         return currentGame.owner === username;
-    }, [currentGame, username]);
+    };
 
-    const handleSelectDeckClick = useCallback(() => {
+    const handleSelectDeckClick = () => {
         setFilteredDecks(decks || []);
         setShowModal(true);
-    }, [decks]);
+    };
 
-    const selectDeck = useCallback((index) => {
+    const selectDeck = (index) => {
         setShowModal(false);
-        socket.emit('selectdeck', currentGame.id, filteredDecks[index]);
-    }, [socket, currentGame, filteredDecks]);
+        socket.emit("selectdeck", currentGame.id, filteredDecks[index]);
+    };
 
-    const getPlayerStatus = useCallback((player) => {
+    const getPlayerStatus = (player) => {
         const playerIsMe = player && player.name === username;
 
         let deck = null;
@@ -112,122 +111,120 @@ export function InnerPendingGame({
 
         if(player && player.deck && player.deck.selected) {
             if(playerIsMe) {
-                deck = <span className='deck-selection clickable' onClick={ handleSelectDeckClick }>{ player.deck.name }</span>;
+                deck = <span className="deck-selection clickable" onClick={ handleSelectDeckClick }>{ player.deck.name }</span>;
             } else {
-                deck = <span className='deck-selection'>Deck Selected</span>;
+                deck = <span className="deck-selection">Deck Selected</span>;
             }
 
             status = <DeckStatus deck={ player.deck } />;
         } else if(player && playerIsMe) {
-            selectLink = <span className='card-link' onClick={ handleSelectDeckClick }>Select deck...</span>;
+            selectLink = <span className="card-link" onClick={ handleSelectDeckClick }>Select deck...</span>;
         }
 
         return (
-            <div className='player-row' key={ player.name }>
+            <div className="player-row" key={ player.name }>
                 <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } />
-                <span className='player-row-name'>{ player.name }</span>
+                <span className="player-row-name">{ player.name }</span>
                 { deck }
                 { status }
                 { selectLink }
             </div>
         );
-    }, [username, handleSelectDeckClick]);
+    };
 
-    const getGameStatus = useCallback(() => {
+    const getGameStatus = () => {
         if(connecting) {
-            return 'Connecting to game server: ' + host;
+            return `Connecting to game server: ${host}`;
         }
 
         if(waiting) {
-            return 'Waiting for lobby server...';
+            return "Waiting for lobby server...";
         }
 
         const playerSize = currentGame?.players ? Object.keys(currentGame.players).length : 0;
         if(playerSize < 2) {
-            return 'Waiting for players...';
+            return "Waiting for players...";
         }
 
         const allPlayersHaveDecks = Object.values(currentGame.players).every(player => !!player.deck?.selected);
         if(!allPlayersHaveDecks) {
-            return 'Waiting for players to select decks';
+            return "Waiting for players to select decks";
         }
 
-        return 'Ready to begin, click start to begin the game';
-    }, [connecting, host, waiting, currentGame]);
+        return "Ready to begin, click start to begin the game";
+    };
 
-    const handleLeaveClick = useCallback((event) => {
+    const handleLeaveClick = (event) => {
         event.preventDefault();
-        socket.emit('leavegame', currentGame.id);
+        socket.emit("leavegame", currentGame.id);
         gameSocketClose();
-    }, [socket, currentGame, gameSocketClose]);
+    };
 
-    const handleStartClick = useCallback((event) => {
+    const handleStartClick = (event) => {
         event.preventDefault();
         setWaiting(true);
-        socket.emit('startgame', currentGame.id);
-    }, [socket, currentGame]);
+        socket.emit("startgame", currentGame.id);
+    };
 
-    const sendMessage = useCallback(() => {
-        if(message === '') {
+    const sendMessage = () => {
+        if(message === "") {
             return;
         }
 
-        sendSocketMessage('chat', message);
-        setMessage('');
-    }, [message, sendSocketMessage]);
+        sendSocketMessage("chat", message);
+        setMessage("");
+    };
 
-    const handleKeyPress = useCallback((event) => {
-        if(event.key === 'Enter') {
+    const handleKeyPress = (event) => {
+        if(event.key === "Enter") {
             sendMessage();
             event.preventDefault();
         }
-    }, [sendMessage]);
+    };
 
-    const handleSendClick = useCallback((event) => {
+    const handleSendClick = (event) => {
         event.preventDefault();
         sendMessage();
-    }, [sendMessage]);
+    };
 
-    const handleChange = useCallback((event) => {
+    const handleChange = (event) => {
         setMessage(event.target.value);
-    }, []);
+    };
 
-    const handleMouseOver = useCallback((card) => {
+    const handleMouseOver = (card) => {
         zoomCard(card);
-    }, [zoomCard]);
+    };
 
-    const getClock = useCallback(() => {
+    const getClock = () => {
         const game = currentGame;
-        if(!game.clocks || game.clocks.type === 'none') {
+        if(!game.clocks || game.clocks.type === "none") {
             return;
         }
-        if(game.clocks.type === 'byoyomi') {
+        if(game.clocks.type === "byoyomi") {
             return `Clock: ${game.clocks.time} mins + ${game.clocks.periods} x ${game.clocks.timePeriod} secs (byoyomi)`;
         }
-        return 'Clock: ' + game.clocks.time + ' mins (' + (game.clocks.type) + ')';
-    }, [currentGame]);
+        return `Clock: ${game.clocks.time} mins (${game.clocks.type})`;
+    };
 
-    const renderedDecks = useMemo(() => {
-        if(loading) {
-            return <div>Loading decks from the server...</div>;
-        }
-        if(apiError) {
-            return <AlertPanel type='error' message={ apiError } />;
-        }
-        if(filteredDecks.length > 0) {
-            return filteredDecks.map((deck, index) => (
-                <DeckRow key={ deck.name + index.toString() } deck={ deck } onClick={ () => selectDeck(index) } />
-            ));
-        }
-        return <div>You have no decks for this format, please add one</div>;
-    }, [loading, apiError, filteredDecks, selectDeck]);
+    let renderedDecks;
+    if(loading) {
+        renderedDecks = <div>Loading decks from the server...</div>;
+    } else if(apiError) {
+        renderedDecks = <AlertPanel type="error" message={ apiError } />;
+    } else if(filteredDecks.length > 0) {
+        renderedDecks = filteredDecks.map((deck, index) => (
+            <DeckRow key={ deck.name + index.toString() } deck={ deck } onClick={ () => selectDeck(index) } />
+        ));
+    } else {
+        renderedDecks = <div>You have no decks for this format, please add one</div>;
+    }
 
-    const handleModalClick = useCallback((event) => {
+    const handleModalClick = (event) => {
         // Close modal when clicking the overlay (outside the modal-dialog)
         if(event.target === event.currentTarget) {
             setShowModal(false);
         }
-    }, []);
+    };
 
     if(currentGame && currentGame.started) {
         return <div>Loading game in progress, please wait...</div>;
@@ -237,20 +234,20 @@ export function InnerPendingGame({
 
     const popup = (
         <div
-            className={ `modal fade ${showModal ? 'in' : ''}` }
-            style={ { display: showModal ? 'block' : 'none' } }
-            tabIndex='-1'
-            role='dialog'
+            className={ `modal fade ${showModal ? "in" : ""}` }
+            style={ { display: showModal ? "block" : "none" } }
+            tabIndex="-1"
+            role="dialog"
             onClick={ handleModalClick }
         >
-            <div className='modal-dialog' role='document'>
-                <div className='modal-content deck-select-modal'>
-                    <div className='deck-select-header'>
-                        <span className='deck-select-title'>Select Deck</span>
-                        <button type='button' className='deck-select-close' aria-label='Close' onClick={ () => setShowModal(false) }>&times;</button>
+            <div className="modal-dialog" role="document">
+                <div className="modal-content deck-select-modal">
+                    <div className="deck-select-header">
+                        <span className="deck-select-title">Select Deck</span>
+                        <button type="button" className="deck-select-close" aria-label="Close" onClick={ () => setShowModal(false) }>&times;</button>
                     </div>
-                    <div className='modal-body'>
-                        <div className='deck-select-list'>
+                    <div className="modal-body">
+                        <div className="deck-select-list">
                             { renderedDecks }
                         </div>
                     </div>
@@ -259,32 +256,32 @@ export function InnerPendingGame({
         </div>
     );
 
-    const backdrop = showModal ? <div className='modal-backdrop fade in' onClick={ () => setShowModal(false) } /> : null;
+    const backdrop = showModal ? <div className="modal-backdrop fade in" onClick={ () => setShowModal(false) } /> : null;
 
     return (
         <div>
             <audio ref={ notificationRef }>
-                <source src='/sound/charge.mp3' type='audio/mpeg' />
-                <source src='/sound/charge.ogg' type='audio/ogg' />
+                <source src="/sound/charge.mp3" type="audio/mpeg" />
+                <source src="/sound/charge.ogg" type="audio/ogg" />
             </audio>
-            <div className='panel-title text-center'>
+            <div className="panel-title text-center">
                 { currentGame.name }
             </div>
-            <div className='panel'>
-                <div className='row-flex-box'>
-                    <div className='column-flex-box'>
-                        <div className='btn-group'>
-                            <button className='btn btn-primary' disabled={ !isGameReady() || connecting || waiting } onClick={ handleStartClick }>Start</button>
-                            <button className='btn btn-primary' onClick={ handleLeaveClick }>Leave</button>
+            <div className="panel">
+                <div className="row-flex-box">
+                    <div className="column-flex-box">
+                        <div className="btn-group">
+                            <button className="btn btn-primary" disabled={ !isGameReady() || connecting || waiting } onClick={ handleStartClick }>Start</button>
+                            <button className="btn btn-primary" onClick={ handleLeaveClick }>Leave</button>
                         </div>
-                        <div className='game-status'>{ getGameStatus() }</div>
+                        <div className="game-status">{ getGameStatus() }</div>
                     </div>
-                    <div className='column-flex-box'>
+                    <div className="column-flex-box">
                         <div>
-                            { 'Spectators allowed: ' + (game.allowSpectators ? 'Yes' : 'No') }
+                            { `Spectators allowed: ${game.allowSpectators ? "Yes" : "No"}` }
                         </div>
                         <div>
-                            { game.allowSpectators ? 'Spectators can chat: ' + (game.spectatorSquelch ? 'No' : 'Yes') : null }
+                            { game.allowSpectators ? `Spectators can chat: ${game.spectatorSquelch ? "No" : "Yes"}` : null }
                         </div>
                         <div>
                             { getClock() }
@@ -292,29 +289,29 @@ export function InnerPendingGame({
                     </div>
                 </div>
             </div>
-            <div className='panel-title text-center'>
+            <div className="panel-title text-center">
                 Players
             </div>
-            <div className='players panel'>
+            <div className="players panel">
                 { currentGame.players && Object.values(currentGame.players).map(player => getPlayerStatus(player)) }
             </div>
-            <div className='panel-title text-center'>
+            <div className="panel-title text-center">
                 Spectators ({ currentGame.spectators.length })
             </div>
-            <div className='spectators panel'>
+            <div className="spectators panel">
                 { currentGame.spectators.map(spectator => (
                     <div key={ spectator.name }>{ spectator.name }</div>
                 )) }
             </div>
-            <div className='panel-title text-center'>
+            <div className="panel-title text-center">
                 Chat</div>
-            <div className='chat-box panel'>
-                <div className='message-list' ref={ messagePanelRef }>
+            <div className="chat-box panel">
+                <div className="message-list" ref={ messagePanelRef }>
                     <Messages messages={ currentGame.messages } onCardMouseOver={ handleMouseOver } onCardMouseOut={ handleMouseOver } />
                 </div>
-                <form className='form form-horizontal'>
-                    <div className='form-group'>
-                        <input className='form-control' type='text' placeholder='Enter a message...' value={ message }
+                <form className="form form-horizontal">
+                    <div className="form-group">
+                        <input className="form-control" type="text" placeholder="Enter a message..." value={ message }
                             onKeyPress={ handleKeyPress } onChange={ handleChange } />
                     </div>
                 </form>
@@ -325,21 +322,7 @@ export function InnerPendingGame({
     );
 }
 
-InnerPendingGame.displayName = 'PendingGame';
-InnerPendingGame.propTypes = {
-    apiError: PropTypes.string,
-    connecting: PropTypes.bool,
-    currentGame: PropTypes.object,
-    decks: PropTypes.array,
-    gameSocketClose: PropTypes.func,
-    host: PropTypes.string,
-    loadDecks: PropTypes.func,
-    loading: PropTypes.bool,
-    sendSocketMessage: PropTypes.func,
-    socket: PropTypes.object,
-    username: PropTypes.string,
-    zoomCard: PropTypes.func
-};
+InnerPendingGame.displayName = "PendingGame";
 
 function mapStateToProps(state) {
     return {

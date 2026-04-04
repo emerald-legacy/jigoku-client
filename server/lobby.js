@@ -1,17 +1,17 @@
-const { Server } = require('socket.io');
-const Socket = require('./socket.js');
-const jwt = require('jsonwebtoken');
-const { parseISO, differenceInSeconds } = require('date-fns');
+const { Server } = require("socket.io");
+const Socket = require("./socket.js");
+const jwt = require("jsonwebtoken");
+const { parseISO, differenceInSeconds } = require("date-fns");
 
-const logger = require('./log.js');
-const version = new Date(require('../version.js'));
-const PendingGame = require('./pendinggame.js');
-const GameRouter = require('./gamerouter.js');
-const DeckService = require('./services/DeckService.js');
-const CardService = require('./services/CardService.js');
-const validateDeck = require('../client/deck-validator.js'); // XXX Move this to a common location
-const Settings = require('./settings.js');
-const GetShadowlandsSummonables = require('./shadowLandsHelper.js');
+const logger = require("./log.js");
+const version = new Date(require("../version.js").default);
+const PendingGame = require("./pendinggame.js");
+const GameRouter = require("./gamerouter.js");
+const DeckService = require("./services/DeckService.js");
+const CardService = require("./services/CardService.js");
+const validateDeck = require("../client/deck-validator.js").default;
+const Settings = require("./settings.js");
+const GetShadowlandsSummonables = require("./shadowLandsHelper.js");
 
 const ONE_MINUTE = 60 * 1000;
 const FIVE_MINUTES = 5 * ONE_MINUTE;
@@ -29,23 +29,23 @@ class Lobby {
         this.router = options.router || new GameRouter(this.config);
         this.titleCardData = null;
 
-        this.router.on('onGameClosed', this.onGameClosed.bind(this));
-        this.router.on('onPlayerLeft', this.onPlayerLeft.bind(this));
-        this.router.on('onWorkerTimedOut', this.onWorkerTimedOut.bind(this));
-        this.router.on('onNodeReconnected', this.onNodeReconnected.bind(this));
-        this.router.on('onWorkerStarted', this.onWorkerStarted.bind(this));
+        this.router.on("onGameClosed", this.onGameClosed.bind(this));
+        this.router.on("onPlayerLeft", this.onPlayerLeft.bind(this));
+        this.router.on("onWorkerTimedOut", this.onWorkerTimedOut.bind(this));
+        this.router.on("onNodeReconnected", this.onNodeReconnected.bind(this));
+        this.router.on("onWorkerStarted", this.onWorkerStarted.bind(this));
 
         this.io = options.io || new Server(server, {
             perMessageDeflate: false,
             pingTimeout: 30000,
             pingInterval: 25000,
             cors: {
-                origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
+                origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",") : "*",
                 credentials: true
             }
         });
         this.io.use(this.handshake.bind(this));
-        this.io.on('connection', this.onConnection.bind(this));
+        this.io.on("connection", this.onConnection.bind(this));
 
         this.lastUserBroadcast = new Date();
 
@@ -97,7 +97,7 @@ class Lobby {
                 spectators: spectators,
                 id: game.id,
                 started: game.started,
-                node: game.node ? game.node.identity : 'None',
+                node: game.node ? game.node.identity : "None",
                 startedAt: game.createdAt
             };
         });
@@ -148,7 +148,7 @@ class Lobby {
 
         // Socket.io v4 uses auth object, v1 used query string
         const token = socket.handshake.auth?.token || socket.handshake.query?.token;
-        if(token && token !== 'undefined') {
+        if(token && token !== "undefined") {
             jwt.verify(token, this.config.secret, function(err, user) {
                 if(err) {
                     logger.info(`Lobby JWT verification failed: ${err.message}`);
@@ -165,7 +165,7 @@ class Lobby {
         }
 
         if(!versionInfo || versionInfo < version) {
-            socket.emit('banner', 'Your client version is out of date, please refresh or clear your cache to get the latest version');
+            socket.emit("banner", "Your client version is out of date, please refresh or clear your cache to get the latest version");
         }
 
         next();
@@ -199,7 +199,7 @@ class Lobby {
             filteredUsers = userList.filter(user => !socket.user.blockList.includes(user.name.toLowerCase()));
         }
 
-        socket.send('users', filteredUsers);
+        socket.send("users", filteredUsers);
     }
 
     broadcastGameList(socket) {
@@ -208,7 +208,7 @@ class Lobby {
             if(socket) {
                 let filteredGames = this.filterGameListWithBlockList(socket.user);
                 let gameSummaries = this.mapGamesToGameSummaries(filteredGames);
-                socket.send('games', gameSummaries);
+                socket.send("games", gameSummaries);
             }
         });
     }
@@ -242,7 +242,7 @@ class Lobby {
                 return;
             }
 
-            this.sockets[player.id].send('gamestate', game.getSummary(player.name));
+            this.sockets[player.id].send("gamestate", game.getSummary(player.name));
         });
     }
 
@@ -315,18 +315,18 @@ class Lobby {
     onConnection(ioSocket) {
         var socket = new Socket(ioSocket, { config: this.config });
 
-        socket.registerEvent('newgame', this.onNewGame.bind(this));
-        socket.registerEvent('joingame', this.onJoinGame.bind(this));
-        socket.registerEvent('leavegame', this.onLeaveGame.bind(this));
-        socket.registerEvent('watchgame', this.onWatchGame.bind(this));
-        socket.registerEvent('startgame', this.onStartGame.bind(this));
-        socket.registerEvent('chat', this.onPendingGameChat.bind(this));
-        socket.registerEvent('selectdeck', this.onSelectDeck.bind(this));
-        socket.registerEvent('connectfailed', this.onConnectFailed.bind(this));
-        socket.registerEvent('removegame', this.onRemoveGame.bind(this));
+        socket.registerEvent("newgame", this.onNewGame.bind(this));
+        socket.registerEvent("joingame", this.onJoinGame.bind(this));
+        socket.registerEvent("leavegame", this.onLeaveGame.bind(this));
+        socket.registerEvent("watchgame", this.onWatchGame.bind(this));
+        socket.registerEvent("startgame", this.onStartGame.bind(this));
+        socket.registerEvent("chat", this.onPendingGameChat.bind(this));
+        socket.registerEvent("selectdeck", this.onSelectDeck.bind(this));
+        socket.registerEvent("connectfailed", this.onConnectFailed.bind(this));
+        socket.registerEvent("removegame", this.onRemoveGame.bind(this));
 
-        socket.on('authenticate', this.onAuthenticated.bind(this));
-        socket.on('disconnect', this.onSocketDisconnected.bind(this));
+        socket.on("authenticate", this.onAuthenticated.bind(this));
+        socket.on("disconnect", this.onSocketDisconnected.bind(this));
 
         this.sockets[ioSocket.id] = socket;
 
@@ -347,7 +347,7 @@ class Lobby {
 
         var game = this.findGameForUser(socket.user.username);
         if(game && game.started) {
-            socket.send('handoff', { address: game.node.address, port: game.node.port, protocol: game.node.protocol, name: game.node.identity, gameId: game.id });
+            socket.send("handoff", { address: game.node.address, port: game.node.port, protocol: game.node.protocol, name: game.node.identity, gameId: game.id });
         }
     }
 
@@ -371,7 +371,7 @@ class Lobby {
 
         delete this.users[socket.user.username];
 
-        logger.info('user \'%s\' disconnected from the lobby: %s', socket.user.username, reason);
+        logger.info("user '%s' disconnected from the lobby: %s", socket.user.username, reason);
 
         var game = this.findGameForUser(socket.user.username);
         if(!game) {
@@ -424,7 +424,7 @@ class Lobby {
 
         game.join(socket.id, socket.user, password, (err, message) => {
             if(err) {
-                socket.send('passworderror', message);
+                socket.send("passworderror", message);
 
                 return;
             }
@@ -464,7 +464,7 @@ class Lobby {
 
         this.broadcastGameList();
 
-        this.io.to(game.id).emit('handoff', { address: gameNode.address, port: gameNode.port, protocol: game.node.protocol, name: game.node.identity });
+        this.io.to(game.id).emit("handoff", { address: gameNode.address, port: gameNode.port, protocol: game.node.protocol, name: game.node.identity });
     }
 
     onWatchGame(socket, gameId, password) {
@@ -480,7 +480,7 @@ class Lobby {
 
         game.watch(socket.id, socket.user, password, (err, message) => {
             if(err) {
-                socket.send('passworderror', message);
+                socket.send("passworderror", message);
 
                 return;
             }
@@ -489,7 +489,7 @@ class Lobby {
 
             if(game.started) {
                 this.router.addSpectator(game, socket.user);
-                socket.send('handoff', { address: game.node.address, port: game.node.port, protocol: game.node.protocol, name: game.node.identity });
+                socket.send("handoff", { address: game.node.address, port: game.node.port, protocol: game.node.protocol, name: game.node.identity });
             } else {
                 this.sendGameState(game);
             }
@@ -503,7 +503,7 @@ class Lobby {
         }
 
         game.leave(socket.user.username);
-        socket.send('cleargamestate');
+        socket.send("cleargamestate");
         socket.leaveChannel(game.id);
 
         if(game.isEmpty()) {
@@ -526,7 +526,7 @@ class Lobby {
     }
 
     onSelectDeck(socket, gameId, deckId) {
-        if(deckId && typeof deckId === 'object') {
+        if(deckId && typeof deckId === "object") {
             deckId = deckId._id;
         }
 
@@ -589,7 +589,7 @@ class Lobby {
             return;
         }
 
-        logger.info('user \'%s\' failed to handoff to game server', socket.user.username);
+        logger.info("user '%s' failed to handoff to game server", socket.user.username);
         this.router.notifyFailedConnect(game, socket.user.username);
     }
 
@@ -650,7 +650,7 @@ class Lobby {
 
     onWorkerStarted(nodeName) {
         const shortCardData = this.shortCardData ? Object.values(this.shortCardData) : [];
-        this.router.sendCommand(nodeName, 'CARDDATA', { titleCardData: this.titleCardData, shortCardData });
+        this.router.sendCommand(nodeName, "CARDDATA", { titleCardData: this.titleCardData, shortCardData });
     }
 
     onNodeReconnected(nodeName, games) {

@@ -1,7 +1,7 @@
-const logger = require('../log.js');
-const { toObjectId } = require('../db.js');
+const logger = require("../log.js");
+const { toObjectId } = require("../db.js");
 
-const allClans = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
+const allClans = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
 function emptyStats() {
     const byOpponentClan = {};
@@ -20,7 +20,7 @@ function emptyStats() {
 
 class DeckStatsService {
     constructor(db) {
-        this.collection = db.collection('deckstats');
+        this.collection = db.collection("deckstats");
         this.ensureIndexes();
     }
 
@@ -86,18 +86,18 @@ class DeckStatsService {
             const inc = {};
 
             if(won) {
-                inc['stats.totalWins'] = 1;
+                inc["stats.totalWins"] = 1;
                 if(opponentClan && allClans.includes(opponentClan)) {
                     inc[`stats.byOpponentClan.${opponentClan}.wins`] = 1;
                 }
-                const reasonKey = ['conquest', 'dishonor', 'honor', 'concede'].includes(winReason) ? winReason : 'other';
+                const reasonKey = ["conquest", "dishonor", "honor", "concede"].includes(winReason) ? winReason : "other";
                 inc[`stats.byWinReason.${reasonKey}`] = 1;
             } else {
-                inc['stats.totalLosses'] = 1;
+                inc["stats.totalLosses"] = 1;
                 if(opponentClan && allClans.includes(opponentClan)) {
                     inc[`stats.byOpponentClan.${opponentClan}.losses`] = 1;
                 }
-                const reasonKey = ['conquest', 'dishonor', 'honor', 'concede'].includes(winReason) ? winReason : 'other';
+                const reasonKey = ["conquest", "dishonor", "honor", "concede"].includes(winReason) ? winReason : "other";
                 inc[`stats.byLossReason.${reasonKey}`] = 1;
             }
 
@@ -106,8 +106,8 @@ class DeckStatsService {
             const baseStats = emptyStats();
             const setOnInsert = {
                 deckId: objectId,
-                username: username || 'unknown',
-                contentHash: ''
+                username: username || "unknown",
+                contentHash: ""
             };
 
             // Flatten emptyStats into dot-notation and exclude keys that $inc will set
@@ -115,14 +115,14 @@ class DeckStatsService {
             const flattenStats = (obj, prefix) => {
                 for(const [key, val] of Object.entries(obj)) {
                     const path = prefix ? `${prefix}.${key}` : key;
-                    if(typeof val === 'object' && val !== null && !Array.isArray(val)) {
+                    if(typeof val === "object" && val !== null && !Array.isArray(val)) {
                         flattenStats(val, path);
                     } else if(!incKeys.has(path)) {
                         setOnInsert[path] = val;
                     }
                 }
             };
-            flattenStats(baseStats, 'stats');
+            flattenStats(baseStats, "stats");
 
             await this.collection.updateOne(
                 { deckId: objectId },

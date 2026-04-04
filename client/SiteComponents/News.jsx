@@ -1,13 +1,12 @@
-import PropTypes from 'prop-types';
-import NewsItem from './NewsItem.jsx';
+import NewsItem from "./NewsItem.jsx";
 
 function News({ news }) {
-    const icons = ['military', 'political'];
+    const icons = ["military", "political"];
 
     if(!news || news.length === 0) {
         return (
-            <div className='news-container'>
-                <div className='military-container'>There is no site news at the moment</div>
+            <div className="news-container">
+                <div className="military-container">There is no site news at the moment</div>
             </div>
         );
     }
@@ -22,15 +21,12 @@ function News({ news }) {
     ));
 
     return (
-        <div className='news-container'>
+        <div className="news-container">
             { newsItems }
         </div>
     );
 }
 
-News.displayName = 'News';
-News.propTypes = {
-    news: PropTypes.array
-};
+News.displayName = "News";
 
 export default News;

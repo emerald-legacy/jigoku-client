@@ -1,0 +1,40 @@
+.discard {
+    & .popup {
+        position: absolute;
+        min-height: 146px;
+        bottom: initial;
+        top: 95px;
+        z-index: var(--layer-popups);
+
+        & .inner {
+            min-height: var(--card-height);
+            width: calc(var(--card-width) * 5 + 5 * 5px + var(--scrollbar-width));
+            max-height: calc(var(--card-height) * 4 + 4 * 5px);
+            overflow-y: auto;
+
+            & .card-wrapper {
+                margin: 5px 5px 0 0;
+            }
+        }
+
+        & .arrow {
+            bottom: initial;
+            top: -63px;
+            left: 10px;
+        }
+    }
+}
+
+.our-side {
+    & .discard {
+        & .popup {
+            bottom: 95px;
+            top: initial;
+
+            & .arrow {
+                bottom: -30px;
+                top: initial;
+            }
+        }
+    }
+}

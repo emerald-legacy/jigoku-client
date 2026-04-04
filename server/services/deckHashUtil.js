@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+const crypto = require("crypto");
 
 /**
  * Compute a deterministic SHA-256 hash of a deck's card content.
@@ -6,8 +6,8 @@ const crypto = require('crypto');
  */
 function computeDeckContentHash(deck) {
     const parts = {
-        faction: deck.faction?.value || '',
-        alliance: deck.alliance?.value || '',
+        faction: deck.faction?.value || "",
+        alliance: deck.alliance?.value || "",
         stronghold: normalizeCards(deck.stronghold),
         role: normalizeCards(deck.role),
         provinceCards: normalizeCards(deck.provinceCards),
@@ -16,7 +16,7 @@ function computeDeckContentHash(deck) {
     };
 
     const canonical = JSON.stringify(parts);
-    return crypto.createHash('sha256').update(canonical).digest('hex');
+    return crypto.createHash("sha256").update(canonical).digest("hex");
 }
 
 function normalizeCards(cards) {

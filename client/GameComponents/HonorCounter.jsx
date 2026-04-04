@@ -1,31 +1,23 @@
-import PropTypes from 'prop-types';
 
 function HonorCounter({ cancel, fade, name, value }) {
-    let className = 'honorcounter ' + name;
+    let className = `honorcounter ${name}`;
 
     if(cancel) {
-        className += ' cancel';
+        className += " cancel";
     }
 
     if(fade) {
-        className += ' fade-out';
+        className += " fade-out";
     }
 
     return (
         <div key={ name } className={ className }>
-            <img src='/img/Honor.png' title='Honor' alt='Honor' />
-            <div className='honorcountertext'>{ value }</div>
+            <img src="/img/Honor.png" title="Honor" alt="Honor" />
+            <div className="honorcountertext">{ value }</div>
         </div>
     );
 }
 
-HonorCounter.displayName = 'HonorCounter';
-HonorCounter.propTypes = {
-    cancel: PropTypes.bool,
-    fade: PropTypes.bool,
-    name: PropTypes.string.isRequired,
-    shortName: PropTypes.string,
-    value: PropTypes.number
-};
+HonorCounter.displayName = "HonorCounter";
 
 export default HonorCounter;

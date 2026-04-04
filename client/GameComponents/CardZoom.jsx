@@ -1,18 +1,17 @@
-import { memo } from 'react';
-import PropTypes from 'prop-types';
+import { memo } from "react";
 
 function CardZoom({ cardName, imageUrl, orientation, show }) {
-    let zoomClass = 'card-large';
+    let zoomClass = "card-large";
 
-    if(orientation === 'horizontal') {
-        zoomClass += '-horizontal';
+    if(orientation === "horizontal") {
+        zoomClass += "-horizontal";
     }
 
     return (
         <div className={ zoomClass }>
             { show && cardName !== undefined ? (
-                <div className='card-zoomed shadow no-highlight'>
-                    <span className='card-name'>{ cardName }</span>
+                <div className="card-zoomed shadow no-highlight">
+                    <span className="card-name">{ cardName }</span>
                     <img src={ imageUrl } />
                 </div>
             ) : null }
@@ -20,12 +19,6 @@ function CardZoom({ cardName, imageUrl, orientation, show }) {
     );
 }
 
-CardZoom.displayName = 'CardZoom';
-CardZoom.propTypes = {
-    cardName: PropTypes.string,
-    imageUrl: PropTypes.string,
-    orientation: PropTypes.oneOf(['horizontal', 'vertical']),
-    show: PropTypes.bool
-};
+CardZoom.displayName = "CardZoom";
 
 export default memo(CardZoom);

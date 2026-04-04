@@ -1,8 +1,8 @@
 /**
  * MongoDB 6 database connection
  */
-const { MongoClient, ObjectId } = require('mongodb');
-const logger = require('./log.js');
+const { MongoClient, ObjectId } = require("mongodb");
+const logger = require("./log.js");
 
 let client = null;
 let db = null;
@@ -26,10 +26,10 @@ async function connect(url) {
             await client.connect();
 
             const urlObj = new URL(url);
-            const dbName = urlObj.pathname.slice(1) || 'jigoku';
+            const dbName = urlObj.pathname.slice(1) || "jigoku";
 
             db = client.db(dbName);
-            logger.info('Connected to MongoDB');
+            logger.info("Connected to MongoDB");
             return db;
         } catch(err) {
             connectPromise = null;
@@ -59,7 +59,7 @@ async function close() {
  */
 function getDb() {
     if(!db) {
-        throw new Error('Database not connected. Call connect() first.');
+        throw new Error("Database not connected. Call connect() first.");
     }
     return db;
 }
@@ -71,7 +71,7 @@ function toObjectId(id) {
     if(id instanceof ObjectId) {
         return id;
     }
-    if(typeof id === 'string' && ObjectId.isValid(id)) {
+    if(typeof id === "string" && ObjectId.isValid(id)) {
         return new ObjectId(id);
     }
     return id;

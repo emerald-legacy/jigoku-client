@@ -1,17 +1,16 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useState } from "react";
 
-const clanOrder = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
+const clanOrder = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
 const tabs = [
-    { key: 'all', label: 'All' },
-    { key: 'emerald', label: 'Emerald' },
-    { key: 'sanctuary', label: 'Sanctuary' },
-    { key: 'stronghold', label: 'Imperial' }
+    { key: "all", label: "All" },
+    { key: "emerald", label: "Emerald" },
+    { key: "sanctuary", label: "Sanctuary" },
+    { key: "stronghold", label: "Imperial" }
 ];
 
 function GameStats({ stats }) {
-    const [activeTab, setActiveTab] = useState('all');
+    const [activeTab, setActiveTab] = useState("all");
     const [expandedClan, setExpandedClan] = useState(null);
 
     if(!stats) {
@@ -30,16 +29,16 @@ function GameStats({ stats }) {
     };
 
     return (
-        <div className='game-stats'>
-            <div className='panel-title text-center'>
-                Game Statistics <span className='game-stats-period'>(Last 30 Days)</span>
+        <div className="game-stats">
+            <div className="panel-title text-center">
+                Game Statistics <span className="game-stats-period">(Last 30 Days)</span>
             </div>
-            <div className='panel game-stats-body'>
-                <div className='game-stats-tabs'>
+            <div className="panel game-stats-body">
+                <div className="game-stats-tabs">
                     { tabs.map(tab => (
                         <button
                             key={ tab.key }
-                            className={ 'game-stats-tab' + (activeTab === tab.key ? ' active' : '') }
+                            className={ `game-stats-tab${activeTab === tab.key ? " active" : ""}` }
                             onClick={ () => handleTabChange(tab.key) }
                         >
                             { tab.label }
@@ -47,11 +46,11 @@ function GameStats({ stats }) {
                     )) }
                 </div>
                 { !modeStats || modeStats.totalGames === 0 ? (
-                    <div className='game-stats-empty'>No recent games</div>
+                    <div className="game-stats-empty">No recent games</div>
                 ) : (
                     <>
-                        <div className='game-stats-total'>{ modeStats.totalGames } games played</div>
-                        <div className='game-stats-clans'>
+                        <div className="game-stats-total">{ modeStats.totalGames } games played</div>
+                        <div className="game-stats-clans">
                             { clanOrder.map(clan => {
                                 const data = modeStats.clanStats.find(c => c.clan === clan);
                                 if(!data || data.gamesPlayed === 0) {
@@ -62,36 +61,36 @@ function GameStats({ stats }) {
                                 const isExpanded = expandedClan === clan;
 
                                 return (
-                                    <div key={ clan } className={ 'game-stats-clan-row' + (isExpanded ? ' expanded' : '') }>
+                                    <div key={ clan } className={ `game-stats-clan-row${isExpanded ? " expanded" : ""}` }>
                                         <div
-                                            className={ 'game-stats-clan' + (hasMatchups ? ' clickable' : '') }
+                                            className={ `game-stats-clan${hasMatchups ? " clickable" : ""}` }
                                             onClick={ hasMatchups ? () => toggleClan(clan) : undefined }
                                         >
                                             <img
-                                                className='game-stats-clan-icon'
+                                                className="game-stats-clan-icon"
                                                 src={ `/img/mons/${clan}.png` }
                                                 title={ clan }
                                             />
                                             <span>{ data.gamesPlayed } played</span>
-                                            <span className='game-stats-clan-wins'>{ data.wins }W</span>
+                                            <span className="game-stats-clan-wins">{ data.wins }W</span>
                                             { hasMatchups && (
-                                                <span className='game-stats-expand'>{ isExpanded ? '\u25B2' : '\u25BC' }</span>
+                                                <span className="game-stats-expand">{ isExpanded ? "\u25B2" : "\u25BC" }</span>
                                             ) }
                                         </div>
                                         { isExpanded && data.matchups && (
-                                            <div className='game-stats-matchups'>
-                                                <span className='game-stats-matchup-vs'>vs.</span>
+                                            <div className="game-stats-matchups">
+                                                <span className="game-stats-matchup-vs">vs.</span>
                                                 { clanOrder.filter(opp => data.matchups[opp]).map(opp => {
                                                     const m = data.matchups[opp];
                                                     return (
-                                                        <div key={ opp } className='game-stats-matchup'>
+                                                        <div key={ opp } className="game-stats-matchup">
                                                             <img
-                                                                className='game-stats-clan-icon'
+                                                                className="game-stats-clan-icon"
                                                                 src={ `/img/mons/${opp}.png` }
                                                                 title={ opp }
                                                             />
                                                             <span>{ m.winRate }%</span>
-                                                            <span className='game-stats-matchup-detail'>({ m.wins }/{ m.played })</span>
+                                                            <span className="game-stats-matchup-detail">({ m.wins }/{ m.played })</span>
                                                         </div>
                                                     );
                                                 }) }
@@ -102,19 +101,19 @@ function GameStats({ stats }) {
                             }) }
                         </div>
                         { modeStats.mostSuccessfulClans && modeStats.mostSuccessfulClans.length > 0 && (
-                            <div className='game-stats-best'>
-                                <div className='game-stats-best-label'>
-                                    { activeTab === 'stronghold' ? 'In favor with the Emperor' : 'In favor with the Empress' }
+                            <div className="game-stats-best">
+                                <div className="game-stats-best-label">
+                                    { activeTab === "stronghold" ? "In favor with the Emperor" : "In favor with the Empress" }
                                 </div>
-                                <div className='game-stats-best-clans'>
+                                <div className="game-stats-best-clans">
                                     { modeStats.mostSuccessfulClans.map(({ clan, winRate }) => (
-                                        <span key={ clan } className='game-stats-best-entry'>
+                                        <span key={ clan } className="game-stats-best-entry">
                                             <img
-                                                className='game-stats-clan-icon'
+                                                className="game-stats-clan-icon"
                                                 src={ `/img/mons/${clan}.png` }
                                                 title={ clan }
                                             />
-                                            <span className='game-stats-best-name'>
+                                            <span className="game-stats-best-name">
                                                 { clan } ({ winRate }% win rate)
                                             </span>
                                         </span>
@@ -129,9 +128,6 @@ function GameStats({ stats }) {
     );
 }
 
-GameStats.displayName = 'GameStats';
-GameStats.propTypes = {
-    stats: PropTypes.object
-};
+GameStats.displayName = "GameStats";
 
 export default GameStats;

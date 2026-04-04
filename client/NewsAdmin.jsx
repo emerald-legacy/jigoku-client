@@ -1,15 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { format } from 'date-fns';
+import { useState, useEffect } from "react";
+import { connect } from "react-redux";
+import { format } from "date-fns";
 
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
-import TextArea from './FormComponents/TextArea.jsx';
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import TextArea from "./FormComponents/TextArea.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, loading, news, newsSaved }) {
-    const [newsText, setNewsText] = useState('');
+    const [newsText, setNewsText] = useState("");
 
     useEffect(() => {
         loadNews({ forceLoad: true });
@@ -25,21 +24,21 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
         }
     }, [newsSaved, clearNewsStatus, loadNews]);
 
-    const onNewsTextChange = useCallback((event) => {
+    const onNewsTextChange = (event) => {
         setNewsText(event.target.value);
-    }, []);
+    };
 
-    const onAddNews = useCallback((event) => {
+    const onAddNews = (event) => {
         event.preventDefault();
         addNews(newsText);
-        setNewsText('');
-    }, [addNews, newsText]);
+        setNewsText("");
+    };
 
     let content = null;
 
     const renderedNews = news?.map((newsItem, index) => (
         <tr key={ index }>
-            <td>{ format(new Date(newsItem.datePublished), 'yyyy-MM-dd') }</td>
+            <td>{ format(new Date(newsItem.datePublished), "yyyy-MM-dd") }</td>
             <td>{ newsItem.poster }</td>
             <td>{ newsItem.text }</td>
         </tr>
@@ -49,19 +48,19 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
 
     if(newsSaved) {
         successPanel = (
-            <AlertPanel message='News added successfully' type='success' />
+            <AlertPanel message="News added successfully" type="success" />
         );
     }
 
     if(loading) {
         content = <div>Loading news from the server...</div>;
     } else if(apiError) {
-        content = <AlertPanel type='error' message={ apiError } />;
+        content = <AlertPanel type="error" message={ apiError } />;
     } else {
         content = (
             <div>
                 { successPanel }
-                <table className='table table-striped'>
+                <table className="table table-striped">
                     <thead>
                         <tr>
                             <th>Date</th>
@@ -74,10 +73,10 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
                     </tbody>
                 </table>
 
-                <form className='form'>
-                    <TextArea name='newsText' label='Add news item' value={ newsText } onChange={ onNewsTextChange } />
+                <form className="form">
+                    <TextArea name="newsText" label="Add news item" value={ newsText } onChange={ onNewsTextChange } />
 
-                    <button type='submit' className='btn btn-primary' onClick={ onAddNews }>Add</button>
+                    <button type="submit" className="btn btn-primary" onClick={ onAddNews }>Add</button>
                 </form>
             </div>
         );
@@ -86,16 +85,7 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
     return content;
 }
 
-InnerNewsAdmin.displayName = 'NewsAdmin';
-InnerNewsAdmin.propTypes = {
-    addNews: PropTypes.func,
-    apiError: PropTypes.string,
-    clearNewsStatus: PropTypes.func,
-    loadNews: PropTypes.func,
-    loading: PropTypes.bool,
-    news: PropTypes.array,
-    newsSaved: PropTypes.bool
-};
+InnerNewsAdmin.displayName = "NewsAdmin";
 
 function mapStateToProps(state) {
     return {

@@ -1,29 +1,28 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useState, useEffect, useRef } from "react";
+import { connect } from "react-redux";
 
-import StatusPopOver from './StatusPopOver.jsx';
-import validateDeck from './deck-validator.js';
-import * as actions from './actions';
+import StatusPopOver from "./StatusPopOver.jsx";
+import validateDeck from "./deck-validator.js";
+import * as actions from "./actions";
 
 export function InnerDeckStatus({ className: propsClassName, deck, updateDeckStatus }) {
     const [deckStatus, setDeckStatus] = useState({});
     const validationTimeoutRef = useRef(null);
     const prevDeckRef = useRef(null);
 
-    const getDeckHash = useCallback((deckToHash) => {
+    const getDeckHash = (deckToHash) => {
         if(!deckToHash) {
-            return '';
+            return "";
         }
 
         // Create a simple hash of the deck contents
         const parts = [];
         const arrays = [
-            { name: 's', arr: deckToHash.stronghold },
-            { name: 'r', arr: deckToHash.role },
-            { name: 'p', arr: deckToHash.provinceCards },
-            { name: 'd', arr: deckToHash.dynastyCards },
-            { name: 'c', arr: deckToHash.conflictCards }
+            { name: "s", arr: deckToHash.stronghold },
+            { name: "r", arr: deckToHash.role },
+            { name: "p", arr: deckToHash.provinceCards },
+            { name: "d", arr: deckToHash.dynastyCards },
+            { name: "c", arr: deckToHash.conflictCards }
         ];
 
         for(const { name, arr } of arrays) {
@@ -36,83 +35,66 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
             }
         }
 
-        return parts.sort().join('|');
-    }, []);
+        return parts.sort().join("|");
+    };
 
-    const hasDeckContentChanged = useCallback(
-        (oldDeck, newDeck) => {
-            // Check if format changed (affects validation rules)
-            if(oldDeck.format !== newDeck.format) {
-                return true;
-            }
+    const hasDeckContentChanged = (oldDeck, newDeck) => {
+        // Check if format changed (affects validation rules)
+        if(oldDeck.format !== newDeck.format) {
+            return true;
+        }
 
-            // Compare deck card lists to see if content changed
-            const oldHash = getDeckHash(oldDeck);
-            const newHash = getDeckHash(newDeck);
-            return oldHash !== newHash;
-        },
-        [getDeckHash]
-    );
+        // Compare deck card lists to see if content changed
+        const oldHash = getDeckHash(oldDeck);
+        const newHash = getDeckHash(newDeck);
+        return oldHash !== newHash;
+    };
 
-    const getDeckStatusAsync = useCallback(
-        async (deckToValidate, forceValidate = false) => {
-            const targetDeck = deckToValidate || deck;
-            // Only use cached status if not forcing validation
-            if(targetDeck.status && !forceValidate) {
-                setDeckStatus(targetDeck.status);
-                return;
-            }
-            setDeckStatus({
-                valid: undefined,
-                extendedStatus: ['Querying Validation Server']
-            });
-            const gameMode =
-                targetDeck.format && targetDeck.format.value
-                    ? targetDeck.format.value
-                    : 'stronghold';
-            const status = await validateDeck(targetDeck, {
-                includeExtendedStatus: true,
-                gameMode
-            });
-            setDeckStatus(status);
+    const getDeckStatusAsync = async (deckToValidate, forceValidate = false) => {
+        const targetDeck = deckToValidate || deck;
+        // Only use cached status if not forcing validation
+        if(targetDeck.status && !forceValidate) {
+            setDeckStatus(targetDeck.status);
+            return;
+        }
+        setDeckStatus({
+            valid: undefined,
+            extendedStatus: ["Querying Validation Server"]
+        });
+        const gameMode =
+            targetDeck.format && targetDeck.format.value
+                ? targetDeck.format.value
+                : "stronghold";
+        const status = await validateDeck(targetDeck, {
+            includeExtendedStatus: true,
+            gameMode
+        });
+        setDeckStatus(status);
 
-            // Update Redux store with validation result
-            if(updateDeckStatus && targetDeck._id) {
-                updateDeckStatus(targetDeck._id, status);
-            }
-        },
-        [deck, updateDeckStatus]
-    );
+        // Update Redux store with validation result
+        if(updateDeckStatus && targetDeck._id) {
+            updateDeckStatus(targetDeck._id, status);
+        }
+    };
 
-    const clearValidationTimeout = useCallback(() => {
+    const clearValidationTimeout = () => {
         if(validationTimeoutRef.current) {
             clearTimeout(validationTimeoutRef.current);
             validationTimeoutRef.current = null;
         }
-    }, []);
+    };
 
-    const scheduleValidation = useCallback(
-        (deckToSchedule) => {
-            // Clear any pending validation
-            clearValidationTimeout();
+    const scheduleValidation = (deckToSchedule) => {
+        // Clear any pending validation
+        clearValidationTimeout();
 
-            // Schedule validation for 1 second after the last change
-            validationTimeoutRef.current = setTimeout(() => {
-                getDeckStatusAsync(deckToSchedule, true);
-            }, 1000);
-        },
-        [clearValidationTimeout, getDeckStatusAsync]
-    );
+        // Schedule validation for 1 second after the last change
+        validationTimeoutRef.current = setTimeout(() => {
+            getDeckStatusAsync(deckToSchedule, true);
+        }, 1000);
+    };
 
-    // Initial mount - get deck status
-    useEffect(() => {
-        if(deck) {
-            getDeckStatusAsync(deck);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    // Handle deck changes
+    // Handle deck changes (including initial mount when prevDeck is null)
     useEffect(() => {
         if(!deck) {
             return;
@@ -141,24 +123,24 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         return () => {
             clearValidationTimeout();
         };
-    }, [clearValidationTimeout]);
+    }, []);
 
     let statusName;
-    let className = 'deck-status';
+    let className = "deck-status";
 
     if(propsClassName) {
-        className += ' ' + propsClassName;
+        className += ` ${propsClassName}`;
     }
 
     if(deckStatus.valid) {
-        statusName = 'Valid';
-        className += ' valid';
+        statusName = "Valid";
+        className += " valid";
     } else if(deckStatus.valid === false) {
-        statusName = 'Invalid';
-        className += ' invalid';
+        statusName = "Invalid";
+        className += " invalid";
     } else {
-        statusName = 'Validating';
-        className += ' casual-play';
+        statusName = "Validating";
+        className += " casual-play";
     }
 
     return (
@@ -169,7 +151,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
             >
                 <div>
                     { deckStatus.extendedStatus && deckStatus.extendedStatus.length !== 0 && (
-                        <ul className='deck-status-errors'>
+                        <ul className="deck-status-errors">
                             { deckStatus.extendedStatus.map((error, index) => (
                                 <li key={ index }>{ error }</li>
                             )) }
@@ -181,12 +163,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
     );
 }
 
-InnerDeckStatus.displayName = 'DeckStatus';
-InnerDeckStatus.propTypes = {
-    className: PropTypes.string,
-    deck: PropTypes.object.isRequired,
-    updateDeckStatus: PropTypes.func
-};
+InnerDeckStatus.displayName = "DeckStatus";
 
 function mapStateToProps() {
     return {};

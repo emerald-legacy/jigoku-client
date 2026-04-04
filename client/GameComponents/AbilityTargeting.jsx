@@ -1,67 +1,65 @@
-import { useCallback } from 'react';
-import PropTypes from 'prop-types';
-import { ArrowRight } from 'lucide-react';
-import { getCardImageUrl, getCardBackUrl } from '../cardImageUrl.js';
+import { ArrowRight } from "lucide-react";
+import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl.js";
 
 function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
-    const handleMouseOver = useCallback((event, card) => {
+    const handleMouseOver = (event, card) => {
         if(card && !card.facedown && onMouseOver) {
             onMouseOver(card);
         }
-    }, [onMouseOver]);
+    };
 
-    const handleMouseOut = useCallback((event, card) => {
+    const handleMouseOut = (event, card) => {
         if(card && onMouseOut) {
             onMouseOut(card);
         }
-    }, [onMouseOut]);
+    };
 
-    const getCardImagePath = useCallback((card) => {
+    const getCardImagePath = (card) => {
         if(!card.id) {
-            const backFile = (card.isDynasty ? 'dynasty' : card.isConflict ? 'conflict' : 'province') + 'cardback.jpg';
+            const backFile = `${card.isDynasty ? "dynasty" : card.isConflict ? "conflict" : "province"}cardback.jpg`;
             return getCardBackUrl(backFile);
         }
         return getCardImageUrl(card.id, card.packId);
-    }, []);
+    };
 
-    const renderSimpleCard = useCallback((card) => {
+    const renderSimpleCard = (card) => {
         return (
             <div
-                className='target-card vertical'
+                className="target-card vertical"
                 onMouseOut={ (event) => handleMouseOut(event, card) }
                 onMouseOver={ (event) => handleMouseOver(event, card) }
             >
                 <img
-                    className='target-card-image vertical'
+                    className="target-card-image vertical"
                     alt={ card.name }
                     src={ getCardImagePath(card) }
                 />
             </div>
         );
-    }, [handleMouseOut, handleMouseOver, getCardImagePath]);
+    };
 
-    const renderSimpleRing = useCallback((ring) => {
+    const renderSimpleRing = (ring) => {
         return (
-            <div className='ring-prompt'>
-                <div className='ring no-highlight'>
-                    <div className={ 'ring icon-element-' + ring.element + ' large' } />
+            <div className="ring-prompt">
+                <div className="ring no-highlight">
+                    <div className={ `ring icon-element-${ring.element} large` } />
                 </div>
             </div>
         );
-    }, []);
+    };
 
-    const renderStringChoice = useCallback((string) => {
+    const renderStringChoice = (string) => {
         return (
-            <div className='target-card vertical'>
+            <div className="target-card vertical">
                 { string }
             </div>
         );
-    }, []);
+    };
 
     const targetCards = targets?.map((target, index) => {
-        if(target.type === 'select') {
+        if(target.type === "select") {
             return <span key={ index }>{ renderStringChoice(target.name) }</span>;
-        } else if(target.type === 'ring') {
+        } else if(target.type === "ring") {
             return <span key={ index }>{ renderSimpleRing(target) }</span>;
         }
         return <span key={ index }>{ renderSimpleCard(target) }</span>;
@@ -69,26 +67,20 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }) {
 
     let sourceElement;
     if(source.type) {
-        sourceElement = source.type === 'ring' ? renderSimpleRing(source) : renderSimpleCard(source);
+        sourceElement = source.type === "ring" ? renderSimpleRing(source) : renderSimpleCard(source);
     } else {
         sourceElement = renderStringChoice(source.name);
     }
 
     return (
-        <div className='prompt-control-targeting'>
+        <div className="prompt-control-targeting">
             { sourceElement }
-            { targetCards && targetCards.length > 0 ? <span className='targeting-arrow'><ArrowRight size={ 16 } /></span> : null }
+            { targetCards && targetCards.length > 0 ? <span className="targeting-arrow"><ArrowRight size={ 16 } /></span> : null }
             { targetCards && targetCards.length > 0 ? targetCards : null }
         </div>
     );
 }
 
-AbilityTargeting.displayName = 'AbilityTargeting';
-AbilityTargeting.propTypes = {
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    source: PropTypes.object,
-    targets: PropTypes.array
-};
+AbilityTargeting.displayName = "AbilityTargeting";
 
 export default AbilityTargeting;

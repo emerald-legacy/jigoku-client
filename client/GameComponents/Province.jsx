@@ -1,8 +1,7 @@
-import { memo } from 'react';
-import PropTypes from 'prop-types';
+import { memo } from "react";
 
-import Card from './Card.jsx';
-import { tryParseJSON } from '../util.js';
+import Card from "./Card.jsx";
+import { tryParseJSON } from "../util.js";
 
 function Province({
     cards,
@@ -16,7 +15,7 @@ function Province({
     onMenuItemClick,
     onMouseOut,
     onMouseOver,
-    orientation = 'vertical',
+    orientation = "vertical",
     popupLocation,
     provinceCard: propsProvinceCard,
     size,
@@ -25,21 +24,21 @@ function Province({
     title
 }) {
     const onDragOver = (event) => {
-        event.target.classList.add('highlight-panel');
+        event.target.classList.add("highlight-panel");
         event.preventDefault();
     };
 
     const onDragLeave = (event) => {
-        event.target.classList.remove('highlight-panel');
+        event.target.classList.remove("highlight-panel");
     };
 
     const handleDragDrop = (event, target) => {
         event.stopPropagation();
         event.preventDefault();
 
-        event.target.classList.remove('highlight-panel');
+        event.target.classList.remove("highlight-panel");
 
-        const card = event.dataTransfer.getData('Text');
+        const card = event.dataTransfer.getData("Text");
 
         if(!card) {
             return;
@@ -61,15 +60,15 @@ function Province({
         let attachmentOffset = 13;
         let cardHeight = 84;
         switch(size) {
-            case 'large':
+            case "large":
                 attachmentOffset *= 1.4;
                 cardHeight *= 1.4;
                 break;
-            case 'small':
+            case "small":
                 attachmentOffset *= 0.8;
                 cardHeight *= 0.8;
                 break;
-            case 'x-large':
+            case "x-large":
                 attachmentOffset *= 2;
                 cardHeight *= 2;
                 break;
@@ -86,17 +85,17 @@ function Province({
 
         if(attachmentCount > 0) {
             wrapperStyle = {
-                marginLeft: 4 + attachmentCount * attachmentOffset + 'px',
-                minHeight: cardHeight + totalTiers * attachmentOffset + 'px'
+                marginLeft: `${4 + attachmentCount * attachmentOffset}px`,
+                minHeight: `${cardHeight + totalTiers * attachmentOffset}px`
             };
         }
 
         return wrapperStyle;
     };
 
-    let className = 'panel province ' + size;
-    const displayCardCount = cardCount || (cards ? cards.length : '0');
-    const headerText = title ? title + ' (' + displayCardCount + ')' : '';
+    let className = `panel province ${size}`;
+    const displayCardCount = cardCount || (cards ? cards.length : "0");
+    const headerText = title ? `${title} (${displayCardCount})` : "";
 
     let provinceCard =
         propsProvinceCard || cards?.find((card) => card.isProvince);
@@ -113,19 +112,19 @@ function Province({
         dynastyCards = dynastyCards.map((card) => ({ ...card, facedown: true }));
     }
 
-    let cardClassName = '';
+    let cardClassName = "";
     if(provinceCard) {
-        cardClassName = 'province-attachment';
+        cardClassName = "province-attachment";
     }
 
-    if(size !== 'normal') {
-        cardClassName += ' ' + size;
+    if(size !== "normal") {
+        cardClassName += ` ${size}`;
     }
 
-    if(orientation === 'horizontal' || orientation === 'bowed') {
-        className += ' horizontal';
+    if(orientation === "horizontal" || orientation === "bowed") {
+        className += " horizontal";
     } else {
-        className += ' vertical';
+        className += " vertical";
     }
 
     return (
@@ -136,7 +135,7 @@ function Province({
             onDrop={ (event) => handleDragDrop(event, source) }
             style={ provinceCard ? { ...getWrapperStyle(provinceCard) } : {} }
         >
-            <div className='panel-header'>{ headerText }</div>
+            <div className="panel-header">{ headerText }</div>
             { provinceCard ? (
                 <Card
                     id={ provinceCard.uuid }
@@ -192,38 +191,6 @@ function Province({
     );
 }
 
-Province.displayName = 'Province';
-Province.propTypes = {
-    cardCount: PropTypes.number,
-    cards: PropTypes.array,
-    disableMouseOver: PropTypes.bool,
-    dynastyCard: PropTypes.object,
-    hiddenDynastyCard: PropTypes.bool,
-    hiddenProvinceCard: PropTypes.bool,
-    isBroken: PropTypes.bool,
-    isMe: PropTypes.bool,
-    menu: PropTypes.array,
-    onCardClick: PropTypes.func,
-    onDragDrop: PropTypes.func,
-    onMenuItemClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    onTouchMove: PropTypes.func,
-    orientation: PropTypes.string,
-    popupLocation: PropTypes.string,
-    popupMenu: PropTypes.array,
-    provinceCard: PropTypes.object,
-    showDynastyRow: PropTypes.bool,
-    size: PropTypes.string,
-    source: PropTypes.oneOf([
-        'stronghold province',
-        'province 1',
-        'province 2',
-        'province 3',
-        'province 4'
-    ]).isRequired,
-    strongholdCard: PropTypes.object,
-    title: PropTypes.string
-};
+Province.displayName = "Province";
 
 export default memo(Province);

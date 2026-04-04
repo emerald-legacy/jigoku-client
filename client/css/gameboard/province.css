@@ -1,0 +1,118 @@
+.province {
+    padding: 0px;
+    position: relative;
+    border-radius: 6px;
+
+    &.vertical {
+        height: var(--card-height);
+        width: var(--card-width);
+    }
+
+    &.horizontal {
+        height: var(--card-width);
+        width: var(--card-height);
+    }
+
+    &.small {
+        &.vertical {
+            height: var(--card-sm-height);
+            width: var(--card-sm-width);
+        }
+
+        &.horizontal {
+            height: var(--card-sm-width);
+            width: var(--card-sm-height);
+        }
+    }
+
+    &.large {
+        &.vertical {
+            height: var(--card-lg-height);
+            width: var(--card-lg-width);
+        }
+
+        &.horizontal {
+            height: var(--card-lg-width);
+            width: var(--card-lg-height);
+        }
+    }
+
+    &.x-large {
+        &.vertical {
+            height: var(--card-xl-height);
+            width: var(--card-xl-width);
+        }
+
+        &.horizontal {
+            height: var(--card-xl-width);
+            width: var(--card-xl-height);
+        }
+    }
+
+    &.xxl {
+        &.vertical {
+            height: var(--card-xxl-height);
+            width: var(--card-xxl-width);
+        }
+
+        &.horizontal {
+            height: var(--card-xxl-width);
+            width: var(--card-xxl-height);
+        }
+    }
+
+    &.panel {
+        margin-top: 0px;
+        top: 0px;
+    }
+}
+
+.province-merge {
+    margin: 5px;
+
+    & .popup {
+        position: absolute;
+        min-height: 92px;
+        min-width: 168px;
+        left: 90px;
+        top: -75px;
+
+        & .inner {
+            columns: 2;
+            min-height: 128px;
+
+            & .card-wrapper {
+                margin: 5px 0 0 0;
+            }
+        }
+
+        & .arrow {
+            left: -25px;
+            top: 55px;
+            bottom: initial;
+        }
+    }
+}
+
+.our-side {
+    & .province {
+        & .popup {
+            position: absolute;
+            bottom: 100%;
+
+            & .inner {
+                min-width: calc(var(--card-width) * 2 + 2 * 5px);
+                min-height: calc(var(--card-height) + 2 * 5px);
+
+                & .card-wrapper {
+                    margin: 5px 5px 0 0;
+                }
+            }
+
+            & .arrow {
+                bottom: 15px;
+                top: initial;
+            }
+        }
+    }
+}

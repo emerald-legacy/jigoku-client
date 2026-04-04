@@ -2,6 +2,6 @@ function Unauthorised() {
     return <div>Sorry, you are not authorised to view that page.</div>;
 }
 
-Unauthorised.displayName = 'Unauthorised';
+Unauthorised.displayName = "Unauthorised";
 
 export default Unauthorised;

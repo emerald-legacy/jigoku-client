@@ -1,24 +1,24 @@
 /* global cardImageVersion */
 
-const versionSuffix = typeof cardImageVersion !== 'undefined' && cardImageVersion
-    ? '?v=' + cardImageVersion
-    : '';
+const versionSuffix = typeof cardImageVersion !== "undefined" && cardImageVersion
+    ? `?v=${cardImageVersion}`
+    : "";
 
 export function getCardImageUrl(cardId, packId) {
     if(!cardId) {
-        return '';
+        return "";
     }
     const base = packId
-        ? '/img/cards/' + cardId + '-' + packId + '.jpg'
-        : '/img/cards/' + cardId + '.jpg';
-    return base + versionSuffix;
+        ? `/img/cards/${cardId}-${packId}.jpg`
+        : `/img/cards/${cardId}.jpg`;
+    return `${base}${versionSuffix}`;
 }
 
 export function getCardBackUrl(filename) {
-    return '/img/cards/' + filename + versionSuffix;
+    return `/img/cards/${filename}${versionSuffix}`;
 }
 
-const communityFormats = new Set(['emerald', 'sanctuary', 'obsidian']);
+const communityFormats = new Set(["emerald", "sanctuary", "obsidian"]);
 
 /**
  * Pick the preferred pack_id from a card's versions array based on game format.

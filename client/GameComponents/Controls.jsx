@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types';
-import { Menu, AlertCircle, Wrench, Settings, Download } from 'lucide-react';
+import { Menu, AlertCircle, Wrench, Settings, Download } from "lucide-react";
 
 function Controls({
     manualModeEnabled,
@@ -14,48 +13,38 @@ function Controls({
     const laptopSize = window.innerWidth <= 1366;
 
     return (
-        <div className='controls panel'>
+        <div className="controls panel">
             <button
-                className={ 'btn btn-transparent' + (showChatAlert ? ' with-alert' : '') }
+                className={ `btn btn-transparent${showChatAlert ? " with-alert" : ""}` }
                 onClick={ onToggleChatClick }
             >
                 <Menu size={ 16 } />
-                { laptopSize ? '' : ' Toggle Chat' }
+                { laptopSize ? "" : " Toggle Chat" }
                 { showChatAlert && <AlertCircle size={ 16 } /> }
             </button>
             { showManualMode && (
                 <button
-                    className={ 'btn btn-transparent ' + (manualModeEnabled ? 'manual' : 'auto') }
+                    className={ `btn btn-transparent ${manualModeEnabled ? "manual" : "auto"}` }
                     onClick={ onManualModeClick }
                 >
                     <Wrench size={ 16 } />
-                    { laptopSize ? '' : ' Manual Mode ' + (manualModeEnabled ? ' Enabled' : 'Disabled') }
+                    { laptopSize ? "" : ` Manual Mode ${manualModeEnabled ? " Enabled" : "Disabled"}` }
                 </button>
             ) }
-            <button className='btn btn-transparent' onClick={ onSettingsClick }>
+            <button className="btn btn-transparent" onClick={ onSettingsClick }>
                 <Settings size={ 16 } />
-                { laptopSize ? '' : ' Settings' }
+                { laptopSize ? "" : " Settings" }
             </button>
             { showDownloadLog && (
-                <button className='btn btn-transparent' onClick={ onDownloadLogClick }>
+                <button className="btn btn-transparent" onClick={ onDownloadLogClick }>
                     <Download size={ 16 } />
-                    { laptopSize ? '' : ' Game Log' }
+                    { laptopSize ? "" : " Game Log" }
                 </button>
             ) }
         </div>
     );
 }
 
-Controls.displayName = 'Controls';
-Controls.propTypes = {
-    manualModeEnabled: PropTypes.bool,
-    onDownloadLogClick: PropTypes.func,
-    onManualModeClick: PropTypes.func,
-    onSettingsClick: PropTypes.func,
-    onToggleChatClick: PropTypes.func,
-    showChatAlert: PropTypes.bool,
-    showDownloadLog: PropTypes.bool,
-    showManualMode: PropTypes.bool
-};
+Controls.displayName = "Controls";
 
 export default Controls;

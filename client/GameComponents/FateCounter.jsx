@@ -1,31 +1,23 @@
-import PropTypes from 'prop-types';
 
 function FateCounter({ cancel, fade, name, value }) {
-    let className = 'fatecounter ' + name;
+    let className = `fatecounter ${name}`;
 
     if(cancel) {
-        className += ' cancel';
+        className += " cancel";
     }
 
     if(fade) {
-        className += ' fade-out';
+        className += " fade-out";
     }
 
     return (
         <div key={ name } className={ className }>
-            <img src='/img/Fate.png' title='Fate' alt='Fate' />
-            <div className='fatecountertext'>{ value }</div>
+            <img src="/img/Fate.png" title="Fate" alt="Fate" />
+            <div className="fatecountertext">{ value }</div>
         </div>
     );
 }
 
-FateCounter.displayName = 'FateCounter';
-FateCounter.propTypes = {
-    cancel: PropTypes.bool,
-    fade: PropTypes.bool,
-    name: PropTypes.string.isRequired,
-    shortName: PropTypes.string,
-    value: PropTypes.number
-};
+FateCounter.displayName = "FateCounter";
 
 export default FateCounter;

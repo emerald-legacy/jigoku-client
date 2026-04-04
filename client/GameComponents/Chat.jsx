@@ -1,11 +1,10 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import Messages from './Messages.jsx';
+import { useState, useRef, useEffect } from "react";
+import Messages from "./Messages.jsx";
 
 function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
     const messagePanelRef = useRef(null);
     const [canScroll, setCanScroll] = useState(true);
-    const [message, setMessage] = useState('');
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         if(canScroll && messagePanelRef.current) {
@@ -13,20 +12,20 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
         }
     }, [canScroll, messages]);
 
-    const handleChange = useCallback((event) => {
+    const handleChange = (event) => {
         setMessage(event.target.value);
-    }, []);
+    };
 
-    const handleKeyPress = useCallback((event) => {
-        if(event.key === 'Enter') {
+    const handleKeyPress = (event) => {
+        if(event.key === "Enter") {
             sendMessage(message);
-            setMessage('');
+            setMessage("");
 
             event.preventDefault();
         }
-    }, [message, sendMessage]);
+    };
 
-    const handleScroll = useCallback(() => {
+    const handleScroll = () => {
         const messagesEl = messagePanelRef.current;
         if(!messagesEl) {
             return;
@@ -39,13 +38,13 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
                 setCanScroll(false);
             }
         }, 500);
-    }, []);
+    };
 
-    const classes = 'chat' + (visible ? '' : ' collapsed');
+    const classes = `chat${visible ? "" : " collapsed"}`;
 
     return (
         <div className={ classes }>
-            <div className='messages panel' ref={ messagePanelRef } onScroll={ handleScroll }>
+            <div className="messages panel" ref={ messagePanelRef } onScroll={ handleScroll }>
                 <Messages
                     messages={ messages }
                     onCardMouseOver={ onMouseOver }
@@ -54,8 +53,8 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
             </div>
             <form>
                 <input
-                    className='form-control'
-                    placeholder='Chat...'
+                    className="form-control"
+                    placeholder="Chat..."
                     onKeyPress={ handleKeyPress }
                     onChange={ handleChange }
                     value={ message }
@@ -65,13 +64,6 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }) {
     );
 }
 
-Chat.displayName = 'Chat';
-Chat.propTypes = {
-    messages: PropTypes.array,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    sendMessage: PropTypes.func,
-    visible: PropTypes.bool
-};
+Chat.displayName = "Chat";
 
 export default Chat;

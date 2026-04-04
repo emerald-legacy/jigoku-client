@@ -12,11 +12,8 @@ COPY . .
 ARG BUILD_VERSION=LOCAL
 ENV BUILD_VERSION=$BUILD_VERSION
 
-# Build webpack bundle
-RUN mkdir -p server/logs public/img/cards && npm run build
-
-# Remove dev dependencies
-RUN npm prune --omit=dev
+# Build client bundle and remove dev dependencies
+RUN mkdir -p server/logs public/img/cards && npm run build && npm prune --omit=dev
 
 # Production stage
 FROM node:24.14-alpine3.23

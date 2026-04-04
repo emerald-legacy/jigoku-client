@@ -21,7 +21,7 @@ const defaultOptionSettings = {
 const defaultSettings = {
     disableGravatar: false,
     windowTimer: 10,
-    background: 'BG1'
+    background: "BG1"
 };
 
 const defaultTimerSettings = {

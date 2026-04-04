@@ -1,10 +1,9 @@
-import { useState, memo } from 'react';
-import PropTypes from 'prop-types';
-import Draggable from 'react-draggable';
-import { X } from 'lucide-react';
+import { useState, useRef, memo } from "react";
+import Draggable from "react-draggable";
+import { X } from "lucide-react";
 
-import Card from './Card.jsx';
-import { tryParseJSON } from '../util.js';
+import Card from "./Card.jsx";
+import { tryParseJSON } from "../util.js";
 
 function CardPile({
     cardCount,
@@ -23,7 +22,7 @@ function CardPile({
     onMouseOut,
     onMouseOver,
     onTouchMove,
-    orientation = 'vertical',
+    orientation = "vertical",
     popupLocation,
     popupMenu,
     size,
@@ -33,6 +32,7 @@ function CardPile({
 }) {
     const [showPopup, setShowPopup] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
+    const draggableRef = useRef(null);
 
     const onCollectionClick = (event) => {
         event.preventDefault();
@@ -91,21 +91,21 @@ function CardPile({
     };
 
     const onDragOver = (event) => {
-        event.target.classList.add('highlight-panel');
+        event.target.classList.add("highlight-panel");
         event.preventDefault();
     };
 
     const onDragLeave = (event) => {
-        event.target.classList.remove('highlight-panel');
+        event.target.classList.remove("highlight-panel");
     };
 
     const handleDragDrop = (event, target) => {
         event.stopPropagation();
         event.preventDefault();
 
-        event.target.classList.remove('highlight-panel');
+        event.target.classList.remove("highlight-panel");
 
-        const card = event.dataTransfer.getData('Text');
+        const card = event.dataTransfer.getData("Text");
 
         if(!card) {
             return;
@@ -148,7 +148,7 @@ function CardPile({
                     onTouchMove={ onTouchMove }
                     onClick={ () => handleCardClick(card) }
                     onDragDrop={ onDragDrop }
-                    orientation={ orientation === 'bowed' ? 'vertical' : orientation }
+                    orientation={ orientation === "bowed" ? "vertical" : orientation }
                     size={ size }
                 />
             );
@@ -158,18 +158,18 @@ function CardPile({
             return null;
         }
 
-        let popupClass = 'panel';
-        let arrowClass = 'arrow lg';
+        let popupClass = "panel";
+        let arrowClass = "arrow lg";
 
-        if(popupLocation === 'top') {
-            popupClass += ' our-side';
-            arrowClass += ' down';
+        if(popupLocation === "top") {
+            popupClass += " our-side";
+            arrowClass += " down";
         } else {
-            arrowClass += ' up';
+            arrowClass += " up";
         }
 
-        if(orientation === 'horizontal') {
-            arrowClass = 'arrow lg left';
+        if(orientation === "horizontal") {
+            arrowClass = "arrow lg left";
         }
 
         let linkIndex = 0;
@@ -179,7 +179,7 @@ function CardPile({
                 { popupMenu.map((menuItem) => {
                     return (
                         <a
-                            className='btn btn-default'
+                            className="btn btn-default"
                             key={ linkIndex++ }
                             onClick={ () => onPopupMenuItemClick(menuItem) }
                         >
@@ -191,17 +191,17 @@ function CardPile({
         ) : null;
 
         return (
-            <Draggable handle='.grip' cancel='.close-button'>
-                <div className={ `popup ${isMe ? '' : 'opponent'}` }>
-                    <div className='grip'>
+            <Draggable handle=".grip" cancel=".close-button" nodeRef={ draggableRef }>
+                <div ref={ draggableRef } className={ `popup ${isMe ? "" : "opponent"}` }>
+                    <div className="grip">
                         <div
-                            className='panel-title'
+                            className="panel-title"
                             onClick={ (event) => event.stopPropagation() }
                         >
-                            <span className='text-center'>{ title }</span>
-                            <span className='pull-right'>
+                            <span className="text-center">{ title }</span>
+                            <span className="pull-right">
                                 <a
-                                    className='close-button'
+                                    className="close-button"
                                     onClick={ handleCloseClick }
                                 ><X size={ 16 } /></a>
                             </span>
@@ -212,7 +212,7 @@ function CardPile({
                         onClick={ (event) => event.stopPropagation() }
                     >
                         { popupMenuElement }
-                        <div className='inner'>{ cardList }</div>
+                        <div className="inner">{ cardList }</div>
                         <div className={ arrowClass } />
                     </div>
                 </div>
@@ -231,31 +231,31 @@ function CardPile({
             );
         });
 
-        return <div className='panel menu'>{ menuElements }</div>;
+        return <div className="panel menu">{ menuElements }</div>;
     };
 
-    let className = 'card-pile ' + (propsClassName || '');
-    if(size !== 'normal') {
-        className += ' ' + size;
+    let className = `card-pile ${propsClassName || ""}`;
+    if(size !== "normal") {
+        className += ` ${size}`;
     }
 
     const displayCardCount = cardCount || (cards ? cards.length : 0);
     if(displayCardCount === 0) {
-        className += ' panel';
+        className += " panel";
     }
-    const headerText = title ? title + ' (' + displayCardCount + ')' : '';
+    const headerText = title ? `${title} (${displayCardCount})` : "";
     const topCard = propsTopCard || (cards && cards[0]);
     const cardOrientation =
-        orientation === 'horizontal' && topCard && topCard.facedown
-            ? 'bowed'
+        orientation === "horizontal" && topCard && topCard.facedown
+            ? "bowed"
             : orientation;
 
     const displayTopCard = hiddenTopCard && !propsTopCard ? { facedown: true } : topCard;
 
-    if(orientation === 'horizontal' || orientation === 'bowed') {
-        className += ' horizontal';
+    if(orientation === "horizontal" || orientation === "bowed") {
+        className += " horizontal";
     } else {
-        className += ' vertical';
+        className += " vertical";
     }
 
     return (
@@ -266,7 +266,7 @@ function CardPile({
             onDrop={ (event) => handleDragDrop(event, source) }
             onClick={ onCollectionClick }
         >
-            <div className='panel-header'>{ headerText }</div>
+            <div className="panel-header">{ headerText }</div>
             { displayTopCard ? (
                 <Card
                     card={ displayTopCard }
@@ -281,7 +281,7 @@ function CardPile({
                     size={ size }
                 />
             ) : (
-                <div className='card-placeholder' />
+                <div className="card-placeholder" />
             ) }
             { showMenu ? getMenu() : null }
             { getPopup() }
@@ -289,50 +289,6 @@ function CardPile({
     );
 }
 
-CardPile.displayName = 'CardPile';
-CardPile.propTypes = {
-    cardCount: PropTypes.number,
-    cards: PropTypes.array,
-    className: PropTypes.string,
-    closeOnClick: PropTypes.bool,
-    disableMenu: PropTypes.bool,
-    disableMouseOver: PropTypes.bool,
-    hiddenTopCard: PropTypes.bool,
-    isMe: PropTypes.bool,
-    menu: PropTypes.array,
-    onCardClick: PropTypes.func,
-    onCloseClick: PropTypes.func,
-    onDragDrop: PropTypes.func,
-    onMenuItemClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    onTouchMove: PropTypes.func,
-    orientation: PropTypes.string,
-    popupLocation: PropTypes.string,
-    popupMenu: PropTypes.array,
-    size: PropTypes.string,
-    source: PropTypes.oneOf([
-        'none',
-        'hand',
-        'conflict discard pile',
-        'dynasty discard pile',
-        'play area',
-        'conflict deck',
-        'dynasty deck',
-        'province deck',
-        'attachment',
-        'faction',
-        'stronghold province',
-        'role card',
-        'province 1',
-        'province 2',
-        'province 3',
-        'province 4',
-        'additional',
-        'removed from game'
-    ]).isRequired,
-    title: PropTypes.string,
-    topCard: PropTypes.object
-};
+CardPile.displayName = "CardPile";
 
 export default memo(CardPile);

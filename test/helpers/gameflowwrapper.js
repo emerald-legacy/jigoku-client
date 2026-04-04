@@ -1,31 +1,31 @@
 /* global jasmine */
 
-const _ = require('underscore');
-const Game = require('../../build/server/game/game.js');
-const PlayerInteractionWrapper = require('./playerinteractionwrapper.js');
-const Settings = require('../../build/server/settings.js');
+const _ = require("underscore");
+const Game = require("../../build/server/game/game.js");
+const PlayerInteractionWrapper = require("./playerinteractionwrapper.js");
+const Settings = require("../../build/server/settings.js");
 
 class GameFlowWrapper {
     constructor() {
-        var gameRouter = jasmine.createSpyObj('gameRouter', ['gameWon', 'playerLeft', 'handleError']);
+        var gameRouter = jasmine.createSpyObj("gameRouter", ["gameWon", "playerLeft", "handleError"]);
         gameRouter.handleError.and.callFake((game, error) => {
             throw error;
         });
         var details = {
-            name: 'player1\'s game',
+            name: "player1's game",
             id: 12345,
-            owner: 'player1',
+            owner: "player1",
             saveGameId: 12345,
             players: [
-                { id: '111', user: Settings.getUserWithDefaultsSet({ username: 'player1' }) },
-                { id: '222', user: Settings.getUserWithDefaultsSet({ username: 'player2' }) }
+                { id: "111", user: Settings.getUserWithDefaultsSet({ username: "player1" }) },
+                { id: "222", user: Settings.getUserWithDefaultsSet({ username: "player2" }) }
             ]
         };
         this.game = new Game(details, { router: gameRouter });
         this.game.started = true;
 
-        this.player1 = new PlayerInteractionWrapper(this.game, this.game.getPlayerByName('player1'));
-        this.player2 = new PlayerInteractionWrapper(this.game, this.game.getPlayerByName('player2'));
+        this.player1 = new PlayerInteractionWrapper(this.game, this.game.getPlayerByName("player1"));
+        this.player2 = new PlayerInteractionWrapper(this.game, this.game.getPlayerByName("player2"));
         this.player1.player.timerSettings.events = false;
         this.player2.player.timerSettings.events = false;
         this.allPlayers = [this.player1, this.player2];
@@ -50,7 +50,7 @@ class GameFlowWrapper {
      * @param {Function} handler - function of a player to be executed
      */
     eachPlayerStartingWithPrompted(handler) {
-        var playersInPromptedOrder = _.sortBy(this.allPlayers, player => player.hasPrompt('Waiting for opponent to take an action or pass'));
+        var playersInPromptedOrder = _.sortBy(this.allPlayers, player => player.hasPrompt("Waiting for opponent to take an action or pass"));
         _.each(playersInPromptedOrder, player => handler(player));
     }
 
@@ -65,25 +65,25 @@ class GameFlowWrapper {
      * @param {String} strongholds.player2 - stronghold province for player 2
      */
     selectStrongholdProvinces(strongholds = {}) {
-        this.guardCurrentPhase('setup');
+        this.guardCurrentPhase("setup");
         //Select the fillers, so that province cards specified for province setup aren't used
-        this.player1.selectStrongholdProvince(strongholds.player1 || 'shameful-display');
-        this.player2.selectStrongholdProvince(strongholds.player2 || 'shameful-display');
+        this.player1.selectStrongholdProvince(strongholds.player1 || "shameful-display");
+        this.player2.selectStrongholdProvince(strongholds.player2 || "shameful-display");
     }
 
     /**
      * Keeps provinces during prompts for dynasty mulligan
      */
     keepDynasty() {
-        this.guardCurrentPhase('setup');
-        this.eachPlayerInFirstPlayerOrder(player => player.clickPrompt('Done'));
+        this.guardCurrentPhase("setup");
+        this.eachPlayerInFirstPlayerOrder(player => player.clickPrompt("Done"));
     }
     /**
      * Keeps hand during prompt for conflict mulligan
      */
     keepConflict() {
-        this.guardCurrentPhase('setup');
-        this.eachPlayerInFirstPlayerOrder(player => player.clickPrompt('Done'));
+        this.guardCurrentPhase("setup");
+        this.eachPlayerInFirstPlayerOrder(player => player.clickPrompt("Done"));
     }
     /**
      * Skips setup phase with defaults
@@ -99,15 +99,15 @@ class GameFlowWrapper {
      * Both players pass for the rest of the action window
      */
     noMoreActions() {
-        if(this.game.currentPhase === 'dynasty') {
+        if(this.game.currentPhase === "dynasty") {
             // Players that have already passed aren't prompted again in dynasty
             this.eachPlayerStartingWithPrompted(player => {
                 if(!player.player.passedDynasty) {
-                    player.clickPrompt('Pass');
+                    player.clickPrompt("Pass");
                 }
             });
         } else {
-            this.eachPlayerStartingWithPrompted(player => player.clickPrompt('Pass'));
+            this.eachPlayerStartingWithPrompted(player => player.clickPrompt("Pass"));
         }
     }
 
@@ -115,23 +115,23 @@ class GameFlowWrapper {
      * Skips any remaining conflicts, skips the action window
      */
     finishConflictPhase() {
-        this.guardCurrentPhase('conflict');
+        this.guardCurrentPhase("conflict");
         while(this.player1.player.getConflictOpportunities() > 0 ||
             this.player2.player.getConflictOpportunities() > 0) {
             try {
                 this.noMoreActions();
             } catch(e) {
                 // Case: handle skipping a player's conflict
-                var playersInPromptedOrder = _.sortBy(this.allPlayers, player => player.hasPrompt('Waiting for opponent to declare conflict'));
-                playersInPromptedOrder[0].clickPrompt('Pass Conflict');
-                playersInPromptedOrder[0].clickPrompt('yes');
+                var playersInPromptedOrder = _.sortBy(this.allPlayers, player => player.hasPrompt("Waiting for opponent to declare conflict"));
+                playersInPromptedOrder[0].clickPrompt("Pass Conflict");
+                playersInPromptedOrder[0].clickPrompt("yes");
             }
         }
         this.noMoreActions();
         // Resolve claiming imperial favor, if any
-        var claimingPlayer = _.find(this.allPlayers, player => player.hasPrompt('Which side of the Imperial Favor would you like to claim?'));
+        var claimingPlayer = _.find(this.allPlayers, player => player.hasPrompt("Which side of the Imperial Favor would you like to claim?"));
         if(claimingPlayer) {
-            claimingPlayer.clickPrompt('military');
+            claimingPlayer.clickPrompt("military");
         }
         // this.guardCurrentPhase('fate');
     }
@@ -142,29 +142,29 @@ class GameFlowWrapper {
     finishFatePhase() {
         // this.guardCurrentPhase('fate');
         for(let player of this.allPlayers) {
-            if(this.player.currentPrompt().menuTitle === 'Fate Phase') {
-                player.clickPrompt('Done');
+            if(this.player.currentPrompt().menuTitle === "Fate Phase") {
+                player.clickPrompt("Done");
             }
         }
-        var playersInPromptedOrder = _.sortBy(this.allPlayers, player => player.hasPrompt('Waiting for opponent to discard dynasty cards'));
-        _.each(playersInPromptedOrder, player => player.clickPrompt('Done'));
+        var playersInPromptedOrder = _.sortBy(this.allPlayers, player => player.hasPrompt("Waiting for opponent to discard dynasty cards"));
+        _.each(playersInPromptedOrder, player => player.clickPrompt("Done"));
         // End the round
-        var promptedToEnd = _.sortBy(this.allPlayers, player => player.hasPrompt('Waiting for opponent to end the round'));
-        _.each(promptedToEnd, player => player.clickPrompt('End Round'));
-        this.guardCurrentPhase('dynasty');
+        var promptedToEnd = _.sortBy(this.allPlayers, player => player.hasPrompt("Waiting for opponent to end the round"));
+        _.each(promptedToEnd, player => player.clickPrompt("End Round"));
+        this.guardCurrentPhase("dynasty");
     }
 
     /**
      * Completes the regroup phase
      */
     finishRegroupPhase() {
-        this.guardCurrentPhase('regroup');
-        var playersInPromptedOrder = _.sortBy(this.allPlayers, player => player.hasPrompt('Waiting for opponent to discard dynasty cards'));
-        _.each(playersInPromptedOrder, player => player.clickPrompt('Done'));
+        this.guardCurrentPhase("regroup");
+        var playersInPromptedOrder = _.sortBy(this.allPlayers, player => player.hasPrompt("Waiting for opponent to discard dynasty cards"));
+        _.each(playersInPromptedOrder, player => player.clickPrompt("Done"));
         // End the round
-        var promptedToEnd = _.sortBy(this.allPlayers, player => player.hasPrompt('Waiting for opponent to end the round'));
-        _.each(promptedToEnd, player => player.clickPrompt('End Round'));
-        this.guardCurrentPhase('dynasty');
+        var promptedToEnd = _.sortBy(this.allPlayers, player => player.hasPrompt("Waiting for opponent to end the round"));
+        _.each(promptedToEnd, player => player.clickPrompt("End Round"));
+        this.guardCurrentPhase("dynasty");
     }
 
     /**
@@ -176,26 +176,26 @@ class GameFlowWrapper {
     nextPhase() {
         var phaseChange = 0;
         switch(this.game.currentPhase) {
-            case 'setup':
+            case "setup":
                 this.skipSetupPhase();
                 break;
-            case 'dynasty':
+            case "dynasty":
                 this.noMoreActions();
                 phaseChange = -1;
                 break;
-            case 'draw':
+            case "draw":
                 this.bidHonor();
                 phaseChange = -1;
                 break;
-            case 'conflict':
+            case "conflict":
                 this.finishConflictPhase();
                 phaseChange = -1;
                 break;
-            case 'fate':
+            case "fate":
                 this.finishFatePhase();
                 phaseChange = -1;
                 break;
-            case 'regroup':
+            case "regroup":
                 this.finishRegroupPhase();
                 phaseChange = 4; //New turn
                 break;
@@ -225,17 +225,17 @@ class GameFlowWrapper {
     *   @param {?number} player2amt = amount for player2 to bid
     */
     bidHonor(player1amt, player2amt) {
-        this.guardCurrentPhase('draw');
+        this.guardCurrentPhase("draw");
         this.player1.bidHonor(player1amt);
         this.player2.bidHonor(player2amt);
-        if(this.game.currentPhase === 'draw') {
+        if(this.game.currentPhase === "draw") {
             this.eachPlayerInFirstPlayerOrder(player => {
-                if(player.hasPrompt('Triggered Abilities')) {
+                if(player.hasPrompt("Triggered Abilities")) {
                     player.pass();
                 }
             });
         }
-        this.guardCurrentPhase('conflict');
+        this.guardCurrentPhase("conflict");
     }
 
     /**
@@ -251,7 +251,7 @@ class GameFlowWrapper {
         var promptedPlayer = this.allPlayers.find(p => p.hasPrompt(title));
 
         if(!promptedPlayer) {
-            var promptString = _.map(this.allPlayers, player => player.name + ': ' + player.formatPrompt()).join('\n\n');
+            var promptString = _.map(this.allPlayers, player => player.name + ": " + player.formatPrompt()).join("\n\n");
             throw new Error(`No players are being prompted with "${title}". Current prompts are:\n\n${promptString}`);
         }
 
@@ -259,11 +259,11 @@ class GameFlowWrapper {
     }
 
     selectFirstPlayer(player) {
-        var promptedPlayer = this.getPromptedPlayer('You won the flip. Do you want to be:');
+        var promptedPlayer = this.getPromptedPlayer("You won the flip. Do you want to be:");
         if(player === promptedPlayer) {
-            promptedPlayer.clickPrompt('First Player');
+            promptedPlayer.clickPrompt("First Player");
         } else {
-            promptedPlayer.clickPrompt('Second Player');
+            promptedPlayer.clickPrompt("Second Player");
         }
     }
 
@@ -275,7 +275,7 @@ class GameFlowWrapper {
     getChatLogs(numBack = 1, reverse = true) {
         let results = [];
         for(let i = 0; i < this.game.messages.length && i < numBack; i++) {
-            let result = '';
+            let result = "";
             let chatMessage = this.game.messages[this.game.messages.length - i - 1];
             for(let j = 0; j < chatMessage.message.length; j++) {
                 result += getChatString(chatMessage.message[j]);
@@ -287,7 +287,7 @@ class GameFlowWrapper {
 
         function getChatString(item) {
             if(Array.isArray(item)) {
-                return item.map(arrItem => getChatString(arrItem)).join('');
+                return item.map(arrItem => getChatString(arrItem)).join("");
             } else if(item instanceof Object) {
                 if(item.name) {
                     return item.name;
@@ -305,7 +305,7 @@ class GameFlowWrapper {
      */
     getChatLog(numBack = 0) {
         let messages = this.getChatLogs(numBack + 1, false);
-        return messages.length && messages[numBack] ? messages[numBack] : '<No Message Found>';
+        return messages.length && messages[numBack] ? messages[numBack] : "<No Message Found>";
     }
 }
 

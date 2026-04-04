@@ -1,24 +1,24 @@
-const express = require('express');
+const express = require("express");
 const app = express();
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const MongoStore = require('connect-mongo').default;
-const config = require('config');
-const passport = require('passport');
-const localStrategy = require('passport-local').Strategy;
-const logger = require('./log.js');
-const bcrypt = require('bcrypt');
-const api = require('./api');
-const path = require('path');
-const jwt = require('jsonwebtoken');
-const http = require('http');
-const helmet = require('helmet');
-const { rateLimit } = require('express-rate-limit');
-const db = require('./db.js');
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const MongoStore = require("connect-mongo").default;
+const config = require("config");
+const passport = require("passport");
+const localStrategy = require("passport-local").Strategy;
+const logger = require("./log.js");
+const bcrypt = require("bcrypt");
+const api = require("./api");
+const path = require("path");
+const jwt = require("jsonwebtoken");
+const http = require("http");
+const helmet = require("helmet");
+const { rateLimit } = require("express-rate-limit");
+const db = require("./db.js");
 
-const fs = require('fs');
-const UserService = require('./services/UserService.js');
-const Settings = require('./settings.js');
+const fs = require("fs");
+const UserService = require("./services/UserService.js");
+const Settings = require("./settings.js");
 
 // Rate limiting configuration
 const apiLimiter = rateLimit({
@@ -26,7 +26,7 @@ const apiLimiter = rateLimit({
     max: 100, // Limit each IP to 100 requests per windowMs
     standardHeaders: true,
     legacyHeaders: false,
-    message: { success: false, message: 'Too many requests, please try again later' }
+    message: { success: false, message: "Too many requests, please try again later" }
 });
 
 const authLimiter = rateLimit({
@@ -34,7 +34,7 @@ const authLimiter = rateLimit({
     max: 10, // Limit each IP to 10 auth attempts per windowMs
     standardHeaders: true,
     legacyHeaders: false,
-    message: { success: false, message: 'Too many authentication attempts, please try again later' }
+    message: { success: false, message: "Too many authentication attempts, please try again later" }
 });
 
 class Server {
@@ -50,29 +50,29 @@ class Server {
         this.userService = new UserService(database);
     }
 
-    init() {
+    async init() {
         // Security headers with Helmet v7
         app.use(
             // @ts-ignore - helmet v7 types
             helmet({
                 contentSecurityPolicy: {
                     directives: {
-                        defaultSrc: ['\'self\''],
-                        scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\'', 'https://www.google.com', 'https://www.gstatic.com'],
-                        styleSrc: ['\'self\'', '\'unsafe-inline\''],
-                        imgSrc: ['\'self\'', 'data:', 'https:'],
-                        connectSrc: ['\'self\'', 'wss:', 'ws:', 'https://www.emeralddb.org', 'https://emeralddb.org'].concat(config.cspConnectSources || []),
-                        fontSrc: ['\'self\'', 'data:'],
-                        frameSrc: ['\'self\'', 'https://www.google.com', 'https://www.gstatic.com'],
-                        objectSrc: ['\'none\''],
-                        upgradeInsecureRequests: process.env.HTTPS === 'false' ? null : []
+                        defaultSrc: ["'self'"],
+                        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://www.google.com", "https://www.gstatic.com"],
+                        styleSrc: ["'self'", "'unsafe-inline'"],
+                        imgSrc: ["'self'", "data:", "https:"],
+                        connectSrc: ["'self'", "wss:", "ws:", "https://www.emeralddb.org", "https://emeralddb.org"].concat(config.cspConnectSources || []),
+                        fontSrc: ["'self'", "data:"],
+                        frameSrc: ["'self'", "https://www.google.com", "https://www.gstatic.com"],
+                        objectSrc: ["'none'"],
+                        upgradeInsecureRequests: process.env.HTTPS === "false" ? null : []
                     }
                 },
                 crossOriginEmbedderPolicy: false // Needed for Socket.io compatibility
             })
         );
 
-        app.set('trust proxy', 1);
+        app.set("trust proxy", 1);
         app.use(session({
             store: MongoStore.create({
                 mongoUrl: config.dbPath,
@@ -83,14 +83,14 @@ class Server {
             secret: config.secret,
             cookie: {
                 maxAge: config.cookieLifetime,
-                secure: config.https === true || config.https === 'true',
+                secure: config.https === true || config.https === "true",
                 httpOnly: true, // SECURITY FIX: Prevent XSS access to cookies
-                sameSite: 'lax',
+                sameSite: "lax",
                 // Omit domain for IP addresses — browsers handle IP cookies
                 // correctly only when no domain attribute is set
                 ...(config.domain && !/^\d+\.\d+\.\d+\.\d+$/.test(config.domain) ? { domain: config.domain } : {})
             },
-            name: 'sessionId'
+            name: "sessionId"
         }));
 
         app.use(passport.initialize());
@@ -105,75 +105,63 @@ class Server {
         app.use(express.urlencoded({ extended: false }));
 
         // Apply rate limiting to API routes
-        app.use('/api/', apiLimiter);
-        app.use('/api/account/login', authLimiter);
-        app.use('/api/account/register', authLimiter);
-        app.use('/api/account/password-reset', authLimiter);
+        app.use("/api/", apiLimiter);
+        app.use("/api/account/login", authLimiter);
+        app.use("/api/account/register", authLimiter);
+        app.use("/api/account/password-reset", authLimiter);
 
         api.init(app);
 
-        app.use(express.static(__dirname + '/../public'));
-        app.set('view engine', 'pug');
-        app.set('views', path.join(__dirname, '..', 'views'));
+        app.use(express.static(__dirname + "/../public"));
+        app.set("view engine", "pug");
+        app.set("views", path.join(__dirname, "..", "views"));
 
         // Health check endpoint
-        app.get('/health', (req, res) => {
+        app.get("/health", (req, res) => {
             res.json({
-                status: 'ok',
+                status: "ok",
                 timestamp: Date.now(),
                 uptime: process.uptime()
             });
         });
 
-        let useWebpackDev = false;
+        let useViteDev = false;
         if(this.isDeveloping) {
             try {
-                const webpack = require('webpack');
-                const webpackConfig = require('../webpack.config.js');
-                const webpackDevMiddleware = require('webpack-dev-middleware');
-                const webpackHotMiddleware = require('webpack-hot-middleware');
-
-                /** @type {any} */
-                const wpConfig = webpackConfig;
-                const compiler = webpack(wpConfig);
-                const middleware = webpackDevMiddleware(compiler, {
-                    publicPath: webpackConfig.output.publicPath
+                const { createServer } = await import("vite");
+                const vite = await createServer({
+                    server: { middlewareMode: true },
+                    appType: "custom"
                 });
-
-                app.use(middleware);
-                app.use(webpackHotMiddleware(compiler, {
-                    log: false,
-                    path: '/__webpack_hmr',
-                    heartbeat: 2000
-                }));
-                useWebpackDev = true;
+                app.use(vite.middlewares);
+                useViteDev = true;
             } catch(err) {
-                logger.info('Webpack not available, serving pre-built bundle from public/');
+                logger.info("Vite not available, serving pre-built bundle from public/");
             }
         }
 
-        // Load webpack manifest for production cache-busted filenames
+        // Load Vite manifest for production cache-busted filenames
         let manifest = {};
-        if(!useWebpackDev) {
+        if(!useViteDev) {
             try {
-                const manifestPath = path.join(__dirname, '..', 'public', 'manifest.json');
-                manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+                const manifestPath = path.join(__dirname, "..", "public", ".vite", "manifest.json");
+                manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
             } catch(err) {
-                logger.warn('Could not load manifest.json, falling back to default filenames');
+                logger.warn("Could not load .vite/manifest.json, falling back to default filenames");
             }
         }
 
         // Load card image version for cache busting
-        let cardImageVersion = '';
+        let cardImageVersion = "";
         try {
-            const versionPath = path.join(__dirname, '..', 'public', 'img', 'cards', 'version.json');
-            const versionData = JSON.parse(fs.readFileSync(versionPath, 'utf8'));
+            const versionPath = path.join(__dirname, "..", "public", "img", "cards", "version.json");
+            const versionData = JSON.parse(fs.readFileSync(versionPath, "utf8"));
             cardImageVersion = String(versionData.timestamp);
         } catch(err) {
             // No version file — no cache busting for images
         }
 
-        app.get('/{*splat}', (req, res) => {
+        app.get("/{*splat}", (req, res) => {
             let token = undefined;
             /** @type {any} */
             const authReq = req;
@@ -184,13 +172,23 @@ class Server {
                 authReq.user = userWithoutBlockList;
             }
 
-            res.render('index', {
-                basedir: path.join(__dirname, '..', 'views'),
+            // Extract asset paths from Vite manifest
+            const entry = manifest["client/index.jsx"] || {};
+            const bundleJs = entry.file ? "/" + entry.file : "/assets/index.js";
+            const cssFiles = (entry.css || []).map(f => "/" + f);
+            const preloadJs = (entry.imports || [])
+                .map(key => manifest[key]?.file)
+                .filter(Boolean)
+                .map(f => "/" + f);
+
+            res.render("index", {
+                basedir: path.join(__dirname, "..", "views"),
                 user: Settings.getUserWithDefaultsSet(authReq.user),
                 token: token,
-                production: !useWebpackDev,
-                vendorsJs: manifest['vendors.js'] || '/vendors.min.js',
-                bundleJs: manifest['main.js'] || '/bundle.min.js',
+                production: !useViteDev,
+                bundleJs: bundleJs,
+                cssFiles: cssFiles,
+                preloadJs: preloadJs,
                 cardImageVersion: cardImageVersion
             });
         });
@@ -210,12 +208,12 @@ class Server {
     run() {
         var port = config.lobby.port;
 
-        this.server.listen(port, '0.0.0.0', function onStart(err) {
+        this.server.listen(port, "0.0.0.0", function onStart(err) {
             if(err) {
                 logger.error(`Server listen error: ${err}`);
             }
 
-            logger.info('==> ?? Listening on port %s. Open up http://0.0.0.0:%s/ in your browser.', port, port);
+            logger.info("==> ?? Listening on port %s. Open up http://0.0.0.0:%s/ in your browser.", port, port);
         });
     }
 
@@ -224,13 +222,13 @@ class Server {
             const user = await this.userService.getUserByUsername(username);
 
             if(!user) {
-                return done(null, false, { message: 'Invalid username/password' });
+                return done(null, false, { message: "Invalid username/password" });
             }
 
             const valid = await bcrypt.compare(password, user.password);
 
             if(!valid) {
-                return done(null, false, { message: 'Invalid username/password' });
+                return done(null, false, { message: "Invalid username/password" });
             }
 
             let userObj = {
@@ -264,7 +262,7 @@ class Server {
         this.userService.getUserById(id)
             .then(user => {
                 if(!user) {
-                    return done(new Error('user not found'));
+                    return done(new Error("user not found"));
                 }
 
                 let userObj = {

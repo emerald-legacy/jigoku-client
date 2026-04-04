@@ -1,37 +1,37 @@
-import { gzipSync, gunzipSync, strToU8, strFromU8 } from 'fflate';
-import { getRecording } from '../gameStateRecorder.js';
+import { gzipSync, gunzipSync, strToU8, strFromU8 } from "fflate";
+import { getRecording } from "../gameStateRecorder.js";
 
-const iconsConflict = ['military', 'political'];
-const iconsElement = ['air', 'earth', 'fire', 'water', 'void'];
-const iconsClan = ['crab', 'crane', 'dragon', 'lion', 'phoenix', 'scorpion', 'unicorn'];
-const otherIcons = ['fate', 'honor', 'card', 'cards'];
+const iconsConflict = ["military", "political"];
+const iconsElement = ["air", "earth", "fire", "water", "void"];
+const iconsClan = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
+const otherIcons = ["fate", "honor", "card", "cards"];
 
 function fragmentToText(fragment) {
     if(fragment === null || fragment === undefined) {
-        return '';
+        return "";
     }
 
-    if(typeof fragment === 'string') {
+    if(typeof fragment === "string") {
         if(iconsConflict.includes(fragment) || iconsElement.includes(fragment) || iconsClan.includes(fragment) || otherIcons.includes(fragment)) {
-            return '[' + fragment + ']';
+            return `[${fragment}]`;
         }
         return fragment;
     }
 
-    if(typeof fragment === 'number') {
+    if(typeof fragment === "number") {
         return String(fragment);
     }
 
     if(Array.isArray(fragment)) {
-        return fragment.map(fragmentToText).join('');
+        return fragment.map(fragmentToText).join("");
     }
 
     if(fragment.alert) {
         const alertText = fragmentToText(fragment.alert.message);
-        if(fragment.alert.type === 'endofround') {
-            return '--- ' + alertText + ' ---';
+        if(fragment.alert.type === "endofround") {
+            return `--- ${alertText} ---`;
         }
-        return '[' + fragment.alert.type.toUpperCase() + '] ' + alertText;
+        return `[${fragment.alert.type.toUpperCase()}] ${alertText}`;
     }
 
     if(fragment.message) {
@@ -43,28 +43,28 @@ function fragmentToText(fragment) {
     }
 
     if(fragment.id) {
-        if(fragment.type === 'ring') {
-            return 'the ' + fragment.element + ' ring';
+        if(fragment.type === "ring") {
+            return `the ${fragment.element} ring`;
         }
-        if(fragment.type === 'player') {
+        if(fragment.type === "player") {
             return fragment.name;
         }
         if(fragment.facedown) {
-            return 'a facedown card';
+            return "a facedown card";
         }
-        return fragment.name || fragment.label || '';
+        return fragment.name || fragment.label || "";
     }
 
     if(fragment.name) {
         return fragment.name;
     }
 
-    return '';
+    return "";
 }
 
 function messageToText(message) {
     if(!message) {
-        return '';
+        return "";
     }
     return fragmentToText(message);
 }
@@ -72,11 +72,11 @@ function messageToText(message) {
 export function buildGameLog(currentGame) {
     const players = Object.values(currentGame.players).map((p) => ({
         name: p.name,
-        faction: p.faction?.name || p.faction?.value || 'unknown'
+        faction: p.faction?.name || p.faction?.value || "unknown"
     }));
 
     const lines = (currentGame.messages || []).map((entry) => messageToText(entry.message));
-    const plainText = lines.filter((line) => line.length > 0).join('\n');
+    const plainText = lines.filter((line) => line.length > 0).join("\n");
 
     const replayData = getRecording();
 
@@ -99,23 +99,21 @@ export function downloadGameLog(currentGame) {
     const log = buildGameLog(currentGame);
     const json = JSON.stringify(log);
     const compressed = gzipSync(strToU8(json));
-    const blob = new Blob([compressed], { type: 'application/gzip' });
+    const blob = new Blob([compressed], { type: "application/gzip" });
     const url = URL.createObjectURL(blob);
 
     const now = new Date();
-    const date = now.getFullYear() +
-        '-' + String(now.getMonth() + 1).padStart(2, '0') +
-        '-' + String(now.getDate()).padStart(2, '0');
+    const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-    const sanitize = (s) => (s || '').replace(/[^a-zA-Z0-9_-]/g, '_').substring(0, 30);
+    const sanitize = (s) => (s || "").replace(/[^a-zA-Z0-9_-]/g, "_").substring(0, 30);
     const gameName = sanitize(log.metadata.gameName);
     const playerParts = log.metadata.players
-        .map((p) => sanitize(p.name) + '-' + sanitize(p.faction))
-        .join('_vs_');
+        .map((p) => `${sanitize(p.name)}-${sanitize(p.faction)}`)
+        .join("_vs_");
 
-    const filename = date + '_' + gameName + '_' + playerParts + '.json.gz';
+    const filename = `${date}_${gameName}_${playerParts}.json.gz`;
 
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = filename;
     document.body.appendChild(a);
@@ -137,7 +135,7 @@ export function parseGameLog(arrayBuffer) {
     const log = JSON.parse(json);
 
     if(!log.version || !log.metadata) {
-        throw new Error('Invalid game log file');
+        throw new Error("Invalid game log file");
     }
 
     if(log.replayData && log.replayData.length > 0) {

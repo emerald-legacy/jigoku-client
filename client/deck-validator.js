@@ -1,5 +1,5 @@
-const axios = require('axios').default;
-const GameModes = require('./GameModes');
+import axios from "axios";
+import GameModes from "./GameModes.js";
 
 class ValidatorCache {
 
@@ -7,7 +7,7 @@ class ValidatorCache {
     }
 
     updateCache(key, value) {
-        if(typeof window === 'undefined') {
+        if(typeof window === "undefined") {
             return;
         }
 
@@ -20,7 +20,7 @@ class ValidatorCache {
     }
 
     getCache(key) {
-        if(typeof window === 'undefined') {
+        if(typeof window === "undefined") {
             return null;
         }
 
@@ -62,7 +62,7 @@ class DeckValidator {
 
         let mode = this.gameMode;
         if(mode === GameModes.Stronghold) {
-            mode = 'standard';
+            mode = "standard";
         }
 
         const body = {
@@ -81,7 +81,7 @@ class DeckValidator {
 
         try {
             // const res = await axios.post('https://beta-emeralddb.herokuapp.com/api/decklists/validate', body);
-            const res = await axios.post('https://www.emeralddb.org/api/decklists/validate', body);
+            const res = await axios.post("https://www.emeralddb.org/api/decklists/validate", body);
             const resultObj = {
                 valid: res.data.valid,
                 extendedStatus: res.data.errors
@@ -92,13 +92,13 @@ class DeckValidator {
         } catch(e) {
             return {
                 valid: undefined,
-                extendedStatus: ['Error Validating']
+                extendedStatus: ["Error Validating"]
             };
         }
     }
 }
 
-module.exports = async function validateDeck(deck, options) {
+export default async function validateDeck(deck, options) {
     options = Object.assign({ includeExtendedStatus: true }, options);
 
     let validator = new DeckValidator(options.packs, options.gameMode);
@@ -111,4 +111,4 @@ module.exports = async function validateDeck(deck, options) {
     }
 
     return result;
-};
+}

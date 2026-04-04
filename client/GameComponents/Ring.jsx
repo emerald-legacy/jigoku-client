@@ -1,9 +1,8 @@
-import { useState, memo } from 'react';
-import PropTypes from 'prop-types';
+import { useState, memo } from "react";
 
-import CardCounters from './CardCounters.jsx';
-import CardMenu from './CardMenu.jsx';
-import { getRingEffect } from '../RingEffectDescriptions.js';
+import CardCounters from "./CardCounters.jsx";
+import CardMenu from "./CardMenu.jsx";
+import { getRingEffect } from "../RingEffectDescriptions.js";
 
 function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode }) {
     const [showMenu, setShowMenu] = useState(false);
@@ -33,19 +32,19 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
     const getCountersForRing = () => {
         const counters = {};
 
-        counters['ring-fate'] = ring.fate
-            ? { count: ring.fate, shortName: 'F' }
+        counters["ring-fate"] = ring.fate
+            ? { count: ring.fate, shortName: "F" }
             : undefined;
 
         if(ring.tokens) {
             const shortNames = {
-                honor: 'H',
-                fate: 'F'
+                honor: "H",
+                fate: "F"
             };
             for(const [key, token] of Object.entries(ring.tokens)) {
                 counters[key] = {
                     count: token,
-                    fade: ring.type === 'attachment',
+                    fade: ring.type === "attachment",
                     shortName: shortNames[key]
                 };
             }
@@ -54,7 +53,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
         // Filter out undefined, null, or negative counters
         const filteredCounters = {};
         for(const [key, counter] of Object.entries(counters)) {
-            if(counter !== undefined && counter !== null && counter.count >= 0) {
+            if(counter != null && counter.count >= 0) { // eslint-disable-line eqeqeq
                 filteredCounters[key] = counter;
             }
         }
@@ -74,35 +73,31 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
     };
 
     const getIcon = () => {
-        if(ring.conflictType === 'military') {
+        if(ring.conflictType === "military") {
             return (
-                <span className='icon-military'>
-                    <span className='hide-text'>military</span>
+                <span className="icon-military">
+                    <span className="hide-text">military</span>
                 </span>
             );
         }
         return (
-            <span className='icon-political'>
-                <span className='hide-text'>political</span>
+            <span className="icon-political">
+                <span className="hide-text">political</span>
             </span>
         );
     };
 
     let size = propSize;
     if(ring.claimed) {
-        size = 'small';
+        size = "small";
     }
 
-    let className = 'ring icon-element-' + ring.element + (size ? ' ' + size : '');
-    let bgClassName = 'ring-background tint-' + ring.conflictType + (size ? ' ' + size : '');
-    let svgClassName =
-        'ring-svg tint-' +
-        ring.conflictType +
-        (size ? ' ' + size : '') +
-        (ring.selected || ring.contested ? ' contested' : '');
+    let className = `ring icon-element-${ring.element}${size ? ` ${size}` : ""}`;
+    let bgClassName = `ring-background tint-${ring.conflictType}${size ? ` ${size}` : ""}`;
+    let svgClassName = `ring-svg tint-${ring.conflictType}${size ? ` ${size}` : ""}${ring.selected || ring.contested ? " contested" : ""}`;
     if(ring.unselectable) {
-        className = className + ' unselectable';
-        bgClassName += ' unselectable';
+        className += " unselectable";
+        bgClassName += " unselectable";
     }
 
     let visible = true;
@@ -110,8 +105,8 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
         (owner && (!ring.claimed || owner !== ring.claimedBy)) ||
         (!owner && ring.claimed)
     ) {
-        className += ' hidden';
-        svgClassName += ' hidden';
+        className += " hidden";
+        svgClassName += " hidden";
         visible = false;
     }
     if(!visible) {
@@ -119,17 +114,17 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
     }
 
     const shouldShowTooltip = showRingEffects && isHovered && !ring.claimed && !showMenu;
-    const ringEffect = shouldShowTooltip ? getRingEffect(gameMode, ring.element) : '';
+    const ringEffect = shouldShowTooltip ? getRingEffect(gameMode, ring.element) : "";
 
     return (
         <div
-            className={ 'ring no-highlight' + (ring.unselectable ? ' unselectable' : '') }
+            className={ `ring no-highlight${ring.unselectable ? " unselectable" : ""}` }
             onClick={ (event) => handleClick(event, ring.element) }
             onMouseEnter={ () => setIsHovered(true) }
             onMouseLeave={ () => setIsHovered(false) }
         >
             <svg className={ svgClassName }>
-                <circle cx='50%' cy='50%' r='50%' className={ bgClassName } />
+                <circle cx="50%" cy="50%" r="50%" className={ bgClassName } />
             </svg>
             <div className={ className } />
             { shouldShowCounters() && visible ? (
@@ -139,26 +134,15 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
                 <CardMenu menu={ ring.menu } onMenuItemClick={ handleMenuItemClick } />
             ) : null }
             { shouldShowTooltip && ringEffect ? (
-                <div className='ring-tooltip'>
-                    <div className='ring-tooltip-title'>{ ring.element.charAt(0).toUpperCase() + ring.element.slice(1) }</div>
-                    <div className='ring-tooltip-text'>{ ringEffect }</div>
+                <div className="ring-tooltip">
+                    <div className="ring-tooltip-title">{ `${ring.element.charAt(0).toUpperCase()}${ring.element.slice(1)}` }</div>
+                    <div className="ring-tooltip-text">{ ringEffect }</div>
                 </div>
             ) : null }
         </div>
     );
 }
 
-Ring.displayName = 'Ring';
-Ring.propTypes = {
-    buttons: PropTypes.array,
-    gameMode: PropTypes.string,
-    onClick: PropTypes.func,
-    onMenuItemClick: PropTypes.func,
-    owner: PropTypes.string,
-    ring: PropTypes.object,
-    showRingEffects: PropTypes.bool,
-    size: PropTypes.string,
-    socket: PropTypes.object
-};
+Ring.displayName = "Ring";
 
 export default memo(Ring);

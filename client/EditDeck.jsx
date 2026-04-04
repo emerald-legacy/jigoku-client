@@ -1,57 +1,56 @@
-import { useCallback, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useEffect } from "react";
+import { connect } from "react-redux";
 
-import DeckSummary from './DeckSummary.jsx';
-import DeckEditor from './DeckEditor.jsx';
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
+import DeckSummary from "./DeckSummary.jsx";
+import DeckEditor from "./DeckEditor.jsx";
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDeck, loading, navigate, saveDeck, setUrl }) {
     useEffect(() => {
         if(deckId) {
             loadDeck(deckId);
         } else if(deck) {
-            setUrl('/decks/edit/' + deck._id);
+            setUrl(`/decks/edit/${deck._id}`);
             loadDeck(deck._id);
         }
     }, [deckId, deck, loadDeck, setUrl]);
 
     useEffect(() => {
         if(deckSaved) {
-            navigate('/decks');
+            navigate("/decks");
         }
     }, [deckSaved, navigate]);
 
-    const handleEditDeck = useCallback((deckData) => {
+    const handleEditDeck = (deckData) => {
         saveDeck(deckData);
-    }, [saveDeck]);
+    };
 
     let content;
 
     if(loading) {
         content = <div>Loading decks from the server...</div>;
     } else if(apiError) {
-        content = <AlertPanel type='error' message={ apiError } />;
+        content = <AlertPanel type="error" message={ apiError } />;
     } else if(!deck) {
-        content = <AlertPanel message='The specified deck was not found' type='error' />;
+        content = <AlertPanel message="The specified deck was not found" type="error" />;
     } else {
         content = (
-            <div className='row'>
-                <div className='col-sm-6'>
-                    <div className='panel-title text-center'>
+            <div className="row">
+                <div className="col-sm-6">
+                    <div className="panel-title text-center">
                         Deck Editor
                     </div>
-                    <div className='panel'>
-                        <DeckEditor mode='Save' onDeckSave={ handleEditDeck } />
+                    <div className="panel">
+                        <DeckEditor mode="Save" onDeckSave={ handleEditDeck } />
                     </div>
                 </div>
-                <div className='col-sm-6'>
-                    <div className='panel-title text-center'>
+                <div className="col-sm-6">
+                    <div className="panel-title text-center">
                         { deck.name }
                     </div>
-                    <div className='panel'>
+                    <div className="panel">
                         <DeckSummary cards={ cards } deck={ deck } />
                     </div>
                 </div>
@@ -62,24 +61,7 @@ export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDe
     return content;
 }
 
-InnerEditDeck.displayName = 'InnerEditDeck';
-InnerEditDeck.propTypes = {
-    agendas: PropTypes.object,
-    apiError: PropTypes.string,
-    banners: PropTypes.array,
-    cards: PropTypes.object,
-    deck: PropTypes.object,
-    deckId: PropTypes.string,
-    deckSaved: PropTypes.bool,
-    factions: PropTypes.object,
-    formats: PropTypes.object,
-    loadDeck: PropTypes.func,
-    loading: PropTypes.bool,
-    navigate: PropTypes.func,
-    packs: PropTypes.array,
-    saveDeck: PropTypes.func,
-    setUrl: PropTypes.func
-};
+InnerEditDeck.displayName = "InnerEditDeck";
 
 function mapStateToProps(state) {
     return {

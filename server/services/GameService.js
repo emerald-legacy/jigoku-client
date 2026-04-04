@@ -1,8 +1,8 @@
-const logger = require('../log.js');
+const logger = require("../log.js");
 
 class GameService {
     constructor(db) {
-        this.games = db.collection('games');
+        this.games = db.collection("games");
     }
 
     async create(game) {
@@ -11,7 +11,7 @@ class GameService {
             return { ...game, _id: result.insertedId };
         } catch(err) {
             logger.error(`Unable to create game: ${err}`);
-            throw new Error('Unable to create game');
+            throw new Error("Unable to create game");
         }
     }
 
@@ -31,7 +31,7 @@ class GameService {
             return await this.games.updateOne({ gameId: game.gameId }, { $set: properties });
         } catch(err) {
             logger.error(`Unable to update game: ${err}`);
-            throw new Error('Unable to update game');
+            throw new Error("Unable to update game");
         }
     }
 
@@ -43,7 +43,7 @@ class GameService {
             return games;
         } catch(err) {
             logger.error(`Unable to get all games from ${from} to ${to}: ${err}`);
-            throw new Error('Unable to get all games');
+            throw new Error("Unable to get all games");
         }
     }
 }

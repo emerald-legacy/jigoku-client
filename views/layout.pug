@@ -7,10 +7,15 @@ html
     meta(name='description' content='Play Legend of the Five Rings in your browser')
     title Jigoku Online - Play Legend of the Five Rings LCG in your browser
     script(src='https://www.google.com/recaptcha/api.js?render=6LcIUw8rAAAAANoZo59wKxiypGadOD5iXaN659la')
+    if production
+      each cssFile in cssFiles
+        link(rel='stylesheet', href=cssFile)
+      each jsFile in preloadJs
+        link(rel='modulepreload', href=jsFile)
   body
     block content
     if !production
-      script(src='/bundle.js')
+      script(type='module', src='/@vite/client')
+      script(type='module', src='/client/index.jsx')
     else
-      script(src=vendorsJs)
-      script(src=bundleJs)
+      script(type='module', src=bundleJs)

@@ -1,26 +1,25 @@
-import { useState, useCallback } from 'react';
-import PropTypes from 'prop-types';
+import { useState } from "react";
 
-import Checkbox from '../FormComponents/Checkbox.jsx';
+import Checkbox from "../FormComponents/Checkbox.jsx";
 
 const windows = [
-    { name: 'dynasty', label: 'Dynasty phase', style: 'col-sm-4' },
-    { name: 'draw', label: 'Draw phase', style: 'col-sm-4' },
-    { name: 'preConflict', label: 'Conflict phase', style: 'col-sm-4' },
-    { name: 'conflict', label: 'During conflict', style: 'col-sm-4' },
-    { name: 'fate', label: 'Fate phase', style: 'col-sm-4' }
+    { name: "dynasty", label: "Dynasty phase", style: "col-sm-4" },
+    { name: "draw", label: "Draw phase", style: "col-sm-4" },
+    { name: "preConflict", label: "Conflict phase", style: "col-sm-4" },
+    { name: "conflict", label: "During conflict", style: "col-sm-4" },
+    { name: "fate", label: "Fate phase", style: "col-sm-4" }
 ];
 
 function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettingToggle, onToggle, optionSettings, timerSettings }) {
     const [windowTimer, setWindowTimer] = useState(timerSettings.windowTimer);
 
-    const handleToggle = useCallback((option, value) => {
+    const handleToggle = (option, value) => {
         if(onToggle) {
             onToggle(option, !value);
         }
-    }, [onToggle]);
+    };
 
-    const handleSlideStop = useCallback((event) => {
+    const handleSlideStop = (event) => {
         let value = parseInt(event.target.value);
 
         if(Number.isNaN(value)) {
@@ -36,28 +35,28 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
         }
 
         setWindowTimer(value);
-    }, []);
+    };
 
-    const handleTimerSettingToggle = useCallback((option, event) => {
+    const handleTimerSettingToggle = (option, event) => {
         if(onTimerSettingToggle) {
             onTimerSettingToggle(option, event.target.checked);
         }
-    }, [onTimerSettingToggle]);
+    };
 
-    const handleOptionSettingToggle = useCallback((option, event) => {
+    const handleOptionSettingToggle = (option, event) => {
         if(onOptionSettingToggle) {
             onOptionSettingToggle(option, event.target.checked);
         }
-    }, [onOptionSettingToggle]);
+    };
 
     const windowsElements = windows.map((window) => (
         <Checkbox
             key={ window.name }
             noGroup
-            name={ 'promptedActionWindows.' + window.name }
+            name={ `promptedActionWindows.${window.name}` }
             label={ window.label }
             fieldClass={ window.style }
-            type='checkbox'
+            type="checkbox"
             onChange={ () => handleToggle(window.name, actionWindows[window.name]) }
             checked={ actionWindows[window.name] }
         />
@@ -65,97 +64,97 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
 
     return (
         <div>
-            <form className='form form-horizontal'>
-                <div className='panel-title'>
+            <form className="form form-horizontal">
+                <div className="panel-title">
                     Action window defaults
                 </div>
-                <div className='panel'>
-                    <div className='form-group'>
+                <div className="panel">
+                    <div className="form-group">
                         { windowsElements }
                     </div>
                 </div>
-                <div className='panel-title text-center'>
+                <div className="panel-title text-center">
                     Timed Interrupt Window
                 </div>
-                <div className='panel'>
-                    <div className='form-group'>
+                <div className="panel">
+                    <div className="form-group">
                         <Checkbox
-                            name='timerSettings.events'
+                            name="timerSettings.events"
                             noGroup
                             label="Show timer for opponent's events"
-                            fieldClass='col-sm-6'
-                            onChange={ (e) => handleTimerSettingToggle('events', e) }
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleTimerSettingToggle("events", e) }
                             checked={ timerSettings.events }
                         />
                         <Checkbox
-                            name='timerSettings.eventsInDeck'
+                            name="timerSettings.eventsInDeck"
                             noGroup
-                            label='Show timer for events in your deck'
-                            fieldClass='col-sm-6'
-                            onChange={ (e) => handleTimerSettingToggle('eventsInDeck', e) }
+                            label="Show timer for events in your deck"
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleTimerSettingToggle("eventsInDeck", e) }
                             checked={ timerSettings.eventsInDeck }
                         />
                     </div>
                 </div>
-                <div className='panel-title text-center'>
+                <div className="panel-title text-center">
                     Options
                 </div>
-                <div className='panel'>
-                    <div className='form-group'>
+                <div className="panel">
+                    <div className="form-group">
                         <Checkbox
-                            name='optionSettings.markCardsUnselectable'
+                            name="optionSettings.markCardsUnselectable"
                             noGroup
-                            label='Grey out cards with no relevant abilities during interrupt/reaction windows'
-                            fieldClass='col-sm-6'
-                            onChange={ (e) => handleOptionSettingToggle('markCardsUnselectable', e) }
+                            label="Grey out cards with no relevant abilities during interrupt/reaction windows"
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleOptionSettingToggle("markCardsUnselectable", e) }
                             checked={ optionSettings.markCardsUnselectable }
                         />
                         <Checkbox
-                            name='optionSettings.cancelOwnAbilities'
+                            name="optionSettings.cancelOwnAbilities"
                             noGroup
-                            label='Prompt to cancel/react to initiation of my own abilities'
-                            fieldClass='col-sm-6'
-                            onChange={ (e) => handleOptionSettingToggle('cancelOwnAbilities', e) }
+                            label="Prompt to cancel/react to initiation of my own abilities"
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleOptionSettingToggle("cancelOwnAbilities", e) }
                             checked={ optionSettings.cancelOwnAbilities }
                         />
                         <Checkbox
-                            name='optionSettings.orderForcedAbilities'
+                            name="optionSettings.orderForcedAbilities"
                             noGroup
-                            label='Prompt to order forced triggered/simultaneous abilities'
-                            fieldClass='col-sm-6'
-                            onChange={ (e) => handleOptionSettingToggle('orderForcedAbilities', e) }
+                            label="Prompt to order forced triggered/simultaneous abilities"
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleOptionSettingToggle("orderForcedAbilities", e) }
                             checked={ optionSettings.orderForcedAbilities }
                         />
                         <Checkbox
-                            name='optionSettings.confirmOneClick'
+                            name="optionSettings.confirmOneClick"
                             noGroup
-                            label='Show a confirmation prompt when initating 1-click abilities'
-                            fieldClass='col-sm-6'
-                            onChange={ (e) => handleOptionSettingToggle('confirmOneClick', e) }
+                            label="Show a confirmation prompt when initating 1-click abilities"
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleOptionSettingToggle("confirmOneClick", e) }
                             checked={ optionSettings.confirmOneClick }
                         />
                         <Checkbox
-                            name='optionSettings.disableCardStats'
+                            name="optionSettings.disableCardStats"
                             noGroup
-                            label='Disable card hover statistics popup'
-                            fieldClass='col-sm-6'
-                            onChange={ (e) => handleOptionSettingToggle('disableCardStats', e) }
+                            label="Disable card hover statistics popup"
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleOptionSettingToggle("disableCardStats", e) }
                             checked={ optionSettings.disableCardStats }
                         />
                         <Checkbox
-                            name='optionSettings.sortHandByName'
+                            name="optionSettings.sortHandByName"
                             noGroup
-                            label='Sort Hand by Name'
-                            fieldClass='col-sm-6'
-                            onChange={ (e) => handleOptionSettingToggle('sortHandByName', e) }
+                            label="Sort Hand by Name"
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleOptionSettingToggle("sortHandByName", e) }
                             checked={ optionSettings.sortHandByName }
                         />
                         <Checkbox
-                            name='optionSettings.showRingEffects'
+                            name="optionSettings.showRingEffects"
                             noGroup
-                            label='Show ring effect descriptions on hover'
-                            fieldClass='col-sm-6'
-                            onChange={ (e) => handleOptionSettingToggle('showRingEffects', e) }
+                            label="Show ring effect descriptions on hover"
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleOptionSettingToggle("showRingEffects", e) }
                             checked={ optionSettings.showRingEffects }
                         />
                     </div>
@@ -165,14 +164,6 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
     );
 }
 
-GameConfiguration.displayName = 'GameConfiguration';
-GameConfiguration.propTypes = {
-    actionWindows: PropTypes.object,
-    onOptionSettingToggle: PropTypes.func,
-    onTimerSettingToggle: PropTypes.func,
-    onToggle: PropTypes.func,
-    optionSettings: PropTypes.object,
-    timerSettings: PropTypes.object
-};
+GameConfiguration.displayName = "GameConfiguration";
 
 export default GameConfiguration;

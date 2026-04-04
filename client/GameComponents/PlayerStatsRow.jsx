@@ -1,6 +1,5 @@
-import PropTypes from 'prop-types';
-import Avatar from '../Avatar.jsx';
-import Clock from './Clock.jsx';
+import Avatar from "../Avatar.jsx";
+import Clock from "./Clock.jsx";
 
 export function PlayerStatsRow({
     clockState,
@@ -14,7 +13,7 @@ export function PlayerStatsRow({
     user
 }) {
     const sendUpdate = (type, direction) => {
-        sendGameMessage('changeStat', type, direction === 'up' ? 1 : -1);
+        sendGameMessage("changeStat", type, direction === "up" ? 1 : -1);
     };
 
     const getStatValueOrDefault = (stat) => {
@@ -28,24 +27,24 @@ export function PlayerStatsRow({
         const imageStyle = { backgroundImage: `url(/img/${name}.png)` };
 
         return (
-            <div className='state'>
+            <div className="state">
                 { showControls && (
                     <button
-                        className='btn btn-stat'
-                        onClick={ () => sendUpdate(statToSet, 'down') }
+                        className="btn btn-stat"
+                        onClick={ () => sendUpdate(statToSet, "down") }
                     >
-                        <img src='/img/Minus.png' title='-' alt='-' />
+                        <img src="/img/Minus.png" title="-" alt="-" />
                     </button>
                 ) }
-                <div className='stat-image' style={ imageStyle }>
-                    <div className='stat-value'>{ getStatValueOrDefault(stat) }</div>
+                <div className="stat-image" style={ imageStyle }>
+                    <div className="stat-value">{ getStatValueOrDefault(stat) }</div>
                 </div>
                 { showControls && (
                     <button
-                        className='btn btn-stat'
-                        onClick={ () => sendUpdate(statToSet, 'up') }
+                        className="btn btn-stat"
+                        onClick={ () => sendUpdate(statToSet, "up") }
                     >
-                        <img src='/img/Plus.png' title='+' alt='+' />
+                        <img src="/img/Plus.png" title="+" alt="+" />
                     </button>
                 ) }
             </div>
@@ -53,15 +52,15 @@ export function PlayerStatsRow({
     };
 
     const playerAvatar = (
-        <div className='player-avatar state'>
-            <Avatar emailHash={ user ? user.emailHash : 'unknown' } />
-            <b>{ user ? user.username : 'Noone' }</b>
+        <div className="player-avatar state">
+            <Avatar emailHash={ user ? user.emailHash : "unknown" } />
+            <b>{ user ? user.username : "Noone" }</b>
         </div>
     );
 
     const clock =
-        !clockState || clockState.mode === 'off' ? null : (
-            <div className='state'>
+        !clockState || clockState.mode === "off" ? null : (
+            <div className="state">
                 <Clock
                     secondsLeft={ clockState.timeLeft }
                     mode={ clockState.mode }
@@ -71,38 +70,38 @@ export function PlayerStatsRow({
         );
 
     return (
-        <div className='panel player-stats no-highlight'>
+        <div className="panel player-stats no-highlight">
             { playerAvatar }
-            { getButton('fate', 'Fate') }
-            { getButton('honor', 'Honor') }
+            { getButton("fate", "Fate") }
+            { getButton("honor", "Honor") }
             { firstPlayer && (
-                <div className='state first-player-state'>
+                <div className="state first-player-state">
                     <img
-                        className='first-player-indicator'
-                        src='/img/first-player.png'
-                        title='First Player'
+                        className="first-player-indicator"
+                        src="/img/first-player.png"
+                        title="First Player"
                     />
                 </div>
             ) }
             { (otherPlayer || spectating) && (
-                <div className='state'>
-                    <div className='hand-size'>Hand Size: { handSize }</div>
+                <div className="state">
+                    <div className="hand-size">Hand Size: { handSize }</div>
                 </div>
             ) }
-            <div className='state'>
-                <div className='conflicts-remaining'>
-                    Conflicts Remaining: { getStatValueOrDefault('conflictsRemaining') }
-                    { getStatValueOrDefault('politicalRemaining') > 0 ? (
-                        <span className='icon-political' />
+            <div className="state">
+                <div className="conflicts-remaining">
+                    Conflicts Remaining: { getStatValueOrDefault("conflictsRemaining") }
+                    { getStatValueOrDefault("politicalRemaining") > 0 ? (
+                        <span className="icon-political" />
                     ) : null }
-                    { getStatValueOrDefault('politicalRemaining') > 1 ? (
-                        <span className='icon-political' />
+                    { getStatValueOrDefault("politicalRemaining") > 1 ? (
+                        <span className="icon-political" />
                     ) : null }
-                    { getStatValueOrDefault('militaryRemaining') > 0 ? (
-                        <span className='icon-military' />
+                    { getStatValueOrDefault("militaryRemaining") > 0 ? (
+                        <span className="icon-military" />
                     ) : null }
-                    { getStatValueOrDefault('militaryRemaining') > 1 ? (
-                        <span className='icon-military' />
+                    { getStatValueOrDefault("militaryRemaining") > 1 ? (
+                        <span className="icon-military" />
                     ) : null }
                 </div>
             </div>
@@ -111,17 +110,6 @@ export function PlayerStatsRow({
     );
 }
 
-PlayerStatsRow.displayName = 'PlayerStatsRow';
-PlayerStatsRow.propTypes = {
-    clockState: PropTypes.object,
-    firstPlayer: PropTypes.bool,
-    handSize: PropTypes.number,
-    otherPlayer: PropTypes.bool,
-    sendGameMessage: PropTypes.func,
-    showControls: PropTypes.bool,
-    spectating: PropTypes.bool,
-    stats: PropTypes.object,
-    user: PropTypes.object
-};
+PlayerStatsRow.displayName = "PlayerStatsRow";
 
 export default PlayerStatsRow;

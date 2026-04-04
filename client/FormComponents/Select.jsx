@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 function Select({
     blankOption,
@@ -7,13 +6,13 @@ function Select({
     label,
     labelClass,
     name,
-    nameKey = 'name',
+    nameKey = "name",
     onBlur,
     onChange,
     options,
     validationMessage,
     value,
-    valueKey = 'value'
+    valueKey = "value"
 }) {
     const handleChange = (event) => {
         const selectedValue = options?.find(
@@ -28,7 +27,7 @@ function Select({
         const blankValue = blankOption[valueKey];
         const blankName = blankOption[nameKey];
         optionElements.push(
-            <option key='default' value={ blankValue }>
+            <option key="default" value={ blankValue }>
                 { blankName }
             </option>
         );
@@ -47,18 +46,18 @@ function Select({
     }
 
     const selectStyle = button
-        ? { display: 'inline-block', width: '67%' }
+        ? { display: "inline-block", width: "67%" }
         : {};
 
     return (
-        <div className='form-group'>
-            <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
+        <div className="form-group">
+            <label htmlFor={ name } className={ `${labelClass || ""} control-label` }>
                 { label }
             </label>
             <div className={ fieldClass }>
                 <select
                     style={ selectStyle }
-                    className='form-control'
+                    className="form-control"
                     id={ name }
                     value={ value }
                     onChange={ handleChange }
@@ -67,10 +66,10 @@ function Select({
                     { optionElements }
                 </select>
                 { validationMessage ? (
-                    <span className='help-block'>{ validationMessage } </span>
+                    <span className="help-block">{ validationMessage } </span>
                 ) : null }
                 { button ? (
-                    <button className='btn btn-default select-button' onClick={ button.onClick }>
+                    <button className="btn btn-default select-button" onClick={ button.onClick }>
                         { button.text }
                     </button>
                 ) : null }
@@ -79,21 +78,6 @@ function Select({
     );
 }
 
-Select.displayName = 'Select';
-Select.propTypes = {
-    blankOption: PropTypes.object,
-    button: PropTypes.object,
-    fieldClass: PropTypes.string,
-    label: PropTypes.string,
-    labelClass: PropTypes.string,
-    name: PropTypes.string,
-    nameKey: PropTypes.string,
-    onBlur: PropTypes.func,
-    onChange: PropTypes.func,
-    options: PropTypes.array,
-    validationMessage: PropTypes.string,
-    value: PropTypes.string,
-    valueKey: PropTypes.string
-};
+Select.displayName = "Select";
 
 export default Select;

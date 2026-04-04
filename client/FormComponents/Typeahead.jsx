@@ -1,6 +1,5 @@
-import { Typeahead } from 'react-bootstrap-typeahead';
-import { useRef, useImperativeHandle, forwardRef } from 'react';
-import PropTypes from 'prop-types';
+import { Typeahead } from "react-bootstrap-typeahead";
+import { useRef, useImperativeHandle, forwardRef } from "react";
 
 const TypeaheadInput = forwardRef(function TypeaheadInput(
     {
@@ -35,13 +34,13 @@ const TypeaheadInput = forwardRef(function TypeaheadInput(
     }));
 
     const labelElement = label ? (
-        <label htmlFor={ name } className={ (labelClass || '') + ' control-label' }>
+        <label htmlFor={ name } className={ `${labelClass || ""} control-label` }>
             { label }
         </label>
     ) : null;
 
     return (
-        <div className='form-group'>
+        <div className="form-group">
             { labelElement }
             <div className={ fieldClass }>
                 <Typeahead
@@ -59,7 +58,7 @@ const TypeaheadInput = forwardRef(function TypeaheadInput(
                     onKeyDown={ onKeyDown }
                 />
                 { validationMessage ? (
-                    <span className='help-block'>{ validationMessage } </span>
+                    <span className="help-block">{ validationMessage } </span>
                 ) : null }
             </div>
             { children }
@@ -67,26 +66,6 @@ const TypeaheadInput = forwardRef(function TypeaheadInput(
     );
 });
 
-TypeaheadInput.displayName = 'TypeAhead';
-TypeaheadInput.propTypes = {
-    autoFocus: PropTypes.bool,
-    children: PropTypes.object,
-    dropup: PropTypes.bool,
-    emptyLabel: PropTypes.string,
-    fieldClass: PropTypes.string,
-    label: PropTypes.string,
-    labelClass: PropTypes.string,
-    labelKey: PropTypes.string,
-    minLength: PropTypes.number,
-    name: PropTypes.string,
-    onChange: PropTypes.func,
-    onInputChange: PropTypes.func,
-    onKeyDown: PropTypes.func,
-    options: PropTypes.array,
-    placeholder: PropTypes.string,
-    submitFormOnEnter: PropTypes.bool,
-    validationMessage: PropTypes.string,
-    value: PropTypes.string
-};
+TypeaheadInput.displayName = "TypeAhead";
 
 export default TypeaheadInput;

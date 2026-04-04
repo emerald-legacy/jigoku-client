@@ -1,8 +1,7 @@
-import PropTypes from 'prop-types';
 
-import Province from './Province.jsx';
-import Placeholder from './Placeholder.jsx';
-import CardPile from './CardPile.jsx';
+import Province from "./Province.jsx";
+import Placeholder from "./Placeholder.jsx";
+import CardPile from "./CardPile.jsx";
 
 function StrongholdRow({
     cardSize,
@@ -22,18 +21,18 @@ function StrongholdRow({
         return (
             <div
                 className={ `card-wrapper imperial-favor vertical ${cardSize} ${
-                    player && player.imperialFavor ? '' : 'hidden'
+                    player && player.imperialFavor ? "" : "hidden"
                 }` }
             >
                 { player && (
                     <img
                         className={ `card-image imperial-favor ${cardSize} ${
-                            player.imperialFavor ? '' : 'hidden'
+                            player.imperialFavor ? "" : "hidden"
                         } ` }
                         src={
-                            '/img/' +
-                            (player.imperialFavor ? player.imperialFavor : 'political') +
-                            '-favor.jpg'
+                            "/img/" +
+                            (player.imperialFavor ? player.imperialFavor : "political") +
+                            "-favor.jpg"
                         }
                     />
                 ) }
@@ -44,10 +43,10 @@ function StrongholdRow({
     const getFaction = (player) => {
         if(player.faction) {
             const faction = player.faction.name.toLowerCase();
-            const tokens = faction.split(' ');
+            const tokens = faction.split(" ");
             return tokens[0];
         }
-        return 'crab';
+        return "crab";
     };
 
     const getStronghold = (player, isSkirmishGame) => {
@@ -56,7 +55,7 @@ function StrongholdRow({
                 return (
                     <Province
                         isMe={ isMe }
-                        source='stronghold province'
+                        source="stronghold province"
                         cards={ strongholdProvinceCards }
                         onMouseOver={ onMouseOver }
                         onMouseOut={ onMouseOut }
@@ -70,7 +69,7 @@ function StrongholdRow({
             return (
                 <Province
                     isMe={ isMe }
-                    source='stronghold province'
+                    source="stronghold province"
                     cards={ strongholdProvinceCards }
                     onMouseOver={ onMouseOver }
                     onMouseOut={ onMouseOut }
@@ -85,9 +84,9 @@ function StrongholdRow({
                     <img
                         className={ `card-image skirmish-stronghold ${cardSize}` }
                         src={
-                            '/img/skirmish-images/skirmish-stronghold-' +
+                            "/img/skirmish-images/skirmish-stronghold-" +
                             getFaction(player) +
-                            '.jpg'
+                            ".jpg"
                         }
                     />
                 </div>
@@ -96,16 +95,16 @@ function StrongholdRow({
     };
 
     if(isMe || (spectating && !otherPlayer)) {
-        let shClass = 'player-stronghold-row our-side';
+        let shClass = "player-stronghold-row our-side";
         if(thisPlayer && thisPlayer.imperialFavor) {
-            shClass += ' favor';
+            shClass += " favor";
         }
         return (
             <div className={ shClass }>
                 { thisPlayer && thisPlayer.role && thisPlayer.role.location ? (
                     <CardPile
-                        className='rolecard'
-                        source='role card'
+                        className="rolecard"
+                        source="role card"
                         cards={ [thisPlayer.role] }
                         topCard={ thisPlayer.role }
                         disableMenu
@@ -123,9 +122,9 @@ function StrongholdRow({
         );
     }
 
-    let shClass = 'player-stronghold-row their-side';
+    let shClass = "player-stronghold-row their-side";
     if(otherPlayer && otherPlayer.imperialFavor) {
-        shClass += ' favor';
+        shClass += " favor";
     }
     return (
         <div className={ shClass }>
@@ -133,8 +132,8 @@ function StrongholdRow({
             { getStronghold(otherPlayer, isSkirmish) }
             { otherPlayer && otherPlayer.role && otherPlayer.role.location ? (
                 <CardPile
-                    className='rolecard'
-                    source='role card'
+                    className="rolecard"
+                    source="role card"
                     cards={ [otherPlayer.role] }
                     topCard={ otherPlayer.role }
                     disableMenu
@@ -150,21 +149,6 @@ function StrongholdRow({
     );
 }
 
-StrongholdRow.displayName = 'StrongholdRow';
-StrongholdRow.propTypes = {
-    cardSize: PropTypes.string,
-    isMe: PropTypes.bool,
-    isSkirmish: PropTypes.bool,
-    onCardClick: PropTypes.func,
-    onDragDrop: PropTypes.func,
-    onMenuItemClick: PropTypes.func,
-    onMouseOut: PropTypes.func,
-    onMouseOver: PropTypes.func,
-    otherPlayer: PropTypes.object,
-    role: PropTypes.object,
-    spectating: PropTypes.bool,
-    strongholdProvinceCards: PropTypes.array,
-    thisPlayer: PropTypes.object
-};
+StrongholdRow.displayName = "StrongholdRow";
 
 export default StrongholdRow;

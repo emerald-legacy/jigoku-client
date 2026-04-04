@@ -1,13 +1,12 @@
-import { useState, useCallback, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { useState, useEffect } from "react";
+import { connect } from "react-redux";
 
-import AlertPanel from './SiteComponents/AlertPanel.jsx';
-import DeckSummary from './DeckSummary.jsx';
-import Link from './Link.jsx';
-import DeckRow from './DeckRow.jsx';
+import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import DeckSummary from "./DeckSummary.jsx";
+import Link from "./Link.jsx";
+import DeckRow from "./DeckRow.jsx";
 
-import * as actions from './actions';
+import * as actions from "./actions";
 
 export function InnerDecks({
     apiError,
@@ -43,32 +42,32 @@ export function InnerDecks({
         }
     }, [deckDeleted, clearDeckStatus]);
 
-    const handleDeleteClick = useCallback((event) => {
+    const handleDeleteClick = (event) => {
         event.preventDefault();
         setShowDelete(prev => !prev);
-    }, []);
+    };
 
-    const handleEditClick = useCallback((event) => {
+    const handleEditClick = (event) => {
         event.preventDefault();
-        navigate('/decks/edit');
-    }, [navigate]);
+        navigate("/decks/edit");
+    };
 
-    const handleConfirmDeleteClick = useCallback((event) => {
+    const handleConfirmDeleteClick = (event) => {
         event.preventDefault();
         deleteDeck(selectedDeck);
         setShowDelete(false);
-    }, [deleteDeck, selectedDeck]);
+    };
 
-    const handleToggleSelectAll = useCallback((event) => {
+    const handleToggleSelectAll = (event) => {
         if(event.target.checked) {
             const allDeckIds = decks.map(deck => deck._id);
             setSelectedDeckIds(allDeckIds);
         } else {
             setSelectedDeckIds([]);
         }
-    }, [decks]);
+    };
 
-    const handleToggleSelectDeck = useCallback((deckId) => {
+    const handleToggleSelectDeck = (deckId) => {
         setSelectedDeckIds(prev => {
             const index = prev.indexOf(deckId);
             if(index === -1) {
@@ -77,28 +76,28 @@ export function InnerDecks({
             return prev.filter(id => id !== deckId);
 
         });
-    }, []);
+    };
 
-    const handleDeleteSelectedClick = useCallback((event) => {
+    const handleDeleteSelectedClick = (event) => {
         event.preventDefault();
         setShowDeleteSelected(prev => !prev);
-    }, []);
+    };
 
-    const handleConfirmDeleteSelectedClick = useCallback((event) => {
+    const handleConfirmDeleteSelectedClick = (event) => {
         event.preventDefault();
         if(selectedDeckIds.length > 0) {
             deleteDecks(selectedDeckIds);
             setShowDeleteSelected(false);
             setSelectedDeckIds([]);
         }
-    }, [deleteDecks, selectedDeckIds]);
+    };
 
     let content = null;
 
     if(loading) {
         content = <div>Loading decks from the server...</div>;
     } else if(apiError) {
-        content = <AlertPanel type='error' message={ apiError } />;
+        content = <AlertPanel type="error" message={ apiError } />;
     } else {
         const deckCount = decks ? decks.length : 0;
         const isAtLimit = deckCount >= 50;
@@ -107,18 +106,18 @@ export function InnerDecks({
         let limitWarning = null;
         if(isAtLimit) {
             limitWarning = (
-                <AlertPanel type='warning' message='You have reached the maximum limit of 50 decks. Please delete some decks before creating new ones.' />
+                <AlertPanel type="warning" message="You have reached the maximum limit of 50 decks. Please delete some decks before creating new ones." />
             );
         } else if(isNearLimit) {
             limitWarning = (
-                <AlertPanel type='info' message={ `You have ${deckCount} out of 50 decks. Consider deleting unused decks.` } />
+                <AlertPanel type="info" message={ `You have ${deckCount} out of 50 decks. Consider deleting unused decks.` } />
             );
         }
 
         let successPanel = null;
         if(deckDeleted) {
             successPanel = (
-                <AlertPanel message='Deck deleted successfully' type='success' />
+                <AlertPanel message="Deck deleted successfully" type="success" />
             );
         }
 
@@ -137,16 +136,16 @@ export function InnerDecks({
         let deckInfo = null;
         if(selectedDeck) {
             deckInfo = (
-                <div className='col-sm-7'>
-                    <div className='panel-title text-center'>
+                <div className="col-sm-7">
+                    <div className="panel-title text-center">
                         { selectedDeck.name }
                     </div>
-                    <div className='panel'>
-                        <div className='btn-group'>
-                            <button className='btn btn-primary' onClick={ handleEditClick }>Edit</button>
-                            <button className='btn btn-primary' onClick={ handleDeleteClick }>Delete</button>
+                    <div className="panel">
+                        <div className="btn-group">
+                            <button className="btn btn-primary" onClick={ handleEditClick }>Edit</button>
+                            <button className="btn btn-primary" onClick={ handleDeleteClick }>Delete</button>
                             { showDelete && (
-                                <button className='btn btn-danger' onClick={ handleConfirmDeleteClick }>Delete</button>
+                                <button className="btn btn-danger" onClick={ handleConfirmDeleteClick }>Delete</button>
                             ) }
                         </div>
                         <DeckSummary deck={ selectedDeck } cards={ cards } stats={ deckStats && selectedDeck ? deckStats[selectedDeck._id] : undefined } />
@@ -156,37 +155,37 @@ export function InnerDecks({
         }
 
         content = (
-            <div className='full-height'>
+            <div className="full-height">
                 { successPanel }
                 { limitWarning }
-                <div className='row h-full'>
-                    <div className='col-sm-5 full-height relative'>
-                        <div className='panel-title text-center'>
+                <div className="row h-full">
+                    <div className="col-sm-5 full-height relative">
+                        <div className="panel-title text-center">
                         Your decks ({ deckCount } / 50)
                         </div>
-                        <div className='panel deck-list-container'>
-                            <div className='btn-group'>
+                        <div className="panel deck-list-container">
+                            <div className="btn-group">
                                 { isAtLimit ? (
-                                    <button className='btn btn-primary' disabled title='Maximum deck limit reached'>New Deck</button>
+                                    <button className="btn btn-primary" disabled title="Maximum deck limit reached">New Deck</button>
                                 ) : (
-                                    <Link className='btn btn-primary' href='/decks/add'>New Deck</Link>
+                                    <Link className="btn btn-primary" href="/decks/add">New Deck</Link>
                                 ) }
                                 { selectedDeckIds.length > 0 && (
-                                    <button className='btn btn-danger' onClick={ handleDeleteSelectedClick }>
+                                    <button className="btn btn-danger" onClick={ handleDeleteSelectedClick }>
                                     Delete Selected ({ selectedDeckIds.length })
                                     </button>
                                 ) }
                                 { showDeleteSelected && (
-                                    <button className='btn btn-danger' onClick={ handleConfirmDeleteSelectedClick }>
+                                    <button className="btn btn-danger" onClick={ handleConfirmDeleteSelectedClick }>
                                     Confirm Delete
                                     </button>
                                 ) }
                             </div>
                             { decks && decks.length > 0 && (
-                                <div className='checkbox' style={ { marginTop: '10px', marginBottom: '10px' } }>
+                                <div className="checkbox" style={ { marginTop: "10px", marginBottom: "10px" } }>
                                     <label>
                                         <input
-                                            type='checkbox'
+                                            type="checkbox"
                                             checked={ selectedDeckIds.length === decks.length }
                                             onChange={ handleToggleSelectAll }
                                         />
@@ -194,8 +193,8 @@ export function InnerDecks({
                                     </label>
                                 </div>
                             ) }
-                            <div className='deck-list' style={ { top: decks && decks.length > 0 ? '95px' : '55px' } }>
-                                { !decks || decks.length === 0 ? 'You have no decks, try adding one.' : deckList }
+                            <div className="deck-list" style={ { top: decks && decks.length > 0 ? "95px" : "55px" } }>
+                                { !decks || decks.length === 0 ? "You have no decks, try adding one." : deckList }
                             </div>
                         </div>
                     </div>
@@ -208,24 +207,7 @@ export function InnerDecks({
     return content;
 }
 
-InnerDecks.displayName = 'Decks';
-InnerDecks.propTypes = {
-    apiError: PropTypes.string,
-    cards: PropTypes.object,
-    clearDeckStatus: PropTypes.func,
-    deckDeleted: PropTypes.bool,
-    deckStats: PropTypes.object,
-    decks: PropTypes.array,
-    deleteDeck: PropTypes.func,
-    deleteDecks: PropTypes.func,
-    loadDecks: PropTypes.func,
-    loadDeckStats: PropTypes.func,
-    loadDecksWithLazyValidation: PropTypes.func,
-    loading: PropTypes.bool,
-    navigate: PropTypes.func,
-    selectDeck: PropTypes.func,
-    selectedDeck: PropTypes.object
-};
+InnerDecks.displayName = "Decks";
 
 function mapStateToProps(state) {
     return {

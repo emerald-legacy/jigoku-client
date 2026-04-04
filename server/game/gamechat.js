@@ -10,7 +10,7 @@ class GameChat {
             noAvatar: player.user.settings.disableGravatar
         };
 
-        this.addMessage('{0} {1}', playerArg, message);
+        this.addMessage("{0} {1}", playerArg, message);
     }
 
     addMessage(message, ...args) {
@@ -27,7 +27,7 @@ class GameChat {
 
     formatMessage(format, args) {
         if(!format) {
-            return '';
+            return "";
         }
 
         let fragments = format.split(/(\{\d+\})/);
@@ -39,7 +39,7 @@ class GameChat {
                     if(arg.message) {
                         return output.concat(arg.message);
                     } else if(Array.isArray(arg)) {
-                        if(typeof arg[0] === 'string' && arg[0].includes('{')) {
+                        if(typeof arg[0] === "string" && arg[0].includes("{")) {
                             return output.concat(this.formatMessage(arg[0], arg.slice(1)));
                         }
                         return output.concat(this.formatArray(arg));
@@ -50,10 +50,10 @@ class GameChat {
 
                 }
             } else if(!argMatch && fragment) {
-                let splitFragment = fragment.split(' ');
+                let splitFragment = fragment.split(" ");
                 let lastWord = splitFragment.pop();
                 return splitFragment.reduce((output, word) => {
-                    return output.concat(word || [], ' ');
+                    return output.concat(word || [], " ");
                 }, output).concat(lastWord || []);
             }
             return output;
@@ -68,12 +68,12 @@ class GameChat {
         var format;
 
         if(array.length === 1) {
-            format = '{0}';
+            format = "{0}";
         } else if(array.length === 2) {
-            format = '{0} and {1}';
+            format = "{0} and {1}";
         } else {
-            var range = Array.from({ length: array.length - 1 }, (_, i) => '{' + i + '}');
-            format = range.join(', ') + ' and {' + (array.length - 1) + '}';
+            var range = Array.from({ length: array.length - 1 }, (_, i) => "{" + i + "}");
+            format = range.join(", ") + " and {" + (array.length - 1) + "}";
         }
 
         return this.formatMessage(format, array);

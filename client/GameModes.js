@@ -1,9 +1,9 @@
 const GameModes = Object.freeze({
-    Emerald: 'emerald',
-    Sanctuary: 'sanctuary',
-    Obsidian: 'obsidian',
-    Stronghold: 'stronghold',
-    Skirmish: 'skirmish'
+    Emerald: "emerald",
+    Sanctuary: "sanctuary",
+    Obsidian: "obsidian",
+    Stronghold: "stronghold",
+    Skirmish: "skirmish"
 });
 
-module.exports = GameModes;
+export default GameModes;

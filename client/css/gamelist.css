@@ -1,0 +1,450 @@
+.button-row {
+    margin-right: 10px;
+    margin-top: 10px;
+}
+
+.button-row > button {
+    margin-right: 10px;
+}
+
+.game-list {
+    position: absolute;
+    top: 55px;
+    bottom: 0px;
+    left: 10px;
+    right: 10px;
+    overflow-y: auto;
+}
+
+.game-row {
+    border-radius: 4px;
+    border: 1px solid var(--color-primary);
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    color: white;
+
+    &.skirmish {
+        border-color: var(--color-info);
+        background-color: rgba(35, 115, 168, 0.1);
+    }
+
+    &.sanctuary {
+        background-color: rgba(62, 146, 56, 0.1);
+    }
+
+    &.active {
+        border-color: var(--color-danger);
+        color: var(--color-danger);
+    }
+}
+
+.game-row-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+    overflow: hidden;
+}
+
+.game-row-remove {
+    flex-shrink: 0;
+    color: var(--color-danger);
+}
+
+.game-badge {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.game-badge-mode {
+    background: rgba(51, 102, 0, 0.4);
+    color: white;
+
+    .game-row.skirmish &,
+    .game-row.imperial & {
+        background: rgb(180, 150, 40);
+    }
+
+    .game-row.obsidian & {
+        background: rgb(190, 40, 40);
+    }
+}
+
+.game-badge-type-beginner {
+    background: rgb(62, 146, 56);
+    color: white;
+}
+
+.game-badge-type-casual {
+    background: rgba(91, 192, 222, 0.3);
+    color: white;
+}
+
+.game-badge-type-competitive {
+    background: rgb(139, 35, 35);
+    color: white;
+}
+
+.game-badge-lock {
+    padding: 0;
+    font-size: 13px;
+}
+
+.game-row-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: bold;
+}
+
+.game-row-content {
+    display: flex;
+    align-items: center;
+}
+
+.game-row-players {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    min-width: 0;
+    gap: 4px;
+}
+
+.game-row-player {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+}
+
+.player-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.game-row-vs {
+    flex-shrink: 0;
+    color: white;
+    font-size: 14px;
+    padding: 0 4px;
+}
+
+.game-icon {
+    flex-shrink: 0;
+}
+
+.game-row-empty {
+    opacity: 0.5;
+    font-style: italic;
+    font-size: 13px;
+}
+
+.game-row-buttons {
+    flex-shrink: 0;
+    margin-left: auto;
+    display: flex;
+    gap: 5px;
+    padding-left: 10px;
+}
+
+.clock-icon {
+    height: 1.2em;
+    width: 1.2em;
+    filter: invert(90%);
+    flex-shrink: 0;
+}
+
+.game-node {
+    padding-left: 5px;
+}
+
+.deck-link {
+    cursor: pointer;
+    cursor: hand;
+    color: var(--color-primary);
+    margin-left: 10px;
+}
+
+.deck-link:hover {
+    color: var(--color-info);
+}
+
+.deck-selection {
+    padding: 2px 8px;
+    border-radius: 3px;
+    background: rgba(51, 102, 0, 0.5);
+    color: white;
+    font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+.players {
+    min-height: 50px;
+    clear: both;
+}
+
+.spectators {
+    height: 95px;
+    overflow-y: auto;
+    clear: both;
+}
+
+.game-name-char-limit {
+    float: right;
+}
+
+.game-password {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.deck-status {
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    color: white;
+
+    &.valid {
+        background: var(--color-success);
+    }
+
+    &.casual-play {
+        background: var(--color-warning);
+    }
+
+    &.invalid {
+        background: var(--color-danger);
+    }
+}
+
+.deck-status-summary {
+    font-size: 12px;
+
+    & .valid {
+        color: var(--color-success);
+    }
+
+    & .invalid {
+        color: var(--color-danger);
+    }
+}
+
+.deck-status-errors {
+    border-top: 1px solid var(--color-header-border);
+    font-size: 14px;
+    margin-top: 1em;
+    padding-top: 1em;
+}
+
+.player-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: nowrap;
+    min-width: 0;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+.player-row-name {
+    white-space: nowrap;
+}
+
+.game-list-container {
+    position: absolute;
+    top: 33px;
+    bottom: 0px;
+    left: 15px;
+    right: 15px;
+}
+
+.node-1 {
+    background-color: rgba(240, 173, 78, 0.2);
+}
+
+.node-2 {
+    background-color: rgba(217, 83, 79, 0.2);
+}
+
+.node-3 {
+    background-color: rgba(91, 192, 222, 0.2);
+}
+
+.dev-node-1 {
+    background-color: rgba(240, 173, 78, 0.2);
+}
+
+.dev-node-2 {
+    background-color: rgba(217, 83, 79, 0.2);
+}
+
+.game-stats {
+    margin-top: 0;
+}
+
+.game-stats-body {
+    padding: 10px 14px;
+}
+
+.game-stats-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.game-stats-tab {
+    flex: 1;
+    padding: 4px 8px;
+    border: 1px solid rgba(51, 102, 0, 0.4);
+    border-radius: 3px;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+
+    &:hover {
+        background: rgba(51, 102, 0, 0.2);
+        color: white;
+    }
+
+    &.active {
+        background: rgba(51, 102, 0, 0.4);
+        color: white;
+        font-weight: 600;
+    }
+}
+
+.game-stats-empty {
+    font-size: 14px;
+    opacity: 0.6;
+    padding: 8px 0;
+}
+
+.game-stats-period {
+    font-weight: 400;
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.game-stats-total {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.game-stats-clans {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.game-stats-clan-row {
+    border-radius: 3px;
+    transition: background-color 0.15s;
+
+    &.expanded {
+        background: rgba(51, 102, 0, 0.15);
+    }
+}
+
+.game-stats-clan {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+
+    &.clickable {
+        cursor: pointer;
+
+        &:hover {
+            opacity: 0.8;
+        }
+    }
+}
+
+.game-stats-expand {
+    font-size: 9px;
+    opacity: 0.5;
+    margin-left: 2px;
+}
+
+.game-stats-matchups {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 16px;
+    padding: 4px 0 6px 0;
+    font-size: 12px;
+}
+
+.game-stats-matchup-vs {
+    width: 24px;
+    flex-shrink: 0;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.game-stats-matchup {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.game-stats-matchup-detail {
+    opacity: 0.5;
+}
+
+.game-stats-clan-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.game-stats-clan-wins {
+    font-weight: 600;
+    color: var(--color-success);
+}
+
+.game-stats-best {
+    padding-top: 8px;
+    border-top: 1px solid rgba(51, 102, 0, 0.4);
+}
+
+.game-stats-best-label {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.game-stats-best-clans {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+}
+
+.game-stats-best-entry {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 14px;
+}
+
+.game-stats-best-name {
+    text-transform: capitalize;
+}

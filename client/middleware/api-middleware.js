@@ -11,12 +11,12 @@ export default function callAPIMiddleware({ dispatch, getState }) {
             return next(action);
         }
 
-        if(!Array.isArray(types) || types.length !== 2 || !types.every(type => typeof type === 'string')) {
-            throw new Error('Expected an array of two string types.');
+        if(!Array.isArray(types) || types.length !== 2 || !types.every(type => typeof type === "string")) {
+            throw new Error("Expected an array of two string types.");
         }
 
-        if(typeof callAPI !== 'function') {
-            throw new Error('Expected callAPI to be a function.');
+        if(typeof callAPI !== "function") {
+            throw new Error("Expected callAPI to be a function.");
         }
 
         const [requestType, successType] = types;
@@ -30,7 +30,7 @@ export default function callAPIMiddleware({ dispatch, getState }) {
         }
 
         dispatch(Object.assign({}, payload, {
-            type: 'API_LOADING'
+            type: "API_LOADING"
         }));
 
         return callAPI().then(
@@ -39,7 +39,7 @@ export default function callAPIMiddleware({ dispatch, getState }) {
                     return dispatch(Object.assign({}, payload, {
                         status: 200,
                         message: response.message,
-                        type: 'API_FAILURE'
+                        type: "API_FAILURE"
                     }));
                 }
 
@@ -49,7 +49,7 @@ export default function callAPIMiddleware({ dispatch, getState }) {
                 }));
 
                 dispatch(Object.assign({}, payload, {
-                    type: 'API_LOADED'
+                    type: "API_LOADED"
                 }));
 
                 return ret;
@@ -57,14 +57,14 @@ export default function callAPIMiddleware({ dispatch, getState }) {
             error => {
                 dispatch(Object.assign({}, payload, {
                     status: error.status,
-                    message: 'An error occured communicating with the server.  Please try again later.',
-                    type: 'API_LOADED'
+                    message: "An error occured communicating with the server.  Please try again later.",
+                    type: "API_LOADED"
                 }));
 
                 dispatch(Object.assign({}, payload, {
                     status: error.status,
-                    message: 'An error occured communicating with the server.  Please try again later.',
-                    type: 'API_FAILURE'
+                    message: "An error occured communicating with the server.  Please try again later.",
+                    type: "API_FAILURE"
                 }));
             }
         );

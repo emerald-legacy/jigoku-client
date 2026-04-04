@@ -1,9 +1,9 @@
-const logger = require('../log.js');
+const logger = require("../log.js");
 
 class CardService {
     constructor(db) {
-        this.cards = db.collection('cards');
-        this.packs = db.collection('packs');
+        this.cards = db.collection("cards");
+        this.packs = db.collection("packs");
     }
 
     async replaceCards(cards) {

@@ -1,40 +1,40 @@
-const db = require('../db.js');
-const UserService = require('../services/UserService.js');
-const logger = require('../log.js');
+const db = require("../db.js");
+const UserService = require("../services/UserService.js");
+const logger = require("../log.js");
 
 module.exports.init = function(server) {
     const userService = new UserService(db.getDb());
 
-    server.get('/api/user/:username', async function(req, res) {
+    server.get("/api/user/:username", async function(req, res) {
         if(!req.user) {
-            return res.status(401).send({ message: 'Unauthorized' });
+            return res.status(401).send({ message: "Unauthorized" });
         }
 
         if(!req.user.permissions || !req.user.permissions.canManageUsers) {
-            return res.status(403).send({ message: 'Forbidden' });
+            return res.status(403).send({ message: "Forbidden" });
         }
 
         try {
             const user = await userService.getUserByUsername(req.params.username);
 
             if(!user) {
-                return res.status(404).send({ message: 'Not found' });
+                return res.status(404).send({ message: "Not found" });
             }
 
             res.send({ success: true, user: user });
         } catch(err) {
             logger.error(`Error fetching user ${req.params.username}: ${err}`);
-            res.status(500).send({ success: false, message: 'Error fetching user' });
+            res.status(500).send({ success: false, message: "Error fetching user" });
         }
     });
 
-    server.put('/api/user/:username', async function(req, res) {
+    server.put("/api/user/:username", async function(req, res) {
         if(!req.user) {
-            return res.status(401).send({ message: 'Unauthorized' });
+            return res.status(401).send({ message: "Unauthorized" });
         }
 
         if(!req.user.permissions || !req.user.permissions.canManageUsers) {
-            return res.status(403).send({ message: 'Forbidden' });
+            return res.status(403).send({ message: "Forbidden" });
         }
 
         try {
@@ -42,7 +42,7 @@ module.exports.init = function(server) {
             const user = await userService.getUserByUsername(req.params.username);
 
             if(!user) {
-                return res.status(404).send({ message: 'Not found' });
+                return res.status(404).send({ message: "Not found" });
             }
 
             user.permissions = userToSet.permissions;
@@ -51,7 +51,7 @@ module.exports.init = function(server) {
             res.send({ success: true });
         } catch(err) {
             logger.error(`Error saving user ${req.params.username}: ${err}`);
-            res.send({ success: false, message: 'An error occurred saving the user' });
+            res.send({ success: false, message: "An error occurred saving the user" });
         }
     });
 };

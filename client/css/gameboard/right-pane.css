@@ -1,0 +1,95 @@
+.right-side {
+    pointer-events: none;
+    position: absolute;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    height: 100%;
+    flex-direction: column;
+    min-width: 312px;
+    top: 0;
+    right: 0;
+    z-index: var(--layer-chat);
+
+    & .card-large {
+        position: relative;
+        top: auto;
+        right: auto;
+        overflow: hidden;
+    }
+}
+
+.chat {
+    pointer-events: auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    top: auto;
+    bottom: auto;
+    margin: 5px 0;
+    right: 5px;
+    height: calc(100% - 360px);
+    -webkit-transition: width 1s ease, right 0.5s ease;
+    transition: width 1s ease, right 0.5s ease;
+    overflow: hidden;
+
+    &.collapsed {
+        width: 0;
+        right: 30px;
+    }
+
+    & .messages {
+        position: relative;
+        top: auto;
+        bottom: auto;
+    }
+
+    & form {
+        position: relative;
+        top: auto;
+        bottom: auto;
+        left: auto;
+        right: auto;
+    }
+}
+
+.controls {
+    pointer-events: auto;
+    z-index: var(--layer-popups);
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding: 5px;
+    margin: 0;
+    top: 0;
+
+    & .btn {
+        position: relative;
+        vertical-align: middle;
+
+        &:hover svg {
+            color: #fff;
+        }
+    }
+
+    & svg {
+        color: var(--color-primary);
+    }
+
+    & .auto {
+        & svg {
+            color: var(--color-strength);
+        }
+    }
+
+    & .with-alert {
+        & svg.lucide-alert-circle {
+            color: var(--color-header-bg);
+            position: absolute;
+            top: -5px;
+            right: 0;
+            width: 20px;
+            height: 20px;
+        }
+    }
+}

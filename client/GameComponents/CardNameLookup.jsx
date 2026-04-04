@@ -1,7 +1,6 @@
-import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useState } from "react";
 
-import Typeahead from '../FormComponents/Typeahead.jsx';
+import Typeahead from "../FormComponents/Typeahead.jsx";
 
 function CardNameLookup({ cards, onCardSelected }) {
     const [cardName, setCardName] = useState(null);
@@ -20,12 +19,12 @@ function CardNameLookup({ cards, onCardSelected }) {
 
     return (
         <div>
-            <Typeahead labelKey='label' options={ cardOptions } dropup onChange={ onCardNameChange } />
+            <Typeahead labelKey="label" options={ cardOptions } dropup onChange={ onCardNameChange } />
             <button
-                type='button'
+                type="button"
                 disabled={ !cardName }
                 onClick={ onDoneClick }
-                className='btn btn-primary'
+                className="btn btn-primary"
             >
                 Done
             </button>
@@ -33,10 +32,6 @@ function CardNameLookup({ cards, onCardSelected }) {
     );
 }
 
-CardNameLookup.displayName = 'CardNameLookup';
-CardNameLookup.propTypes = {
-    cards: PropTypes.object,
-    onCardSelected: PropTypes.func
-};
+CardNameLookup.displayName = "CardNameLookup";
 
 export default CardNameLookup;

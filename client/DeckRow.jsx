@@ -1,54 +1,53 @@
-import PropTypes from 'prop-types';
 
 function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showCheckbox }) {
     const getStatusName = (status) => {
         if(!status) {
-            return 'Validating';
+            return "Validating";
         }
         if(status.valid) {
-            return 'Valid';
+            return "Valid";
         } else if(status.valid === false) {
-            return 'Invalid';
+            return "Invalid";
         }
-        return 'Validating';
+        return "Validating";
     };
 
     const getStatusClass = (status) => {
         if(!status) {
-            return 'casual-play';
+            return "casual-play";
         }
         if(status.valid) {
-            return 'valid';
+            return "valid";
         } else if(status.valid === false) {
-            return 'invalid';
+            return "invalid";
         }
-        return 'casual-play';
+        return "casual-play";
     };
 
     const deckStatus = getStatusName(deck.status);
     const statusClass = getStatusClass(deck.status);
 
     return (
-        <div className={ `deck-row${active ? ' active' : ''}` } key={ deck.name } onClick={ onClick }>
+        <div className={ `deck-row${active ? " active" : ""}` } key={ deck.name } onClick={ onClick }>
             { showCheckbox && (
-                <div className='deck-row-checkbox' onClick={ (e) => e.stopPropagation() }>
+                <div className="deck-row-checkbox" onClick={ (e) => e.stopPropagation() }>
                     <input
-                        type='checkbox'
+                        type="checkbox"
                         checked={ isSelected }
                         onChange={ () => onCheckboxChange(deck._id) }
                     />
                 </div>
             ) }
-            <div className='deck-row-clans'>
-                <img className='deck-clan-icon' src={ '/img/mons/' + deck.faction.value + '.png' } />
+            <div className="deck-row-clans">
+                <img className="deck-clan-icon" src={ `/img/mons/${deck.faction.value}.png` } />
                 { deck.alliance && deck.alliance.value ? (
                     <>
-                        <span className='deck-clan-separator'>/</span>
-                        <img className='deck-clan-icon' src={ '/img/mons/' + deck.alliance.value + '.png' } />
+                        <span className="deck-clan-separator">/</span>
+                        <img className="deck-clan-icon" src={ `/img/mons/${deck.alliance.value}.png` } />
                     </>
                 ) : null }
             </div>
-            <span className='deck-row-name'>
+            <span className="deck-row-name">
                 { deck.name }
             </span>
             <span className={ `deck-row-status ${statusClass}` }>
@@ -58,14 +57,6 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
     );
 }
 
-DeckRow.displayName = 'DeckRow';
-DeckRow.propTypes = {
-    active: PropTypes.bool,
-    deck: PropTypes.object,
-    isSelected: PropTypes.bool,
-    onCheckboxChange: PropTypes.func,
-    onClick: PropTypes.func,
-    showCheckbox: PropTypes.bool
-};
+DeckRow.displayName = "DeckRow";
 
 export default DeckRow;

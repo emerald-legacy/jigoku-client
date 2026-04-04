@@ -1,27 +1,27 @@
-const db = require('../db.js');
-const NewsService = require('../services/NewsService.js');
-const logger = require('../log.js');
+const db = require("../db.js");
+const NewsService = require("../services/NewsService.js");
+const logger = require("../log.js");
 
 module.exports.init = function(server) {
     const newsService = new NewsService(db.getDb());
 
-    server.get('/api/news', async function(req, res) {
+    server.get("/api/news", async function(req, res) {
         try {
             const news = await newsService.getRecentNewsItems({ limit: req.query.limit });
             res.send({ success: true, news: news });
         } catch(err) {
             logger.error(`Error loading news: ${err}`);
-            res.send({ success: false, message: 'Error loading news' });
+            res.send({ success: false, message: "Error loading news" });
         }
     });
 
-    server.put('/api/news', async function(req, res) {
+    server.put("/api/news", async function(req, res) {
         if(!req.user) {
-            return res.status(401).send({ message: 'Unauthorized' });
+            return res.status(401).send({ message: "Unauthorized" });
         }
 
         if(!req.user.permissions || !req.user.permissions.canEditNews) {
-            return res.status(403).send({ message: 'Forbidden' });
+            return res.status(403).send({ message: "Forbidden" });
         }
 
         try {
@@ -33,7 +33,7 @@ module.exports.init = function(server) {
             res.send({ success: true });
         } catch(err) {
             logger.error(`Error saving news item: ${err}`);
-            res.send({ success: false, message: 'Error saving news item' });
+            res.send({ success: false, message: "Error saving news item" });
         }
     });
 };

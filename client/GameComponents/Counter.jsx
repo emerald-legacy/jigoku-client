@@ -1,14 +1,13 @@
-import PropTypes from 'prop-types';
 
 function Counter({ cancel, fade, name, shortName, value }) {
-    let className = 'counter ' + name;
+    let className = `counter ${name}`;
 
     if(cancel) {
-        className += ' cancel';
+        className += " cancel";
     }
 
     if(fade) {
-        className += ' fade-out';
+        className += " fade-out";
     }
 
     return (
@@ -19,13 +18,6 @@ function Counter({ cancel, fade, name, shortName, value }) {
     );
 }
 
-Counter.displayName = 'Counter';
-Counter.propTypes = {
-    cancel: PropTypes.bool,
-    fade: PropTypes.bool,
-    name: PropTypes.string.isRequired,
-    shortName: PropTypes.string,
-    value: PropTypes.number
-};
+Counter.displayName = "Counter";
 
 export default Counter;

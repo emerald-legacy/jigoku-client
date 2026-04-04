@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 
 /**
  * Typed useDispatch hook - use throughout the app instead of plain useDispatch

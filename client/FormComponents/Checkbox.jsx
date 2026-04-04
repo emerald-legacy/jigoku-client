@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 
 function Checkbox({
     checked,
@@ -11,10 +10,10 @@ function Checkbox({
     onChange
 }) {
     const checkBox = (
-        <div className={ 'checkbox ' + (fieldClass || '') }>
+        <div className={ `checkbox ${fieldClass || ""}` }>
             <label htmlFor={ name } className={ labelClass }>
                 <input
-                    type='checkbox'
+                    type="checkbox"
                     id={ name }
                     checked={ checked }
                     onChange={ onChange }
@@ -29,19 +28,9 @@ function Checkbox({
         return checkBox;
     }
 
-    return <div className='form-group'>{ checkBox }</div>;
+    return <div className="form-group">{ checkBox }</div>;
 }
 
-Checkbox.displayName = 'Checkbox';
-Checkbox.propTypes = {
-    checked: PropTypes.bool,
-    children: PropTypes.object,
-    fieldClass: PropTypes.string,
-    label: PropTypes.string,
-    labelClass: PropTypes.string,
-    name: PropTypes.string,
-    noGroup: PropTypes.bool,
-    onChange: PropTypes.func
-};
+Checkbox.displayName = "Checkbox";
 
 export default Checkbox;

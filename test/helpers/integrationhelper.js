@@ -1,19 +1,19 @@
 /* global describe, beforeEach, jasmine */
 /* eslint camelcase: 0, no-invalid-this: 0 */
 
-const _ = require('underscore');
+const _ = require("underscore");
 
-require('./objectformatters.js');
+require("./objectformatters.js");
 
-const DeckBuilder = require('./deckbuilder.js');
-const GameFlowWrapper = require('./gameflowwrapper.js');
+const DeckBuilder = require("./deckbuilder.js");
+const GameFlowWrapper = require("./gameflowwrapper.js");
 
 const deckBuilder = new DeckBuilder();
 
 const ProxiedGameFlowWrapperMethods = [
-    'eachPlayerInFirstPlayerOrder', 'startGame', 'keepDynasty', 'keepConflict', 'skipSetupPhase', 'selectFirstPlayer',
-    'noMoreActions', 'selectStrongholdProvinces', 'advancePhases', 'getPromptedPlayer', 'nextPhase', 'getChatLogs',
-    'getChatLog'
+    "eachPlayerInFirstPlayerOrder", "startGame", "keepDynasty", "keepConflict", "skipSetupPhase", "selectFirstPlayer",
+    "noMoreActions", "selectStrongholdProvinces", "advancePhases", "getPromptedPlayer", "nextPhase", "getChatLogs",
+    "getChatLog"
 ];
 
 var customMatchers = {
@@ -45,7 +45,7 @@ var customMatchers = {
                 if(result.pass) {
                     result.message = `Expected ${actual.name} not to have enabled prompt button "${expected}" but it did.`;
                 } else {
-                    var buttonText = _.map(buttons, button => '[' + button.text + (button.disabled ? ' (disabled) ' : '') + ']').join('\n');
+                    var buttonText = _.map(buttons, button => "[" + button.text + (button.disabled ? " (disabled) " : "") + "]").join("\n");
                     result.message = `Expected ${actual.name} to have enabled prompt button "${expected}" but it had buttons:\n${buttonText}`;
                 }
 
@@ -64,7 +64,7 @@ var customMatchers = {
                 if(result.pass) {
                     result.message = `Expected ${actual.name} not to have disabled prompt button "${expected}" but it did.`;
                 } else {
-                    var buttonText = _.map(buttons, button => '[' + button.text + (button.disabled ? ' (disabled) ' : '') + ']').join('\n');
+                    var buttonText = _.map(buttons, button => "[" + button.text + (button.disabled ? " (disabled) " : "") + "]").join("\n");
                     result.message = `Expected ${actual.name} to have disabled prompt button "${expected}" but it had buttons:\n${buttonText}`;
                 }
 
@@ -119,13 +119,13 @@ beforeEach(function() {
 });
 
 global.integration = function(definitions) {
-    describe('integration', function() {
+    describe("integration", function() {
         beforeEach(function() {
             this.flow = new GameFlowWrapper();
 
             this.game = this.flow.game;
-            this.player1Object = this.game.getPlayerByName('player1');
-            this.player2Object = this.game.getPlayerByName('player2');
+            this.player1Object = this.game.getPlayerByName("player1");
+            this.player2Object = this.game.getPlayerByName("player2");
             this.player1 = this.flow.player1;
             this.player2 = this.flow.player2;
 
@@ -166,8 +166,8 @@ global.integration = function(definitions) {
                     });
                 }
 
-                if(options.phase !== 'setup') {
-                    if(['draw', 'fate'].includes(options.phase)) {
+                if(options.phase !== "setup") {
+                    if(["draw", "fate"].includes(options.phase)) {
                         this.player1.player.promptedActionWindows[options.phase] = true;
                         this.player2.player.promptedActionWindows[options.phase] = true;
                     }
@@ -210,31 +210,31 @@ global.integration = function(definitions) {
                     this.player1.provinces = options.player1.provinces;
                     this.player2.provinces = options.player2.provinces;
                 }
-                for(const location of ['province 1', 'province 2', 'province 3', 'province 4']) {
+                for(const location of ["province 1", "province 2", "province 3", "province 4"]) {
                     this.player1.player.replaceDynastyCard(location);
                     this.player2.player.replaceDynastyCard(location);
                 }
-                if(options.phase !== 'setup') {
+                if(options.phase !== "setup") {
                     this.game.checkGameState(true);
                 }
             };
 
             this.initiateConflict = function(options = {}) {
                 if(!options.type) {
-                    options.type = 'military';
+                    options.type = "military";
                 }
                 if(!options.ring) {
-                    options.ring = 'air';
+                    options.ring = "air";
                 }
-                let attackingPlayer = this.getPromptedPlayer('Choose an elemental ring\n(click the ring again to change conflict type)');
+                let attackingPlayer = this.getPromptedPlayer("Choose an elemental ring\n(click the ring again to change conflict type)");
                 if(!attackingPlayer) {
-                    throw new Error('Neither player can declare a conflict');
+                    throw new Error("Neither player can declare a conflict");
                 }
                 attackingPlayer.declareConflict(options.type, options.province, options.attackers, options.ring);
                 if(!options.defenders) {
                     return;
                 }
-                let defendingPlayer = this.getPromptedPlayer('Choose defenders');
+                let defendingPlayer = this.getPromptedPlayer("Choose defenders");
                 defendingPlayer.assignDefenders(options.defenders);
                 if(!options.jumpTo) {
                     return;

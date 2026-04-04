@@ -9,11 +9,6 @@
     // In production, add your game node URLs here, e.g.: ['https://node1.example.com', 'wss://node1.example.com']
     cspConnectSources: ['http://localhost:9501', 'http://localhost:9502', 'ws://localhost:9501', 'ws://localhost:9502'],
 
-    /*
-     * Other global configurations used, but not specified, include:
-     *  - sentryDsn (for production only)
-     */
-
     lobby: {
         port: 4000
 

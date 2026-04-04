@@ -15,8 +15,8 @@ function processDecks(decks, state) {
         }
         deck.faction = state.factions[deck.faction.value];
         if(deck.alliance) {
-            if(deck.alliance.value === '') {
-                deck.alliance = { name: '', value: '' };
+            if(deck.alliance.value === "") {
+                deck.alliance = { name: "", value: "" };
             } else {
                 deck.alliance = state.factions[deck.alliance.value];
             }
@@ -73,17 +73,17 @@ function processDecks(decks, state) {
 export default function(state = {}, action) {
     let newState;
     switch(action.type) {
-        case 'RECEIVE_CARDS':
+        case "RECEIVE_CARDS":
             var agendas = {};
 
             Object.values(action.response.cards).forEach(card => {
-                if(card.type === 'agenda' && card.pack_code !== 'VDS') {
+                if(card.type === "agenda" && card.pack_code !== "VDS") {
                     agendas[card.id] = card;
                 }
             });
 
             var banners = Object.values(agendas).filter(card => {
-                return card.label.startsWith('Banner of the');
+                return card.label.startsWith("Banner of the");
             });
 
             return Object.assign({}, state, {
@@ -91,11 +91,11 @@ export default function(state = {}, action) {
                 agendas: agendas,
                 banners: banners
             });
-        case 'RECEIVE_PACKS':
+        case "RECEIVE_PACKS":
             return Object.assign({}, state, {
                 packs: action.response.packs
             });
-        case 'RECEIVE_FACTIONS':
+        case "RECEIVE_FACTIONS":
             var factions = {};
 
             action.response.factions.forEach(faction => {
@@ -105,7 +105,7 @@ export default function(state = {}, action) {
             return Object.assign({}, state, {
                 factions: factions
             });
-        case 'RECEIVE_FORMATS':
+        case "RECEIVE_FORMATS":
             var formats = {};
 
             action.response.formats.forEach(format => {
@@ -115,15 +115,15 @@ export default function(state = {}, action) {
             return Object.assign({}, state, {
                 formats: formats
             });
-        case 'ZOOM_CARD':
+        case "ZOOM_CARD":
             return Object.assign({}, state, {
                 zoomCard: action.card
             });
-        case 'CLEAR_ZOOM':
+        case "CLEAR_ZOOM":
             return Object.assign({}, state, {
                 zoomCard: undefined
             });
-        case 'RECEIVE_DECKS':
+        case "RECEIVE_DECKS":
             if(!action.response || !action.response.decks) {
                 return state;
             }
@@ -136,12 +136,12 @@ export default function(state = {}, action) {
             newState = selectDeck(newState, newState.decks[0]);
 
             return newState;
-        case 'REQUEST_DECK':
+        case "REQUEST_DECK":
             return Object.assign({}, state, {
                 deckSaved: false,
                 deckDeleted: false
             });
-        case 'REQUEST_DECKS':
+        case "REQUEST_DECKS":
             newState = Object.assign({}, state, {
                 deckSaved: false,
                 deckDeleted: false
@@ -154,7 +154,7 @@ export default function(state = {}, action) {
             }
 
             return newState;
-        case 'RECEIVE_DECK':
+        case "RECEIVE_DECK":
             newState = Object.assign({}, state, {
                 singleDeck: true,
                 deckSaved: false
@@ -183,7 +183,7 @@ export default function(state = {}, action) {
             newState = selectDeck(newState, selected);
 
             return newState;
-        case 'SELECT_DECK':
+        case "SELECT_DECK":
             newState = Object.assign({}, state, {
                 selectedDeck: action.deck,
                 deckSaved: false
@@ -194,8 +194,8 @@ export default function(state = {}, action) {
             }
 
             return newState;
-        case 'ADD_DECK':
-            var newDeck = { name: 'New Deck' };
+        case "ADD_DECK":
+            var newDeck = { name: "New Deck" };
 
             newState = Object.assign({}, state, {
                 selectedDeck: newDeck,
@@ -205,7 +205,7 @@ export default function(state = {}, action) {
             processDecks([newState.selectedDeck], state);
 
             return newState;
-        case 'UPDATE_DECK':
+        case "UPDATE_DECK":
             newState = Object.assign({}, state, {
                 selectedDeck: action.deck,
                 deckSaved: false
@@ -216,7 +216,7 @@ export default function(state = {}, action) {
             }
 
             return newState;
-        case 'UPDATE_DECK_STATUS':
+        case "UPDATE_DECK_STATUS":
             newState = Object.assign({}, state);
 
             // Update status in the decks array
@@ -235,20 +235,20 @@ export default function(state = {}, action) {
             }
 
             return newState;
-        case 'SAVE_DECK':
+        case "SAVE_DECK":
             newState = Object.assign({}, state, {
                 deckSaved: false
             });
 
             return newState;
-        case 'RECEIVE_DECK_STATS':
+        case "RECEIVE_DECK_STATS":
             if(!action.response || !action.response.stats) {
                 return state;
             }
             return Object.assign({}, state, {
                 deckStats: action.response.stats
             });
-        case 'DECK_SAVED':
+        case "DECK_SAVED":
             newState = Object.assign({}, state, {
                 deckSaved: true,
                 decks: undefined,
@@ -256,7 +256,7 @@ export default function(state = {}, action) {
             });
 
             return newState;
-        case 'DECK_DELETED':
+        case "DECK_DELETED":
             newState = Object.assign({}, state, {
                 deckDeleted: true
             });
@@ -273,7 +273,7 @@ export default function(state = {}, action) {
             newState.selectedDeck = newState.decks[0];
 
             return newState;
-        case 'DECKS_DELETED':
+        case "DECKS_DELETED":
             newState = Object.assign({}, state, {
                 deckDeleted: true
             });
@@ -292,12 +292,12 @@ export default function(state = {}, action) {
             newState.selectedDeck = newState.decks[0];
 
             return newState;
-        case 'CLEAR_DECK_STATUS':
+        case "CLEAR_DECK_STATUS":
             return Object.assign({}, state, {
                 deckDeleted: false,
                 deckSaved: false
             });
-        case 'RECEIVE_DECKS_UNVALIDATED':
+        case "RECEIVE_DECKS_UNVALIDATED":
             processDecks(action.decks, state);
             newState = Object.assign({}, state, {
                 singleDeck: false,
@@ -308,7 +308,7 @@ export default function(state = {}, action) {
             newState = selectDeck(newState, newState.decks[0]);
 
             return newState;
-        case 'UPDATE_DECKS_VALIDATION':
+        case "UPDATE_DECKS_VALIDATION":
             newState = Object.assign({}, state);
 
             if(newState.decks) {
@@ -329,7 +329,7 @@ export default function(state = {}, action) {
             }
 
             return newState;
-        case 'DECKS_VALIDATION_COMPLETE':
+        case "DECKS_VALIDATION_COMPLETE":
             return Object.assign({}, state, {
                 decksValidating: false
             });
