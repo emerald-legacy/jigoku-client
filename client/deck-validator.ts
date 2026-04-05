@@ -1,3 +1,4 @@
+/// <reference lib="dom" />
 import axios from "axios";
 import GameModes from "./GameModes";
 
@@ -40,6 +41,10 @@ class ValidatorCache {
 }
 
 class DeckValidator {
+    packs: any;
+    gameMode: any;
+    cache: any;
+
     constructor(packs, gameMode) {
         this.packs = packs;
         this.gameMode = gameMode;

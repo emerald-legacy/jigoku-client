@@ -1,4 +1,6 @@
 class GameChat {
+    messages: any;
+
     constructor() {
         this.messages = [];
     }

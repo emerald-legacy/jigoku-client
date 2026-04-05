@@ -95,6 +95,11 @@ function recordGame(bucket, game, players) {
 }
 
 class GameStatsService {
+    games: any;
+    cache: any;
+    cacheTime: any;
+    static getInstance: any;
+
     constructor(db) {
         this.games = db.collection("games");
         this.cache = null;
@@ -132,7 +137,7 @@ class GameStatsService {
                 ]
             }).toArray();
 
-            const buckets = {};
+            const buckets: any = {};
             for(const mode of statModes) {
                 buckets[mode] = emptyBucket();
             }
@@ -153,7 +158,7 @@ class GameStatsService {
                 }
             }
 
-            const stats = {};
+            const stats: any = {};
             for(const mode of statModes) {
                 stats[mode] = computeStats(buckets[mode]);
             }

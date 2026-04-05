@@ -49,7 +49,7 @@ module.exports.init = function(server) {
             return res.status(401).send({ message: "Unauthorized" });
         }
 
-        const options = {};
+        const options: any = {};
         if(req.query.format) {
             options.format = req.query.format;
         }

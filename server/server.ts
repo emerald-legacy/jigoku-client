@@ -41,6 +41,11 @@ const authLimiter = rateLimit({
 });
 
 class Server {
+    isDeveloping: any;
+    app: any;
+    server: any;
+    userService: any;
+
     constructor(isDeveloping) {
         this.isDeveloping = isDeveloping;
         this.app = app;

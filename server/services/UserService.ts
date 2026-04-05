@@ -3,6 +3,8 @@ const logger = require("../log.js");
 const { toObjectId } = require("../db.js");
 
 class UserService {
+    users: any;
+
     constructor(db) {
         this.users = db.collection("users");
     }
@@ -49,7 +51,7 @@ class UserService {
     }
 
     async update(user) {
-        const toSet = {
+        const toSet: any = {
             email: user.email,
             settings: user.settings,
             promptedActionWindows: user.promptedActionWindows,

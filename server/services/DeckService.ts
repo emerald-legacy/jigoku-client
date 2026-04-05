@@ -2,6 +2,8 @@ const logger = require("../log.js");
 const { toObjectId } = require("../db.js");
 
 class DeckService {
+    decks: any;
+
     constructor(db) {
         this.decks = db.collection("decks");
     }
@@ -15,8 +17,8 @@ class DeckService {
         }
     }
 
-    async findByUserName(userName, options = {}) {
-        const query = { username: userName };
+    async findByUserName(userName, options: any = {}) {
+        const query: any = { username: userName };
 
         if(options.format) {
             query["format.value"] = options.format;

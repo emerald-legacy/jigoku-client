@@ -19,7 +19,19 @@ const ONE_HOUR = 60 * ONE_MINUTE;
 const FOUR_HOURS = 4 * ONE_HOUR;
 
 class Lobby {
-    constructor(server, options = {}) {
+    sockets: any;
+    users: any;
+    games: any;
+    config: any;
+    deckService: any;
+    cardService: any;
+    router: any;
+    titleCardData: any;
+    io: any;
+    lastUserBroadcast: any;
+    shortCardData: any;
+
+    constructor(server, options: any = {}) {
         this.sockets = {};
         this.users = {};
         this.games = {};
@@ -202,7 +214,7 @@ class Lobby {
         socket.send("users", filteredUsers);
     }
 
-    broadcastGameList(socket) {
+    broadcastGameList(socket?) {
         let sockets = socket ? [socket] : Object.values(this.sockets);
         sockets.forEach(socket => {
             if(socket) {

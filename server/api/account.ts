@@ -25,7 +25,7 @@ function hashPassword(password, rounds) {
 }
 
 function loginUser(request, user) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         request.login(user, function (err) {
             if(err) {
                 return reject(err);
@@ -37,7 +37,7 @@ function loginUser(request, user) {
 }
 
 function sendEmail(address, email) {
-    return new Promise((resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
         var emailTransport = nodemailer.createTransport(config.emailPath);
 
         emailTransport.sendMail({

@@ -11,6 +11,13 @@ const FIFTEEN_SECONDS = 15 * ONE_SECOND;
 const THIRTY_SECONDS = 30 * ONE_SECOND;
 
 class GameRouter extends EventEmitter {
+    workers: any;
+    gameService: any;
+    gameStatsService: any;
+    deckStatsService: any;
+    connections: any;
+    wss: any;
+
     constructor(config) {
         super();
 
@@ -264,7 +271,7 @@ class GameRouter extends EventEmitter {
     }
 
     // Internal methods
-    sendCommand(identity, command, arg) {
+    sendCommand(identity, command, arg?) {
         const logLevel = (command === "PING") ? "debug" : "info";
         logger[logLevel](`sending ${command} to ${identity}`);
 

@@ -23,10 +23,10 @@ async function runStats() {
 
     console.info("" + games.length, "total games");
 
-    let players = {};
-    let factions = {};
-    let alliances = {};
-    let factionAlliances = {};
+    let players: any = {};
+    let factions: any = {};
+    let alliances: any = {};
+    let factionAlliances: any = {};
 
     games.forEach(game => {
         if(Object.keys(game.players).length !== 2) {

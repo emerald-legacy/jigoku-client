@@ -3,7 +3,11 @@ const EventEmitter = require("events");
 const jwt = require("jsonwebtoken");
 
 class Socket extends EventEmitter {
-    constructor(socket, options = {}) {
+    socket: any;
+    user: any;
+    config: any;
+
+    constructor(socket, options: any = {}) {
         super();
 
         this.socket = socket;

@@ -19,6 +19,8 @@ function emptyStats() {
 }
 
 class DeckStatsService {
+    collection: any;
+
     constructor(db) {
         this.collection = db.collection("deckstats");
         this.ensureIndexes();

@@ -1,6 +1,9 @@
 const logger = require("../log.js");
 
 class CardService {
+    cards: any;
+    packs: any;
+
     constructor(db) {
         this.cards = db.collection("cards");
         this.packs = db.collection("packs");

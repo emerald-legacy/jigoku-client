@@ -6,6 +6,23 @@ const GameChat = require("./game/gamechat.js");
 const GameModes = require("../client/GameModes").default;
 
 class PendingGame {
+    owner: any;
+    players: any;
+    spectators: any;
+    id: any;
+    name: any;
+    allowSpectators: any;
+    spectatorSquelch: any;
+    skirmishMode: any;
+    gameMode: any;
+    gameType: any;
+    clocks: any;
+    createdAt: any;
+    gameChat: any;
+    node: any;
+    started: any;
+    password: any;
+
     constructor(owner, details) {
         this.owner = owner;
         this.players = {};
@@ -64,8 +81,8 @@ class PendingGame {
     }
 
     // Actions
-    addMessage() {
-        this.gameChat.addMessage(...arguments);
+    addMessage(...args: any[]) {
+        this.gameChat.addMessage(...args);
     }
 
     addPlayer(id, user) {

@@ -1,6 +1,8 @@
 const logger = require("../log.js");
 
 class GameService {
+    games: any;
+
     constructor(db) {
         this.games = db.collection("games");
     }

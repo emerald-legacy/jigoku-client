@@ -1,4 +1,6 @@
 class NewsService {
+    news: any;
+
     constructor(db) {
         this.news = db.collection("news");
     }
