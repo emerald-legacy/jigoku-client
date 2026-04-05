@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 import AdditionalCardPile from "./AdditionalCardPile.jsx";
-import Card from "./Card.jsx";
 import CardPile from "./CardPile.jsx";
 import Province from "./Province.jsx";
 import { tryParseJSON } from "../util.js";
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
 function DynastyRow({
     additionalPiles,
     cardSize,
@@ -73,6 +73,7 @@ function DynastyRow({
             onDragDrop(dragData.card, dragData.source, target);
         }
     };
+    /* eslint-enable @typescript-eslint/no-unused-vars */
 
     const handleConflictCloseClick = () => {
         if(onConflictClick) {
@@ -106,6 +107,7 @@ function DynastyRow({
         }
     };
 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     const handleDiscardedCardClick = (event, cardId) => {
         event.preventDefault();
         event.stopPropagation();
@@ -122,6 +124,7 @@ function DynastyRow({
     const handleDynastyMenuClick = () => {
         setShowDynastyMenu(prev => !prev);
     };
+    /* eslint-enable @typescript-eslint/no-unused-vars */
 
     const handleConflictShuffleClick = () => {
         if(onConflictShuffleClick) {
@@ -147,6 +150,7 @@ function DynastyRow({
         }
     };
 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     let additionalPilesElements;
     if(!additionalPiles) {
         additionalPilesElements = [];
@@ -165,6 +169,7 @@ function DynastyRow({
             />
         ));
     }
+    /* eslint-enable @typescript-eslint/no-unused-vars */
 
     const conflictDeckMenu = [
         { text: "Show", handler: handleShowConflictDeckClick, showPopup: true },

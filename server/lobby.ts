@@ -1,7 +1,7 @@
 const { Server } = require("socket.io");
 const Socket = require("./socket.js");
 const jwt = require("jsonwebtoken");
-const { parseISO, differenceInSeconds } = require("date-fns");
+const { differenceInSeconds } = require("date-fns");
 
 const logger = require("./log.js");
 const version = new Date(require("../version.js").default);

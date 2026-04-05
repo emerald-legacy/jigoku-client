@@ -4,6 +4,7 @@ import { bindActionCreators } from "@reduxjs/toolkit";
 import Draggable from "react-draggable";
 
 import PlayerStatsBox from "./GameComponents/PlayerStatsBox.jsx";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- used in commented-out sidebar stats feature
 import PlayerStatsRow from "./GameComponents/PlayerStatsRow.jsx";
 import PlayerHand from "./GameComponents/PlayerHand.jsx";
 import DynastyRow from "./GameComponents/DynastyRow.jsx";

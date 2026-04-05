@@ -1,5 +1,3 @@
-/* global cardImageVersion */
-
 declare const cardImageVersion: string | undefined;
 
 const versionSuffix = typeof cardImageVersion !== "undefined" && cardImageVersion

@@ -83,7 +83,7 @@ class DeckValidator {
             };
             this.cache.updateCache(key, resultObj);
             return resultObj;
-        } catch(e) {
+        } catch(_e) {
             return {
                 valid: undefined,
                 extendedStatus: ["Error Validating"]
@@ -99,7 +99,7 @@ export default async function validateDeck(deck, options) {
     let result = await validator.validateDeck(deck);
 
     if(!options.includeExtendedStatus) {
-        // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { extendedStatus, ...resultWithoutExtendedStatus } = result;
         return resultWithoutExtendedStatus;
     }

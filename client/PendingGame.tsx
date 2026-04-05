@@ -27,9 +27,12 @@ export function InnerPendingGame({
     const messagePanelRef = useRef(null);
     const prevPlayersRef = useRef(null);
 
+    /* eslint-disable @typescript-eslint/no-unused-vars */
     const [playerCount, setPlayerCount] = useState(1);
     const [playSound, setPlaySound] = useState(true);
+    /* eslint-enable @typescript-eslint/no-unused-vars */
     const [message, setMessage] = useState("");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [decksLoading, setDecksLoading] = useState(true);
     const [waiting, setWaiting] = useState(false);
     const [filteredDecks, setFilteredDecks] = useState([]);
@@ -182,6 +185,7 @@ export function InnerPendingGame({
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleSendClick = (event) => {
         event.preventDefault();
         sendMessage();

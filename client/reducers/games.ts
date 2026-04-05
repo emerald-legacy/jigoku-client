@@ -90,8 +90,8 @@ function games(state: GamesState = {
                 passwordJoinType: undefined
             });
         case "CLEAR_GAMESTATE": {
-            // eslint-disable-next-line no-unused-vars
-            const { currentGame, ...stateWithoutGame } = state;
+
+            const { currentGame: _currentGame, ...stateWithoutGame } = state;
             retState = stateWithoutGame;
             retState.newGame = false;
             return retState as GamesState;

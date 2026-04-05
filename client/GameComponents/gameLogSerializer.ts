@@ -136,7 +136,7 @@ export function parseGameLog(arrayBuffer: ArrayBuffer) {
     try {
         const decompressed = gunzipSync(new Uint8Array(arrayBuffer));
         json = strFromU8(decompressed);
-    } catch(e) {
+    } catch(_e) {
         const decoder = new TextDecoder();
         json = decoder.decode(arrayBuffer);
     }

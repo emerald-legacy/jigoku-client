@@ -54,7 +54,6 @@ function Card(props) {
         declaring,
         disableMouseOver,
         id,
-        isInPopup,
         isMe,
         onClick,
         onCloseClick,

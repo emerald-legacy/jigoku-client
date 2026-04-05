@@ -20,7 +20,7 @@ export function loadDecks(format: string | null = null) {
                         const status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
                         deck.status = status;
                         return deck;
-                    } catch(error) {
+                    } catch(_error) {
                         deck.status = {
                             valid: undefined,
                             extendedStatus: ["Error Validating"]
@@ -51,7 +51,7 @@ export function loadDeck(deckId: string) {
                 try {
                     const status = await validateDeck(response.data.deck, { includeExtendedStatus: true, gameMode });
                     response.data.deck.status = status;
-                } catch(error) {
+                } catch(_error) {
                     response.data.deck.status = {
                         valid: undefined,
                         extendedStatus: ["Error Validating"]
@@ -172,7 +172,7 @@ async function validateDecksInBatches(decks: any[], dispatch: any, batchSize = 1
             try {
                 const status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
                 return { deckId: deck._id, status };
-            } catch(error) {
+            } catch(_error) {
                 return {
                     deckId: deck._id,
                     status: { valid: undefined, extendedStatus: ["Error Validating"] }

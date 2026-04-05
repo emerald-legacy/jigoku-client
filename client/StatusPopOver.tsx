@@ -34,10 +34,8 @@ function StatusPopOver({ children, show, status }) {
                     } }
                 >
                     <div className="arrow" style={ { left: "50%" } } />
-                    <div
-                        className="popover-content"
-                        dangerouslySetInnerHTML={ { __html: content } }
-                    />
+                    { /* eslint-disable-next-line react/no-danger */ }
+                    <div className="popover-content" dangerouslySetInnerHTML={ { __html: content } } />
                 </div>
             ) }
         </span>

@@ -71,9 +71,8 @@ module.exports = [
             "react-hooks/rules-of-hooks": "error",
             "react-hooks/exhaustive-deps": "warn",
 
-            // Downgraded to warn for legacy code
-            "react/no-unescaped-entities": "warn",
-            "no-unused-vars": "warn",
+            "react/no-unescaped-entities": "off", // Apostrophes in prose are fine
+            "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
 
             // Code style rules
             "indent": ["error", 4, { SwitchCase: 1 }],
@@ -170,11 +169,10 @@ module.exports = [
             "react-hooks/rules-of-hooks": "error",
             "react-hooks/exhaustive-deps": "warn",
 
-            // Downgraded to warn for legacy code
-            "react/no-unescaped-entities": "warn",
+            "react/no-unescaped-entities": "off", // Apostrophes in prose are fine
             "no-undef": "off", // TypeScript handles this
             "no-unused-vars": "off",
-            "@typescript-eslint/no-unused-vars": "warn",
+            "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" }],
 
             // Code style rules
             "indent": ["error", 4, { SwitchCase: 1 }],

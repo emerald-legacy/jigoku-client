@@ -68,7 +68,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
         }
 
         let index = 0;
-        return message.map((fragment, key) => {
+        return message.map((fragment, _key) => {
             if(fragment === null || fragment === undefined) {
                 return "";
             }

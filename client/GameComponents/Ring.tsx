@@ -72,6 +72,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
         return true;
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const getIcon = () => {
         if(ring.conflictType === "military") {
             return (

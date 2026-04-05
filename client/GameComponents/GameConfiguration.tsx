@@ -11,6 +11,7 @@ const windows = [
 ];
 
 function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettingToggle, onToggle, optionSettings, timerSettings }) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [windowTimer, setWindowTimer] = useState(timerSettings.windowTimer);
 
     const handleToggle = (option, value) => {
@@ -19,6 +20,7 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
         }
     };
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const handleSlideStop = (event) => {
         let value = parseInt(event.target.value);
 

@@ -27,7 +27,9 @@ class CardService {
 
             result.forEach(card => {
                 if(options && options.shortForm) {
+                    // eslint-disable-next-line camelcase
                     const { id, name, type, clan, faction, side, deck_limit, elements, is_unique, influence_cost, influence_pool, versions, role_restriction, allowed_clans } = card;
+                    // eslint-disable-next-line camelcase
                     cards[card.id] = { id, name, type, clan, faction, side, deck_limit, elements, is_unique, influence_cost, influence_pool, versions, role_restriction, allowed_clans };
                 } else {
                     cards[card.id] = card;

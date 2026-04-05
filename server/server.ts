@@ -138,7 +138,7 @@ class Server {
                 });
                 app.use(vite.middlewares);
                 useViteDev = true;
-            } catch(err) {
+            } catch(_err) {
                 logger.info("Vite not available, serving pre-built bundle from public/");
             }
         }
@@ -149,7 +149,7 @@ class Server {
             try {
                 const manifestPath = path.join(projectRoot, "public", ".vite", "manifest.json");
                 manifest = JSON.parse(fs.readFileSync(manifestPath, "utf8"));
-            } catch(err) {
+            } catch(_err) {
                 logger.warn("Could not load .vite/manifest.json, falling back to default filenames");
             }
         }
@@ -160,7 +160,7 @@ class Server {
             const versionPath = path.join(projectRoot, "public", "img", "cards", "version.json");
             const versionData = JSON.parse(fs.readFileSync(versionPath, "utf8"));
             cardImageVersion = String(versionData.timestamp);
-        } catch(err) {
+        } catch(_err) {
             // No version file — no cache busting for images
         }
 
@@ -171,7 +171,7 @@ class Server {
 
             if(authReq.user) {
                 token = jwt.sign(authReq.user, config.secret);
-                const { blockList, ...userWithoutBlockList } = authReq.user;
+                const { blockList: _blockList, ...userWithoutBlockList } = authReq.user;
                 authReq.user = userWithoutBlockList;
             }
 

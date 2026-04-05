@@ -9,7 +9,7 @@ export function tryParseJSON(jsonString: string): any {
         if(retObject && typeof retObject === "object") {
             return retObject;
         }
-    } catch(e) {
+    } catch(_e) {
         return false;
     }
     return false;

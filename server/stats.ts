@@ -99,7 +99,8 @@ async function runStats() {
         return { name: faction.name, wins: faction.wins, losses: faction.losses, winRate: Math.round(((faction.wins / games) * 100)) };
     });
 
-    let allianceWinRates = Object.values(alliances).map(faction => { // eslint-disable-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    let allianceWinRates = Object.values(alliances).map(faction => {
         let games = alliances.wins + alliances.losses;
 
         return { name: faction.name, wins: faction.wins, losses: faction.losses, winRate: Math.round(((faction.wins / games) * 100)) };

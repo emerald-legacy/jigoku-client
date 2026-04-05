@@ -26,11 +26,12 @@ function Clock({
 }: ClockProps) {
     const [timeLeft, setTimeLeft] = useState(0);
     const [periods, setPeriods] = useState(0);
-    // eslint-disable-next-line no-unused-vars
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [mainTime, setMainTime] = useState(0);
     const [timePeriod, setTimePeriod] = useState(0);
     const [delayToStartClock, setDelayToStartClock] = useState(0);
-    // eslint-disable-next-line no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [manuallyPaused, setManuallyPaused] = useState(false);
 
     const prevStateIdRef = useRef<any>(null);

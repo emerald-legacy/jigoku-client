@@ -63,6 +63,7 @@ function ActivePlayerPrompt({
     const [showTimer, setShowTimer] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
     const [timerClass, setTimerClass] = useState("100%");
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [timerCancelled, setTimerCancelled] = useState(false);
 
     const timerRef = useRef({ started: null, timerTime: 0 });
