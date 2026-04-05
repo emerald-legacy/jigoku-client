@@ -19,7 +19,7 @@ export default defineConfig({
         outDir: 'public',
         manifest: true,
         rollupOptions: {
-            input: 'client/index.jsx',
+            input: 'client/index.tsx',
             output: {
                 assetFileNames: 'assets/[name].[hash].[ext]',
                 chunkFileNames: 'assets/[name].[hash].js',
@@ -38,7 +38,7 @@ export default defineConfig({
         '__BUILD_VERSION__': JSON.stringify(process.env.BUILD_VERSION || 'LOCAL')
     },
     resolve: {
-        extensions: ['.js', '.jsx', '.json']
+        extensions: ['.ts', '.tsx', '.js', '.jsx', '.json']
     },
     optimizeDeps: {
         include: ['react', 'react-dom', 'react-redux', '@reduxjs/toolkit']

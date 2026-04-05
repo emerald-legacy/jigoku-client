@@ -28,10 +28,10 @@ client.connect()
 
 if [ "$CARD_COUNT" = "0" ]; then
   echo "No cards found in database. Fetching card data..."
-  node server/scripts/fetchdata.js ${ENVIRONMENT:-live}
+  node build/server/scripts/fetchdata.js ${ENVIRONMENT:-live}
 else
   echo "Card data already exists ($CARD_COUNT cards)"
 fi
 
 # Start the application
-exec node index.js
+exec node build/index.js

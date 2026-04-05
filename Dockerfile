@@ -12,8 +12,8 @@ COPY . .
 ARG BUILD_VERSION=LOCAL
 ENV BUILD_VERSION=$BUILD_VERSION
 
-# Build client bundle and remove dev dependencies
-RUN mkdir -p server/logs public/img/cards && npm run build && npm prune --omit=dev
+# Build server (tsc) and client bundle (vite), then remove dev dependencies
+RUN mkdir -p server/logs public/img/cards && npm run build:all && npm prune --omit=dev
 
 # Production stage
 FROM node:24.14-alpine3.23
@@ -24,17 +24,13 @@ WORKDIR /app
 # Copy pruned node_modules and built artifacts
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/server ./server
+COPY --from=builder /app/build ./build
 COPY --from=builder /app/views ./views
 COPY --from=builder /app/config ./config
 COPY --from=builder /app/package.json ./
-COPY --from=builder /app/index.js ./
-COPY --from=builder /app/version.js ./
 COPY --from=builder /app/docker-entrypoint.sh ./
-COPY --from=builder /app/client/GameModes.js ./client/
-COPY --from=builder /app/client/deck-validator.js ./client/
 
-RUN mkdir -p server/logs public/img/cards && chmod +x docker-entrypoint.sh \
+RUN mkdir -p build/server/logs public/img/cards && chmod +x docker-entrypoint.sh \
     && chown -R node:node /app
 
 ARG BUILD_VERSION=LOCAL

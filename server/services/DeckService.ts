@@ -1,0 +1,75 @@
+const logger = require("../log.js");
+const { toObjectId } = require("../db.js");
+
+class DeckService {
+    decks: any;
+
+    constructor(db) {
+        this.decks = db.collection("decks");
+    }
+
+    async getById(id) {
+        try {
+            return await this.decks.findOne({ _id: toObjectId(id) });
+        } catch(err) {
+            logger.error(`Unable to fetch deck ${id}: ${err}`);
+            throw new Error("Unable to fetch deck " + id);
+        }
+    }
+
+    async findByUserName(userName, options: any = {}) {
+        const query: any = { username: userName };
+
+        if(options.format) {
+            query["format.value"] = options.format;
+        }
+
+        return this.decks.find(query).sort({ lastUpdated: -1 }).toArray();
+    }
+
+    async countByUserName(userName) {
+        return this.decks.countDocuments({ username: userName });
+    }
+
+    async create(deck) {
+        const properties = {
+            username: deck.username,
+            name: deck.deckName,
+            provinceCards: deck.provinceCards,
+            stronghold: deck.stronghold,
+            role: deck.role,
+            conflictCards: deck.conflictCards,
+            dynastyCards: deck.dynastyCards,
+            faction: deck.faction,
+            alliance: deck.alliance,
+            format: deck.format,
+            lastUpdated: new Date()
+        };
+
+        const result = await this.decks.insertOne(properties);
+        return { ...properties, _id: result.insertedId };
+    }
+
+    async update(deck) {
+        const properties = {
+            name: deck.deckName,
+            provinceCards: deck.provinceCards,
+            stronghold: deck.stronghold,
+            role: deck.role,
+            conflictCards: deck.conflictCards,
+            dynastyCards: deck.dynastyCards,
+            faction: deck.faction,
+            alliance: deck.alliance,
+            format: deck.format,
+            lastUpdated: new Date()
+        };
+
+        return this.decks.updateOne({ _id: toObjectId(deck.id) }, { $set: properties });
+    }
+
+    async delete(id) {
+        return this.decks.deleteOne({ _id: toObjectId(id) });
+    }
+}
+
+module.exports = DeckService;
