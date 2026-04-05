@@ -10,12 +10,12 @@ export default defineConfig({
     test: {
         globals: true,
         environment: 'jsdom',
-        setupFiles: ['./test/client/setup.js'],
-        include: ['test/client/**/*.spec.{js,jsx}'],
+        setupFiles: ['./test/client/setup.ts'],
+        include: ['test/client/**/*.spec.{js,jsx,ts,tsx}'],
         coverage: {
             provider: 'v8',
             reporter: ['text', 'html'],
-            include: ['client/**/*.{js,jsx}'],
+            include: ['client/**/*.{js,jsx,ts,tsx}'],
             exclude: ['client/DevTools.jsx']
         },
         server: {

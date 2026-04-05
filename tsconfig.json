@@ -2,28 +2,30 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
-    "target": "es2017",
+    "target": "es2022",
     "sourceMap": true,
     "outDir": "build",
+    "rootDir": ".",
     "allowJs": true,
-    "checkJs": true,
+    "strict": false,
     "lib": [
-      "es2017",
-      "dom"
+      "es2022"
     ],
     "esModuleInterop": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
   "include": [
     "server/**/*",
-    "index.js"
+    "index.ts",
+    "version.js",
+    "client/GameModes.ts",
+    "client/deck-validator.ts"
   ],
   "exclude": [
     "node_modules",
     "test/**/*",
-    "client/**/*"
+    "build/**/*"
   ]
 }
