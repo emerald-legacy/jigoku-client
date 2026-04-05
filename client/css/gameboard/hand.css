@@ -61,6 +61,7 @@
 }
 
 .hand.squish {
+    display: flex;
     flex-shrink: 1;
     flex-wrap: nowrap;
 
@@ -68,6 +69,7 @@
         border-radius: 4px 0px 0px 4px;
         min-width: var(--attachment-offset);
         flex-basis: var(--card-width);
+        overflow: hidden;
 
         &.large {
             min-width: var(--attachment-offset-lg);
@@ -89,13 +91,10 @@
             flex-basis: var(--card-xxl-width);
         }
 
-        &.tail {
-            overflow: hidden;
-
-            &.nohide {
-                overflow: visible;
-                border-radius: 4px;
-            }
+        &:last-child {
+            flex-shrink: 0;
+            overflow: visible;
+            border-radius: 4px;
         }
 
         & .card-frame {
