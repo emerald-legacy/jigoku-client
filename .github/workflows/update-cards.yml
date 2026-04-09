@@ -32,5 +32,5 @@ jobs:
             cd /opt/jigoku
             FORCE_FLAG=${{ inputs.force_images == true && '--force' || '' }}
             CYCLE_FLAG="${{ inputs.card_set != 'all' && format('--cycle {0}', inputs.card_set) || '' }}"
-            docker compose -f docker-compose.prod.yml exec -T lobby \
+            docker compose -f docker-compose.prod.yml exec -T --user node lobby \
               node build/server/scripts/fetchdata.js live $FORCE_FLAG $CYCLE_FLAG
