@@ -30,6 +30,9 @@ export function recordState(gameState: GameState): void {
 }
 
 export function setHiddenInfo(data: any[]): void {
+    if(!isRecording) {
+        return;
+    }
     hiddenInfo = data;
 }
 

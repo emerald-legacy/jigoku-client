@@ -121,7 +121,7 @@ class App extends React.Component {
         });
 
         socket.on("gamestate", game => {
-            if(game.started) {
+            if(game.started && game.players?.[this.props.username]) {
                 recordState(game);
             }
             this.props.receiveGameState(game, this.props.username);
@@ -194,10 +194,13 @@ class App extends React.Component {
             });
 
             gameSocket.on("gamestate", game => {
-                if(game.started && !game.winner) {
+                const isPlayer = !!game.players?.[this.props.username];
+                if(isPlayer && game.started && !game.winner) {
                     startRecording();
                 }
-                recordState(game);
+                if(isPlayer) {
+                    recordState(game);
+                }
                 this.props.receiveGameState(game, this.props.username);
             });
 
