@@ -107,6 +107,32 @@ function mergeHiddenInfo(state, hiddenInfo) {
                 }
             }
         }
+
+        const strongholdCards = player.strongholdProvince;
+        const hiddenStronghold = info.provinces?.stronghold;
+        const hiddenChildren = info.strongholdChildren;
+        if(strongholdCards && (hiddenStronghold || hiddenChildren)) {
+            merged.players[playerName].strongholdProvince = strongholdCards.map((card, i) => {
+                let nextCard = card;
+                const hidden = hiddenStronghold?.[i];
+                if(card.facedown && hidden && (hidden.type === "stronghold" || hidden.type === "province")) {
+                    nextCard = { ...nextCard, id: hidden.id, name: hidden.name, packId: hidden.packId };
+                }
+                if(card.isStronghold && Array.isArray(card.childCards) && hiddenChildren && hiddenChildren.length > 0) {
+                    nextCard = {
+                        ...nextCard,
+                        childCards: card.childCards.map((child, j) => {
+                            const revealed = hiddenChildren[j];
+                            if(child.facedown && revealed) {
+                                return { ...child, id: revealed.id, name: revealed.name, packId: revealed.packId };
+                            }
+                            return child;
+                        })
+                    };
+                }
+                return nextCard;
+            });
+        }
     }
 
     return merged;
