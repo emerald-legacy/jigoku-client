@@ -13,7 +13,7 @@ const speeds = [
 
 const noop = () => {};
 
-function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJumpToStart, onJumpToEnd, onStepBack, onStepForward, onTogglePlay, onSpeedChange, onReset }) {
+function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, showHiddenInfo, onJumpToStart, onJumpToEnd, onStepBack, onStepForward, onTogglePlay, onSpeedChange, onToggleHiddenInfo, onReset }) {
     return (
         <div className="replay-bar">
             <div className="replay-controls">
@@ -48,6 +48,10 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, onJu
                 </span>
             </div>
             <div className="replay-actions">
+                <label className="replay-toggle">
+                    <input type="checkbox" checked={ showHiddenInfo } onChange={ onToggleHiddenInfo } />
+                    Show hidden info
+                </label>
                 <button className="btn btn-default btn-sm" onClick={ onReset }>Load File</button>
             </div>
         </div>
@@ -144,6 +148,7 @@ function GameReplay() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [speedIndex, setSpeedIndex] = useState(1);
+    const [showHiddenInfo, setShowHiddenInfo] = useState(true);
     const [cardToZoom, setCardToZoom] = useState(null);
     const [error, setError] = useState(null);
     const [dragOver, setDragOver] = useState(false);
@@ -288,7 +293,7 @@ function GameReplay() {
     };
 
     // Merge hidden info (opponent's hand cards + facedown provinces) into displayed state
-    const currentState = entry.hiddenInfo ? mergeHiddenInfo(baseState, entry.hiddenInfo) : baseState;
+    const currentState = (entry.hiddenInfo && showHiddenInfo) ? mergeHiddenInfo(baseState, entry.hiddenInfo) : baseState;
 
     const metadata = logData.metadata;
     const playerNames = metadata.players.map((p) => p.name);
@@ -330,12 +335,14 @@ function GameReplay() {
                     totalStates={ totalStates }
                     isPlaying={ isPlaying }
                     speedIndex={ speedIndex }
+                    showHiddenInfo={ showHiddenInfo }
                     onJumpToStart={ handleJumpToStart }
                     onJumpToEnd={ handleJumpToEnd }
                     onStepBack={ () => setCurrentIndex((i) => Math.max(0, i - 1)) }
                     onStepForward={ () => setCurrentIndex((i) => Math.min(totalStates - 1, i + 1)) }
                     onTogglePlay={ () => setIsPlaying(!isPlaying) }
                     onSpeedChange={ setSpeedIndex }
+                    onToggleHiddenInfo={ () => setShowHiddenInfo((v) => !v) }
                     onReset={ handleReset }
                 />,
                 portalTarget
