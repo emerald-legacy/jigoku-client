@@ -147,6 +147,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
     padding: 2px 0;
 
     & .btn {
@@ -156,5 +157,20 @@
             color: inherit;
             margin-right: 3px;
         }
+    }
+}
+
+.replay-toggle {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    opacity: 0.75;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+
+    &:hover {
+        opacity: 1;
     }
 }

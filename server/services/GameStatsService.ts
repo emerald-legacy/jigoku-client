@@ -152,7 +152,7 @@ class GameStatsService {
                 }
 
                 const mode = game.gameMode;
-                if(mode && buckets[mode]) {
+                if(game.winner && mode && buckets[mode]) {
                     recordGame(buckets[mode], game, players);
                     recordGame(buckets.all, game, players);
                 }
