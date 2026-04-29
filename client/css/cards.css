@@ -1,6 +1,7 @@
 .card-wrapper {
     vertical-align: middle;
     display: inline-block;
+    transition: width 0.3s ease-out, height 0.3s ease-out, min-width 0.3s ease-out;
 
     &.at-home {
         order: 2;
@@ -125,8 +126,8 @@
     position: relative;
     border-radius: 6px;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-    overflow: hidden;
     z-index: var(--layer-cards);
+    transition: width 0.3s ease-out, height 0.3s ease-out, margin-top 0.3s ease-out;
 
     &.small {
         &.vertical {
@@ -228,10 +229,19 @@
     }
 }
 
+.card-image-src {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
 .card-image {
     left: 0;
     position: absolute;
     top: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    transition: transform 0.3s ease-out, left 0.3s ease-out, top 0.3s ease-out;
 
     &.small {
         &.vertical {
@@ -562,6 +572,7 @@
         width: 25px;
         height: 25px;
         z-index: 2;
+        transition: opacity 0.2s ease-out;
     }
 }
 
@@ -665,5 +676,16 @@
 
     &.xxl {
         margin-top: calc(-1 * (var(--card-xxl-height) + var(--card-xxl-height) / 2));
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .card-image,
+    .card,
+    .card-wrapper {
+        transition: none;
+    }
+
+    .honorcounter > img {
+        transition: none;
     }
 }
