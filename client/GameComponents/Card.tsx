@@ -5,6 +5,7 @@ import CardMenu from "./CardMenu.jsx";
 import CardStats from "./CardStats.jsx";
 import CardCounters from "./CardCounters.jsx";
 import CardPile from "./CardPile.jsx";
+import AbilityPips from "./AbilityPips.jsx";
 import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl.js";
 
 const shortNames = {
@@ -615,7 +616,10 @@ function Card(props) {
                 >
                     <div>
                         <span className="card-name">{ card.name }</span>
-                        <img className={ imageClass } src={ !isFacedown() && !card.isToken ? getCardImagePath() : getCardBackUrl(cardBack) } />
+                    </div>
+                    <div className={ imageClass }>
+                        <img className="card-image-src" src={ !isFacedown() && !card.isToken ? getCardImagePath() : getCardBackUrl(cardBack) } />
+                        { card.abilityLimits && <AbilityPips abilityLimits={ card.abilityLimits } /> }
                     </div>
                     <CardCounters counters={ getCountersForCard(card) } />
                 </div>
