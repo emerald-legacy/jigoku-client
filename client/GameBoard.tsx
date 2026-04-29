@@ -804,7 +804,7 @@ export class InnerGameBoard extends React.Component {
                 <HonorChangeOverlay
                     animations={ this.props.pendingAnimations || [] }
                     onDismiss={ () => {
-                        const honorAnims = (this.props.pendingAnimations || []).filter(a => a.type === 'honor');
+                        const honorAnims = (this.props.pendingAnimations || []).filter(a => a.type === "honor");
                         honorAnims.forEach(a => this.props.dispatch(clearAnimation((a as any).playerName)));
                     } }
                 />

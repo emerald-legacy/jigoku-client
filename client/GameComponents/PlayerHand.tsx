@@ -1,5 +1,5 @@
-import React from 'react';
-import { CSSTransition, TransitionGroup } from 'react-transition-group';
+import React from "react";
+import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Card from "./Card.jsx";
 import { tryParseJSON } from "../util";
 
@@ -113,7 +113,7 @@ function PlayerHand({ cardSize, cards, isMe, onAnimationEnd, onCardClick, onDrag
             const staggerDelay = `${index * 40}ms`;
             return (
                 <CSSTransition key={ card.uuid } timeout={ 300 + index * 40 } classNames="hand-card" nodeRef={ nodeRef }>
-                    <div ref={ nodeRef } style={ { display: 'contents', '--hand-stagger-delay': staggerDelay } as React.CSSProperties }>
+                    <div ref={ nodeRef } style={ { display: "contents", "--hand-stagger-delay": staggerDelay } as React.CSSProperties }>
                         <Card
                             card={ card }
                             className={ className }
@@ -140,9 +140,9 @@ function PlayerHand({ cardSize, cards, isMe, onAnimationEnd, onCardClick, onDrag
         titleBarClassName += ` ${cardSize}`;
     }
 
-    const earthAnim = pendingAnimations?.find(a => a.type === 'earth' && a.playerName === playerName);
+    const earthAnim = pendingAnimations?.find(a => a.type === "earth" && a.playerName === playerName);
     if(earthAnim) {
-        className += ' ring-effect-earth';
+        className += " ring-effect-earth";
     }
 
     // Calculate dynamic width based on number of cards

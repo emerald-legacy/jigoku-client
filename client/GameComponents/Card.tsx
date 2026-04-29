@@ -536,7 +536,7 @@ function Card(props) {
             return <div />;
         }
 
-        const anim = pendingAnimations?.find(a => 'targetUuid' in a && a.targetUuid === card.uuid);
+        const anim = pendingAnimations?.find(a => "targetUuid" in a && a.targetUuid === card.uuid);
         const displayBowed = !anim && (orientation === "bowed" || card.bowed);
 
         if(size !== "normal") {

@@ -76,7 +76,7 @@ function games(state: GamesState = {
         case "CLEAR_ANIMATION": {
             const pending = state.pendingAnimations || [];
             const filtered = pending.filter(a => {
-                if('targetUuid' in a) {
+                if("targetUuid" in a) {
                     return a.targetUuid !== action.id;
                 }
                 return a.playerName !== action.id;
