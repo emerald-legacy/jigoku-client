@@ -25,6 +25,7 @@ import GameModes from "./GameModes";
 import { getCardImageUrl } from "./cardImageUrl.js";
 
 import * as actions from "./actions";
+import { clearAnimation } from "./ReduxActions/game";
 
 export class InnerGameBoard extends React.Component {
     constructor(props) {
@@ -275,12 +276,14 @@ export class InnerGameBoard extends React.Component {
         let conflict = this.props.currentGame.conflict;
         let cardSize = this.props.user.settings.cardSize;
         let disableCardStats = this.props.user.settings.optionSettings.disableCardStats;
+        let pendingAnimationsRef = this.props.pendingAnimations;
 
         if(cached &&
             cached.cardsInPlay === player.cardPiles.cardsInPlay &&
             cached.conflict === conflict &&
             cached.cardSize === cardSize &&
-            cached.disableCardStats === disableCardStats) {
+            cached.disableCardStats === disableCardStats &&
+            cached.pendingAnimations === pendingAnimationsRef) {
             return cached.result;
         }
 
@@ -313,12 +316,16 @@ export class InnerGameBoard extends React.Component {
         let playerIsDefending = (player && conflict.defendingPlayerId && player.id.includes(conflict.defendingPlayerId));
         let playerDeclaringParticipants = conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen));
 
+        const pendingAnimations = this.props.pendingAnimations;
+        const onAnimationEnd = (uuid) => this.props.dispatch(clearAnimation(uuid));
+
         Object.values(cardsByType).forEach(cards => {
             let cardsInPlay = cards.map(card => {
                 return (<Card key={ card.uuid } id={ card.uuid } source="play area" card={ card } disableMouseOver={ card.facedown && !card.code }
                     onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
                     showStats={ !disableCardStats } player={ player }
-                    onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ cardSize } isMe={ isMe } declaring={ playerDeclaringParticipants }/>);
+                    onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ cardSize } isMe={ isMe } declaring={ playerDeclaringParticipants }
+                    pendingAnimations={ pendingAnimations } onAnimationEnd={ onAnimationEnd }/>);
             });
             cardsByLocation.push(cardsInPlay);
         });
@@ -328,6 +335,7 @@ export class InnerGameBoard extends React.Component {
             conflict,
             cardSize,
             disableCardStats,
+            pendingAnimations: pendingAnimationsRef,
             result: cardsByLocation
         };
 
@@ -955,6 +963,7 @@ function mapStateToProps(state) {
         cardToZoom: state.cards.zoomCard,
         cards: state.cards.cards,
         currentGame: state.games.currentGame,
+        pendingAnimations: state.games.pendingAnimations,
         socket: state.socket.socket,
         user: state.auth.user,
         username: state.auth.username

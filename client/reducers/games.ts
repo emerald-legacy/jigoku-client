@@ -1,4 +1,4 @@
-import { GamesState } from "../types/redux";
+import { GamesState, AnimationEvent } from "../types/redux";
 
 function games(state: GamesState = {
     games: []
@@ -31,15 +31,21 @@ function games(state: GamesState = {
                 currentGame: action.game,
                 newGame: false
             });
-        case "RECEIVE_GAMESTATE":
+        case "RECEIVE_GAMESTATE": {
             // If server sends incremental messages, accumulate them
             if(action.currentGame && action.currentGame.newMessages && state.currentGame && state.currentGame.messages) {
                 action.currentGame.messages = state.currentGame.messages.concat(action.currentGame.messages);
             }
             delete action.currentGame.newMessages;
 
+            const incomingAnimations: AnimationEvent[] | undefined = action.currentGame.animations;
+            delete action.currentGame.animations;
+
             retState = Object.assign({}, state, {
-                currentGame: action.currentGame
+                currentGame: action.currentGame,
+                pendingAnimations: incomingAnimations !== undefined
+                    ? (state.pendingAnimations || []).concat(incomingAnimations)
+                    : state.pendingAnimations
             });
 
             var currentState = (retState as GamesState).currentGame;
@@ -66,6 +72,17 @@ function games(state: GamesState = {
             }
 
             return retState as GamesState;
+        }
+        case "CLEAR_ANIMATION": {
+            const pending = state.pendingAnimations || [];
+            const filtered = pending.filter(a => {
+                if('targetUuid' in a) {
+                    return a.targetUuid !== action.id;
+                }
+                return a.playerName !== action.id;
+            });
+            return Object.assign({}, state, { pendingAnimations: filtered });
+        }
         case "GAME_SOCKET_CLOSED":
             return Object.assign({}, state, {
                 currentGame: undefined

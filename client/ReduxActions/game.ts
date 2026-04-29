@@ -58,3 +58,10 @@ export function onGameHandoffReceived(details: any) {
         details: details
     };
 }
+
+export function clearAnimation(id: string) {
+    return {
+        type: "CLEAR_ANIMATION" as const,
+        id: id
+    };
+}

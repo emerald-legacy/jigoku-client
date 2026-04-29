@@ -4,6 +4,10 @@ import type { GameState, OnlineUser } from "./game";
 import type { AuthState, UserState } from "./user";
 import type { CardsState } from "./deck";
 
+export type AnimationEvent =
+    | { type: 'water' | 'fire' | 'void'; targetUuid: string; effect: string }
+    | { type: 'earth' | 'air'; playerName: string; effect: string };
+
 export interface NavigationState {
     path?: string;
     search?: string;
@@ -20,6 +24,7 @@ export interface GamesState {
     passwordError?: string;
     gameStats?: any;
     gameId?: string;
+    pendingAnimations?: AnimationEvent[];
 }
 
 export interface SocketState {

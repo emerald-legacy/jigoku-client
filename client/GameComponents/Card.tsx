@@ -57,12 +57,14 @@ function Card(props) {
         id,
         isMe,
         onClick,
+        onAnimationEnd,
         onCloseClick,
         onDragDrop,
         onMenuItemClick,
         onMouseOut,
         onMouseOver,
         orientation = "vertical",
+        pendingAnimations,
         player,
         popupLocation,
         showStats,
@@ -534,6 +536,9 @@ function Card(props) {
             return <div />;
         }
 
+        const anim = pendingAnimations?.find(a => 'targetUuid' in a && a.targetUuid === card.uuid);
+        const displayBowed = !anim && (orientation === "bowed" || card.bowed);
+
         if(size !== "normal") {
             cardClass += ` ${size}`;
             imageClass += ` ${size}`;
@@ -541,7 +546,7 @@ function Card(props) {
 
         cardClass += ` card-type-${card.type}`;
 
-        if(orientation === "bowed" || card.bowed) {
+        if(displayBowed) {
             cardClass += " horizontal";
             imageClass += " vertical bowed";
         } else if(card.isBroken) {
@@ -572,6 +577,10 @@ function Card(props) {
             cardClass += " controlled";
         } else if(card.new) {
             cardClass += " new";
+        }
+
+        if(anim) {
+            cardClass += ` ring-effect-${anim.type}`;
         }
 
         if(className) {
@@ -612,6 +621,7 @@ function Card(props) {
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
                     onClick={ ev => handleClick(ev, card) }
                     onDragStart={ ev => onCardDragStart(ev, card, source) }
+                    onAnimationEnd={ anim && onAnimationEnd ? () => onAnimationEnd(card.uuid) : undefined }
                     draggable
                 >
                     <div>
