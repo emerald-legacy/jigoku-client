@@ -1,3 +1,5 @@
+import React from 'react';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Card from "./Card.jsx";
 import { tryParseJSON } from "../util";
 
@@ -7,13 +9,16 @@ interface PlayerHandProps {
     cardSize?: string;
     cards: any[];
     isMe?: boolean;
+    onAnimationEnd?: (id: string) => void;
     onCardClick?: (card: any) => void;
     onDragDrop?: (card: any, source: string, target: string) => void;
     onMouseOut?: (card: any) => void;
     onMouseOver?: (card: any) => void;
+    pendingAnimations?: any[];
+    playerName?: string;
 }
 
-function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut, onMouseOver }: PlayerHandProps) {
+function PlayerHand({ cardSize, cards, isMe, onAnimationEnd, onCardClick, onDragDrop, onMouseOut, onMouseOver, pendingAnimations, playerName }: PlayerHandProps) {
     const handleDragOver = (event: React.DragEvent) => {
         (event.target as HTMLElement).classList.add("highlight-panel");
         event.preventDefault();
@@ -92,7 +97,7 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
                 break;
         }
 
-        return cards?.map((card) => {
+        return cards?.map((card, index) => {
             let className = "";
             if(needsSquish) {
                 className += " squish";
@@ -104,20 +109,25 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
                 }
             }
 
+            const nodeRef = React.createRef<HTMLDivElement>();
+            const staggerDelay = `${index * 40}ms`;
             return (
-                <Card
-                    key={ card.uuid }
-                    card={ card }
-                    className={ className }
-                    style={ EMPTY_STYLE }
-                    disableMouseOver={ !isMe }
-                    source="hand"
-                    onMouseOver={ onMouseOver }
-                    onMouseOut={ onMouseOut }
-                    onClick={ onCardClick }
-                    onDragDrop={ onDragDrop }
-                    size={ cardSize }
-                />
+                <CSSTransition key={ card.uuid } timeout={ 300 + index * 40 } classNames="hand-card" nodeRef={ nodeRef }>
+                    <div ref={ nodeRef } style={ { display: 'contents', '--hand-stagger-delay': staggerDelay } as React.CSSProperties }>
+                        <Card
+                            card={ card }
+                            className={ className }
+                            style={ EMPTY_STYLE }
+                            disableMouseOver={ !isMe }
+                            source="hand"
+                            onMouseOver={ onMouseOver }
+                            onMouseOut={ onMouseOut }
+                            onClick={ onCardClick }
+                            onDragDrop={ onDragDrop }
+                            size={ cardSize }
+                        />
+                    </div>
+                </CSSTransition>
             );
         }) || [];
     })();
@@ -128,6 +138,11 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
     if(cardSize !== "normal") {
         className += ` ${cardSize}`;
         titleBarClassName += ` ${cardSize}`;
+    }
+
+    const earthAnim = pendingAnimations?.find(a => a.type === 'earth' && a.playerName === playerName);
+    if(earthAnim) {
+        className += ' ring-effect-earth';
     }
 
     // Calculate dynamic width based on number of cards
@@ -150,15 +165,17 @@ function PlayerHand({ cardSize, cards, isMe, onCardClick, onDragDrop, onMouseOut
                     { `Hand (${handCards.length})` }
                 </div>
             </div>
-            <div
+            <TransitionGroup
+                component="div"
                 className={ className }
                 style={ handStyle }
                 onDragLeave={ handleDragLeave }
                 onDragOver={ handleDragOver }
-                onDrop={ (event) => handleDragDrop(event, "hand") }
+                onDrop={ (event) => handleDragDrop(event as React.DragEvent, "hand") }
+                onAnimationEnd={ earthAnim && onAnimationEnd ? () => onAnimationEnd(playerName!) : undefined }
             >
                 { handCards }
-            </div>
+            </TransitionGroup>
         </div>
     );
 }

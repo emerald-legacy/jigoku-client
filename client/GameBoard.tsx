@@ -682,7 +682,10 @@ export class InnerGameBoard extends React.Component {
                         onDragDrop={ this.onDragDrop }
                         onMouseOut={ this.onMouseOut }
                         onMouseOver={ this.onMouseOver }
-                        cardSize={ this.props.user.settings.cardSize } />
+                        cardSize={ this.props.user.settings.cardSize }
+                        pendingAnimations={ this.props.pendingAnimations }
+                        playerName={ thisPlayer.name }
+                        onAnimationEnd={ (id) => this.props.dispatch(clearAnimation(id)) } />
                 </div>
             </Draggable>);
         }
@@ -723,7 +726,10 @@ export class InnerGameBoard extends React.Component {
                     onDragDrop={ this.onDragDrop }
                     onMouseOut={ this.onMouseOut }
                     onMouseOver={ this.onMouseOver }
-                    cardSize={ this.props.user.settings.cardSize } />
+                    cardSize={ this.props.user.settings.cardSize }
+                    pendingAnimations={ this.props.pendingAnimations }
+                    playerName={ otherPlayer.name }
+                    onAnimationEnd={ (id) => this.props.dispatch(clearAnimation(id)) } />
             </div>
         </Draggable>);
     }

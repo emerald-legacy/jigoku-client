@@ -720,10 +720,36 @@
     height: 6px;
 }
 
+.hand-card-enter .card-wrapper {
+    transform: translateX(var(--card-width, 65px));
+    opacity: 0;
+}
+
+.hand-card-enter-active .card-wrapper {
+    transform: translateX(0);
+    opacity: 1;
+    transition: transform 0.3s ease-out var(--hand-stagger-delay, 0ms), opacity 0.3s ease-out var(--hand-stagger-delay, 0ms);
+}
+
+.hand-card-exit .card-wrapper {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.hand-card-exit-active .card-wrapper {
+    transform: translateY(50px);
+    opacity: 0;
+    transition: transform 0.4s ease-in, opacity 0.4s ease-in;
+    pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .card-image,
-    .card-wrapper {
+    .card-wrapper,
+    .hand-card-enter-active .card-wrapper,
+    .hand-card-exit-active .card-wrapper {
         transition: none;
+        animation: none;
     }
 
     .honorcounter > img {
