@@ -26,6 +26,7 @@ import { getCardImageUrl } from "./cardImageUrl.js";
 
 import * as actions from "./actions";
 import { clearAnimation } from "./ReduxActions/game";
+import HonorChangeOverlay from "./GameComponents/HonorChangeOverlay";
 
 export class InnerGameBoard extends React.Component {
     constructor(props) {
@@ -800,6 +801,13 @@ export class InnerGameBoard extends React.Component {
             <div className="game-board">
                 { popup }
                 { backdrop }
+                <HonorChangeOverlay
+                    animations={ this.props.pendingAnimations || [] }
+                    onDismiss={ () => {
+                        const honorAnims = (this.props.pendingAnimations || []).filter(a => a.type === 'honor');
+                        honorAnims.forEach(a => this.props.dispatch(clearAnimation((a as any).playerName)));
+                    } }
+                />
                 { this.getPrompt(thisPlayer) }
                 { this.getPlayerHand(thisPlayer) }
                 { this.getOpponentHand(otherPlayer) }

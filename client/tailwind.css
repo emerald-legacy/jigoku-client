@@ -27,6 +27,7 @@
 @import "./css/gameboard/conflict.css";
 @import "./css/gameboard/clock-popup.css";
 @import "./css/gameboard/ring-effects.css";
+@import "./css/gameboard/honor-change-overlay.css";
 /* end gameboard */
 @import "./css/cards.css";
 @import "./css/cardStats.css";
