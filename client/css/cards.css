@@ -125,13 +125,7 @@
 .card {
     position: relative;
     border-radius: 6px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
     z-index: var(--layer-cards);
-    transition: width 0.3s ease-out, height 0.3s ease-out;
-
-    &.attachment {
-        transition: width 0.3s ease-out, height 0.3s ease-out, margin-top 0.3s ease-out;
-    }
 
     &.small {
         &.vertical {
@@ -193,7 +187,7 @@
 
     /* lighten(#336600, 60%) = HSL(90,100%,80%) ≈ #ccff99, fadeout 10% = alpha 0.9 */
     &.selectable {
-        box-shadow: 0 0 10px 1px rgba(204, 255, 153, 0.9);
+        & .card-image { box-shadow: 0 0 10px 1px rgba(204, 255, 153, 0.9); }
     }
 
     &.unselectable {
@@ -205,31 +199,31 @@
     }
 
     &.in-danger {
-        box-shadow: 0 0 1px 2px red;
+        & .card-image { box-shadow: 0 0 1px 2px red; }
     }
 
     &.selected {
-        box-shadow: 0 0 1px 4px var(--color-tertiary);
+        & .card-image { box-shadow: 0 0 1px 4px var(--color-tertiary); }
     }
 
     &.new {
-        box-shadow: 0 0 1px 2px var(--color-info);
+        & .card-image { box-shadow: 0 0 1px 2px var(--color-info); }
     }
 
     &.controlled {
-        box-shadow: 0 0 1px 2px var(--color-warning);
+        & .card-image { box-shadow: 0 0 1px 2px var(--color-warning); }
     }
 
     &.conflict {
-        box-shadow: 0 0 1px 3px var(--color-danger);
+        & .card-image { box-shadow: 0 0 1px 3px var(--color-danger); }
     }
 
     &.covert {
-        box-shadow: 0 0 1px 2px #9900cc;
+        & .card-image { box-shadow: 0 0 1px 2px #9900cc; }
     }
 
     &.highlight {
-        box-shadow: 0 0 3px 5px var(--color-primary);
+        & .card-image { box-shadow: 0 0 3px 5px var(--color-primary); }
     }
 }
 
@@ -245,7 +239,8 @@
     top: 0;
     border-radius: 6px;
     overflow: hidden;
-    transition: transform 0.3s ease-out, left 0.3s ease-out, top 0.3s ease-out;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease-out, left 0.3s ease-out, top 0.3s ease-out, box-shadow 0.15s ease;
 
     &.small {
         &.vertical {
@@ -727,7 +722,6 @@
 
 @media (prefers-reduced-motion: reduce) {
     .card-image,
-    .card,
     .card-wrapper {
         transition: none;
     }
