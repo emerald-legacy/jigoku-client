@@ -93,7 +93,7 @@
             flex-basis: var(--card-xxl-width);
         }
 
-        &.tail {
+        &:has(.card.tail) {
             flex-shrink: 0;
             overflow: visible;
             border-radius: 4px;
