@@ -678,46 +678,17 @@
     }
 }
 
-.ability-pips {
+
+.ability-used-corner {
     position: absolute;
-    top: 4px;
-    right: 4px;
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
+    top: 0;
+    right: 0;
+    width: 16px;
+    height: 16px;
+    background: rgba(55, 55, 55, 0.8);
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
     pointer-events: none;
     z-index: calc(var(--layer-cards) + 2);
-}
-
-.ability-pip-group {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    background: rgba(0, 0, 0, 0.7);
-    border-radius: 4px;
-    padding: 4px 3px;
-}
-
-.ability-pip {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
-}
-
-.ability-pip.available {
-    background-color: #4ade80;
-    box-shadow: 0 0 4px rgba(74, 222, 128, 0.7);
-}
-
-.ability-pip.used {
-    background-color: #9ca3af;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.card.small .ability-pip {
-    width: 6px;
-    height: 6px;
 }
 
 .hand-card-enter .card-wrapper {
@@ -756,7 +727,4 @@
         transition: none;
     }
 
-    .ability-pip {
-        transition: none;
-    }
 }
