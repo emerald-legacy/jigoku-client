@@ -21,7 +21,8 @@ module.exports.init = function(server) {
                 return res.status(404).send({ message: "Not found" });
             }
 
-            res.send({ success: true, user: user });
+            const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeUser } = user;
+            res.send({ success: true, user: safeUser });
         } catch(err) {
             logger.error(`Error fetching user ${req.params.username}: ${err}`);
             res.status(500).send({ success: false, message: "Error fetching user" });

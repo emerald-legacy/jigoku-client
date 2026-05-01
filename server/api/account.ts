@@ -120,7 +120,8 @@ module.exports.init = function (server) {
             const newUser = await userService.addUser(user);
             await loginUser(req, newUser);
 
-            res.send({ success: true, user: Settings.getUserWithDefaultsSet(req.body), token: jwt.sign(req.user, config.secret) });
+            const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeNewUser } = newUser;
+            res.send({ success: true, user: Settings.getUserWithDefaultsSet(safeNewUser), token: jwt.sign(safeNewUser, config.secret) });
         } catch(err) {
             logger.error(`Registration error: ${err}`);
             res.send({ success: false, message: "An error occured registering your account" });
@@ -261,7 +262,16 @@ module.exports.init = function (server) {
                         settings: user.settings,
                         promptedActionWindows: user.promptedActionWindows,
                         permissions: user.permissions || {}
-                    }, token: jwt.sign(user, config.secret)
+                    }, token: jwt.sign({
+                        username: user.username,
+                        email: user.email,
+                        emailHash: user.emailHash,
+                        _id: user._id,
+                        admin: user.admin,
+                        settings: user.settings,
+                        promptedActionWindows: user.promptedActionWindows,
+                        permissions: user.permissions || {}
+                    }, config.secret)
                 });
             })
             .catch(() => {
