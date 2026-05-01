@@ -67,8 +67,6 @@ function computeStats(bucket) {
 }
 
 function recordGame(bucket, game, players) {
-    bucket.totalGames++;
-
     const clan0 = normalizeClan(players[0].faction);
     const clan1 = normalizeClan(players[1].faction);
 
@@ -135,6 +133,8 @@ class GameStatsService {
                     { startedAt: { $gte: thirtyDaysAgo } },
                     { startedAt: { $gte: thirtyDaysAgoStr } }
                 ]
+            }, {
+                projection: { players: 1, winner: 1, gameMode: 1, startedAt: 1 }
             }).toArray();
 
             const buckets: any = {};
@@ -152,9 +152,13 @@ class GameStatsService {
                 }
 
                 const mode = game.gameMode;
-                if(game.winner && mode && buckets[mode]) {
-                    recordGame(buckets[mode], game, players);
-                    recordGame(buckets.all, game, players);
+                if(mode && buckets[mode]) {
+                    buckets[mode].totalGames++;
+                    buckets.all.totalGames++;
+                    if(game.winner) {
+                        recordGame(buckets[mode], game, players);
+                        recordGame(buckets.all, game, players);
+                    }
                 }
             }
 
