@@ -20,7 +20,7 @@ const fs = require("fs");
 const UserService = require("./services/UserService.js");
 
 function safeJsonStringify(obj) {
-    return JSON.stringify(obj)
+    return (JSON.stringify(obj) ?? "null")
         .replace(/</g, "\\u003c")
         .replace(/>/g, "\\u003e")
         .replace(/&/g, "\\u0026")
