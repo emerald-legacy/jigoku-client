@@ -40,7 +40,14 @@ let emailTransport = null;
 
 function getEmailTransport() {
     if(!emailTransport) {
-        emailTransport = nodemailer.createTransport(config.emailPath);
+        try {
+            const emailConfig = typeof config.emailPath === "string"
+                ? JSON.parse(config.emailPath)
+                : config.emailPath;
+            emailTransport = nodemailer.createTransport(emailConfig);
+        } catch(_e) {
+            throw new Error("Failed to initialise email transport: check EMAIL_PATH configuration");
+        }
     }
     return emailTransport;
 }
