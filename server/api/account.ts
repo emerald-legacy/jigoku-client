@@ -36,9 +36,18 @@ function loginUser(request, user) {
     });
 }
 
+let emailTransport = null;
+
+function getEmailTransport() {
+    if(!emailTransport) {
+        emailTransport = nodemailer.createTransport(config.emailPath);
+    }
+    return emailTransport;
+}
+
 function sendEmail(address, email) {
     return new Promise<void>((resolve, reject) => {
-        var emailTransport = nodemailer.createTransport(config.emailPath);
+        var emailTransport = getEmailTransport();
 
         emailTransport.sendMail({
             from: "Jigoku Online <noreply@jigoku.online>",
@@ -92,6 +101,10 @@ module.exports.init = function (server) {
             return res.send({ success: false, message: "No email specified" });
         }
 
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)) {
+            return res.send({ success: false, message: "Please enter a valid email address" });
+        }
+
         if(!req.body.username) {
             return res.send({ success: false, message: "No username specified" });
         }
@@ -126,7 +139,11 @@ module.exports.init = function (server) {
 
             const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeNewUser } = newUser;
             res.send({ success: true, user: Settings.getUserWithDefaultsSet(safeNewUser), token: jwt.sign(safeNewUser, config.secret) });
-        } catch(err) {
+        } catch(err: any) {
+            if(err.code === 11000) {
+                const field = err.keyPattern?.email ? "email" : "username";
+                return res.send({ success: false, message: `An account with that ${field} already exists` });
+            }
             logger.error(`Registration error: ${err}`);
             res.send({ success: false, message: "An error occured registering your account" });
         }
@@ -283,10 +300,7 @@ module.exports.init = function (server) {
             });
     }
 
-    server.put("/api/account/:username", (req, res) => {
-        let userToSet = JSON.parse(req.body.data);
-        let existingUser;
-
+    server.put("/api/account/:username", wrapAsync(async (req, res) => {
         if(!req.user) {
             return res.status(401).send({ message: "Unauthorized" });
         }
@@ -295,37 +309,33 @@ module.exports.init = function (server) {
             return res.status(403).send({ message: "Unauthorized" });
         }
 
-        userService.getUserByUsername(req.params.username)
-            .then(user => {
-                if(!user) {
-                    return res.status(404).send({ message: "Not found" });
-                }
+        let userToSet;
+        try {
+            userToSet = JSON.parse(req.body.data);
+        } catch(_e) {
+            return res.status(400).send({ success: false, message: "Invalid request data" });
+        }
 
-                user.email = userToSet.email;
-                user.settings = userToSet.settings;
-                user.promptedActionWindows = userToSet.promptedActionWindows;
+        try {
+            const user = await userService.getUserByUsername(req.params.username);
 
-                existingUser = user;
+            if(!user) {
+                return res.status(404).send({ message: "Not found" });
+            }
 
-                if(userToSet.password && userToSet.password !== "") {
-                    return hashPassword(userToSet.password, 10);
-                }
+            user.email = userToSet.email;
+            user.settings = userToSet.settings;
+            user.promptedActionWindows = userToSet.promptedActionWindows;
 
-                return updateUser(res, user);
-            })
-            .then(passwordHash => {
-                if(!passwordHash) {
-                    return;
-                }
+            if(userToSet.password && userToSet.password !== "") {
+                user.password = await hashPassword(userToSet.password, 10);
+            }
 
-                existingUser.password = passwordHash;
-
-                return updateUser(res, existingUser);
-            })
-            .catch(() => {
-                return res.send({ success: false, message: "An error occured updating your user profile" });
-            });
-    });
+            await updateUser(res, user);
+        } catch(_e) {
+            return res.send({ success: false, message: "An error occured updating your user profile" });
+        }
+    }));
 
     server.get("/api/account/:username/blocklist", wrapAsync(async (req, res) => {
         let user = await checkAuth(req, res);
