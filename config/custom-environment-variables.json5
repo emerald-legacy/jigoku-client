@@ -5,6 +5,7 @@
     domain: 'DOMAIN',
     https: 'HTTPS',
     secret: 'SECRET',
+    nodeSecret: 'NODE_SECRET',
     captchaKey: 'CAPTCHA_KEY',
     hmacSecret: 'HMAC_SECRET',
     emailPath: 'EMAIL_PATH',
