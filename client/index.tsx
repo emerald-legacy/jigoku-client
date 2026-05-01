@@ -15,7 +15,7 @@ window.onpopstate = function(e) {
     store.dispatch(navigate(e.target.location.pathname));
 };
 
-if(typeof window.user !== "undefined") {
+if(window.user) {
     store.dispatch(login(window.user, window.authToken, window.user.admin));
 }
 
