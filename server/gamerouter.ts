@@ -212,12 +212,18 @@ class GameRouter extends EventEmitter {
                 worker.numGames = Object.keys(message.arg.games).length;
 
                 break;
-            case "GAMEWIN":
+            case "GAMEWIN": {
                 logger.info(`received GAMEWIN from ${identityStr}`);
-                this.gameService.update(message.arg.game);
+                const game = message.arg.game;
+                if(!game || !game.gameId || !Array.isArray(game.players) || !game.players.some(p => p.name === game.winner)) {
+                    logger.error(`Invalid GAMEWIN payload from ${identityStr}: ${JSON.stringify(game)}`);
+                    break;
+                }
+                this.gameService.update(game);
                 this.gameStatsService.invalidateCache();
-                this.updateDeckStats(message.arg.game);
+                this.updateDeckStats(game);
                 break;
+            }
             case "GAMECLOSED":
                 logger.info(`received GAMECLOSED from ${identityStr}`);
                 if(worker) {
