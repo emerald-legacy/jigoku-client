@@ -42,7 +42,7 @@ class GameRouter extends EventEmitter {
         this.wss.on("connection", (ws, req) => {
             const parsed = new URL(req.url, "http://localhost");
             const identity = parsed.searchParams.get("identity");
-            const nodeSecret = config.get("nodeSecret");
+            const nodeSecret = config.has("nodeSecret") ? config.get("nodeSecret") : null;
 
             if(!identity) {
                 logger.error("WebSocket connection without identity, closing");
