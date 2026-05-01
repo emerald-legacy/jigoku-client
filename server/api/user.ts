@@ -39,14 +39,24 @@ module.exports.init = function(server) {
         }
 
         try {
-            const userToSet = JSON.parse(req.body.data);
+            let userToSet;
+            try {
+                userToSet = JSON.parse(req.body.data);
+            } catch(_e) {
+                return res.status(400).send({ success: false, message: "Invalid request data" });
+            }
+
             const user = await userService.getUserByUsername(req.params.username);
 
             if(!user) {
                 return res.status(404).send({ message: "Not found" });
             }
 
-            user.permissions = userToSet.permissions;
+            const allowedPermissions = ["canEditNews", "canManageUsers", "allowMelee"];
+            const incomingPerms = userToSet.permissions || {};
+            user.permissions = Object.fromEntries(
+                allowedPermissions.map(key => [key, !!incomingPerms[key]])
+            );
             await userService.update(user);
 
             res.send({ success: true });

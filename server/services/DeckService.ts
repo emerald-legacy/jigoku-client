@@ -70,6 +70,16 @@ class DeckService {
     async delete(id) {
         return this.decks.deleteOne({ _id: toObjectId(id) });
     }
+
+    async findByIds(ids) {
+        const objectIds = ids.map(id => toObjectId(id));
+        return this.decks.find({ _id: { $in: objectIds } }).toArray();
+    }
+
+    async deleteMany(ids) {
+        const objectIds = ids.map(id => toObjectId(id));
+        return this.decks.deleteMany({ _id: { $in: objectIds } });
+    }
 }
 
 module.exports = DeckService;

@@ -73,7 +73,13 @@ module.exports.init = function(server) {
             return res.status(401).send({ message: "Unauthorized" });
         }
 
-        const data = { id: req.params.id, ...JSON.parse(req.body.data) };
+        let parsed;
+        try {
+            parsed = JSON.parse(req.body.data);
+        } catch(_e) {
+            return res.status(400).send({ success: false, message: "Invalid request data" });
+        }
+        const data = { id: req.params.id, ...parsed };
         await deckService.update(data);
 
         const contentHash = computeDeckContentHash(data);
@@ -95,7 +101,13 @@ module.exports.init = function(server) {
             });
         }
 
-        const deck = { ...JSON.parse(req.body.data), username: req.user.username };
+        let parsed;
+        try {
+            parsed = JSON.parse(req.body.data);
+        } catch(_e) {
+            return res.status(400).send({ success: false, message: "Invalid request data" });
+        }
+        const deck = { ...parsed, username: req.user.username };
         await deckService.create(deck);
         res.send({ success: true });
     }));
@@ -131,18 +143,23 @@ module.exports.init = function(server) {
             return res.status(400).send({ success: false, message: "Invalid deck IDs" });
         }
 
-        const decks = await Promise.all(deckIds.map(id => deckService.getById(id)));
+        if(deckIds.length > 100) {
+            return res.status(400).send({ success: false, message: "Cannot delete more than 100 decks at once" });
+        }
+
+        const decks = await deckService.findByIds(deckIds);
+
+        if(decks.length !== deckIds.length) {
+            return res.status(404).send({ success: false, message: "One or more decks not found" });
+        }
 
         for(const deck of decks) {
-            if(!deck) {
-                return res.status(404).send({ success: false, message: "One or more decks not found" });
-            }
             if(deck.username !== req.user.username) {
-                return res.status(401).send({ success: false, message: "Unauthorized" });
+                return res.status(403).send({ success: false, message: "Unauthorized" });
             }
         }
 
-        await Promise.all(deckIds.map(id => deckService.delete(id)));
+        await deckService.deleteMany(deckIds);
         await deckStatsService.deleteByDeckIds(deckIds);
 
         res.send({

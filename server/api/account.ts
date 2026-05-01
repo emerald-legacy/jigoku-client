@@ -84,6 +84,10 @@ module.exports.init = function (server) {
             return res.send({ success: false, message: "No password specified" });
         }
 
+        if(req.body.password.length < 8) {
+            return res.send({ success: false, message: "Password must be at least 8 characters" });
+        }
+
         if(!req.body.email) {
             return res.send({ success: false, message: "No email specified" });
         }
@@ -182,7 +186,7 @@ module.exports.init = function (server) {
             const hmac = crypto.createHmac("sha512", config.hmacSecret);
             const expectedToken = hmac.update("RESET " + user.username + " " + user.tokenExpires).digest("hex");
 
-            if(expectedToken !== req.body.token) {
+            if(!crypto.timingSafeEqual(Buffer.from(expectedToken), Buffer.from(req.body.token))) {
                 logger.error(`Invalid reset token for ${user.username}`);
                 return res.send({ success: false, message: "An error occured resetting your password, check the url you have entered and try again" });
             }
