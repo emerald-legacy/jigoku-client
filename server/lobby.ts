@@ -551,6 +551,10 @@ class Lobby {
             .then(async results => {
                 let [cards, packs, deck] = results;
 
+                if(!deck || deck.username !== socket.user.username) {
+                    return;
+                }
+
                 if(deck.stronghold) {
                     deck.stronghold.forEach(stronghold => {
                         stronghold.card = cards[stronghold.card.id];
