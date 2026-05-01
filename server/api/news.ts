@@ -7,15 +7,16 @@ module.exports.init = function(server) {
 
     server.get("/api/news", async function(req, res) {
         try {
-            const news = await newsService.getRecentNewsItems({ limit: req.query.limit });
+            const limit = Math.min(parseInt(req.query.limit as string) || 10, 100);
+            const news = await newsService.getRecentNewsItems({ limit });
             res.send({ success: true, news: news });
         } catch(err) {
             logger.error(`Error loading news: ${err}`);
-            res.send({ success: false, message: "Error loading news" });
+            res.status(500).send({ success: false, message: "Error loading news" });
         }
     });
 
-    server.put("/api/news", async function(req, res) {
+    server.post("/api/news", async function(req, res) {
         if(!req.user) {
             return res.status(401).send({ message: "Unauthorized" });
         }
@@ -33,7 +34,7 @@ module.exports.init = function(server) {
             res.send({ success: true });
         } catch(err) {
             logger.error(`Error saving news item: ${err}`);
-            res.send({ success: false, message: "Error saving news item" });
+            res.status(500).send({ success: false, message: "Error saving news item" });
         }
     });
 };

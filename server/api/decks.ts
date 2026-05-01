@@ -70,7 +70,7 @@ module.exports.init = function(server) {
         }
 
         if(deck.username !== req.user.username) {
-            return res.status(401).send({ message: "Unauthorized" });
+            return res.status(403).send({ message: "Unauthorized" });
         }
 
         let parsed;
@@ -80,7 +80,11 @@ module.exports.init = function(server) {
             return res.status(400).send({ success: false, message: "Invalid request data" });
         }
         const data = { id: req.params.id, ...parsed };
-        await deckService.update(data);
+        const updateResult = await deckService.update(data);
+
+        if(updateResult.matchedCount === 0) {
+            return res.status(404).send({ success: false, message: "No such deck" });
+        }
 
         const contentHash = computeDeckContentHash(data);
         await deckStatsService.upsertForDeck(req.params.id, req.user.username, contentHash);
