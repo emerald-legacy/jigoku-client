@@ -11,10 +11,14 @@ interface AbilityUsedMarkerProps {
 }
 
 function AbilityUsedMarker({ abilityLimits }: AbilityUsedMarkerProps) {
-    if(!abilityLimits || abilityLimits.length === 0) return null;
+    if(!abilityLimits || abilityLimits.length === 0) {
+        return null;
+    }
 
     const allExhausted = abilityLimits.every(l => l.exhausted);
-    if(!allExhausted) return null;
+    if(!allExhausted) {
+        return null;
+    }
 
     return <div className="ability-used-corner" />;
 }
