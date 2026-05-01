@@ -190,7 +190,7 @@ class Server {
             const authReq = req;
 
             if(authReq.user) {
-                token = jwt.sign(authReq.user, config.secret);
+                token = jwt.sign(authReq.user, config.secret, { expiresIn: "7d" });
                 const { blockList: _blockList, ...userWithoutBlockList } = authReq.user;
                 authReq.user = userWithoutBlockList;
             }

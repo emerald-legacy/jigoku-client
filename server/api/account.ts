@@ -138,7 +138,7 @@ module.exports.init = function (server) {
             await loginUser(req, newUser);
 
             const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeNewUser } = newUser;
-            res.send({ success: true, user: Settings.getUserWithDefaultsSet(safeNewUser), token: jwt.sign(safeNewUser, config.secret) });
+            res.send({ success: true, user: Settings.getUserWithDefaultsSet(safeNewUser), token: jwt.sign(safeNewUser, config.secret, { expiresIn: "7d" }) });
         } catch(err: any) {
             if(err.code === 11000) {
                 const field = err.keyPattern?.email ? "email" : "username";
@@ -174,7 +174,7 @@ module.exports.init = function (server) {
     });
 
     server.post("/api/account/login", passport.authenticate("local"), function (req, res) {
-        res.send({ success: true, user: req.user, token: jwt.sign(req.user, config.secret) });
+        res.send({ success: true, user: req.user, token: jwt.sign(req.user, config.secret, { expiresIn: "7d" }) });
     });
 
     server.post("/api/account/password-reset-finish", wrapAsync(async (req, res) => {
@@ -292,7 +292,7 @@ module.exports.init = function (server) {
                         settings: user.settings,
                         promptedActionWindows: user.promptedActionWindows,
                         permissions: user.permissions || {}
-                    }, config.secret)
+                    }, config.secret, { expiresIn: "7d" })
                 });
             })
             .catch(() => {
