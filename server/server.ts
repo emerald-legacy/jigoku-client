@@ -19,6 +19,14 @@ const db = require("./db.js");
 const fs = require("fs");
 const UserService = require("./services/UserService.js");
 
+function safeJsonStringify(obj) {
+    return JSON.stringify(obj)
+        .replace(/</g, "\\u003c")
+        .replace(/>/g, "\\u003e")
+        .replace(/&/g, "\\u0026")
+        .replace(/\//g, "\\u002f");
+}
+
 // Project root: works for both `tsx server/` (source) and `node build/server/` (compiled)
 const projectRoot = path.resolve(__dirname, "..", fs.existsSync(path.join(__dirname, "..", "views")) ? "" : "..");
 const Settings = require("./settings.js");
@@ -191,7 +199,7 @@ class Server {
 
             res.render("index", {
                 basedir: path.join(projectRoot, "views"),
-                user: Settings.getUserWithDefaultsSet(authReq.user),
+                userJson: safeJsonStringify(Settings.getUserWithDefaultsSet(authReq.user)),
                 token: token,
                 production: !useViteDev,
                 bundleJs: bundleJs,

@@ -5,6 +5,6 @@ block content
   if token
     script(type="text/javascript").
       var authToken = '#{token}';
-  script(type="text/javascript")!= "var user = " + JSON.stringify(user) + ";"
+  script(type="text/javascript")!= "var user = " + userJson + ";"
   script(type="text/javascript").
     var cardImageVersion = '#{cardImageVersion}';
