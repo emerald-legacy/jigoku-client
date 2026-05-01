@@ -27,8 +27,11 @@ export function InnerForgotPassword() {
 
     const onSubmit = (event) => {
         event.preventDefault();
+        console.log("[FP] onSubmit called");
         grecaptcha.ready(() => {
+            console.log("[FP] grecaptcha ready");
             grecaptcha.execute("6LdO-NMsAAAAAOetW0LZ70BAf12jY5Om101J9As2", { action: "submit" }).then(async (token) => {
+                console.log("[FP] token received", token ? "ok" : "empty");
                 setError("");
 
                 // Do synchronous validation to avoid stale state
