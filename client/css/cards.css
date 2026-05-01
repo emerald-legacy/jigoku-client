@@ -685,7 +685,7 @@
     right: 0;
     width: 16px;
     height: 16px;
-    background: rgba(55, 55, 55, 0.8);
+    background: rgba(55, 55, 55, 0.9);
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     pointer-events: none;
     z-index: calc(var(--layer-cards) + 2);
@@ -697,7 +697,7 @@
     left: 0;
     width: 16px;
     height: 16px;
-    background: rgba(55, 55, 55, 0.8);
+    background: rgba(55, 55, 55, 0.9);
     clip-path: polygon(0 0, 0 100%, 100% 100%);
     pointer-events: none;
     z-index: calc(var(--layer-cards) + 2);
