@@ -1,4 +1,5 @@
 const { WebSocketServer } = require("ws");
+const config = require("config");
 const logger = require("./log.js");
 const db = require("./db.js");
 const EventEmitter = require("events");
@@ -41,9 +42,16 @@ class GameRouter extends EventEmitter {
         this.wss.on("connection", (ws, req) => {
             const parsed = new URL(req.url, "http://localhost");
             const identity = parsed.searchParams.get("identity");
+            const nodeSecret = config.get("nodeSecret");
 
             if(!identity) {
                 logger.error("WebSocket connection without identity, closing");
+                ws.close();
+                return;
+            }
+
+            if(nodeSecret && parsed.searchParams.get("secret") !== nodeSecret) {
+                logger.error(`Game node ${identity} rejected: invalid secret`);
                 ws.close();
                 return;
             }
