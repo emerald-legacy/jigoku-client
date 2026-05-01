@@ -67,6 +67,13 @@ class Server {
     }
 
     async init() {
+        if(!config.secret || config.secret === "somethingverysecret") {
+            throw new Error("SECRET env var must be set to a strong random value before starting the server");
+        }
+        if(!config.hmacSecret) {
+            throw new Error("HMAC_SECRET env var must be set before starting the server");
+        }
+
         // Security headers with Helmet v7
         app.use(
             // @ts-ignore - helmet v7 types
