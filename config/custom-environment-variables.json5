@@ -5,6 +5,9 @@
     domain: 'DOMAIN',
     https: 'HTTPS',
     secret: 'SECRET',
+    captchaKey: 'CAPTCHA_KEY',
+    hmacSecret: 'HMAC_SECRET',
+    emailPath: 'EMAIL_PATH',
 
     lobby: {
         port: 'PORT'
