@@ -8,19 +8,20 @@ interface AbilityLimit {
 
 interface AbilityUsedMarkerProps {
     abilityLimits: AbilityLimit[];
+    isAttachment?: boolean;
 }
 
-function AbilityUsedMarker({ abilityLimits }: AbilityUsedMarkerProps) {
+function AbilityUsedMarker({ abilityLimits, isAttachment = false }: AbilityUsedMarkerProps) {
     if(!abilityLimits || abilityLimits.length === 0) {
         return null;
     }
 
-    const allExhausted = abilityLimits.every(l => l.exhausted);
+    const allExhausted = abilityLimits.every(l => l.exhausted || l.current >= l.max);
     if(!allExhausted) {
         return null;
     }
 
-    return <div className="ability-used-corner" />;
+    return <div className={ isAttachment ? "ability-used-corner-bottom-left" : "ability-used-corner" } />;
 }
 
 export default AbilityUsedMarker;
