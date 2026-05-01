@@ -47,7 +47,7 @@ function sendEmail(address, email) {
             text: email
         }, function (error) {
             if(error) {
-                reject(error);
+                return reject(error);
             }
 
             resolve();
@@ -206,10 +206,10 @@ module.exports.init = function (server) {
         }
 
         try {
-            const captchaResponse = await axios.post("https://www.google.com/recaptcha/api/siteverify", {
-                secret: captchaSecret,
-                response: req.body.captcha
-            });
+            const captchaParams = new URLSearchParams();
+            captchaParams.append("secret", captchaSecret);
+            captchaParams.append("response", req.body.captcha);
+            const captchaResponse = await axios.post("https://www.google.com/recaptcha/api/siteverify", captchaParams);
 
             if(!captchaResponse.data.success) {
                 return res.send({ success: false, message: "Please complete the captcha correctly" });
