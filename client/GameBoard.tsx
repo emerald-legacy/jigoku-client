@@ -215,6 +215,9 @@ export class InnerGameBoard extends React.Component {
         if(!card || !card.id) {
             return "";
         }
+        if(card.facedownId) {
+            return getCardImageUrl(card.facedownId, card.facedownPackId);
+        }
         return getCardImageUrl(card.id, card.packId);
     }
 

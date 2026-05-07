@@ -629,7 +629,7 @@ function Card(props) {
                         <span className="card-name">{ card.name }</span>
                     </div>
                     <div className={ imageClass }>
-                        <img className="card-image-src" src={ !isFacedown() && !card.isToken ? getCardImagePath() : getCardBackUrl(cardBack) } />
+                        <img className="card-image-src" src={ !isFacedown() ? getCardImagePath() : getCardBackUrl(cardBack) } />
                         { card.abilityLimits && <AbilityUsedMarker abilityLimits={ card.abilityLimits } isAttachment={ card.type === "attachment" } /> }
                     </div>
                     <CardCounters counters={ getCountersForCard(card) } />
