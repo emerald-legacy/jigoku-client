@@ -57,7 +57,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
             }
 
             const childItems = menuItem.childItems.map(item => (
-                <li key={ item.name } onClick={ () => setOpenDropdown(null) }><Link href={ item.path }>{ item.name }</Link></li>
+                <li key={ item.name } className={ item.path === currentPath ? 'active' : '' } onClick={ () => setOpenDropdown(null) }><Link href={ item.path }>{ item.name }</Link></li>
             ));
 
             return (
