@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import Messages from "./Messages.jsx";
+import Messages from "./Messages";
 
 interface ChatProps {
     messages: any[];

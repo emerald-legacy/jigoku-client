@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import Draggable from "react-draggable";
 
-import AbilityTargeting from "./AbilityTargeting.jsx";
-import CardNameLookup from "./CardNameLookup.jsx";
+import AbilityTargeting from "./AbilityTargeting";
+import CardNameLookup from "./CardNameLookup";
 
 // Deep equality check for objects
 function isEqual(a, b) {

@@ -1,7 +1,7 @@
 import { useState, memo } from "react";
 
-import CardCounters from "./CardCounters.jsx";
-import CardMenu from "./CardMenu.jsx";
+import CardCounters from "./CardCounters";
+import CardMenu from "./CardMenu";
 import { getRingEffect } from "../RingEffectDescriptions.js";
 
 function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode }) {

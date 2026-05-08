@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
-import AlertPanel from "./SiteComponents/AlertPanel.jsx";
-import DeckSummary from "./DeckSummary.jsx";
-import Link from "./Link.jsx";
-import DeckRow from "./DeckRow.jsx";
+import AlertPanel from "./SiteComponents/AlertPanel";
+import DeckSummary from "./DeckSummary";
+import Link from "./Link";
+import DeckRow from "./DeckRow";
 
 import * as actions from "./actions";
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Upload, SkipBack, ChevronLeft, Play, Pause, ChevronRight, SkipForward } from "lucide-react";
-import { InnerGameBoard } from "./GameBoard.jsx";
+import { InnerGameBoard } from "./GameBoard";
 import { parseGameLog } from "./GameComponents/gameLogSerializer.js";
 
 const speeds = [

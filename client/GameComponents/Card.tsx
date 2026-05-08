@@ -1,11 +1,11 @@
 import React, { useState, useRef, memo } from "react";
 import { X } from "lucide-react";
 
-import CardMenu from "./CardMenu.jsx";
-import CardStats from "./CardStats.jsx";
-import CardCounters from "./CardCounters.jsx";
-import CardPile from "./CardPile.jsx";
-import AbilityUsedMarker from "./AbilityUsedMarker.jsx";
+import CardMenu from "./CardMenu";
+import CardStats from "./CardStats";
+import CardCounters from "./CardCounters";
+import CardPile from "./CardPile";
+import AbilityUsedMarker from "./AbilityUsedMarker";
 import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl.js";
 
 const shortNames = {

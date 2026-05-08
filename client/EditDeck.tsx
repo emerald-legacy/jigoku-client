@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { connect } from "react-redux";
 
-import DeckSummary from "./DeckSummary.jsx";
-import DeckEditor from "./DeckEditor.jsx";
-import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import DeckSummary from "./DeckSummary";
+import DeckEditor from "./DeckEditor";
+import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
 

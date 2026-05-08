@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-import Card from "./Card.jsx";
+import Card from "./Card";
 import { tryParseJSON } from "../util.js";
 
 function Province({

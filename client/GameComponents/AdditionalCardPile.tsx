@@ -1,5 +1,5 @@
 
-import CardPile from "./CardPile.jsx";
+import CardPile from "./CardPile";
 
 interface AdditionalCardPileProps {
     className?: string;

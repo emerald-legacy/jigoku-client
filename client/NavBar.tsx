@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
 import { ChevronDown } from "lucide-react";
 
-import Link from "./Link.jsx";
-import Avatar from "./Avatar.jsx";
+import Link from "./Link";
+import Avatar from "./Avatar";
 
 import * as actions from "./actions";
 

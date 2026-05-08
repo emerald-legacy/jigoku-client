@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { connect } from "react-redux";
 
-import StatusPopOver from "./StatusPopOver.jsx";
+import StatusPopOver from "./StatusPopOver";
 import validateDeck from "./deck-validator.js";
 import * as actions from "./actions";
 

@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { format } from "date-fns";
 
-import AlertPanel from "./SiteComponents/AlertPanel.jsx";
-import TextArea from "./FormComponents/TextArea.jsx";
+import AlertPanel from "./SiteComponents/AlertPanel";
+import TextArea from "./FormComponents/TextArea";
 
 import * as actions from "./actions";
 

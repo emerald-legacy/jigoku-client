@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-import DeckStatus from "./DeckStatus.jsx";
-import DeckStats from "./DeckStats.jsx";
+import DeckStatus from "./DeckStatus";
+import DeckStats from "./DeckStats";
 import { getCardImageUrl, preferredPackId } from "./cardImageUrl.js";
 
 function DeckSummary({ cards, deck, stats }) {

@@ -1,6 +1,6 @@
 import React from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
-import Card from "./Card.jsx";
+import Card from "./Card";
 import { tryParseJSON } from "../util";
 
 const EMPTY_STYLE = {};

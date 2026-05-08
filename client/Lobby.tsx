@@ -3,10 +3,10 @@ import { connect } from "react-redux";
 
 import { X, Menu } from "lucide-react";
 import * as actions from "./actions";
-import Avatar from "./Avatar.jsx";
-import News from "./SiteComponents/News.jsx";
-import AlertPanel from "./SiteComponents/AlertPanel.jsx";
-import Link from "./Link.jsx";
+import Avatar from "./Avatar";
+import News from "./SiteComponents/News";
+import AlertPanel from "./SiteComponents/AlertPanel";
+import Link from "./Link";
 
 export function InnerLobby({ bannerNotice, loadNews, loading, news, users }) {
     const [showUsers, setShowUsers] = useState(false);
