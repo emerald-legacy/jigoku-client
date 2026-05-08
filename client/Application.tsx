@@ -8,26 +8,27 @@ import Login from "./Login";
 import Logout from "./Logout";
 import Register from "./Register";
 import Lobby from "./Lobby";
-import Decks from "./Decks";
-import AddDeck from "./AddDeck";
-import EditDeck from "./EditDeck";
 import NotFound from "./NotFound";
 import ErrorBoundary from "./SiteComponents/ErrorBoundary";
 import NavBar from "./NavBar";
 import GameLobby from "./GameLobby";
 import GameBoard from "./GameBoard";
-import HowToPlay from "./HowToPlay";
-import About from "./About";
-import Community from "./Community";
-import Formats from "./Formats";
-import ForgotPassword from "./ForgotPassword";
-import ResetPassword from "./ResetPassword";
-import Profile from "./Profile";
-import NewsAdmin from "./NewsAdmin";
-import Unauthorised from "./Unauthorised";
-import UserAdmin from "./UserAdmin";
-import BlockList from "./BlockList";
-import GameReplay from "./GameReplay";
+
+const Decks = React.lazy(() => import("./Decks"));
+const AddDeck = React.lazy(() => import("./AddDeck"));
+const EditDeck = React.lazy(() => import("./EditDeck"));
+const HowToPlay = React.lazy(() => import("./HowToPlay"));
+const About = React.lazy(() => import("./About"));
+const Community = React.lazy(() => import("./Community"));
+const Formats = React.lazy(() => import("./Formats"));
+const ForgotPassword = React.lazy(() => import("./ForgotPassword"));
+const ResetPassword = React.lazy(() => import("./ResetPassword"));
+const Profile = React.lazy(() => import("./Profile"));
+const NewsAdmin = React.lazy(() => import("./NewsAdmin"));
+const Unauthorised = React.lazy(() => import("./Unauthorised"));
+const UserAdmin = React.lazy(() => import("./UserAdmin"));
+const BlockList = React.lazy(() => import("./BlockList"));
+const GameReplay = React.lazy(() => import("./GameReplay"));
 import { startRecording, recordState, setHiddenInfo, clearRecording } from "./gameStateRecorder.js";
 
 import { toast } from "sonner";
@@ -496,7 +497,9 @@ class App extends React.Component {
             <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" currentPath={ this.props.path } numGames={ this.props.games.length } />
             <div className="container">
                 <ErrorBoundary navigate={ this.props.navigate } errorPath={ this.props.path } message={ "We're sorry - something's gone wrong." }>
-                    { component }
+                    <React.Suspense fallback={ null }>
+                        { component }
+                    </React.Suspense>
                 </ErrorBoundary>
             </div>
         </div>);
