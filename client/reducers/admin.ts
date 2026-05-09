@@ -1,24 +1,27 @@
-import { AdminState } from "../types/redux";
+import { createSlice } from "@reduxjs/toolkit";
+import type { AdminState } from "../types/redux";
 
-export default function(state: AdminState = {} as AdminState, action: any): AdminState {
-    switch(action.type) {
-        case "RECEIVE_FINDUSER":
-            return Object.assign({}, state, {
-                currentUser: action.response.user
-            });
-        case "SAVE_USER":
-            return Object.assign({}, state, {
-                userSaved: false
-            });
-        case "USER_SAVED":
-            return Object.assign({}, state, {
-                userSaved: true
-            });
-        case "CLEAR_USER_STATUS":
-            return Object.assign({}, state, {
-                userSaved: false
+const adminSlice = createSlice({
+    name: "admin",
+    initialState: {} as AdminState,
+    reducers: {
+        clearUserStatus(state) {
+            state.userSaved = false;
+        }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase("RECEIVE_FINDUSER", (state: AdminState, action: any) => {
+                state.currentUser = action.response.user;
+            })
+            .addCase("SAVE_USER", (state: AdminState) => {
+                state.userSaved = false;
+            })
+            .addCase("USER_SAVED", (state: AdminState) => {
+                state.userSaved = true;
             });
     }
+});
 
-    return state;
-}
+export const { clearUserStatus } = adminSlice.actions;
+export default adminSlice.reducer;

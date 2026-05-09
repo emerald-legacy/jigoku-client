@@ -1,29 +1,28 @@
-import { NewsState } from "../types/redux";
+import { createSlice } from "@reduxjs/toolkit";
+import type { NewsState } from "../types/redux";
 
-function news(state: NewsState = {
-    news: []
-} as NewsState, action: any): NewsState {
-    switch(action.type) {
-        case "REQUEST_NEWS":
-            return Object.assign({}, state, {
-                newsSaved: false
+const newsSlice = createSlice({
+    name: "news",
+    initialState: { news: [] } as NewsState,
+    reducers: {
+        clearNewsStatus(state) {
+            state.newsSaved = false;
+        }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase("REQUEST_NEWS", (state: NewsState) => {
+                state.newsSaved = false;
+            })
+            .addCase("RECEIVE_NEWS", (state: NewsState, action: any) => {
+                state.newsSaved = false;
+                state.news = action.response.news;
+            })
+            .addCase("NEWS_ADDED", (state: NewsState) => {
+                state.newsSaved = true;
             });
-        case "RECEIVE_NEWS":
-            return Object.assign({}, state, {
-                newsSaved: false,
-                news: action.response.news
-            });
-        case "NEWS_ADDED":
-            return Object.assign({}, state, {
-                newsSaved: true
-            });
-        case "CLEAR_NEWS_STATUS":
-            return Object.assign({}, state, {
-                newsSaved: false
-            });
-        default:
-            return state;
     }
-}
+});
 
-export default news;
+export const { clearNewsStatus } = newsSlice.actions;
+export default newsSlice.reducer;

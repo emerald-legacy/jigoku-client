@@ -1,36 +1,33 @@
+import { createSlice } from "@reduxjs/toolkit";
 import type { ApiState } from "../types/redux";
 
-export default function(state: ApiState = {}, action: any): ApiState {
-    let loadingCount = state.loadingCount || 0;
-
-    switch(action.type) {
-        case "API_FAILURE":
-            loadingCount--;
-
-            return Object.assign({}, state, {
-                status: action.status,
-                message: action.message,
-                loading: loadingCount > 0,
-                loadingCount: loadingCount
-            });
-        case "API_LOADED":
-            loadingCount--;
-
-            return Object.assign({}, state, {
-                loading: loadingCount > 0,
-                loadingCount: loadingCount,
-                message: undefined
-            });
-        case "API_LOADING":
-            loadingCount++;
-
-            return Object.assign({}, state, {
-                status: undefined,
-                message: undefined,
-                loading: loadingCount > 0,
-                loadingCount: loadingCount
+const apiSlice = createSlice({
+    name: "api",
+    initialState: {} as ApiState,
+    reducers: {},
+    extraReducers: (builder) => {
+        builder
+            .addCase("API_LOADING", (state: ApiState) => {
+                const count = (state.loadingCount || 0) + 1;
+                state.status = undefined;
+                state.message = undefined;
+                state.loading = count > 0;
+                state.loadingCount = count;
+            })
+            .addCase("API_LOADED", (state: ApiState) => {
+                const count = (state.loadingCount || 0) - 1;
+                state.loading = count > 0;
+                state.loadingCount = count;
+                state.message = undefined;
+            })
+            .addCase("API_FAILURE", (state: ApiState, action: any) => {
+                const count = (state.loadingCount || 0) - 1;
+                state.status = action.status;
+                state.message = action.message;
+                state.loading = count > 0;
+                state.loadingCount = count;
             });
     }
+});
 
-    return state;
-}
+export default apiSlice.reducer;

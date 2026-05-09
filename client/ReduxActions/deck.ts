@@ -64,33 +64,7 @@ export function loadDeck(deckId: string) {
     };
 }
 
-export function selectDeck(deck: any) {
-    return {
-        type: "SELECT_DECK" as const,
-        deck: deck
-    };
-}
-
-export function addDeck() {
-    return {
-        type: "ADD_DECK" as const
-    };
-}
-
-export function updateDeck(deck: any) {
-    return {
-        type: "UPDATE_DECK" as const,
-        deck: deck
-    };
-}
-
-export function updateDeckStatus(deckId: string, status: any) {
-    return {
-        type: "UPDATE_DECK_STATUS" as const,
-        deckId: deckId,
-        status: status
-    };
-}
+export { selectDeck, addDeck, updateDeck, updateDeckStatus, clearDeckStatus } from "../reducers/cards";
 
 export function deleteDeck(deck: any) {
     return {
@@ -129,12 +103,6 @@ export function saveDeck(deck: any) {
             const method: "put" | "post" = deck._id ? "put" : "post";
             return axios[method](url, { data: str }).then(r => r.data);
         }
-    };
-}
-
-export function clearDeckStatus() {
-    return {
-        type: "CLEAR_DECK_STATUS" as const
     };
 }
 

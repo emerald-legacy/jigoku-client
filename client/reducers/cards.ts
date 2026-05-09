@@ -1,13 +1,12 @@
-import { CardsState } from "../types/deck";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { CardsState } from "../types/deck";
 
-function selectDeck(state: CardsState, deck: any): CardsState {
+function applySelectDeck(state: CardsState, deck: any): void {
     if(state.decks && state.decks.length !== 0) {
         state.selectedDeck = deck;
     } else {
-        delete state.selectedDeck;
+        state.selectedDeck = undefined;
     }
-
-    return state;
 }
 
 function processDecks(decks: any[], state: CardsState): void {
@@ -41,301 +40,233 @@ function processDecks(decks: any[], state: CardsState): void {
         }
 
         if(deck.stronghold) {
-            deck.stronghold = deck.stronghold.map((card: any) => {
-                return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
-            });
+            deck.stronghold = deck.stronghold.map((card: any) => ({
+                count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id
+            }));
         }
-
         if(deck.role) {
-            deck.role = deck.role.map((card: any) => {
-                return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
-            });
+            deck.role = deck.role.map((card: any) => ({
+                count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id
+            }));
         }
-
         if(deck.provinceCards) {
-            deck.provinceCards = deck.provinceCards.map((card: any) => {
-                return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
-            });
+            deck.provinceCards = deck.provinceCards.map((card: any) => ({
+                count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id
+            }));
         }
-
         if(deck.conflictCards) {
-            deck.conflictCards = deck.conflictCards.map((card: any) => {
-                return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
-            });
+            deck.conflictCards = deck.conflictCards.map((card: any) => ({
+                count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id
+            }));
         }
-
         if(deck.dynastyCards) {
-            deck.dynastyCards = deck.dynastyCards.map((card: any) => {
-                return { count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id };
-            });
+            deck.dynastyCards = deck.dynastyCards.map((card: any) => ({
+                count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id
+            }));
         }
     });
 }
 
-export default function(state: CardsState = {} as CardsState, action: any): CardsState {
-    let newState: CardsState;
-    switch(action.type) {
-        case "RECEIVE_CARDS":
-            var agendas: Record<string, any> = {};
-
-            Object.values(action.response.cards).forEach((card: any) => {
-                if(card.type === "agenda" && card.pack_code !== "VDS") {
-                    agendas[card.id] = card;
+const cardsSlice = createSlice({
+    name: "cards",
+    initialState: {} as CardsState,
+    reducers: {
+        zoomCard(state, action: PayloadAction<any>) {
+            state.zoomCard = action.payload;
+        },
+        clearZoom(state) {
+            state.zoomCard = undefined;
+        },
+        selectDeck(state, action: PayloadAction<any>) {
+            state.selectedDeck = action.payload;
+            state.deckSaved = false;
+            if(state.selectedDeck) {
+                processDecks([state.selectedDeck], state);
+            }
+        },
+        addDeck(state) {
+            const newDeck: any = { name: "New Deck" };
+            state.selectedDeck = newDeck;
+            state.deckSaved = false;
+            processDecks([state.selectedDeck], state);
+        },
+        updateDeck(state, action: PayloadAction<any>) {
+            state.selectedDeck = action.payload;
+            state.deckSaved = false;
+            if(state.selectedDeck) {
+                processDecks([state.selectedDeck], state);
+            }
+        },
+        updateDeckStatus: {
+            reducer(state, action: PayloadAction<{ deckId: string; status: any }>) {
+                const { deckId, status } = action.payload;
+                if(state.decks) {
+                    state.decks = state.decks.map((deck: any) =>
+                        deck._id === deckId ? { ...deck, status } : deck
+                    );
                 }
-            });
-
-            var banners = Object.values(agendas).filter((card: any) => {
-                return card.label.startsWith("Banner of the");
-            });
-
-            return Object.assign({}, state, {
-                cards: action.response.cards,
-                agendas: agendas,
-                banners: banners
-            });
-        case "RECEIVE_PACKS":
-            return Object.assign({}, state, {
-                packs: action.response.packs
-            });
-        case "RECEIVE_FACTIONS":
-            var factions: Record<string, any> = {};
-
-            action.response.factions.forEach((faction: any) => {
-                factions[faction.value] = faction;
-            });
-
-            return Object.assign({}, state, {
-                factions: factions
-            });
-        case "RECEIVE_FORMATS":
-            var formats: Record<string, any> = {};
-
-            action.response.formats.forEach((format: any) => {
-                formats[format.value] = format;
-            });
-
-            return Object.assign({}, state, {
-                formats: formats
-            });
-        case "ZOOM_CARD":
-            return Object.assign({}, state, {
-                zoomCard: action.card
-            });
-        case "CLEAR_ZOOM":
-            return Object.assign({}, state, {
-                zoomCard: undefined
-            });
-        case "RECEIVE_DECKS":
-            if(!action.response || !action.response.decks) {
-                return state;
-            }
-            processDecks(action.response.decks, state);
-            newState = Object.assign({}, state, {
-                singleDeck: false,
-                decks: action.response.decks
-            });
-
-            newState = selectDeck(newState, newState.decks[0]);
-
-            return newState;
-        case "REQUEST_DECK":
-            return Object.assign({}, state, {
-                deckSaved: false,
-                deckDeleted: false
-            });
-        case "REQUEST_DECKS":
-            newState = Object.assign({}, state, {
-                deckSaved: false,
-                deckDeleted: false
-            });
-
-            if(newState.selectedDeck && !newState.selectedDeck._id) {
-                if(newState.decks && newState.decks.length > 0) {
-                    newState.selectedDeck = newState.decks[0];
+                if(state.selectedDeck && state.selectedDeck._id === deckId) {
+                    state.selectedDeck = { ...state.selectedDeck, status };
                 }
+            },
+            prepare(deckId: string, status: any) {
+                return { payload: { deckId, status } };
             }
-
-            return newState;
-        case "RECEIVE_DECK":
-            newState = Object.assign({}, state, {
-                singleDeck: true,
-                deckSaved: false
-            });
-
-            processDecks([action.response.deck], state);
-
-            newState.decks = state.decks.map((deck: any) => {
-                if(action.response.deck._id === deck.id) {
-                    return deck;
-                }
-
-                return deck;
-            });
-
-            if(!newState.decks.some((deck: any) => {
-                return deck._id === action.response.deck._id;
-            })) {
-                newState.decks.push(action.response.deck);
-            }
-
-            var selected = newState.decks.find((deck: any) => {
-                return deck._id === action.response.deck._id;
-            });
-
-            newState = selectDeck(newState, selected);
-
-            return newState;
-        case "SELECT_DECK":
-            newState = Object.assign({}, state, {
-                selectedDeck: action.deck,
-                deckSaved: false
-            });
-
-            if(newState.selectedDeck) {
-                processDecks([newState.selectedDeck], state);
-            }
-
-            return newState;
-        case "ADD_DECK":
-            var newDeck: any = { name: "New Deck" };
-
-            newState = Object.assign({}, state, {
-                selectedDeck: newDeck,
-                deckSaved: false
-            });
-
-            processDecks([newState.selectedDeck], state);
-
-            return newState;
-        case "UPDATE_DECK":
-            newState = Object.assign({}, state, {
-                selectedDeck: action.deck,
-                deckSaved: false
-            });
-
-            if(newState.selectedDeck) {
-                processDecks([newState.selectedDeck], state);
-            }
-
-            return newState;
-        case "UPDATE_DECK_STATUS":
-            newState = Object.assign({}, state);
-
-            // Update status in the decks array
-            if(newState.decks) {
-                newState.decks = newState.decks.map((deck: any) => {
-                    if(deck._id === action.deckId) {
-                        return Object.assign({}, deck, { status: action.status });
-                    }
-                    return deck;
+        },
+        clearDeckStatus(state) {
+            state.deckDeleted = false;
+            state.deckSaved = false;
+        },
+        receiveDecksUnvalidated(state, action: PayloadAction<any[]>) {
+            processDecks(action.payload, state);
+            state.singleDeck = false;
+            state.decks = action.payload;
+            state.decksValidating = true;
+            applySelectDeck(state, state.decks[0]);
+        },
+        updateDecksValidation(state, action: PayloadAction<any[]>) {
+            if(state.decks) {
+                state.decks = state.decks.map((deck: any) => {
+                    const validation = action.payload.find((v: any) => v.deckId === deck._id);
+                    return validation ? { ...deck, status: validation.status } : deck;
                 });
             }
-
-            // Update status in the selected deck if it matches
-            if(newState.selectedDeck && newState.selectedDeck._id === action.deckId) {
-                newState.selectedDeck = Object.assign({}, newState.selectedDeck, { status: action.status });
-            }
-
-            return newState;
-        case "SAVE_DECK":
-            newState = Object.assign({}, state, {
-                deckSaved: false
-            });
-
-            return newState;
-        case "RECEIVE_DECK_STATS":
-            if(!action.response || !action.response.stats) {
-                return state;
-            }
-            return Object.assign({}, state, {
-                deckStats: action.response.stats
-            });
-        case "DECK_SAVED":
-            newState = Object.assign({}, state, {
-                deckSaved: true,
-                decks: undefined,
-                deckStats: undefined
-            });
-
-            return newState;
-        case "DECK_DELETED":
-            newState = Object.assign({}, state, {
-                deckDeleted: true
-            });
-
-            newState.decks = newState.decks.filter((deck: any) => {
-                return deck._id !== action.response.deckId;
-            });
-
-            if(newState.deckStats) {
-                newState.deckStats = Object.assign({}, newState.deckStats);
-                delete newState.deckStats[action.response.deckId];
-            }
-
-            newState.selectedDeck = newState.decks[0];
-
-            return newState;
-        case "DECKS_DELETED":
-            newState = Object.assign({}, state, {
-                deckDeleted: true
-            });
-
-            newState.decks = newState.decks.filter((deck: any) => {
-                return !action.response.deckIds.includes(deck._id);
-            });
-
-            if(newState.deckStats) {
-                newState.deckStats = Object.assign({}, newState.deckStats);
-                for(const id of action.response.deckIds) {
-                    delete newState.deckStats[id];
+            if(state.selectedDeck) {
+                const validation = action.payload.find((v: any) => v.deckId === state.selectedDeck._id);
+                if(validation) {
+                    state.selectedDeck = { ...state.selectedDeck, status: validation.status };
                 }
             }
-
-            newState.selectedDeck = newState.decks[0];
-
-            return newState;
-        case "CLEAR_DECK_STATUS":
-            return Object.assign({}, state, {
-                deckDeleted: false,
-                deckSaved: false
-            });
-        case "RECEIVE_DECKS_UNVALIDATED":
-            processDecks(action.decks, state);
-            newState = Object.assign({}, state, {
-                singleDeck: false,
-                decks: action.decks,
-                decksValidating: true
-            });
-
-            newState = selectDeck(newState, newState.decks[0]);
-
-            return newState;
-        case "UPDATE_DECKS_VALIDATION":
-            newState = Object.assign({}, state);
-
-            if(newState.decks) {
-                newState.decks = newState.decks.map((deck: any) => {
-                    const validation = action.validations.find((v: any) => v.deckId === deck._id);
+        },
+        decksValidationComplete(state) {
+            state.decksValidating = false;
+        }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase("RECEIVE_CARDS", (state: CardsState, action: any) => {
+                const agendas: Record<string, any> = {};
+                Object.values(action.response.cards).forEach((card: any) => {
+                    if(card.type === "agenda" && card.pack_code !== "VDS") {
+                        agendas[card.id] = card;
+                    }
+                });
+                state.cards = action.response.cards;
+                state.agendas = agendas;
+                state.banners = Object.values(agendas).filter((card: any) =>
+                    card.label.startsWith("Banner of the")
+                );
+            })
+            .addCase("RECEIVE_PACKS", (state: CardsState, action: any) => {
+                state.packs = action.response.packs;
+            })
+            .addCase("RECEIVE_FACTIONS", (state: CardsState, action: any) => {
+                const factions: Record<string, any> = {};
+                action.response.factions.forEach((faction: any) => {
+                    factions[faction.value] = faction;
+                });
+                state.factions = factions;
+            })
+            .addCase("RECEIVE_FORMATS", (state: CardsState, action: any) => {
+                const formats: Record<string, any> = {};
+                action.response.formats.forEach((format: any) => {
+                    formats[format.value] = format;
+                });
+                state.formats = formats;
+            })
+            .addCase("REQUEST_DECK", (state: CardsState) => {
+                state.deckSaved = false;
+                state.deckDeleted = false;
+            })
+            .addCase("REQUEST_DECKS", (state: CardsState) => {
+                state.deckSaved = false;
+                state.deckDeleted = false;
+                if(state.selectedDeck && !state.selectedDeck._id) {
+                    if(state.decks && state.decks.length > 0) {
+                        state.selectedDeck = state.decks[0];
+                    }
+                }
+            })
+            .addCase("RECEIVE_DECKS", (state: CardsState, action: any) => {
+                if(!action.response || !action.response.decks) {
+                    return;
+                }
+                processDecks(action.response.decks, state);
+                state.singleDeck = false;
+                state.decks = action.response.decks;
+                applySelectDeck(state, state.decks[0]);
+            })
+            .addCase("RECEIVE_DECK", (state: CardsState, action: any) => {
+                state.singleDeck = true;
+                state.deckSaved = false;
+                processDecks([action.response.deck], state);
+                if(!state.decks.some((deck: any) => deck._id === action.response.deck._id)) {
+                    state.decks.push(action.response.deck);
+                }
+                const selected = state.decks.find((deck: any) => deck._id === action.response.deck._id);
+                applySelectDeck(state, selected);
+            })
+            .addCase("SAVE_DECK", (state: CardsState) => {
+                state.deckSaved = false;
+            })
+            .addCase("DECK_SAVED", (state: CardsState) => {
+                state.deckSaved = true;
+                state.decks = undefined;
+                state.deckStats = undefined;
+            })
+            .addCase("DECK_DELETED", (state: CardsState, action: any) => {
+                state.deckDeleted = true;
+                state.decks = state.decks.filter((deck: any) => deck._id !== action.response.deckId);
+                if(state.deckStats) {
+                    delete state.deckStats[action.response.deckId];
+                }
+                state.selectedDeck = state.decks[0];
+            })
+            .addCase("DECKS_DELETED", (state: CardsState, action: any) => {
+                state.deckDeleted = true;
+                state.decks = state.decks.filter((deck: any) => !action.response.deckIds.includes(deck._id));
+                if(state.deckStats) {
+                    for(const id of action.response.deckIds) {
+                        delete state.deckStats[id];
+                    }
+                }
+                state.selectedDeck = state.decks[0];
+            })
+            .addCase("RECEIVE_DECK_STATS", (state: CardsState, action: any) => {
+                if(!action.response || !action.response.stats) {
+                    return;
+                }
+                state.deckStats = action.response.stats;
+            })
+            .addCase("UPDATE_DECKS_VALIDATION", (state: CardsState, action: any) => {
+                if(state.decks) {
+                    state.decks = state.decks.map((deck: any) => {
+                        const validation = action.validations.find((v: any) => v.deckId === deck._id);
+                        return validation ? { ...deck, status: validation.status } : deck;
+                    });
+                }
+                if(state.selectedDeck) {
+                    const validation = action.validations.find((v: any) => v.deckId === state.selectedDeck._id);
                     if(validation) {
-                        return Object.assign({}, deck, { status: validation.status });
+                        state.selectedDeck = { ...state.selectedDeck, status: validation.status };
                     }
-                    return deck;
-                });
-            }
-
-            if(newState.selectedDeck) {
-                const selectedValidation = action.validations.find((v: any) => v.deckId === newState.selectedDeck._id);
-                if(selectedValidation) {
-                    newState.selectedDeck = Object.assign({}, newState.selectedDeck, { status: selectedValidation.status });
                 }
-            }
-
-            return newState;
-        case "DECKS_VALIDATION_COMPLETE":
-            return Object.assign({}, state, {
-                decksValidating: false
+            })
+            .addCase("DECKS_VALIDATION_COMPLETE", (state: CardsState) => {
+                state.decksValidating = false;
+            })
+            .addCase("RECEIVE_DECKS_UNVALIDATED", (state: CardsState, action: any) => {
+                processDecks(action.decks, state);
+                state.singleDeck = false;
+                state.decks = action.decks;
+                state.decksValidating = true;
+                applySelectDeck(state, state.decks[0]);
             });
-        default:
-            return state;
     }
-}
+});
+
+export const {
+    zoomCard, clearZoom, selectDeck, addDeck, updateDeck, updateDeckStatus,
+    clearDeckStatus, receiveDecksUnvalidated, updateDecksValidation, decksValidationComplete
+} = cardsSlice.actions;
+export default cardsSlice.reducer;

@@ -1,12 +1,6 @@
 import axios from "axios";
 
-export function refreshUser(user: any, token: string) {
-    return {
-        type: "REFRESH_USER" as const,
-        user: user,
-        token: token
-    };
-}
+export { refreshUser, clearBlockListStatus } from "../reducers/user";
 
 export function loadBlockList(user: any) {
     return {
@@ -34,11 +28,5 @@ export function removeBlockListEntry(user: any, username: string) {
         shouldCallAPI: () => true,
         callAPI: () => axios.delete(`/api/account/${user.username}/blocklist/${username}`)
             .then(response => response.data)
-    };
-}
-
-export function clearBlockListStatus() {
-    return {
-        type: "CLEAR_BLOCKLIST_STATUS" as const
     };
 }

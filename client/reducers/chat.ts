@@ -1,14 +1,15 @@
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { ChatState } from "../types/redux";
 
-function chat(state: ChatState = {}, action: any): ChatState {
-    switch(action.type) {
-        case "RECEIVE_BANNER_NOTICE":
-            return Object.assign({}, state, {
-                notice: action.notice
-            });
-        default:
-            return state;
+const chatSlice = createSlice({
+    name: "chat",
+    initialState: {} as ChatState,
+    reducers: {
+        receiveBannerNotice(state, action: PayloadAction<string>) {
+            state.notice = action.payload;
+        }
     }
-}
+});
 
-export default chat;
+export const { receiveBannerNotice } = chatSlice.actions;
+export default chatSlice.reducer;

@@ -1,43 +1,45 @@
-import { AuthState } from "../types/user";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { AuthState } from "../types/user";
+import { refreshUser } from "./user";
 
-export default function(state: AuthState = {} as AuthState, action: any): AuthState {
-    switch(action.type) {
-        case "AUTH_REGISTER":
-            var retState = Object.assign({}, state, {
-                user: action.user,
-                username: action.user.username,
-                token: action.token,
-                loggedIn: true
-            });
-
-            if(!retState.user.permissions) {
-                retState.user.permissions = {};
+const authSlice = createSlice({
+    name: "auth",
+    initialState: {} as AuthState,
+    reducers: {
+        register(state, action: PayloadAction<{ user: any; token: string }>) {
+            const { user, token } = action.payload;
+            state.user = user;
+            state.username = user.username;
+            state.token = token;
+            state.loggedIn = true;
+            if(!state.user.permissions) {
+                state.user.permissions = {};
             }
-
-            return retState;
-        case "AUTH_LOGIN":
-            return Object.assign({}, state, {
-                user: action.user,
-                username: action.user.username,
-                token: action.token,
-                isAdmin: action.isAdmin,
-                loggedIn: true
-            });
-        case "AUTH_LOGOUT":
-            return Object.assign({}, state, {
-                user: undefined,
-                username: undefined,
-                token: undefined,
-                isAdmin: false,
-                loggedIn: false
-            });
-        case "REFRESH_USER":
-            return Object.assign({}, state, {
-                user: action.user,
-                username: action.user.username,
-                token: action.token
-            });
+        },
+        login(state, action: PayloadAction<{ user: any; token: string; isAdmin: boolean }>) {
+            const { user, token, isAdmin } = action.payload;
+            state.user = user;
+            state.username = user.username;
+            state.token = token;
+            state.isAdmin = isAdmin;
+            state.loggedIn = true;
+        },
+        logout(state) {
+            state.user = undefined;
+            state.username = undefined;
+            state.token = undefined;
+            state.isAdmin = false;
+            state.loggedIn = false;
+        }
+    },
+    extraReducers: (builder) => {
+        builder.addCase(refreshUser, (state, action) => {
+            state.user = action.payload.user;
+            state.username = action.payload.user.username;
+            state.token = action.payload.token;
+        });
     }
+});
 
-    return state;
-}
+export const { register, login, logout } = authSlice.actions;
+export default authSlice.reducer;
