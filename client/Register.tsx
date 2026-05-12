@@ -155,7 +155,7 @@ export function InnerRegister({ navigate, register, socket }) {
                     return;
                 }
 
-                register(data.user, data.token);
+                register({ user: data.user, token: data.token });
                 socket.emit("authenticate", data.token);
                 navigate("/");
             })

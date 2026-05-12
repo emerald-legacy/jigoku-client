@@ -68,7 +68,7 @@ export function InnerLogin({ login, navigate, socket }) {
                 return;
             }
 
-            login(response.data.user, response.data.token);
+            login({ user: response.data.user, token: response.data.token });
             if(socket) {
                 socket.emit("authenticate", response.data.token);
             }

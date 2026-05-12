@@ -9,14 +9,14 @@ import ErrorBoundary from "./SiteComponents/ErrorBoundary";
 
 const store = configureStore();
 
-store.dispatch(navigate(window.location.pathname, window.location.search));
+store.dispatch(navigate(window.location.pathname + window.location.search));
 
 window.onpopstate = function(e) {
     store.dispatch(navigate(e.target.location.pathname));
 };
 
 if(window.user) {
-    store.dispatch(login(window.user, window.authToken, window.user.admin));
+    store.dispatch(login({ user: window.user, token: window.authToken, isAdmin: window.user.admin }));
 }
 
 const container = document.getElementById("component");
