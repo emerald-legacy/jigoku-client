@@ -45,7 +45,7 @@
     "cookie-parser": "1.4.7",
     "date-fns": "4.1.0",
     "express": "5.2.1",
-    "express-rate-limit": "8.3.1",
+    "express-rate-limit": "8.5.1",
     "express-session": "1.19.0",
     "fflate": "0.8.2",
     "helmet": "8.1.0",
