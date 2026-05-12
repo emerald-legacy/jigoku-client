@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 
 import { connect } from "react-redux";
-import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
 

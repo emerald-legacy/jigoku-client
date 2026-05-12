@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import Checkbox from "../FormComponents/Checkbox.jsx";
+import Checkbox from "../FormComponents/Checkbox";
 
 const windows = [
     { name: "dynasty", label: "Dynasty phase", style: "col-sm-4" },

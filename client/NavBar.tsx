@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
 import { ChevronDown } from "lucide-react";
 
-import Link from "./Link.jsx";
-import Avatar from "./Avatar.jsx";
+import Link from "./Link";
+import Avatar from "./Avatar";
 
 import * as actions from "./actions";
 
@@ -57,7 +57,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
             }
 
             const childItems = menuItem.childItems.map(item => (
-                <li key={ item.name } onClick={ () => setOpenDropdown(null) }><Link href={ item.path }>{ item.name }</Link></li>
+                <li key={ item.name } className={ item.path === currentPath ? "active" : "" } onClick={ () => setOpenDropdown(null) }><Link href={ item.path }>{ item.name }</Link></li>
             ));
 
             return (

@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
 
-import AlertPanel from "./SiteComponents/AlertPanel.jsx";
-import DeckRow from "./DeckRow.jsx";
-import Messages from "./GameComponents/Messages.jsx";
-import Avatar from "./Avatar.jsx";
-import DeckStatus from "./DeckStatus.jsx";
+import AlertPanel from "./SiteComponents/AlertPanel";
+import DeckRow from "./DeckRow";
+import Messages from "./GameComponents/Messages";
+import Avatar from "./Avatar";
+import DeckStatus from "./DeckStatus";
 
 import * as actions from "./actions";
 

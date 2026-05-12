@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import Card from "./Card.jsx";
+import Card from "./Card";
 
 interface SquishableCardPanelProps {
     cardSize?: string;

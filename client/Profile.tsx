@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
 
-import AlertPanel from "./SiteComponents/AlertPanel.jsx";
-import Input from "./FormComponents/Input.jsx";
-import Checkbox from "./FormComponents/Checkbox.jsx";
+import AlertPanel from "./SiteComponents/AlertPanel";
+import Input from "./FormComponents/Input";
+import Checkbox from "./FormComponents/Checkbox";
 
 import * as actions from "./actions";
 

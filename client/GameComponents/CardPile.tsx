@@ -2,7 +2,7 @@ import { useState, useRef, memo } from "react";
 import Draggable from "react-draggable";
 import { X } from "lucide-react";
 
-import Card from "./Card.jsx";
+import Card from "./Card";
 import { tryParseJSON } from "../util.js";
 
 function CardPile({

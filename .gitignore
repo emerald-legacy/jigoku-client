@@ -16,3 +16,4 @@ build/
 !babel.config.json
 .idea/
 assets/
+memory/

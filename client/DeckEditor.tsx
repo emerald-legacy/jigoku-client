@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
 
-import Input from "./FormComponents/Input.jsx";
-import Select from "./FormComponents/Select.jsx";
-import Typeahead from "./FormComponents/Typeahead.jsx";
-import TextArea from "./FormComponents/TextArea.jsx";
+import Input from "./FormComponents/Input";
+import Select from "./FormComponents/Select";
+import Typeahead from "./FormComponents/Typeahead";
+import TextArea from "./FormComponents/TextArea";
 import { preferredPackId } from "./cardImageUrl.js";
 
 import * as actions from "./actions";

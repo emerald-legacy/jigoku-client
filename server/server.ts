@@ -236,7 +236,7 @@ class Server {
                 logger.error(`Server listen error: ${err}`);
             }
 
-            logger.info("==> ?? Listening on port %s. Open up http://0.0.0.0:%s/ in your browser.", port, port);
+            logger.info(`Listening on port ${port}`);
         });
     }
 

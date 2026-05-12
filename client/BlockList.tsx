@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import { X } from "lucide-react";
-import AlertPanel from "./SiteComponents/AlertPanel.jsx";
-import Input from "./FormComponents/Input.jsx";
+import AlertPanel from "./SiteComponents/AlertPanel";
+import Input from "./FormComponents/Input";
 
 import * as actions from "./actions";
 

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { connect } from "react-redux";
 
-import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import AlertPanel from "./SiteComponents/AlertPanel";
 import * as actions from "./actions";
 
 export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordGame, passwordJoinType, socket }) {

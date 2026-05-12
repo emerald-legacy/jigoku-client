@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import GameModes from "./GameModes";
 
 import { X } from "lucide-react";
-import Avatar from "./Avatar.jsx";
+import Avatar from "./Avatar";
 import * as actions from "./actions";
 
 const gameModeLabels = {

@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import EmojiConvertor from "emoji-js";
 import { CheckCircle, Info, AlertCircle, AlertTriangle } from "lucide-react";
-import Avatar from "../Avatar.jsx";
+import Avatar from "../Avatar";
 
 const iconsConflict = ["military", "political"];
 

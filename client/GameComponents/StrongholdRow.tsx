@@ -1,7 +1,7 @@
 
-import Province from "./Province.jsx";
-import Placeholder from "./Placeholder.jsx";
-import CardPile from "./CardPile.jsx";
+import Province from "./Province";
+import Placeholder from "./Placeholder";
+import CardPile from "./CardPile";
 
 function StrongholdRow({
     cardSize,

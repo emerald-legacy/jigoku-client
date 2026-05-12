@@ -1,8 +1,8 @@
 import { useState } from "react";
 
-import AdditionalCardPile from "./AdditionalCardPile.jsx";
-import CardPile from "./CardPile.jsx";
-import Province from "./Province.jsx";
+import AdditionalCardPile from "./AdditionalCardPile";
+import CardPile from "./CardPile";
+import Province from "./Province";
 import { tryParseJSON } from "../util.js";
 
 /* eslint-disable @typescript-eslint/no-unused-vars */

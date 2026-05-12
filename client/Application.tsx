@@ -4,30 +4,31 @@ import { bindActionCreators } from "@reduxjs/toolkit";
 import { connect } from "react-redux";
 import { io } from "socket.io-client";
 
-import Login from "./Login.jsx";
-import Logout from "./Logout.jsx";
-import Register from "./Register.jsx";
-import Lobby from "./Lobby.jsx";
-import Decks from "./Decks.jsx";
-import AddDeck from "./AddDeck.jsx";
-import EditDeck from "./EditDeck.jsx";
-import NotFound from "./NotFound.jsx";
-import ErrorBoundary from "./SiteComponents/ErrorBoundary.jsx";
-import NavBar from "./NavBar.jsx";
-import GameLobby from "./GameLobby.jsx";
-import GameBoard from "./GameBoard.jsx";
-import HowToPlay from "./HowToPlay.jsx";
-import About from "./About.jsx";
-import Community from "./Community.jsx";
-import Formats from "./Formats.jsx";
-import ForgotPassword from "./ForgotPassword.jsx";
-import ResetPassword from "./ResetPassword.jsx";
-import Profile from "./Profile.jsx";
-import NewsAdmin from "./NewsAdmin.jsx";
-import Unauthorised from "./Unauthorised.jsx";
-import UserAdmin from "./UserAdmin.jsx";
-import BlockList from "./BlockList.jsx";
-import GameReplay from "./GameReplay.jsx";
+import Login from "./Login";
+import Logout from "./Logout";
+import Register from "./Register";
+import Lobby from "./Lobby";
+import NotFound from "./NotFound";
+import ErrorBoundary from "./SiteComponents/ErrorBoundary";
+import NavBar from "./NavBar";
+import GameLobby from "./GameLobby";
+import GameBoard from "./GameBoard";
+
+const Decks = React.lazy(() => import("./Decks"));
+const AddDeck = React.lazy(() => import("./AddDeck"));
+const EditDeck = React.lazy(() => import("./EditDeck"));
+const HowToPlay = React.lazy(() => import("./HowToPlay"));
+const About = React.lazy(() => import("./About"));
+const Community = React.lazy(() => import("./Community"));
+const Formats = React.lazy(() => import("./Formats"));
+const ForgotPassword = React.lazy(() => import("./ForgotPassword"));
+const ResetPassword = React.lazy(() => import("./ResetPassword"));
+const Profile = React.lazy(() => import("./Profile"));
+const NewsAdmin = React.lazy(() => import("./NewsAdmin"));
+const Unauthorised = React.lazy(() => import("./Unauthorised"));
+const UserAdmin = React.lazy(() => import("./UserAdmin"));
+const BlockList = React.lazy(() => import("./BlockList"));
+const GameReplay = React.lazy(() => import("./GameReplay"));
 import { startRecording, recordState, setHiddenInfo, clearRecording } from "./gameStateRecorder.js";
 
 import { toast } from "sonner";
@@ -496,7 +497,9 @@ class App extends React.Component {
             <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" currentPath={ this.props.path } numGames={ this.props.games.length } />
             <div className="container">
                 <ErrorBoundary navigate={ this.props.navigate } errorPath={ this.props.path } message={ "We're sorry - something's gone wrong." }>
-                    { component }
+                    <React.Suspense fallback={ null }>
+                        { component }
+                    </React.Suspense>
                 </ErrorBoundary>
             </div>
         </div>);

@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
-import NewGame from "./NewGame.jsx";
-import GameList from "./GameList.jsx";
-import GameStats from "./GameStats.jsx";
-import PendingGame from "./PendingGame.jsx";
-import PasswordGame from "./PasswordGame.jsx";
-import AlertPanel from "./SiteComponents/AlertPanel.jsx";
+import NewGame from "./NewGame";
+import GameList from "./GameList";
+import GameStats from "./GameStats";
+import PendingGame from "./PendingGame";
+import PasswordGame from "./PasswordGame";
+import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
 

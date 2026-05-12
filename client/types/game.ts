@@ -21,6 +21,9 @@ export interface Card {
     element?: string;
     label?: string;
     packId?: string;
+    isToken?: boolean;
+    facedownId?: string;
+    facedownPackId?: string;
     tokens?: CardToken;
     menu?: MenuItem[];
     attached?: boolean;

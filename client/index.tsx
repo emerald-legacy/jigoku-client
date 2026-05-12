@@ -4,8 +4,8 @@ import { Provider } from "react-redux";
 import { Toaster } from "sonner";
 import configureStore from "./configureStore";
 import { navigate, login } from "./actions";
-import Application from "./Application.jsx";
-import ErrorBoundary from "./SiteComponents/ErrorBoundary.jsx";
+import Application from "./Application";
+import ErrorBoundary from "./SiteComponents/ErrorBoundary";
 
 const store = configureStore();
 
