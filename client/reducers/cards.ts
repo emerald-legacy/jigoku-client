@@ -9,62 +9,37 @@ function applySelectDeck(state: CardsState, deck: any): void {
     }
 }
 
-function processDecks(decks: any[], state: CardsState): void {
-    decks.forEach(deck => {
-        if(!state.cards || !deck.faction) {
-            return;
-        }
-        deck.faction = state.factions[deck.faction.value];
-        if(deck.alliance) {
-            if(deck.alliance.value === "") {
-                deck.alliance = { name: "", value: "" };
-            } else {
-                deck.alliance = state.factions[deck.alliance.value];
-            }
-        }
+const DECK_LIST_KEYS = ["stronghold", "role", "provinceCards", "conflictCards", "dynastyCards"] as const;
 
-        if(deck.stronghold) {
-            deck.stronghold = deck.stronghold.filter((card: any) => !!card.card);
+function processDeck(rawDeck: any, state: CardsState): any {
+    if(!state.cards || !rawDeck.faction) {
+        return rawDeck;
+    }
+    const deck: any = { ...rawDeck };
+    deck.faction = state.factions[rawDeck.faction.value];
+    if(deck.alliance) {
+        if(deck.alliance.value === "") {
+            deck.alliance = { name: "", value: "" };
+        } else {
+            deck.alliance = state.factions[deck.alliance.value];
         }
-        if(deck.role) {
-            deck.role = deck.role.filter((card: any) => !!card.card);
+    }
+    for(const key of DECK_LIST_KEYS) {
+        if(deck[key]) {
+            deck[key] = deck[key]
+                .filter((card: any) => !!card.card)
+                .map((card: any) => ({
+                    count: card.count,
+                    card: state.cards[card.card.id],
+                    pack_id: card.pack_id
+                }));
         }
-        if(deck.provinceCards) {
-            deck.provinceCards = deck.provinceCards.filter((card: any) => !!card.card);
-        }
-        if(deck.conflictCards) {
-            deck.conflictCards = deck.conflictCards.filter((card: any) => !!card.card);
-        }
-        if(deck.dynastyCards) {
-            deck.dynastyCards = deck.dynastyCards.filter((card: any) => !!card.card);
-        }
+    }
+    return deck;
+}
 
-        if(deck.stronghold) {
-            deck.stronghold = deck.stronghold.map((card: any) => ({
-                count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id
-            }));
-        }
-        if(deck.role) {
-            deck.role = deck.role.map((card: any) => ({
-                count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id
-            }));
-        }
-        if(deck.provinceCards) {
-            deck.provinceCards = deck.provinceCards.map((card: any) => ({
-                count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id
-            }));
-        }
-        if(deck.conflictCards) {
-            deck.conflictCards = deck.conflictCards.map((card: any) => ({
-                count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id
-            }));
-        }
-        if(deck.dynastyCards) {
-            deck.dynastyCards = deck.dynastyCards.map((card: any) => ({
-                count: card.count, card: state.cards[card.card.id], pack_id: card.pack_id
-            }));
-        }
-    });
+function processDecks(decks: any[], state: CardsState): any[] {
+    return decks.map(deck => processDeck(deck, state));
 }
 
 const cardsSlice = createSlice({
@@ -78,24 +53,16 @@ const cardsSlice = createSlice({
             state.zoomCard = undefined;
         },
         selectDeck(state, action: PayloadAction<any>) {
-            state.selectedDeck = action.payload;
             state.deckSaved = false;
-            if(state.selectedDeck) {
-                processDecks([state.selectedDeck], state);
-            }
+            state.selectedDeck = action.payload ? processDeck(action.payload, state) : action.payload;
         },
         addDeck(state) {
-            const newDeck: any = { name: "New Deck" };
-            state.selectedDeck = newDeck;
             state.deckSaved = false;
-            processDecks([state.selectedDeck], state);
+            state.selectedDeck = processDeck({ name: "New Deck" }, state);
         },
         updateDeck(state, action: PayloadAction<any>) {
-            state.selectedDeck = action.payload;
             state.deckSaved = false;
-            if(state.selectedDeck) {
-                processDecks([state.selectedDeck], state);
-            }
+            state.selectedDeck = action.payload ? processDeck(action.payload, state) : action.payload;
         },
         updateDeckStatus: {
             reducer(state, action: PayloadAction<{ deckId: string; status: any }>) {
@@ -191,19 +158,18 @@ const cardsSlice = createSlice({
                 if(!action.response || !action.response.decks) {
                     return;
                 }
-                processDecks(action.response.decks, state);
                 state.singleDeck = false;
-                state.decks = action.response.decks;
+                state.decks = processDecks(action.response.decks, state);
                 applySelectDeck(state, state.decks[0]);
             })
             .addCase("RECEIVE_DECK", (state: CardsState, action: any) => {
                 state.singleDeck = true;
                 state.deckSaved = false;
-                processDecks([action.response.deck], state);
-                if(!state.decks.some((deck: any) => deck._id === action.response.deck._id)) {
-                    state.decks.push(action.response.deck);
+                const processed = processDeck(action.response.deck, state);
+                if(!state.decks.some((deck: any) => deck._id === processed._id)) {
+                    state.decks.push(processed);
                 }
-                const selected = state.decks.find((deck: any) => deck._id === action.response.deck._id);
+                const selected = state.decks.find((deck: any) => deck._id === processed._id);
                 applySelectDeck(state, selected);
             })
             .addCase("SAVE_DECK", (state: CardsState) => {
@@ -256,9 +222,8 @@ const cardsSlice = createSlice({
                 state.decksValidating = false;
             })
             .addCase("RECEIVE_DECKS_UNVALIDATED", (state: CardsState, action: any) => {
-                processDecks(action.decks, state);
                 state.singleDeck = false;
-                state.decks = action.decks;
+                state.decks = processDecks(action.decks, state);
                 state.decksValidating = true;
                 applySelectDeck(state, state.decks[0]);
             });

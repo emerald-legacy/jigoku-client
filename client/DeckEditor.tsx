@@ -117,11 +117,11 @@ export function InnerDeckEditor({
 
     const addCard = (card, number, packId, currentDeck) => {
         const deckCopy = copyDeck(currentDeck);
-        const provinces = deckCopy.provinceCards || [];
-        const stronghold = deckCopy.stronghold || [];
-        const role = deckCopy.role || [];
-        const conflict = deckCopy.conflictCards || [];
-        const dynasty = deckCopy.dynastyCards || [];
+        const provinces = [...(deckCopy.provinceCards || [])];
+        const stronghold = [...(deckCopy.stronghold || [])];
+        const role = [...(deckCopy.role || [])];
+        const conflict = [...(deckCopy.conflictCards || [])];
+        const dynasty = [...(deckCopy.dynastyCards || [])];
 
         let list;
         if(card.type === "province") {
@@ -136,9 +136,9 @@ export function InnerDeckEditor({
             list = role;
         }
 
-        const existingEntry = list.find(entry => entry.card.id === card.id && entry.pack_id === packId);
-        if(existingEntry) {
-            existingEntry.count += number;
+        const existingIdx = list.findIndex(entry => entry.card.id === card.id && entry.pack_id === packId);
+        if(existingIdx >= 0) {
+            list[existingIdx] = { ...list[existingIdx], count: list[existingIdx].count + number };
         } else {
             list.push({ count: number, card: card, pack_id: packId });
         }
