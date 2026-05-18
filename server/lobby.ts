@@ -156,31 +156,30 @@ class Lobby {
     }
 
     handshake(socket, next) {
-        var versionInfo = undefined;
+        const token = socket.handshake.auth?.token;
+        const versionStr = socket.handshake.auth?.version;
 
-        // Socket.io v4 uses auth object, v1 used query string
-        const token = socket.handshake.auth?.token || socket.handshake.query?.token;
+        const finalize = () => {
+            const versionInfo = versionStr ? new Date(versionStr) : undefined;
+            if(!versionInfo || versionInfo < version) {
+                socket.emit("banner", "Your client version is out of date, please refresh or clear your cache to get the latest version");
+            }
+            next();
+        };
+
         if(token && token !== "undefined") {
-            jwt.verify(token, this.config.secret, function(err, user) {
+            jwt.verify(token, this.config.secret, { algorithms: ["HS256"] }, function(err, user) {
                 if(err) {
                     logger.info(`Lobby JWT verification failed: ${err.message}`);
-                    return;
+                    return next(new Error("Invalid authentication token"));
                 }
-
                 socket.request.user = user;
+                finalize();
             });
+            return;
         }
 
-        const versionStr = socket.handshake.auth?.version || socket.handshake.query?.version;
-        if(versionStr) {
-            versionInfo = new Date(versionStr);
-        }
-
-        if(!versionInfo || versionInfo < version) {
-            socket.emit("banner", "Your client version is out of date, please refresh or clear your cache to get the latest version");
-        }
-
-        next();
+        finalize();
     }
 
     // Actions
