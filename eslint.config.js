@@ -1,8 +1,6 @@
-const path = require("path");
 const js = require("@eslint/js");
 const react = require("eslint-plugin-react");
 const reactHooks = require("eslint-plugin-react-hooks");
-const babelParser = require("@babel/eslint-parser");
 const tseslint = require("typescript-eslint");
 const globals = require("globals");
 
@@ -20,14 +18,9 @@ module.exports = [
         languageOptions: {
             ecmaVersion: 2020,
             sourceType: "module",
-            parser: babelParser,
             parserOptions: {
                 ecmaFeatures: {
                     jsx: true
-                },
-                requireConfigFile: true,
-                babelOptions: {
-                    configFile: path.resolve(__dirname, "babel.config.json")
                 }
             },
             globals: {
