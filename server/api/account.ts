@@ -108,7 +108,7 @@ module.exports.init = function (server) {
             return res.send({ success: false, message: "No email specified" });
         }
 
-        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)) {
+        if(!/^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(req.body.email)) {
             return res.send({ success: false, message: "Please enter a valid email address" });
         }
 
@@ -345,7 +345,7 @@ module.exports.init = function (server) {
             }
 
             if(isEmailChange) {
-                if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userToSet.email)) {
+                if(!/^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(userToSet.email)) {
                     return res.send({ success: false, message: "Please enter a valid email address" });
                 }
                 user.email = userToSet.email;
