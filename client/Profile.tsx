@@ -20,6 +20,7 @@ export function InnerProfile({ refreshUser, socket, user }) {
     const [disableGravatar, setDisableGravatar] = useState(user?.settings?.disableGravatar || false);
     const [email, setEmail] = useState(user?.email || "");
     const [loading, setLoading] = useState(false);
+    const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [newPasswordAgain, setNewPasswordAgain] = useState("");
     const [promptedActionWindows, setPromptedActionWindows] = useState(user?.promptedActionWindows || {});
@@ -45,6 +46,9 @@ export function InnerProfile({ refreshUser, socket, user }) {
         switch(field) {
             case "email":
                 setEmail(value);
+                break;
+            case "currentPassword":
+                setCurrentPassword(value);
                 break;
             case "newPassword":
                 setNewPassword(value);
@@ -127,6 +131,13 @@ export function InnerProfile({ refreshUser, socket, user }) {
             return;
         }
 
+        const emailChanged = email !== user.email;
+        const passwordChanged = newPassword.length > 0;
+        if((emailChanged || passwordChanged) && !currentPassword) {
+            setErrorMessage("Please enter your current password to change your email or password");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -134,6 +145,7 @@ export function InnerProfile({ refreshUser, socket, user }) {
                 data: JSON.stringify({
                     email: email,
                     password: newPassword,
+                    currentPassword: currentPassword,
                     promptedActionWindows: promptedActionWindows,
                     settings: {
                         disableGravatar: disableGravatar,
@@ -224,6 +236,8 @@ export function InnerProfile({ refreshUser, socket, user }) {
                         <Input name="newPasswordAgain" label="New Password (again)" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Enter new password (again)"
                             type="password" onChange={ (e) => handleChange("newPasswordAgain", e) } value={ newPasswordAgain }
                             onBlur={ () => verifyPassword(false) } validationMessage={ validation.password1 } />
+                        <Input name="currentPassword" label="Current Password" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Required to change email or password"
+                            type="password" onChange={ (e) => handleChange("currentPassword", e) } value={ currentPassword } />
                         <Checkbox name="disableGravatar" label="Disable Gravatar integration" fieldClass="col-sm-offset-4 col-sm-8"
                             onChange={ (e) => setDisableGravatar(e.target.checked) } checked={ disableGravatar } />
                     </div>

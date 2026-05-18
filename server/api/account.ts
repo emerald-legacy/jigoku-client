@@ -331,11 +331,30 @@ module.exports.init = function (server) {
                 return res.status(404).send({ message: "Not found" });
             }
 
-            user.email = userToSet.email;
+            const isEmailChange = typeof userToSet.email === "string" && userToSet.email !== user.email;
+            const isPasswordChange = typeof userToSet.password === "string" && userToSet.password !== "";
+
+            if(isEmailChange || isPasswordChange) {
+                if(typeof userToSet.currentPassword !== "string" || userToSet.currentPassword === "") {
+                    return res.status(400).send({ success: false, message: "Current password is required to change email or password" });
+                }
+                const valid = await bcrypt.compare(userToSet.currentPassword, user.password);
+                if(!valid) {
+                    return res.status(403).send({ success: false, message: "Current password is incorrect" });
+                }
+            }
+
+            if(isEmailChange) {
+                if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userToSet.email)) {
+                    return res.send({ success: false, message: "Please enter a valid email address" });
+                }
+                user.email = userToSet.email;
+            }
+
             user.settings = userToSet.settings;
             user.promptedActionWindows = userToSet.promptedActionWindows;
 
-            if(userToSet.password && userToSet.password !== "") {
+            if(isPasswordChange) {
                 user.password = await hashPassword(userToSet.password, 10);
             }
 
