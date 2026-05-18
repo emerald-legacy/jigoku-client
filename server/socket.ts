@@ -64,6 +64,10 @@ class Socket extends EventEmitter {
                 return;
             }
 
+            if(this.user && this.user.username !== user.username) {
+                this.socket.disconnect();
+                return;
+            }
             this.socket.request.user = user;
             this.user = user;
             this.emit("authenticate", this, user);
