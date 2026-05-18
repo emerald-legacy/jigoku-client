@@ -181,7 +181,8 @@ module.exports.init = function (server) {
     });
 
     server.post("/api/account/login", passport.authenticate("local"), function (req, res) {
-        res.send({ success: true, user: req.user, token: jwt.sign(req.user, config.secret, { expiresIn: "7d" }) });
+        const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeUser } = (req.user as any) || {};
+        res.send({ success: true, user: safeUser, token: jwt.sign(safeUser, config.secret, { expiresIn: "7d" }) });
     });
 
     server.post("/api/account/password-reset-finish", wrapAsync(async (req, res) => {

@@ -222,9 +222,9 @@ class Server {
             const authReq = req;
 
             if(authReq.user) {
-                token = jwt.sign(authReq.user, config.secret, { expiresIn: "7d" });
-                const { blockList: _blockList, ...userWithoutBlockList } = authReq.user;
-                authReq.user = userWithoutBlockList;
+                const { blockList: _blockList, password: _pw, resetToken: _rt, tokenExpires: _te, ...safeUser } = authReq.user;
+                authReq.user = safeUser;
+                token = jwt.sign(safeUser, config.secret, { expiresIn: "1h" });
             }
 
             // Extract asset paths from Vite manifest
