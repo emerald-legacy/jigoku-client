@@ -183,7 +183,8 @@ class Server {
         let useViteDev = false;
         if(this.isDeveloping) {
             try {
-                const { createServer } = await import("vite");
+                // @ts-expect-error vite is ESM-only and unresolvable under moduleResolution=node; resolved at runtime via dynamic import.
+                const { createServer } = (await import("vite")) as { createServer: (opts: any) => Promise<any> };
                 const vite = await createServer({
                     server: { middlewareMode: true },
                     appType: "custom"
