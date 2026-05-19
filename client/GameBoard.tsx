@@ -171,7 +171,10 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
             document.body.classList.remove("select-cursor");
         }
 
-        let menuOptions = [
+        type ContextMenuOption =
+            | { text: string; onClick: (...args: any[]) => any }
+            | { text: string; popup: React.ReactNode };
+        let menuOptions: ContextMenuOption[] = [
             { text: "Leave Game", onClick: this.onLeaveClick }
         ];
 
@@ -192,7 +195,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
                 </ul>
             );
 
-            (menuOptions as any[]).unshift({ text: `Spectators: ${props.currentGame.spectators.length}`, popup: spectatorPopup });
+            menuOptions.unshift({ text: `Spectators: ${props.currentGame.spectators.length}`, popup: spectatorPopup });
 
             this.setContextMenu(menuOptions);
         } else {
@@ -370,7 +373,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         let playerDeclaringParticipants = conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen));
 
         const pendingAnimations = this.props.pendingAnimations;
-        const onAnimationEnd = (uuid: string) => this.props.dispatch(clearAnimation(uuid) as any);
+        const onAnimationEnd = (uuid: string) => this.props.dispatch(clearAnimation(uuid));
 
         Object.values<CardType[]>(cardsByType).forEach((cards: CardType[]) => {
             let cardsInPlay = cards.map((card: CardType) => {
@@ -697,7 +700,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         return (<div className="inset-pane">
             <ActivePlayerPrompt title={ thisPlayer.menuTitle }
                 buttons={ thisPlayer.buttons }
-                cards={ this.props.cards as unknown as CardType[] }
+                cards={ this.props.cards }
                 controls={ thisPlayer.controls }
                 promptTitle={ thisPlayer.promptTitle }
                 onButtonClick={ this.onCommand }
@@ -738,7 +741,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
                         cardSize={ this.props.user.settings.cardSize }
                         pendingAnimations={ this.props.pendingAnimations }
                         playerName={ thisPlayer.name }
-                        onAnimationEnd={ (id: string) => this.props.dispatch(clearAnimation(id) as any) } />
+                        onAnimationEnd={ (id: string) => this.props.dispatch(clearAnimation(id)) } />
                 </div>
             </Draggable>);
         }
@@ -782,7 +785,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
                     cardSize={ this.props.user.settings.cardSize }
                     pendingAnimations={ this.props.pendingAnimations }
                     playerName={ otherPlayer.name }
-                    onAnimationEnd={ (id: string) => this.props.dispatch(clearAnimation(id) as any) } />
+                    onAnimationEnd={ (id: string) => this.props.dispatch(clearAnimation(id)) } />
             </div>
         </Draggable>);
     }
@@ -856,8 +859,11 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
                 <HonorChangeOverlay
                     animations={ this.props.pendingAnimations || [] }
                     onDismiss={ () => {
-                        const honorAnims = (this.props.pendingAnimations || []).filter(a => a.type === "honor");
-                        honorAnims.forEach(a => this.props.dispatch(clearAnimation((a as any).playerName)));
+                        for(const a of this.props.pendingAnimations || []) {
+                            if(a.type === "honor") {
+                                this.props.dispatch(clearAnimation(a.playerName));
+                            }
+                        }
                     } }
                 />
                 { this.getPrompt(thisPlayer) }

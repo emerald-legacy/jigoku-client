@@ -93,6 +93,10 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-const EditDeck: React.ComponentType = connect(mapStateToProps, actions)(InnerEditDeck);
+interface EditDeckOwnProps {
+    deckId?: string;
+}
+
+const EditDeck: React.ComponentType<EditDeckOwnProps> = connect(mapStateToProps, actions)(InnerEditDeck);
 
 export default EditDeck;

@@ -56,7 +56,7 @@ interface PromptUser {
 
 interface ActivePlayerPromptProps {
     buttons?: Button[];
-    cards?: Card[];
+    cards?: Record<string, Card>;
     controls?: Control[];
     onButtonClick?: (command: string | undefined, arg: string | undefined, uuid: string | undefined, method: string | undefined) => void;
     onMouseOut?: (card: Card) => void;

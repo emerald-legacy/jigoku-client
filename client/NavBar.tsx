@@ -163,6 +163,14 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-const NavBar: React.ComponentType = connect(mapStateToProps, actions)(InnerNavBar);
+interface NavBarOwnProps {
+    currentPath?: string;
+    leftMenu?: NavMenuItem[];
+    numGames?: number;
+    rightMenu?: NavMenuItem[];
+    title?: string;
+}
+
+const NavBar: React.ComponentType<NavBarOwnProps> = connect(mapStateToProps, actions)(InnerNavBar);
 
 export default NavBar;

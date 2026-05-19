@@ -205,7 +205,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }: InnerMessa
                     </span>
                 );
             } else if(fragment.isReactComponent) {
-                return fragment as unknown as React.ReactNode;
+                return fragment as React.ReactElement;
             } else if(typeof fragment === "object" && fragment.name) {
                 // Handle objects with a name property (players, cards without id, etc.)
                 return fragment.name;

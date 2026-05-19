@@ -143,18 +143,6 @@ function Card(props: CardProps) {
         target.style.position = "fixed";
     };
 
-    const getReactComponentFromDOMNode = (dom: Element): any => {
-        for(const key in dom) {
-            if(key.indexOf("__reactInternalInstance$") === 0) {
-                const compInternals = (dom as any)[key]._currentElement;
-                const compWrapper = compInternals._owner;
-                const comp = compWrapper._instance;
-                return comp;
-            }
-        }
-        return null;
-    };
-
     const onTouchStart = (event: React.TouchEvent<HTMLElement>) => {
         const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
         setTouchStart({ left: rect.left, top: rect.top });
@@ -183,11 +171,6 @@ function Card(props: CardProps) {
                 dropTarget = "hand";
             } else if(pileClasses.includes("player-board")) {
                 dropTarget = "play area";
-            } else {
-                const component = getReactComponentFromDOMNode(nearestPile);
-                if(component) {
-                    dropTarget = component.props.source;
-                }
             }
 
             if(dropTarget && onDragDrop) {

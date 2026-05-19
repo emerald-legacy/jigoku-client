@@ -108,7 +108,6 @@ InnerNewsAdmin.displayName = "NewsAdmin";
 function mapStateToProps(state: RootState) {
     return {
         apiError: state.api.message,
-        loadNews: (state.news as any).loadNews,
         loading: state.api.loading,
         news: state.news.news,
         newsSaved: state.news.newsSaved
