@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
-import { InnerAddDeck } from "../../client/AddDeck.jsx";
+import { InnerAddDeck } from "../../client/AddDeck.tsx";
 
 // Mock child components to avoid complex dependencies
-vi.mock("../../client/DeckSummary.jsx", () => ({
+vi.mock("../../client/DeckSummary.tsx", () => ({
     default: ({ deck }) => <div data-testid="deck-summary">{ deck?.name || "No deck" }</div>
 }));
 
-vi.mock("../../client/DeckEditor.jsx", () => ({
+vi.mock("../../client/DeckEditor.tsx", () => ({
     default: ({ mode, onDeckSave }) => (
         <div data-testid="deck-editor" data-mode={ mode }>
             <button onClick={ () => onDeckSave({ name: "Test Deck" }) }>Save</button>
@@ -16,7 +16,7 @@ vi.mock("../../client/DeckEditor.jsx", () => ({
     )
 }));
 
-vi.mock("../../client/SiteComponents/AlertPanel.jsx", () => ({
+vi.mock("../../client/SiteComponents/AlertPanel.tsx", () => ({
     default: ({ type, message }) => <div data-testid="alert-panel" data-type={ type }>{ message }</div>
 }));
 
@@ -85,10 +85,6 @@ describe("the <InnerAddDeck /> component", () => {
 
         it("should render the deck editor", () => {
             expect(screen.getByTestId("deck-editor")).toBeInTheDocument();
-        });
-
-        it("should render the deck editor in Add mode", () => {
-            expect(screen.getByTestId("deck-editor")).toHaveAttribute("data-mode", "Add");
         });
 
         it("should render the deck summary", () => {

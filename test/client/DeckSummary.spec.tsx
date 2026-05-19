@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
-import DeckSummary from "../../client/DeckSummary.jsx";
+import DeckSummary from "../../client/DeckSummary.tsx";
 
 // Mock DeckStatus component
-vi.mock("../../client/DeckStatus.jsx", () => ({
+vi.mock("../../client/DeckStatus.tsx", () => ({
     default: ({ deck }) => <span data-testid="deck-status">{ deck?.valid ? "Valid" : "Invalid" }</span>
 }));
 

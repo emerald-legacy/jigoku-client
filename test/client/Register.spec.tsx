@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import React from "react";
-import { InnerRegister } from "../../client/Register.jsx";
+import { InnerRegister } from "../../client/Register.tsx";
 
 // Mock AlertPanel component
-vi.mock("../../client/SiteComponents/AlertPanel.jsx", () => ({
+vi.mock("../../client/SiteComponents/AlertPanel.tsx", () => ({
     default: ({ type, message }) => <div data-testid="alert-panel" data-type={ type }>{ message }</div>
 }));
 

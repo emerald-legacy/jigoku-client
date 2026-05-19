@@ -2,25 +2,23 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 
-
-// Mock child components
-vi.mock("../../client/GameComponents/CardMenu.jsx", () => ({
+vi.mock("../../client/GameComponents/CardMenu.tsx", () => ({
     default: ({ menu }) => menu ? <div data-testid="card-menu">Menu</div> : null
 }));
 
-vi.mock("../../client/GameComponents/CardStats.jsx", () => ({
+vi.mock("../../client/GameComponents/CardStats.tsx", () => ({
     default: () => <div data-testid="card-stats">Stats</div>
 }));
 
-vi.mock("../../client/GameComponents/CardCounters.jsx", () => ({
+vi.mock("../../client/GameComponents/CardCounters.tsx", () => ({
     default: ({ counters }) => <div data-testid="card-counters">{ JSON.stringify(counters) }</div>
 }));
 
-vi.mock("../../client/GameComponents/CardPile.jsx", () => ({
+vi.mock("../../client/GameComponents/CardPile.tsx", () => ({
     default: ({ title }) => <div data-testid="card-pile">{ title }</div>
 }));
 
-import Card from "../../client/GameComponents/Card.jsx";
+import Card from "../../client/GameComponents/Card.tsx";
 
 describe("the <Card /> component", () => {
     let card;

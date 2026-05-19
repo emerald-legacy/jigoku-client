@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
-import Controls from "../../../client/GameComponents/Controls.jsx";
+import Controls from "../../../client/GameComponents/Controls.tsx";
 
 describe("the <Controls /> component", () => {
     let onSettingsClick;
