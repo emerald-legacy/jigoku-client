@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
 import type { Dispatch } from "@reduxjs/toolkit";
 import Draggable from "react-draggable";
-import type { Socket } from "socket.io-client";
 
 import type { RootState, AnimationEvent } from "./types/redux";
 import type { GameState, Card as CardType, Ring as RingType, Player, MenuItem, Spectator, GameMessage, MessageFragment } from "./types/game";
@@ -42,7 +41,6 @@ interface GameBoardStateProps {
     cards?: Record<string, any>;
     currentGame?: GameState;
     pendingAnimations?: AnimationEvent[];
-    socket?: Socket;
     user?: User;
     username?: string;
 }
@@ -1034,7 +1032,6 @@ function mapStateToProps(state: RootState): GameBoardStateProps {
         cards: state.cards.cards,
         currentGame: state.games.currentGame,
         pendingAnimations: state.games.pendingAnimations,
-        socket: state.socket.socket,
         user: state.auth.user,
         username: state.auth.username
     };

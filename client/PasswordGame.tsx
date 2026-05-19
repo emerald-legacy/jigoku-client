@@ -1,25 +1,25 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import type { Socket } from "socket.io-client";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import * as actions from "./actions";
 import type { RootState } from "./types/redux";
+import { getLobbySocket } from "./socket";
 
 interface InnerPasswordGameProps {
     cancelPasswordJoin: () => any;
     passwordError?: string;
     passwordGame?: { id: string; name: string };
     passwordJoinType?: string;
-    socket?: Socket;
 }
 
-export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordGame, passwordJoinType, socket }: InnerPasswordGameProps) {
+export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordGame, passwordJoinType }: InnerPasswordGameProps) {
     const [password, setPassword] = useState("");
 
     const onJoinClick = (event: React.MouseEvent) => {
         event.preventDefault();
 
+        const socket = getLobbySocket();
         if(passwordJoinType === "Join") {
             socket?.emit("joingame", passwordGame?.id, password);
         } else if(passwordJoinType === "Watch") {
@@ -70,8 +70,7 @@ function mapStateToProps(state: RootState) {
     return {
         passwordError: state.games.passwordError,
         passwordGame: state.games.passwordGame,
-        passwordJoinType: state.games.passwordJoinType,
-        socket: state.socket.socket
+        passwordJoinType: state.games.passwordJoinType
     };
 }
 

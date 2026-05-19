@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
-import type { Socket } from "socket.io-client";
+import { getLobbySocket } from "./socket";
 import type { RootState } from "./types/redux";
 import type { User } from "./types/user";
 
@@ -21,11 +21,10 @@ const windows = [
 
 interface InnerProfileProps {
     refreshUser: (user: User, token: string) => any;
-    socket?: Socket;
     user?: User & { promptedActionWindows?: Record<string, boolean> };
 }
 
-export function InnerProfile({ refreshUser, socket, user }: InnerProfileProps) {
+export function InnerProfile({ refreshUser, user }: InnerProfileProps) {
     const [disableGravatar, setDisableGravatar] = useState(user?.settings?.disableGravatar || false);
     const [email, setEmail] = useState(user?.email || "");
     const [loading, setLoading] = useState(false);
@@ -171,7 +170,7 @@ export function InnerProfile({ refreshUser, socket, user }: InnerProfileProps) {
 
             if(data.success) {
                 setSuccessMessage("Profile saved successfully.  Please note settings changed here will only apply at the start of your next game");
-                socket.emit("authenticate", data.token);
+                getLobbySocket()?.emit("authenticate", data.token);
                 refreshUser(data.user, data.token);
             } else {
                 setErrorMessage(data.message);
@@ -554,7 +553,6 @@ InnerProfile.displayName = "Profile";
 
 function mapStateToProps(state: RootState) {
     return {
-        socket: state.socket.socket,
         user: state.auth.user
     };
 }

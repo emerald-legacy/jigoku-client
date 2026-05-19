@@ -345,7 +345,6 @@ function GameReplay() {
                 sendGameMessage={ noop }
                 closeGameSocket={ noop }
                 setContextMenu={ noop }
-                socket={ {} as never }
             />
             { portalTarget && createPortal(
                 <ReplayControls

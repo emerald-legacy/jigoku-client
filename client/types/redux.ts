@@ -29,8 +29,8 @@ export interface GamesState {
 }
 
 export interface SocketState {
-    socket?: any;
-    gameSocket?: any;
+    connected?: boolean;
+    gameConnected?: boolean;
     gameConnecting?: boolean;
     gameHost?: string;
 }

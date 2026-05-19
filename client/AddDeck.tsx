@@ -81,8 +81,7 @@ function mapStateToProps(state: RootState) {
         deckSaved: state.cards.deckSaved,
         factions: state.cards.factions,
         formats: state.cards.formats,
-        loading: state.api.loading,
-        socket: state.socket.socket
+        loading: state.api.loading
     };
 }
 

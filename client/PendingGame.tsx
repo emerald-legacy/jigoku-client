@@ -28,7 +28,6 @@ interface InnerPendingGameProps {
     loadDecks?: (...args: any[]) => any;
     loading?: boolean;
     sendSocketMessage?: (...args: any[]) => any;
-    socket?: any;
     username?: string;
     zoomCard?: (...args: any[]) => any;
 }
@@ -43,7 +42,6 @@ export function InnerPendingGame({
     loadDecks,
     loading,
     sendSocketMessage,
-    socket,
     username,
     zoomCard
 }: InnerPendingGameProps) {
@@ -126,7 +124,7 @@ export function InnerPendingGame({
 
     const selectDeck = (index: number) => {
         setShowModal(false);
-        socket.emit("selectdeck", currentGame.id, filteredDecks[index]);
+        sendSocketMessage("selectdeck", currentGame.id, filteredDecks[index]);
     };
 
     const getPlayerStatus = (player: PendingGamePlayer) => {
@@ -183,14 +181,14 @@ export function InnerPendingGame({
 
     const handleLeaveClick = (event: React.MouseEvent) => {
         event.preventDefault();
-        socket.emit("leavegame", currentGame.id);
+        sendSocketMessage("leavegame", currentGame.id);
         gameSocketClose();
     };
 
     const handleStartClick = (event: React.MouseEvent) => {
         event.preventDefault();
         setWaiting(true);
-        socket.emit("startgame", currentGame.id);
+        sendSocketMessage("startgame", currentGame.id);
     };
 
     const sendMessage = () => {
@@ -361,7 +359,6 @@ function mapStateToProps(state: RootState) {
 
         host: state.socket.gameHost,
         loading: state.api.loading,
-        socket: state.socket.socket,
         username: state.auth.username
     };
 }

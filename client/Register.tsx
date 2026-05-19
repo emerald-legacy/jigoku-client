@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
-import type { Socket } from "socket.io-client";
-import type { RootState } from "./types/redux";
+import { getLobbySocket } from "./socket";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import * as actions from "./actions";
@@ -12,10 +11,9 @@ type ValidationMap = Record<string, string>;
 interface InnerRegisterProps {
     navigate: (path: string) => void;
     register: (payload: { user: any; token: string }) => void;
-    socket?: Socket;
 }
 
-export function InnerRegister({ navigate, register, socket }: InnerRegisterProps) {
+export function InnerRegister({ navigate, register }: InnerRegisterProps) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -165,7 +163,7 @@ export function InnerRegister({ navigate, register, socket }: InnerRegisterProps
                 }
 
                 register({ user: data.user, token: data.token });
-                socket?.emit("authenticate", data.token);
+                getLobbySocket()?.emit("authenticate", data.token);
                 navigate("/");
             })
             .catch(() => {
@@ -272,12 +270,6 @@ export function InnerRegister({ navigate, register, socket }: InnerRegisterProps
 
 InnerRegister.displayName = "Register";
 
-function mapStateToProps(state: RootState) {
-    return {
-        socket: state.socket.socket
-    };
-}
-
-const Register = connect(mapStateToProps, actions)(InnerRegister);
+const Register = connect(null, actions)(InnerRegister);
 
 export default Register;

@@ -8,7 +8,7 @@ import Avatar from "./Avatar";
 import * as actions from "./actions";
 import type { GameState, UserSettings } from "./types/game";
 import type { RootState } from "./types/redux";
-import type { Socket } from "socket.io-client";
+import { getLobbySocket } from "./socket";
 
 interface LobbyGamePlayer {
     name: string;
@@ -36,7 +36,6 @@ interface InnerGameListProps {
     games?: LobbyGame[];
     isAdmin?: boolean;
     joinPasswordGame: (game: LobbyGame, action: string) => void;
-    socket: Socket;
     username?: string;
 }
 
@@ -55,7 +54,7 @@ const gameModeModifiers: Record<string, string> = {
     [GameModes.Sanctuary]: "sanctuary"
 };
 
-export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, socket, username }: InnerGameListProps) {
+export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, username }: InnerGameListProps) {
     const joinGame = (event: React.MouseEvent, game: LobbyGame) => {
         event.preventDefault();
 
@@ -67,7 +66,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         if(game.needsPassword) {
             joinPasswordGame(game, "Join");
         } else {
-            socket.emit("joingame", game.id);
+            getLobbySocket()?.emit("joingame", game.id);
         }
     };
 
@@ -86,13 +85,13 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         if(game.needsPassword) {
             joinPasswordGame(game, "Watch");
         } else {
-            socket.emit("watchgame", game.id);
+            getLobbySocket()?.emit("watchgame", game.id);
         }
     };
 
     const removeGame = (event: React.MouseEvent, game: LobbyGame) => {
         event.preventDefault();
-        socket.emit("removegame", game.id);
+        getLobbySocket()?.emit("removegame", game.id);
     };
 
     const gameList = games?.map((game: LobbyGame) => {
@@ -149,7 +148,6 @@ function mapStateToProps(state: RootState) {
     return {
         currentGame: state.games.currentGame,
         isAdmin: state.auth.isAdmin,
-        socket: state.socket.socket,
         username: state.auth.username
     };
 }

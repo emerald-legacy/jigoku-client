@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
-import type { Socket } from "socket.io-client";
-import type { RootState } from "./types/redux";
+import { getLobbySocket } from "./socket";
 
 import Link from "./Link";
 import AlertPanel from "./SiteComponents/AlertPanel";
@@ -14,10 +13,9 @@ type ValidationMap = Record<string, string>;
 interface InnerLoginProps {
     login: (payload: any) => any;
     navigate: (path: string) => any;
-    socket?: Socket;
 }
 
-export function InnerLogin({ login, navigate, socket }: InnerLoginProps) {
+export function InnerLogin({ login, navigate }: InnerLoginProps) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [validation, setValidation] = useState<ValidationMap>({});
@@ -78,9 +76,7 @@ export function InnerLogin({ login, navigate, socket }: InnerLoginProps) {
             }
 
             login({ user: response.data.user, token: response.data.token });
-            if(socket) {
-                socket.emit("authenticate", response.data.token);
-            }
+            getLobbySocket()?.emit("authenticate", response.data.token);
 
             navigate("/");
         } catch(err) {
@@ -171,12 +167,6 @@ export function InnerLogin({ login, navigate, socket }: InnerLoginProps) {
 
 InnerLogin.displayName = "Login";
 
-function mapStateToProps(state: RootState) {
-    return {
-        socket: state.socket.socket
-    };
-}
-
-const Login: React.ComponentType = connect(mapStateToProps, actions)(InnerLogin);
+const Login: React.ComponentType = connect(null, actions)(InnerLogin);
 
 export default Login;

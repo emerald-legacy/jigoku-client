@@ -5,6 +5,8 @@ import type { Dispatch } from "@reduxjs/toolkit";
 import { connect } from "react-redux";
 import { io } from "socket.io-client";
 import type { Socket } from "socket.io-client";
+import { setLobbySocket, setGameSocket, getGameSocket } from "./socket";
+import type { GameSocket } from "./socket";
 
 import type { RootState } from "./types/redux";
 import type { GameState } from "./types/game";
@@ -48,7 +50,6 @@ type ActionFn = (...args: any[]) => any;
 interface AppStateProps {
     currentGame?: GameState;
     currentGameId?: string;
-    gameSocket?: Socket;
     games: any[];
     path: string;
     loggedIn?: boolean;
@@ -142,9 +143,10 @@ class App extends React.Component<AppProps> {
         });
 
         this.lobbySocket = socket;
+        setLobbySocket(socket);
 
         socket.on("connect", () => {
-            this.props.socketConnected(socket);
+            this.props.socketConnected();
         });
 
         socket.on("disconnect", () => {
@@ -153,7 +155,7 @@ class App extends React.Component<AppProps> {
 
         socket.on("reconnect", () => {
             toast.success("The reconnection to the lobby has been successful", { description: "Reconnected" });
-            this.props.socketConnected(socket);
+            this.props.socketConnected();
         });
 
         socket.on("games", games => {
@@ -193,13 +195,13 @@ class App extends React.Component<AppProps> {
 
             this.props.onGameHandoffReceived(server);
 
-            if(this.props.gameSocket && this.props.currentGameId !== server.gameId) {
+            if(getGameSocket() && this.props.currentGameId !== server.gameId) {
                 this.props.closeGameSocket();
             }
 
             this.props.gameSocketConnecting(`${url}/${server.name}`);
 
-            let gameSocket = io(url, {
+            let gameSocket: GameSocket = io(url, {
                 path: `/${server.name}/socket.io`,
                 reconnection: true,
                 reconnectionDelay: 2000,
@@ -209,13 +211,14 @@ class App extends React.Component<AppProps> {
                     token: this.props.token
                 }
             });
+            setGameSocket(gameSocket);
 
             gameSocket.on("connect_error", (err: Error & { description?: string }) => {
                 toast.error(`There was an error connecting to the game server: ${err.message}(${err.description})`, { description: "Connect Error" });
             });
 
             gameSocket.on("disconnect", () => {
-                if(!(gameSocket as Socket & { gameClosing?: boolean }).gameClosing) {
+                if(!gameSocket.gameClosing) {
                     toast.error("You have been disconnected from the game server", { description: "Connection lost" });
                 }
 
@@ -230,7 +233,7 @@ class App extends React.Component<AppProps> {
 
             gameSocket.on("reconnect", () => {
                 toast.success("The reconnection has been successful", { description: "Reconnected" });
-                this.props.gameSocketConnected(gameSocket);
+                this.props.gameSocketConnected();
             });
 
             gameSocket.on("reconnect_failed", () => {
@@ -239,7 +242,7 @@ class App extends React.Component<AppProps> {
             });
 
             gameSocket.on("connect", () => {
-                this.props.gameSocketConnected(gameSocket);
+                this.props.gameSocketConnected();
             });
 
             gameSocket.on("gamestate", game => {
@@ -278,6 +281,7 @@ class App extends React.Component<AppProps> {
         if(this.lobbySocket) {
             this.lobbySocket.removeAllListeners();
             this.lobbySocket.disconnect();
+            setLobbySocket(null);
         }
         if(this.axiosInterceptor !== undefined) {
             axios.interceptors.response.eject(this.axiosInterceptor);
@@ -558,7 +562,6 @@ function mapStateToProps(state: RootState): AppStateProps {
     return {
         currentGame: state.games.currentGame,
         currentGameId: state.games.gameId,
-        gameSocket: state.socket.gameSocket,
         games: state.games.games,
         path: state.navigation.path!,
         loggedIn: state.auth.loggedIn,

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
-import type { RootState } from "./types/redux";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 
@@ -143,12 +142,6 @@ export function InnerForgotPassword() {
 
 InnerForgotPassword.displayName = "ForgotPassword";
 
-function mapStateToProps(state: RootState) {
-    return {
-        socket: state.socket.socket
-    };
-}
-
-const ForgotPassword = connect(mapStateToProps, actions)(InnerForgotPassword);
+const ForgotPassword = connect(null, actions)(InnerForgotPassword);
 
 export default ForgotPassword;

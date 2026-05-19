@@ -4,11 +4,15 @@ export default function(state: SocketState = {} as SocketState, action: any): So
     switch(action.type) {
         case "SOCKET_CONNECTED":
             return Object.assign({}, state, {
-                socket: action.socket
+                connected: true
+            });
+        case "SOCKET_DISCONNECTED":
+            return Object.assign({}, state, {
+                connected: false
             });
         case "GAME_SOCKET_CONNECTED":
             return Object.assign({}, state, {
-                gameSocket: action.socket,
+                gameConnected: true,
                 gameConnecting: false
             });
         case "GAME_SOCKET_CONNECTING":
@@ -23,9 +27,9 @@ export default function(state: SocketState = {} as SocketState, action: any): So
             });
         case "GAME_SOCKET_CLOSED":
             return Object.assign({}, state, {
+                gameConnected: false,
                 gameConnecting: false,
-                gameHost: undefined,
-                gameSocket: undefined
+                gameHost: undefined
             });
     }
 

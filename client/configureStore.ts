@@ -8,10 +8,7 @@ export default function createStore(initialState?: any) {
         reducer: rootReducer,
         preloadedState: initialState,
         middleware: ((getDefaultMiddleware: any) =>
-            getDefaultMiddleware({
-                serializableCheck: false,
-                immutableCheck: false
-            }).concat(callAPIMiddleware as Middleware)) as any,
+            getDefaultMiddleware().concat(callAPIMiddleware as Middleware)) as any,
         devTools: import.meta.env.DEV
     });
 

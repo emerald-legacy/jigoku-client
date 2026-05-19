@@ -99,7 +99,6 @@ function mapStateToProps(state: RootState) {
         games: state.games.games,
         newGame: state.games.newGame,
         passwordGame: state.games.passwordGame,
-        socket: state.socket.socket,
         username: state.auth.username
     };
 }

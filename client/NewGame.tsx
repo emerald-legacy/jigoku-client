@@ -4,7 +4,7 @@ import GameModes from "./GameModes";
 
 import * as actions from "./actions";
 import type { RootState } from "./types/redux";
-import type { Socket } from "socket.io-client";
+import { getLobbySocket } from "./socket";
 
 const defaultTime: Record<string, string> = {
     timer: "60",
@@ -15,12 +15,12 @@ const defaultTime: Record<string, string> = {
 
 interface InnerNewGameProps {
     cancelNewGame: () => void;
+    connected?: boolean;
     defaultGameName?: string;
     loadDecks: (gameMode: string) => void;
-    socket?: Socket;
 }
 
-export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket }: InnerNewGameProps) {
+export function InnerNewGame({ cancelNewGame, connected, defaultGameName, loadDecks }: InnerNewGameProps) {
     const [spectators, setSpectators] = useState(true);
     const [spectatorSquelch, setSpectatorSquelch] = useState(false);
     const [selectedGameMode, setSelectedGameMode] = useState<string>(GameModes.Emerald);
@@ -68,7 +68,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
             timePeriod: clocks ? byoyomiTimePeriod : 0
         };
 
-        socket.emit("newgame", {
+        getLobbySocket()?.emit("newgame", {
             name: gameName,
             spectators: spectators,
             spectatorSquelch: spectatorSquelch,
@@ -155,7 +155,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
 
     const charsLeft = 140 - gameName.length;
 
-    if(!socket) {
+    if(!connected) {
         return (
             <div>
                 Connecting to the server, please wait...
@@ -265,7 +265,7 @@ InnerNewGame.displayName = "NewGame";
 function mapStateToProps(state: RootState) {
     return {
         allowMelee: state.auth.user ? state.auth.user.permissions.allowMelee : false,
-        socket: state.socket.socket
+        connected: state.socket.connected
     };
 }
 
