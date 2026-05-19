@@ -1,9 +1,9 @@
 /*eslint no-console: 0*/
 
-const db = require("./db.js");
+import db from "./db.js";
 
-const GameService = require("./services/GameService.js");
-const config = require("config");
+import GameService from "./services/GameService.js";
+import config from "config";
 
 async function runStats() {
     const args = process.argv.slice(2);
@@ -13,7 +13,7 @@ async function runStats() {
         process.exit(1);
     }
 
-    await db.connect(config.dbPath);
+    await db.connect(config.get("dbPath"));
     const gameService = new GameService(db.getDb());
 
     console.info("Running stats between", args[0], "and", args[1]);

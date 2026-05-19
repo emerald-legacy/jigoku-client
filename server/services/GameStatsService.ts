@@ -1,4 +1,4 @@
-const logger = require("../log.js");
+import logger from "../log.js";
 
 const allClans = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 const statModes = ["all", "stronghold", "emerald", "sanctuary"];
@@ -188,4 +188,4 @@ GameStatsService.getInstance = function(db) {
     return instance;
 };
 
-module.exports = GameStatsService;
+export default GameStatsService;

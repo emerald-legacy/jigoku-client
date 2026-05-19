@@ -1,16 +1,14 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "target": "es2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ES2022",
     "sourceMap": true,
     "outDir": "build",
     "rootDir": ".",
-    "allowJs": true,
+    "allowJs": false,
     "strict": false,
-    "lib": [
-      "es2022"
-    ],
+    "lib": ["ES2022"],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
@@ -20,7 +18,7 @@
   "include": [
     "server/**/*",
     "index.ts",
-    "version.js",
+    "version.ts",
     "client/GameModes.ts",
     "client/deck-validator.ts"
   ],

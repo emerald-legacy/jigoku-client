@@ -1,4 +1,4 @@
-const logger = require("../log.js");
+import logger from "../log.js";
 
 class GameService {
     games: any;
@@ -50,4 +50,4 @@ class GameService {
     }
 }
 
-module.exports = GameService;
+export default GameService;

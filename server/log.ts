@@ -1,5 +1,9 @@
-const winston = require("winston");
-require("winston-daily-rotate-file");
+import winston from "winston";
+import "winston-daily-rotate-file";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const { combine, timestamp, printf, splat } = winston.format;
 
@@ -30,4 +34,4 @@ const logger = winston.createLogger({
     ]
 });
 
-module.exports = logger;
+export default logger;

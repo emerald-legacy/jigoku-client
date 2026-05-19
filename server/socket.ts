@@ -1,6 +1,7 @@
-const logger = require("./log.js");
-const EventEmitter = require("events");
-const jwt = require("jsonwebtoken");
+import { EventEmitter } from "node:events";
+import jwt from "jsonwebtoken";
+
+import logger from "./log.js";
 
 class Socket extends EventEmitter {
     socket: any;
@@ -83,4 +84,4 @@ class Socket extends EventEmitter {
     }
 }
 
-module.exports = Socket;
+export default Socket;

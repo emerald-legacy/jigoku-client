@@ -1,8 +1,8 @@
 /**
  * MongoDB 6 database connection
  */
-const { MongoClient, ObjectId } = require("mongodb");
-const logger = require("./log.js");
+import { MongoClient, ObjectId } from "mongodb";
+import logger from "./log.js";
 
 let client = null;
 let db = null;
@@ -77,7 +77,15 @@ function toObjectId(id) {
     return id;
 }
 
-module.exports = {
+export {
+    connect,
+    close,
+    getDb,
+    toObjectId,
+    ObjectId
+};
+
+export default {
     connect,
     close,
     getDb,

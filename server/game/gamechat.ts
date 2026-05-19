@@ -82,4 +82,4 @@ class GameChat {
     }
 }
 
-module.exports = GameChat;
+export default GameChat;

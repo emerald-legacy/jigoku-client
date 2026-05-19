@@ -1,8 +1,8 @@
-const db = require("../db.js");
-const NewsService = require("../services/NewsService.js");
-const logger = require("../log.js");
+import db from "../db.js";
+import NewsService from "../services/NewsService.js";
+import logger from "../log.js";
 
-module.exports.init = function(server) {
+export function init(server) {
     const newsService = new NewsService(db.getDb());
 
     server.get("/api/news", async function(req, res) {
@@ -37,4 +37,4 @@ module.exports.init = function(server) {
             res.status(500).send({ success: false, message: "Error saving news item" });
         }
     });
-};
+}

@@ -1,15 +1,15 @@
-const account = require("./account.js");
-const decks = require("./decks.js");
-const cards = require("./cards.js");
-const gamestats = require("./gamestats.js");
-const news = require("./news.js");
-const user = require("./user.js");
+import * as account from "./account.js";
+import * as decks from "./decks.js";
+import * as cards from "./cards.js";
+import * as gamestats from "./gamestats.js";
+import * as news from "./news.js";
+import * as user from "./user.js";
 
-module.exports.init = function(server) {
+export function init(server) {
     account.init(server);
     decks.init(server);
     cards.init(server);
     gamestats.init(server);
     news.init(server);
     user.init(server);
-};
+}
