@@ -4,12 +4,18 @@ import DeckStatus from "./DeckStatus";
 import DeckStats from "./DeckStats";
 import { getCardImageUrl, preferredPackId } from "./cardImageUrl.js";
 
-function DeckSummary({ cards, deck, stats }) {
+interface DeckSummaryProps {
+    cards?: Record<string, any>;
+    deck?: any;
+    stats?: any;
+}
+
+function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
     const [cardToShow, setCardToShow] = useState(undefined);
     const [packIdToShow, setPackIdToShow] = useState(undefined);
 
     const onCardMouseOver = (event, id, packId) => {
-        const cardToDisplay = Object.values(cards || {}).find((card) => id === card.id);
+        const cardToDisplay = Object.values(cards || {}).find((card: any) => id === card.id);
         setCardToShow(cardToDisplay);
         setPackIdToShow(packId);
     };
@@ -60,7 +66,7 @@ function DeckSummary({ cards, deck, stats }) {
         }
 
         // Render each group
-        for(const [key, cardList] of Object.entries(groupedCards)) {
+        for(const [key, cardList] of Object.entries(groupedCards) as [string, any[]][]) {
             const cardElements = [];
             let count = 0;
 

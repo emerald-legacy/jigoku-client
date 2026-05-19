@@ -1,8 +1,14 @@
 import React from "react";
 import axios from "axios";
 import { bindActionCreators } from "@reduxjs/toolkit";
+import type { Dispatch } from "@reduxjs/toolkit";
 import { connect } from "react-redux";
 import { io } from "socket.io-client";
+import type { Socket } from "socket.io-client";
+
+import type { RootState } from "./types/redux";
+import type { GameState } from "./types/game";
+import type { User } from "./types/user";
 
 import Login from "./Login";
 import Logout from "./Logout";
@@ -37,17 +43,58 @@ import version from "../version.js";
 
 import * as actions from "./actions";
 
-class App extends React.Component {
-    constructor(props) {
-        super(props);
+type ActionFn = (...args: any[]) => any;
 
-        let boundActionCreators = bindActionCreators(actions, this.props.dispatch);
+interface AppStateProps {
+    currentGame?: GameState;
+    currentGameId?: string;
+    gameSocket?: Socket;
+    games: any[];
+    path: string;
+    loggedIn?: boolean;
+    token?: string;
+    user?: User;
+    username?: string;
+}
+
+interface AppDispatchProps {
+    dispatch: Dispatch;
+    loadCards: ActionFn;
+    loadPacks: ActionFn;
+    loadFactions: ActionFn;
+    loadFormats: ActionFn;
+    navigate: ActionFn;
+    socketConnected: ActionFn;
+    receiveGames: ActionFn;
+    receiveUsers: ActionFn;
+    receiveNewGame: ActionFn;
+    receiveGameState: ActionFn;
+    clearGameState: ActionFn;
+    receivePasswordError: ActionFn;
+    receiveBannerNotice: ActionFn;
+    onGameHandoffReceived: ActionFn;
+    closeGameSocket: ActionFn;
+    gameSocketConnecting: ActionFn;
+    gameSocketDisconnect: ActionFn;
+    gameSocketReconnecting: ActionFn;
+    gameSocketConnected: ActionFn;
+    sendGameSocketConnectFailed: ActionFn;
+    setContextMenu: ActionFn;
+}
+
+type AppProps = AppStateProps & AppDispatchProps;
+
+class App extends React.Component<AppProps> {
+    static displayName = "Application";
+
+    constructor(props: AppProps) {
+        super(props);
 
         this.paths = {
             "/": () => <Lobby />,
             "/login": () => <Login />,
             "/register": () => <Register />,
-            "/decks": () => <Decks { ...boundActionCreators } />,
+            "/decks": () => <Decks />,
             "/decks/add": () => <AddDeck />,
             "/decks/edit": params => <EditDeck deckId={ params.deckId } />,
             "/play": () => (this.props.currentGame && this.props.currentGame.started) ? <GameBoard /> : <GameLobby />,
@@ -163,12 +210,12 @@ class App extends React.Component {
                 }
             });
 
-            gameSocket.on("connect_error", (err) => {
+            gameSocket.on("connect_error", (err: Error & { description?: string }) => {
                 toast.error(`There was an error connecting to the game server: ${err.message}(${err.description})`, { description: "Connect Error" });
             });
 
             gameSocket.on("disconnect", () => {
-                if(!gameSocket.gameClosing) {
+                if(!(gameSocket as Socket & { gameClosing?: boolean }).gameClosing) {
                     toast.error("You have been disconnected from the game server", { description: "Connection lost" });
                 }
 
@@ -221,7 +268,7 @@ class App extends React.Component {
         });
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: AppProps) {
         if(prevProps.currentGame && !this.props.currentGame) {
             this.props.setContextMenu([]);
         }
@@ -232,13 +279,16 @@ class App extends React.Component {
             this.lobbySocket.removeAllListeners();
             this.lobbySocket.disconnect();
         }
-        // Clean up axios interceptor
         if(this.axiosInterceptor !== undefined) {
             axios.interceptors.response.eject(this.axiosInterceptor);
         }
     }
 
-    getUrlParameter(name) {
+    private paths: Record<string, (params?: any) => React.ReactNode>;
+    private axiosInterceptor?: number;
+    private lobbySocket?: Socket;
+
+    getUrlParameter(name: string) {
         name = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
         let regex = new RegExp(`[\\?&]${name}=([^&#]*)`);
         let results = regex.exec(location.search);
@@ -246,8 +296,8 @@ class App extends React.Component {
         return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
     }
 
-    isNumeric(n) {
-        return !isNaN(parseFloat(n)) && isFinite(n);
+    isNumeric(n: string | number) {
+        return !isNaN(parseFloat(String(n))) && isFinite(Number(n));
     }
 
     render() {
@@ -284,8 +334,8 @@ class App extends React.Component {
             }
         ];
 
-        let adminMenuItems = [];
-        let permissions = {};
+        let adminMenuItems: { name: string; path: string }[] = [];
+        let permissions: Record<string, boolean> = {};
 
         if(this.props.user && this.props.user.permissions) {
             permissions = this.props.user.permissions;
@@ -303,7 +353,7 @@ class App extends React.Component {
             leftMenu.push({ name: "Admin", childItems: adminMenuItems });
         }
 
-        let component = {};
+        let component: React.ReactNode = null;
 
         let path = this.props.path;
         let argIndex = path.lastIndexOf("/");
@@ -334,8 +384,6 @@ class App extends React.Component {
             tokenArg = this.getUrlParameter("token");
         }
 
-        let boundActionCreators = bindActionCreators(actions, this.props.dispatch);
-
         switch(path) {
             case "/":
                 component = <Lobby />;
@@ -350,7 +398,7 @@ class App extends React.Component {
                 component = <Register />;
                 break;
             case "/decks":
-                component = <Decks { ...boundActionCreators } />;
+                component = <Decks />;
                 break;
             case "/decks/add":
                 component = <AddDeck />;
@@ -506,16 +554,13 @@ class App extends React.Component {
     }
 }
 
-App.displayName = "Application";
-
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState): AppStateProps {
     return {
         currentGame: state.games.currentGame,
         currentGameId: state.games.gameId,
-        disconnecting: state.socket.gameDisconnecting,
         gameSocket: state.socket.gameSocket,
         games: state.games.games,
-        path: state.navigation.path,
+        path: state.navigation.path!,
         loggedIn: state.auth.loggedIn,
         token: state.auth.token,
         user: state.auth.user,
@@ -523,11 +568,9 @@ function mapStateToProps(state) {
     };
 }
 
-function mapDispatchToProps(dispatch) {
-    let boundActions = bindActionCreators(actions, dispatch);
-    boundActions.dispatch = dispatch;
-
-    return boundActions;
+function mapDispatchToProps(dispatch: Dispatch): AppDispatchProps {
+    const boundActions = bindActionCreators(actions as unknown as Record<string, ActionFn>, dispatch);
+    return { ...(boundActions as Omit<AppDispatchProps, "dispatch">), dispatch };
 }
 
 const Application = connect(mapStateToProps, mapDispatchToProps)(App);

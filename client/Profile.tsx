@@ -24,7 +24,7 @@ export function InnerProfile({ refreshUser, socket, user }) {
     const [newPassword, setNewPassword] = useState("");
     const [newPasswordAgain, setNewPasswordAgain] = useState("");
     const [promptedActionWindows, setPromptedActionWindows] = useState(user?.promptedActionWindows || {});
-    const [validation, setValidation] = useState({});
+    const [validation, setValidation] = useState<Record<string, string>>({});
     const [windowTimer, setWindowTimer] = useState(user?.settings?.windowTimer || 0);
     const [optionSettings, setOptionSettings] = useState(user?.settings?.optionSettings || {});
     const [timerSettings, setTimerSettings] = useState(user?.settings?.timerSettings || {});
@@ -168,7 +168,8 @@ export function InnerProfile({ refreshUser, socket, user }) {
                 setErrorMessage(data.message);
             }
         } catch(error) {
-            setErrorMessage(error.response?.data?.message || "An error occurred while saving your profile");
+            const e = error as { response?: { data?: { message?: string } } };
+            setErrorMessage(e.response?.data?.message || "An error occurred while saving your profile");
         } finally {
             setLoading(false);
         }
@@ -207,7 +208,6 @@ export function InnerProfile({ refreshUser, socket, user }) {
             name={ `promptedActionWindows.${window.name}` }
             label={ window.label }
             fieldClass={ window.style }
-            type="checkbox"
             onChange={ (e) => handleWindowToggle(window.name, e) }
             checked={ promptedActionWindows[window.name] }
         />

@@ -6,6 +6,7 @@ interface InputProps {
     label?: string;
     labelClass?: string;
     name: string;
+    noGroup?: boolean;
     onBlur?: (e: FocusEvent<HTMLInputElement>) => void;
     onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     placeholder?: string;

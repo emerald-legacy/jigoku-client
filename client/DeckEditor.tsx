@@ -205,7 +205,7 @@ export function InnerDeckEditor({
         let list = cardList;
         list += getCardListEntry(numberToAdd, cardToAdd, defaultPackId);
 
-        const updatedDeck = addCard(cardToAdd, parseInt(numberToAdd), defaultPackId, deck);
+        const updatedDeck = addCard(cardToAdd, Number(numberToAdd), defaultPackId, deck);
         const clearedDeck = copyDeck(updatedDeck, true);
 
         setCardList(list);
@@ -244,8 +244,8 @@ export function InnerDeckEditor({
                 p.id.toLowerCase() === packName.toLowerCase() || p.name.toLowerCase() === packName.toLowerCase()
             );
 
-            const cardsArray = cards ? Object.values(cards) : [];
-            const card = cardsArray.find(c => {
+            const cardsArray: any[] = cards ? Object.values(cards) : [];
+            const card = cardsArray.find((c: any) => {
                 if(pack && c.versions && c.versions.length) {
                     if(c.name.toLowerCase() === cardName.toLowerCase()) {
                         return c.versions.find(packCard => packCard.pack_id === pack.id);
@@ -368,7 +368,7 @@ export function InnerDeckEditor({
         <div
             className={ `modal fade ${showModal ? "in" : ""}` }
             style={ { display: showModal ? "block" : "none" } }
-            tabIndex="-1"
+            tabIndex={ -1 }
             role="dialog"
             onClick={ handleModalClick }
         >
@@ -418,7 +418,7 @@ export function InnerDeckEditor({
                     onChange={ handleAllianceChange } value={ deck.alliance ? deck.alliance.value : undefined }
                     valueKey="value" nameKey="name" blankOption={ { name: "- Select -", value: "" } } />
 
-                <Typeahead label="Card" labelClass="col-sm-3" fieldClass="col-sm-4" labelKey="name" options={ cardsArray }
+                <Typeahead name="card" label="Card" labelClass="col-sm-3" fieldClass="col-sm-4" labelKey="name" options={ cardsArray }
                     onChange={ handleAddCardChange }>
                     <Input name="numcards" type="text" label="Num" labelClass="col-sm-1" fieldClass="col-sm-2"
                         value={ numberToAdd.toString() } onChange={ handleNumberToAddChange }>
@@ -427,7 +427,7 @@ export function InnerDeckEditor({
                         </div>
                     </Input>
                 </Typeahead>
-                <TextArea label="Cards" labelClass="col-sm-3" fieldClass="col-sm-9" rows="10" value={ cardList }
+                <TextArea name="cards" label="Cards" labelClass="col-sm-3" fieldClass="col-sm-9" rows={ 10 } value={ cardList }
                     onChange={ handleCardListChange } />
                 <div className="form-group">
                     <div className="col-sm-offset-3 col-sm-8">

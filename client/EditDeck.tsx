@@ -43,7 +43,7 @@ export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDe
                         Deck Editor
                     </div>
                     <div className="panel">
-                        <DeckEditor mode="Save" onDeckSave={ handleEditDeck } />
+                        <DeckEditor onDeckSave={ handleEditDeck } />
                     </div>
                 </div>
                 <div className="col-sm-6">

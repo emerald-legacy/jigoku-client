@@ -76,7 +76,6 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
                 name={ `permissions.${permission.name}` }
                 label={ permission.label }
                 fieldClass="col-sm-offset-3 col-sm-4"
-                type="checkbox"
                 onChange={ (e) => onPermissionToggle(permission.name, e) }
                 checked={ permissions[permission.name] }
             />

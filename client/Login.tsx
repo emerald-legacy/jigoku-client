@@ -75,7 +75,8 @@ export function InnerLogin({ login, navigate, socket }) {
 
             navigate("/");
         } catch(err) {
-            if(err.response && err.response.status === 401) {
+            const e = err as { response?: { status?: number } };
+            if(e.response && e.response.status === 401) {
                 setError("Invalid Username/password");
             } else {
                 setError("Could not communicate with the server.  Please try again later.");

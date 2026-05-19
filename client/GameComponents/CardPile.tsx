@@ -5,6 +5,33 @@ import { X } from "lucide-react";
 import Card from "./Card";
 import { tryParseJSON } from "../util.js";
 
+interface CardPileProps {
+    cardCount?: any;
+    cards?: any;
+    className?: any;
+    closeOnClick?: any;
+    disableMenu?: any;
+    disableMouseOver?: any;
+    hiddenTopCard?: any;
+    isMe?: boolean;
+    menu?: any;
+    onCardClick?: any;
+    onCloseClick?: any;
+    onDragDrop?: any;
+    onMenuItemClick?: any;
+    onMouseOut?: any;
+    onMouseOver?: any;
+    onTouchMove?: any;
+    orientation?: string;
+    popupLocation?: any;
+    popupMenu?: any;
+    showPopup?: boolean;
+    size?: any;
+    source?: any;
+    title?: any;
+    topCard?: any;
+}
+
 function CardPile({
     cardCount,
     cards,
@@ -29,7 +56,7 @@ function CardPile({
     source,
     title,
     topCard: propsTopCard
-}) {
+}: CardPileProps) {
     const [showPopup, setShowPopup] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const draggableRef = useRef(null);

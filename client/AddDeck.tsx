@@ -39,7 +39,7 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
                         Deck Editor
                     </div>
                     <div className="panel">
-                        <DeckEditor mode="Add" onDeckSave={ handleAddDeck } />
+                        <DeckEditor onDeckSave={ handleAddDeck } />
                     </div>
                 </div>
                 <div className="col-sm-6">

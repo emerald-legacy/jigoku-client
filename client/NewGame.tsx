@@ -14,12 +14,12 @@ const defaultTime = {
 export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket }) {
     const [spectators, setSpectators] = useState(true);
     const [spectatorSquelch, setSpectatorSquelch] = useState(false);
-    const [selectedGameMode, setSelectedGameMode] = useState(GameModes.Emerald);
+    const [selectedGameMode, setSelectedGameMode] = useState<string>(GameModes.Emerald);
     const [clocks, setClocks] = useState(false);
     const [selectedClockType, setSelectedClockType] = useState("timer");
-    const [clockTimer, setClockTimer] = useState(60);
-    const [byoyomiPeriods, setByoyomiPeriods] = useState(5);
-    const [byoyomiTimePeriod, setByoyomiTimePeriod] = useState(30);
+    const [clockTimer, setClockTimer] = useState<number | string>(60);
+    const [byoyomiPeriods, setByoyomiPeriods] = useState<number | string>(5);
+    const [byoyomiTimePeriod, setByoyomiTimePeriod] = useState<number | string>(30);
     const [selectedGameType, setSelectedGameType] = useState("casual");
     const [password, setPassword] = useState("");
     const [gameName, setGameName] = useState(defaultGameName || "");

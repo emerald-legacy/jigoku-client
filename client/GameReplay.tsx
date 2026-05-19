@@ -65,14 +65,14 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, show
  * - Province cards (type 'province'): card data added but kept facedown (visible on hover only)
  * - Dynasty cards on provinces: left untouched (never revealed)
  */
-function mergeHiddenInfo(state, hiddenInfo) {
+function mergeHiddenInfo(state: any, hiddenInfo: any) {
     if(!state.players || !hiddenInfo) {
         return state;
     }
 
     const merged = { ...state, players: { ...state.players } };
 
-    for(const [playerName, info] of Object.entries(hiddenInfo)) {
+    for(const [playerName, info] of Object.entries<any>(hiddenInfo)) {
         const player = merged.players[playerName];
         if(!player) {
             continue;
@@ -195,7 +195,7 @@ function GameReplay() {
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
-                const log = parseGameLog(e.target.result);
+                const log = parseGameLog(e.target?.result as ArrayBuffer);
                 if(!log.replayData || log.replayData.length === 0) {
                     setError("This log file does not contain replay data. Only logs downloaded after a game with replay recording will work.");
                     return;
@@ -204,7 +204,7 @@ function GameReplay() {
                 setCurrentIndex(0);
                 setIsPlaying(false);
             } catch(err) {
-                setError(`Failed to parse game log: ${err.message}`);
+                setError(`Failed to parse game log: ${(err as Error).message}`);
             }
         };
         reader.readAsArrayBuffer(file);
@@ -301,6 +301,7 @@ function GameReplay() {
     const username = metadata.downloadedBy || playerNames[0] || "__replay_spectator__";
 
     const replayUser = {
+        username,
         settings: {
             cardSize: "normal",
             optionSettings: {}
@@ -323,11 +324,11 @@ function GameReplay() {
                 cardToZoom={ cardToZoom }
                 zoomCard={ setCardToZoom }
                 clearZoom={ () => setCardToZoom(null) }
-                dispatch={ noop }
+                dispatch={ noop as never }
                 sendGameMessage={ noop }
                 closeGameSocket={ noop }
                 setContextMenu={ noop }
-                socket={ {} }
+                socket={ {} as never }
             />
             { portalTarget && createPortal(
                 <ReplayControls

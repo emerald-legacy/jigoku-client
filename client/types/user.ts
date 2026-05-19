@@ -26,4 +26,7 @@ export interface UserState {
     blockList?: string[];
     blockListAdded?: boolean;
     blockListDeleted?: boolean;
+    user?: User;
+    username?: string;
+    token?: string;
 }

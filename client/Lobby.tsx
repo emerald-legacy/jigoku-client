@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import { X, Menu } from "lucide-react";
@@ -8,7 +8,15 @@ import News from "./SiteComponents/News";
 import AlertPanel from "./SiteComponents/AlertPanel";
 import Link from "./Link";
 
-export function InnerLobby({ bannerNotice, loadNews, loading, news, users }) {
+interface InnerLobbyProps {
+    bannerNotice?: string;
+    loadNews?: (...args: any[]) => any;
+    loading?: boolean;
+    news?: any[];
+    users?: any[];
+}
+
+export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: InnerLobbyProps) {
     const [showUsers, setShowUsers] = useState(false);
     const [serverVersions, setServerVersions] = useState([]);
 
@@ -136,6 +144,6 @@ function mapStateToProps(state) {
     };
 }
 
-const Lobby = connect(mapStateToProps, actions, null)(InnerLobby);
+const Lobby: React.ComponentType = connect(mapStateToProps, actions, null)(InnerLobby);
 
 export default Lobby;

@@ -62,7 +62,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
     };
 
     const gameList = games?.map((game) => {
-        const players = game.players ? Object.values(game.players) : [];
+        const players: any[] = game.players ? Object.values(game.players) : [];
         const playerCount = players.length;
         const modeLabel = gameModeLabels[game.gameMode];
         const modeModifier = gameModeModifiers[game.gameMode] || "";

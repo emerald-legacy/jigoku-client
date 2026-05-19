@@ -1,5 +1,14 @@
 
-function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showCheckbox }) {
+interface DeckRowProps {
+    active?: boolean;
+    deck: any;
+    isSelected?: boolean;
+    onCheckboxChange?: (...args: any[]) => any;
+    onClick?: (...args: any[]) => any;
+    showCheckbox?: boolean;
+}
+
+function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showCheckbox }: DeckRowProps) {
     const getStatusName = (status) => {
         if(!status) {
             return "Validating";

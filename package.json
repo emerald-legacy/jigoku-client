@@ -9,9 +9,11 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint server/ client/ --ext=ts --ext=tsx",
+    "typecheck": "tsc -p tsconfig.client.json --noEmit",
+    "typecheck:server": "tsc --noEmit",
     "build": "vite build",
-    "build:server": "tsc --noCheck",
-    "build:all": "tsc --noCheck && vite build",
+    "build:server": "tsc",
+    "build:all": "tsc && tsc -p tsconfig.client.json --noEmit && vite build",
     "start": "node build/index.js",
     "dev": "tsx index.ts"
   },

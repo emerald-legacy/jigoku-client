@@ -5,6 +5,41 @@ import CardPile from "./CardPile";
 import Province from "./Province";
 import { tryParseJSON } from "../util.js";
 
+interface DynastyRowProps {
+    additionalPiles?: any;
+    cardSize?: any;
+    conflictDeck?: any;
+    conflictDeckTopCard?: any;
+    conflictDiscardPile?: any;
+    dynastyDeck?: any;
+    dynastyDeckTopCard?: any;
+    dynastyDiscardPile?: any;
+    isMe?: any;
+    isSkirmish?: any;
+    manualMode?: any;
+    numConflictCards?: any;
+    numDynastyCards?: any;
+    onCardClick?: any;
+    onConflictClick?: any;
+    onConflictShuffleClick?: any;
+    onDiscardedCardClick?: any;
+    onDragDrop?: any;
+    onDynastyClick?: any;
+    onDynastyShuffleClick?: any;
+    onMenuItemClick?: any;
+    onMouseOut?: any;
+    onMouseOver?: any;
+    otherPlayer?: any;
+    province1Cards?: any;
+    province2Cards?: any;
+    province3Cards?: any;
+    province4Cards?: any;
+    removedFromGame?: any;
+    showConflictDeck?: any;
+    showDynastyDeck?: any;
+    spectating?: any;
+}
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 function DynastyRow({
     additionalPiles,
@@ -39,7 +74,7 @@ function DynastyRow({
     showConflictDeck,
     showDynastyDeck,
     spectating
-}) {
+}: DynastyRowProps) {
     const [showConflictMenu, setShowConflictMenu] = useState(false);
     const [showDynastyMenu, setShowDynastyMenu] = useState(false);
 
@@ -155,9 +190,9 @@ function DynastyRow({
     if(!additionalPiles) {
         additionalPilesElements = [];
     } else {
-        const piles = Object.values(additionalPiles).filter(pile => pile.cards.length > 0 && pile.area === "player row");
+        const piles = Object.values<any>(additionalPiles).filter(pile => pile.cards.length > 0 && pile.area === "player row");
         let index = 0;
-        additionalPilesElements = piles.map(pile => (
+        additionalPilesElements = piles.map((pile: any) => (
             <AdditionalCardPile
                 key={ `additional-pile-${index++}` }
                 className="additional-cards"

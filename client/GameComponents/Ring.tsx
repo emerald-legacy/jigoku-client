@@ -30,7 +30,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
     };
 
     const getCountersForRing = () => {
-        const counters = {};
+        const counters: Record<string, { count: number; fade?: boolean; shortName?: string } | undefined> = {};
 
         counters["ring-fate"] = ring.fate
             ? { count: ring.fate, shortName: "F" }
@@ -41,11 +41,11 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
                 honor: "H",
                 fate: "F"
             };
-            for(const [key, token] of Object.entries(ring.tokens)) {
+            for(const [key, token] of Object.entries(ring.tokens as Record<string, number>)) {
                 counters[key] = {
                     count: token,
                     fade: ring.type === "attachment",
-                    shortName: shortNames[key]
+                    shortName: (shortNames as Record<string, string>)[key]
                 };
             }
         }

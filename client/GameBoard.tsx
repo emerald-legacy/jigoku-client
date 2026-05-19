@@ -1,7 +1,14 @@
 import React, { createRef } from "react";
+import type { RefObject } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
+import type { Dispatch } from "@reduxjs/toolkit";
 import Draggable from "react-draggable";
+import type { Socket } from "socket.io-client";
+
+import type { RootState, AnimationEvent } from "./types/redux";
+import type { GameState } from "./types/game";
+import type { User } from "./types/user";
 
 import PlayerStatsBox from "./GameComponents/PlayerStatsBox";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- used in commented-out sidebar stats feature
@@ -28,8 +35,45 @@ import * as actions from "./actions";
 import { clearAnimation } from "./ReduxActions/game";
 import HonorChangeOverlay from "./GameComponents/HonorChangeOverlay";
 
-export class InnerGameBoard extends React.Component {
-    constructor(props) {
+type ActionFn = (...args: any[]) => any;
+
+interface GameBoardStateProps {
+    cardToZoom?: any;
+    cards?: Record<string, any>;
+    currentGame?: GameState;
+    pendingAnimations?: AnimationEvent[];
+    socket?: Socket;
+    user?: User;
+    username?: string;
+}
+
+interface GameBoardDispatchProps {
+    dispatch: Dispatch;
+    clearZoom: ActionFn;
+    closeGameSocket: ActionFn;
+    sendGameMessage: ActionFn;
+    setContextMenu: ActionFn;
+    zoomCard: ActionFn;
+}
+
+type GameBoardProps = GameBoardStateProps & GameBoardDispatchProps;
+
+interface GameBoardState {
+    cardToZoom?: any;
+    showChat: boolean;
+    showChatAlert: boolean;
+    showConflictDeck: boolean;
+    showDynastyDeck: boolean;
+    spectating: boolean;
+    showActionWindowsMenu: boolean;
+    showCardMenu: Record<string, boolean>;
+    showSettingsModal: boolean;
+}
+
+export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardState> {
+    static displayName = "GameBoard";
+
+    constructor(props: GameBoardProps) {
         super(props);
 
         this.modalRef = createRef();
@@ -78,14 +122,20 @@ export class InnerGameBoard extends React.Component {
         this.updateContextMenu(this.props);
     }
 
-    componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps: GameBoardProps) {
         if(prevProps.currentGame !== this.props.currentGame || prevProps.username !== this.props.username) {
             this.updateContextMenu(this.props);
         }
         this.notifyOfNewMessages(this.props, prevProps);
     }
 
-    notifyOfNewMessages(currentProps, prevProps) {
+    private modalRef: RefObject<HTMLDivElement | null>;
+    private draggableRef: RefObject<any>;
+    private opponentDraggableRef: RefObject<any>;
+    private boundActions: Record<string, ActionFn>;
+    private _cardsInPlayCache: Record<string, any>;
+
+    notifyOfNewMessages(currentProps: GameBoardProps, prevProps: GameBoardProps) {
         if(currentProps.currentGame && !this.state.showChat) {
             const prevLength = this.getMessagesFromPlayers(prevProps.currentGame?.messages || []).length;
             const currentLength = this.getMessagesFromPlayers(currentProps.currentGame.messages || []).length;
@@ -126,14 +176,14 @@ export class InnerGameBoard extends React.Component {
         ];
 
         if(props.currentGame && props.currentGame.started) {
-            if(Object.values(props.currentGame.players).find(p => {
+            if(Object.values<any>(props.currentGame.players).find(p => {
                 return p.name === props.username;
             })) {
                 menuOptions.unshift({ text: "Concede", onClick: this.onConcedeClick });
             }
 
             let spectators = props.currentGame.spectators.map(spectator => {
-                return <li key={ spectator.id }>{ spectator.name }</li>;
+                return <li key={ spectator.name }>{ spectator.name }</li>;
             });
 
             let spectatorPopup = (
@@ -142,7 +192,7 @@ export class InnerGameBoard extends React.Component {
                 </ul>
             );
 
-            menuOptions.unshift({ text: `Spectators: ${props.currentGame.spectators.length}`, popup: spectatorPopup });
+            (menuOptions as any[]).unshift({ text: `Spectators: ${props.currentGame.spectators.length}`, popup: spectatorPopup });
 
             this.setContextMenu(menuOptions);
         } else {
@@ -323,8 +373,8 @@ export class InnerGameBoard extends React.Component {
         const pendingAnimations = this.props.pendingAnimations;
         const onAnimationEnd = (uuid) => this.props.dispatch(clearAnimation(uuid));
 
-        Object.values(cardsByType).forEach(cards => {
-            let cardsInPlay = cards.map(card => {
+        Object.values<any[]>(cardsByType).forEach(cards => {
+            let cardsInPlay = cards.map((card: any) => {
                 return (<Card key={ card.uuid } id={ card.uuid } source="play area" card={ card } disableMouseOver={ card.facedown && !card.code }
                     onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
                     showStats={ !disableCardStats } player={ player }
@@ -605,7 +655,7 @@ export class InnerGameBoard extends React.Component {
                     </div>
                 </div>
                 <div className={ `sidebar-pane their-side ${size}` }>
-                    { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ otherPlayer ? `${otherPlayer.showBid}` : "0" } /> }
+                    { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ otherPlayer?.showBid ?? 0 } /> }
                     { this.getRings(otherPlayer ? otherPlayer.name : "\0", `claimed-pool their-pool ${size || ""}`) }
                     <div className="sidebar-pane their-side">
                         <PlayerStatsBox
@@ -632,7 +682,7 @@ export class InnerGameBoard extends React.Component {
                         size={ size }
                         handSize={ thisPlayer.cardPiles.hand ? thisPlayer.cardPiles.hand.length : 0 } />
                     { this.getRings(thisPlayer ? thisPlayer.name : "\0", `claimed-pool my-pool ${size || ""}`) }
-                    { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ `${thisPlayer.showBid}` } /> }
+                    { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ thisPlayer.showBid ?? 0 } /> }
                 </div>
                 <div className="player-nameplate our-side">
                     <Avatar emailHash={ thisPlayer.user ? thisPlayer.user.emailHash : "unknown" } />
@@ -781,7 +831,7 @@ export class InnerGameBoard extends React.Component {
         // }
 
         let popup = (
-            <div id="settings-modal" ref={ this.modalRef } className={ `modal fade ${this.state.showSettingsModal ? "in" : ""}` } style={ { display: this.state.showSettingsModal ? "block" : "none" } } tabIndex="-1" role="dialog">
+            <div id="settings-modal" ref={ this.modalRef } className={ `modal fade ${this.state.showSettingsModal ? "in" : ""}` } style={ { display: this.state.showSettingsModal ? "block" : "none" } } tabIndex={ -1 } role="dialog">
                 <div className="modal-dialog" role="document">
                     <div className="modal-content settings-popup row">
                         <div className="modal-header">
@@ -973,9 +1023,7 @@ export class InnerGameBoard extends React.Component {
     }
 }
 
-InnerGameBoard.displayName = "GameBoard";
-
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState): GameBoardStateProps {
     return {
         cardToZoom: state.cards.zoomCard,
         cards: state.cards.cards,
@@ -987,13 +1035,11 @@ function mapStateToProps(state) {
     };
 }
 
-function mapDispatchToProps(dispatch) {
-    let boundActions = bindActionCreators(actions, dispatch);
-    boundActions.dispatch = dispatch;
-
-    return boundActions;
+function mapDispatchToProps(dispatch: Dispatch): GameBoardDispatchProps {
+    const boundActions = bindActionCreators(actions as unknown as Record<string, ActionFn>, dispatch);
+    return { ...(boundActions as Omit<GameBoardDispatchProps, "dispatch">), dispatch };
 }
 
-const GameBoard = connect(mapStateToProps, mapDispatchToProps, null, { withRef: true })(InnerGameBoard);
+const GameBoard = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(InnerGameBoard);
 
 export default GameBoard;

@@ -53,6 +53,7 @@ export interface ApiState {
 
 export interface AdminState {
     currentUser?: any;
+    userSaved?: boolean;
 }
 
 export interface RootState {

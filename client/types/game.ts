@@ -54,6 +54,7 @@ export interface Ring {
     menu?: MenuItem[];
     conflictType?: string;
     tokens?: CardToken;
+    removedFromGame?: boolean;
 }
 
 export interface PlayerCardPiles {
@@ -111,6 +112,8 @@ export interface Player {
     phase?: string;
     controls?: Control[];
     additionalPiles?: Record<string, { cards: Card[]; title?: string }>;
+    disconnected?: boolean;
+    deck?: { selected?: boolean; status?: any; name?: string };
 }
 
 export interface Button {
@@ -175,6 +178,7 @@ export interface GameState {
     finishedAt?: string;
     rings?: Record<string, Ring>;
     conflictDeclared?: boolean;
+    conflict?: any;
     phase?: string;
     manualMode?: boolean;
     skirmishMode?: boolean;
@@ -183,6 +187,7 @@ export interface GameState {
 export interface UserSettings {
     cardSize?: string;
     background?: string;
+    disableGravatar?: boolean;
     optionSettings?: Record<string, any>;
     promptedActionWindows?: Record<string, boolean>;
     timerSettings?: Record<string, any>;

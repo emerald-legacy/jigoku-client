@@ -46,6 +46,21 @@ function buttonsAreEqual(oldButtons, newButtons) {
     return true;
 }
 
+interface ActivePlayerPromptProps {
+    buttons?: any;
+    cards?: any;
+    controls?: any;
+    onButtonClick?: any;
+    onMouseOut?: any;
+    onMouseOver?: any;
+    onTimerExpired?: any;
+    onTitleClick?: any;
+    phase?: any;
+    promptTitle?: any;
+    title?: any;
+    user?: any;
+}
+
 function ActivePlayerPrompt({
     buttons,
     cards,
@@ -59,7 +74,7 @@ function ActivePlayerPrompt({
     promptTitle,
     title,
     user
-}) {
+}: ActivePlayerPromptProps) {
     const [showTimer, setShowTimer] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
     const [timerClass, setTimerClass] = useState("100%");
@@ -97,7 +112,7 @@ function ActivePlayerPrompt({
 
             const handle = setInterval(() => {
                 const now = new Date();
-                const difference = (now - timerRef.current.started) / 1000;
+                const difference = (now.getTime() - timerRef.current.started.getTime()) / 1000;
 
                 if(difference >= timerRef.current.timerTime) {
                     clearInterval(timerHandleRef.current);
@@ -112,7 +127,7 @@ function ActivePlayerPrompt({
 
                 const newTimerClass = `${(((timerRef.current.timerTime - difference) / timerRef.current.timerTime) * 100).toFixed()}%`;
                 setTimerClass(newTimerClass);
-                setTimeLeft((timerRef.current.timerTime - difference).toFixed());
+                setTimeLeft(Number((timerRef.current.timerTime - difference).toFixed()));
             }, 100);
 
             timerHandleRef.current = handle;

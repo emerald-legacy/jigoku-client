@@ -9,6 +9,21 @@ import DeckStatus from "./DeckStatus";
 
 import * as actions from "./actions";
 
+interface InnerPendingGameProps {
+    apiError?: string;
+    connecting?: boolean;
+    currentGame?: any;
+    decks?: any[];
+    gameSocketClose?: (...args: any[]) => any;
+    host?: string;
+    loadDecks?: (...args: any[]) => any;
+    loading?: boolean;
+    sendSocketMessage?: (...args: any[]) => any;
+    socket?: any;
+    username?: string;
+    zoomCard?: (...args: any[]) => any;
+}
+
 export function InnerPendingGame({
     apiError,
     connecting,
@@ -22,7 +37,7 @@ export function InnerPendingGame({
     socket,
     username,
     zoomCard
-}) {
+}: InnerPendingGameProps) {
     const notificationRef = useRef(null);
     const messagePanelRef = useRef(null);
     const prevPlayersRef = useRef(null);
@@ -87,7 +102,7 @@ export function InnerPendingGame({
             return false;
         }
 
-        const allPlayersHaveDecks = Object.values(currentGame.players).every(player => !!player.deck?.selected);
+        const allPlayersHaveDecks = Object.values<any>(currentGame.players).every(player => !!player.deck?.selected);
         if(!allPlayersHaveDecks) {
             return false;
         }
@@ -149,7 +164,7 @@ export function InnerPendingGame({
             return "Waiting for players...";
         }
 
-        const allPlayersHaveDecks = Object.values(currentGame.players).every(player => !!player.deck?.selected);
+        const allPlayersHaveDecks = Object.values<any>(currentGame.players).every(player => !!player.deck?.selected);
         if(!allPlayersHaveDecks) {
             return "Waiting for players to select decks";
         }
@@ -240,7 +255,7 @@ export function InnerPendingGame({
         <div
             className={ `modal fade ${showModal ? "in" : ""}` }
             style={ { display: showModal ? "block" : "none" } }
-            tabIndex="-1"
+            tabIndex={ -1 }
             role="dialog"
             onClick={ handleModalClick }
         >

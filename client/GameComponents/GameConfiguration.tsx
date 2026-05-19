@@ -58,7 +58,6 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
             name={ `promptedActionWindows.${window.name}` }
             label={ window.label }
             fieldClass={ window.style }
-            type="checkbox"
             onChange={ () => handleToggle(window.name, actionWindows[window.name]) }
             checked={ actionWindows[window.name] }
         />

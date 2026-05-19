@@ -3,6 +3,22 @@ import Province from "./Province";
 import Placeholder from "./Placeholder";
 import CardPile from "./CardPile";
 
+interface StrongholdRowProps {
+    cardSize?: any;
+    isMe?: any;
+    isSkirmish?: any;
+    onCardClick?: any;
+    onDragDrop?: any;
+    onMenuItemClick?: any;
+    onMouseOut?: any;
+    onMouseOver?: any;
+    otherPlayer?: any;
+    role?: any;
+    spectating?: any;
+    strongholdProvinceCards?: any;
+    thisPlayer?: any;
+}
+
 function StrongholdRow({
     cardSize,
     isMe,
@@ -16,7 +32,7 @@ function StrongholdRow({
     spectating,
     strongholdProvinceCards,
     thisPlayer
-}) {
+}: StrongholdRowProps) {
     const getFavor = (player) => {
         return (
             <div

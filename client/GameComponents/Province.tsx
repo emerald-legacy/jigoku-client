@@ -3,6 +3,27 @@ import { memo } from "react";
 import Card from "./Card";
 import { tryParseJSON } from "../util.js";
 
+interface ProvinceProps {
+    cards?: any;
+    cardCount?: any;
+    dynastyCard?: any;
+    hiddenDynastyCard?: any;
+    hiddenProvinceCard?: any;
+    isMe?: any;
+    onCardClick?: any;
+    onDragDrop?: any;
+    onMenuItemClick?: any;
+    onMouseOut?: any;
+    onMouseOver?: any;
+    orientation?: string;
+    popupLocation?: any;
+    provinceCard?: any;
+    size?: any;
+    source?: any;
+    strongholdCard?: any;
+    title?: any;
+}
+
 function Province({
     cards,
     cardCount,
@@ -22,7 +43,7 @@ function Province({
     source,
     strongholdCard: propsStrongholdCard,
     title
-}) {
+}: ProvinceProps) {
     const onDragOver = (event) => {
         event.target.classList.add("highlight-panel");
         event.preventDefault();

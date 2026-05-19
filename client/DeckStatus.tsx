@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { connect } from "react-redux";
 
 import StatusPopOver from "./StatusPopOver";
@@ -39,8 +39,14 @@ function hasDeckContentChanged(oldDeck, newDeck) {
     return getDeckHash(oldDeck) !== getDeckHash(newDeck);
 }
 
-export function InnerDeckStatus({ className: propsClassName, deck, updateDeckStatus }) {
-    const [deckStatus, setDeckStatus] = useState({});
+interface InnerDeckStatusProps {
+    className?: string;
+    deck?: any;
+    updateDeckStatus?: (...args: any[]) => any;
+}
+
+export function InnerDeckStatus({ className: propsClassName, deck, updateDeckStatus }: InnerDeckStatusProps) {
+    const [deckStatus, setDeckStatus] = useState<{ valid?: boolean; extendedStatus?: string[] }>({});
     const validationTimeoutRef = useRef(null);
     const prevDeckRef = useRef(null);
 
@@ -154,6 +160,6 @@ function mapStateToProps() {
     return {};
 }
 
-const DeckStatus = connect(mapStateToProps, actions)(InnerDeckStatus);
+const DeckStatus: React.ComponentType<{ className?: string; deck?: any }> = connect(mapStateToProps, actions)(InnerDeckStatus);
 
 export default DeckStatus;
