@@ -1,41 +1,28 @@
 import axios from "axios";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import type { RootState } from "../types/redux";
+import { apiCall } from "./apiCall";
 
-export function loadCards() {
-    return {
-        types: ["REQUEST_CARDS", "RECEIVE_CARDS"] as const,
-        shouldCallAPI: (state: any) => {
-            return !state.cards.cards;
-        },
-        callAPI: () => axios.get("/api/cards").then(response => response.data)
-    };
-}
+export const loadCards = createAsyncThunk(
+    "cards/load",
+    (_, { rejectWithValue }) => apiCall(() => axios.get("/api/cards"), rejectWithValue),
+    { condition: (_, { getState }) => !(getState() as RootState).cards.cards }
+);
 
-export function loadPacks() {
-    return {
-        types: ["REQUEST_PACKS", "RECEIVE_PACKS"] as const,
-        shouldCallAPI: (state: any) => {
-            return !state.cards.packs;
-        },
-        callAPI: () => axios.get("/api/packs").then(response => response.data)
-    };
-}
+export const loadPacks = createAsyncThunk(
+    "cards/loadPacks",
+    (_, { rejectWithValue }) => apiCall(() => axios.get("/api/packs"), rejectWithValue),
+    { condition: (_, { getState }) => !(getState() as RootState).cards.packs }
+);
 
-export function loadFactions() {
-    return {
-        types: ["REQUEST_FACTIONS", "RECEIVE_FACTIONS"] as const,
-        shouldCallAPI: (state: any) => {
-            return !state.cards.factions;
-        },
-        callAPI: () => axios.get("/api/factions").then(response => response.data)
-    };
-}
+export const loadFactions = createAsyncThunk(
+    "cards/loadFactions",
+    (_, { rejectWithValue }) => apiCall(() => axios.get("/api/factions"), rejectWithValue),
+    { condition: (_, { getState }) => !(getState() as RootState).cards.factions }
+);
 
-export function loadFormats() {
-    return {
-        types: ["REQUEST_FORMATS", "RECEIVE_FORMATS"] as const,
-        shouldCallAPI: (state: any) => {
-            return !state.cards.formats;
-        },
-        callAPI: () => axios.get("/api/formats").then(response => response.data)
-    };
-}
+export const loadFormats = createAsyncThunk(
+    "cards/loadFormats",
+    (_, { rejectWithValue }) => apiCall(() => axios.get("/api/formats"), rejectWithValue),
+    { condition: (_, { getState }) => !(getState() as RootState).cards.formats }
+);

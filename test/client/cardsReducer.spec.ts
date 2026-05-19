@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { configureStore } from "@reduxjs/toolkit";
 import cardsReducer, { selectDeck, addDeck, updateDeck } from "../../client/reducers/cards";
+import { loadCards, loadFactions } from "../../client/ReduxActions/cards";
+import { loadDecks } from "../../client/ReduxActions/deck";
 
 function makeStore() {
     return configureStore({
@@ -14,41 +16,43 @@ describe("cards reducer", () => {
 
     beforeEach(() => {
         store = makeStore();
-        store.dispatch({
-            type: "RECEIVE_CARDS",
-            response: { cards: { c1: { id: "c1", type: "character", side: "dynasty", name: "Card 1" } } }
-        });
-        store.dispatch({
-            type: "RECEIVE_FACTIONS",
-            response: { factions: [{ name: "Crab", value: "crab" }] }
-        });
+        store.dispatch(loadCards.fulfilled(
+            { cards: { c1: { id: "c1", type: "character", side: "dynasty", name: "Card 1" } } },
+            "req-cards"
+        ));
+        store.dispatch(loadFactions.fulfilled(
+            { factions: [{ name: "Crab", value: "crab" }] },
+            "req-factions"
+        ));
     });
 
-    it("RECEIVE_DECKS sets the deck list and selects the first", () => {
-        store.dispatch({
-            type: "RECEIVE_DECKS",
-            response: {
+    it("loadDecks.fulfilled sets the deck list and selects the first", () => {
+        store.dispatch(loadDecks.fulfilled(
+            {
                 decks: [
                     { _id: "a", name: "A", faction: { name: "Crab", value: "crab" } },
                     { _id: "b", name: "B", faction: { name: "Crab", value: "crab" } }
                 ]
-            }
-        });
+            },
+            "req-decks",
+            null
+        ));
         const state = store.getState().cards;
         expect(state.decks?.length).toBe(2);
         expect(state.selectedDeck?._id).toBe("a");
     });
 
     it("selectDeck sets the chosen deck as selectedDeck", () => {
-        store.dispatch({
-            type: "RECEIVE_DECKS",
-            response: {
+        store.dispatch(loadDecks.fulfilled(
+            {
                 decks: [
                     { _id: "a", name: "A", faction: { name: "Crab", value: "crab" } },
                     { _id: "b", name: "B", faction: { name: "Crab", value: "crab" } }
                 ]
-            }
-        });
+            },
+            "req-decks",
+            null
+        ));
         const deckB = store.getState().cards.decks[1];
         store.dispatch(selectDeck(deckB));
         expect(store.getState().cards.selectedDeck?._id).toBe("b");

@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { UserState } from "../types/user";
+import { loadBlockList, addBlockListEntry, removeBlockListEntry } from "../ReduxActions/user";
 
 const userSlice = createSlice({
     name: "user",
@@ -22,16 +23,16 @@ const userSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase("RECEIVE_BLOCKLIST", (state: UserState, action: any) => {
-                state.blockList = action.response.blockList;
+            .addCase(loadBlockList.fulfilled, (state: UserState, action: PayloadAction<any>) => {
+                state.blockList = action.payload.blockList;
             })
-            .addCase("BLOCKLIST_ADDED", (state: UserState, action: any) => {
+            .addCase(addBlockListEntry.fulfilled, (state: UserState, action: PayloadAction<any>) => {
                 state.blockListAdded = true;
-                state.blockList.push(action.response.username);
+                state.blockList.push(action.payload.username);
             })
-            .addCase("BLOCKLIST_DELETED", (state: UserState, action: any) => {
+            .addCase(removeBlockListEntry.fulfilled, (state: UserState, action: PayloadAction<any>) => {
                 state.blockListDeleted = true;
-                state.blockList = state.blockList.filter((u: any) => u !== action.response.username);
+                state.blockList = state.blockList.filter((u: any) => u !== action.payload.username);
             });
     }
 });

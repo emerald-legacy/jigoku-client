@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { NewsState } from "../types/redux";
+import { loadNews, addNews } from "../ReduxActions/news";
 
 const newsSlice = createSlice({
     name: "news",
@@ -11,14 +12,14 @@ const newsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase("REQUEST_NEWS", (state: NewsState) => {
+            .addCase(loadNews.pending, (state: NewsState) => {
                 state.newsSaved = false;
             })
-            .addCase("RECEIVE_NEWS", (state: NewsState, action: any) => {
+            .addCase(loadNews.fulfilled, (state: NewsState, action: PayloadAction<any>) => {
                 state.newsSaved = false;
-                state.news = action.response.news;
+                state.news = action.payload.news;
             })
-            .addCase("NEWS_ADDED", (state: NewsState) => {
+            .addCase(addNews.fulfilled, (state: NewsState) => {
                 state.newsSaved = true;
             });
     }

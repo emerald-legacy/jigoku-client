@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { GamesState, AnimationEvent } from "../types/redux";
+import { loadGameStats } from "../ReduxActions/gamestats";
 
 const gamesSlice = createSlice({
     name: "games",
@@ -99,8 +100,8 @@ const gamesSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase("RECEIVE_GAME_STATS", (state: GamesState, action: any) => {
-                state.gameStats = action.response.stats;
+            .addCase(loadGameStats.fulfilled, (state: GamesState, action: PayloadAction<any>) => {
+                state.gameStats = action.payload.stats;
             })
             .addCase("GAME_SOCKET_CLOSED", (state: GamesState) => {
                 state.currentGame = undefined;

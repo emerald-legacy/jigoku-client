@@ -1,5 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { AdminState } from "../types/redux";
+import { findUser, saveUser } from "../ReduxActions/admin";
 
 const adminSlice = createSlice({
     name: "admin",
@@ -11,13 +12,13 @@ const adminSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase("RECEIVE_FINDUSER", (state: AdminState, action: any) => {
-                state.currentUser = action.response.user;
+            .addCase(findUser.fulfilled, (state: AdminState, action: PayloadAction<any>) => {
+                state.currentUser = action.payload.user;
             })
-            .addCase("SAVE_USER", (state: AdminState) => {
+            .addCase(saveUser.pending, (state: AdminState) => {
                 state.userSaved = false;
             })
-            .addCase("USER_SAVED", (state: AdminState) => {
+            .addCase(saveUser.fulfilled, (state: AdminState) => {
                 state.userSaved = true;
             });
     }

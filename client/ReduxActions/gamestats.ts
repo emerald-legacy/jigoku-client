@@ -1,12 +1,10 @@
 import axios from "axios";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import type { RootState } from "../types/redux";
+import { apiCall } from "./apiCall";
 
-export function loadGameStats() {
-    return {
-        types: ["REQUEST_GAME_STATS", "RECEIVE_GAME_STATS"] as const,
-        shouldCallAPI: (state: any) => !state.games.gameStats,
-        callAPI: async () => {
-            const response = await axios.get("/api/gamestats");
-            return response.data;
-        }
-    };
-}
+export const loadGameStats = createAsyncThunk(
+    "games/loadGameStats",
+    (_, { rejectWithValue }) => apiCall(() => axios.get("/api/gamestats"), rejectWithValue),
+    { condition: (_, { getState }) => !(getState() as RootState).games.gameStats }
+);

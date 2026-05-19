@@ -10,7 +10,7 @@ import type { RootState } from "./types/redux";
 import type { User } from "./types/user";
 
 interface InnerBlockListProps {
-    addBlockListEntry: (user: User | undefined, username: string) => any;
+    addBlockListEntry: (arg: { user: User | undefined; username: string }) => any;
     apiError?: string;
     blockList?: string[];
     blockListAdded?: boolean;
@@ -18,7 +18,7 @@ interface InnerBlockListProps {
     clearBlockListStatus: () => any;
     loadBlockList: (user: User | undefined) => any;
     loading?: boolean;
-    removeBlockListEntry: (user: User | undefined, username: string) => any;
+    removeBlockListEntry: (arg: { user: User | undefined; username: string }) => any;
     user?: User;
 }
 
@@ -55,12 +55,12 @@ export function InnerBlockList({
 
     const onAddClick = (event: React.MouseEvent) => {
         event.preventDefault();
-        addBlockListEntry(user, username);
+        addBlockListEntry({ user, username });
     };
 
     const onRemoveClick = (usernameToRemove: string, event: React.MouseEvent) => {
         event.preventDefault();
-        removeBlockListEntry(user, usernameToRemove);
+        removeBlockListEntry({ user, username: usernameToRemove });
     };
 
     let successPanel;
