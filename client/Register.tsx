@@ -1,19 +1,29 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
+import type { Socket } from "socket.io-client";
+import type { RootState } from "./types/redux";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import * as actions from "./actions";
 
-export function InnerRegister({ navigate, register, socket }) {
+type ValidationMap = Record<string, string>;
+
+interface InnerRegisterProps {
+    navigate: (path: string) => void;
+    register: (payload: { user: any; token: string }) => void;
+    socket?: Socket;
+}
+
+export function InnerRegister({ navigate, register, socket }: InnerRegisterProps) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [password1, setPassword1] = useState("");
-    const [validation, setValidation] = useState({});
+    const [validation, setValidation] = useState<ValidationMap>({});
     const [error, setError] = useState("");
 
-    const verifyUsername = (isSubmitting, currentUsername = username) => {
+    const verifyUsername = (isSubmitting: boolean, currentUsername = username): ValidationMap => {
         const newValidation = { ...validation };
         delete newValidation["username"];
 
@@ -45,7 +55,7 @@ export function InnerRegister({ navigate, register, socket }) {
         return newValidation;
     };
 
-    const verifyEmail = (currentEmail = email) => {
+    const verifyEmail = (currentEmail = email): ValidationMap => {
         const newValidation = { ...validation };
         delete newValidation["email"];
 
@@ -56,7 +66,7 @@ export function InnerRegister({ navigate, register, socket }) {
         return newValidation;
     };
 
-    const verifyPassword = (isSubmitting, currentPassword = password, currentPassword1 = password1) => {
+    const verifyPassword = (isSubmitting: boolean, currentPassword = password, currentPassword1 = password1): ValidationMap => {
         const newValidation = { ...validation };
         delete newValidation["password"];
 
@@ -96,13 +106,12 @@ export function InnerRegister({ navigate, register, socket }) {
         setValidation(newValidation);
     };
 
-    const onRegister = (event) => {
+    const onRegister = (event: React.MouseEvent) => {
         event.preventDefault();
 
         setError("");
 
-        // Validate all fields synchronously
-        let combinedValidation = {};
+        let combinedValidation: ValidationMap = {};
 
         // Check email
         if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
@@ -156,7 +165,7 @@ export function InnerRegister({ navigate, register, socket }) {
                 }
 
                 register({ user: data.user, token: data.token });
-                socket.emit("authenticate", data.token);
+                socket?.emit("authenticate", data.token);
                 navigate("/");
             })
             .catch(() => {
@@ -172,7 +181,7 @@ export function InnerRegister({ navigate, register, socket }) {
             inputType: "text",
             blurCallback: handleUsernameBlur,
             value: username,
-            onChange: (e) => setUsername(e.target.value)
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)
         },
         {
             name: "email",
@@ -181,7 +190,7 @@ export function InnerRegister({ navigate, register, socket }) {
             inputType: "email",
             blurCallback: handleEmailBlur,
             value: email,
-            onChange: (e) => setEmail(e.target.value)
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)
         },
         {
             name: "password",
@@ -190,7 +199,7 @@ export function InnerRegister({ navigate, register, socket }) {
             inputType: "password",
             blurCallback: handlePasswordBlur,
             value: password,
-            onChange: (e) => setPassword(e.target.value)
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)
         },
         {
             name: "password1",
@@ -199,7 +208,7 @@ export function InnerRegister({ navigate, register, socket }) {
             inputType: "password",
             blurCallback: handlePasswordBlur,
             value: password1,
-            onChange: (e) => setPassword1(e.target.value)
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setPassword1(e.target.value)
         }
     ];
 
@@ -263,7 +272,7 @@ export function InnerRegister({ navigate, register, socket }) {
 
 InnerRegister.displayName = "Register";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         socket: state.socket.socket
     };

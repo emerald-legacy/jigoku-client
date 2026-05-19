@@ -1,15 +1,17 @@
 
+import type { Deck, DeckStatus as DeckStatusType } from "./types/deck";
+
 interface DeckRowProps {
     active?: boolean;
-    deck: any;
+    deck: Deck;
     isSelected?: boolean;
-    onCheckboxChange?: (...args: any[]) => any;
-    onClick?: (...args: any[]) => any;
+    onCheckboxChange?: (id: string | undefined) => any;
+    onClick?: () => any;
     showCheckbox?: boolean;
 }
 
 function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showCheckbox }: DeckRowProps) {
-    const getStatusName = (status) => {
+    const getStatusName = (status: DeckStatusType | undefined) => {
         if(!status) {
             return "Validating";
         }
@@ -21,7 +23,7 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
         return "Validating";
     };
 
-    const getStatusClass = (status) => {
+    const getStatusClass = (status: DeckStatusType | undefined) => {
         if(!status) {
             return "casual-play";
         }
@@ -39,11 +41,11 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
     return (
         <div className={ `deck-row${active ? " active" : ""}` } key={ deck.name } onClick={ onClick }>
             { showCheckbox && (
-                <div className="deck-row-checkbox" onClick={ (e) => e.stopPropagation() }>
+                <div className="deck-row-checkbox" onClick={ (e: React.MouseEvent) => e.stopPropagation() }>
                     <input
                         type="checkbox"
                         checked={ isSelected }
-                        onChange={ () => onCheckboxChange(deck._id) }
+                        onChange={ () => onCheckboxChange?.(deck._id) }
                     />
                 </div>
             ) }

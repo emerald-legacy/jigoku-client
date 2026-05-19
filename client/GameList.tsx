@@ -1,3 +1,4 @@
+import React from "react";
 import { connect } from "react-redux";
 import { toast } from "sonner";
 import GameModes from "./GameModes";
@@ -5,8 +6,41 @@ import GameModes from "./GameModes";
 import { X } from "lucide-react";
 import Avatar from "./Avatar";
 import * as actions from "./actions";
+import type { GameState, UserSettings } from "./types/game";
+import type { RootState } from "./types/redux";
+import type { Socket } from "socket.io-client";
 
-const gameModeLabels = {
+interface LobbyGamePlayer {
+    name: string;
+    emailHash?: string;
+    faction?: string;
+    settings?: UserSettings;
+}
+
+interface LobbyGame {
+    id: string;
+    name: string;
+    owner?: string;
+    started?: boolean;
+    needsPassword?: boolean;
+    allowSpectators?: boolean;
+    gameMode?: string;
+    gameType?: string;
+    node?: string;
+    clocks?: { type?: string };
+    players?: Record<string, LobbyGamePlayer>;
+}
+
+interface InnerGameListProps {
+    currentGame?: GameState;
+    games?: LobbyGame[];
+    isAdmin?: boolean;
+    joinPasswordGame: (game: LobbyGame, action: string) => void;
+    socket: Socket;
+    username?: string;
+}
+
+const gameModeLabels: Record<string, string> = {
     [GameModes.Skirmish]: "SKIRMISH",
     [GameModes.Stronghold]: "IMPERIAL",
     [GameModes.Emerald]: "EMERALD",
@@ -14,15 +48,15 @@ const gameModeLabels = {
     [GameModes.Sanctuary]: "SANCTUARY"
 };
 
-const gameModeModifiers = {
+const gameModeModifiers: Record<string, string> = {
     [GameModes.Skirmish]: "skirmish",
     [GameModes.Stronghold]: "imperial",
     [GameModes.Obsidian]: "obsidian",
     [GameModes.Sanctuary]: "sanctuary"
 };
 
-export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, socket, username }) {
-    const joinGame = (event, game) => {
+export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, socket, username }: InnerGameListProps) {
+    const joinGame = (event: React.MouseEvent, game: LobbyGame) => {
         event.preventDefault();
 
         if(!username) {
@@ -37,11 +71,11 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         }
     };
 
-    const canWatch = (game) => {
+    const canWatch = (game: LobbyGame) => {
         return !currentGame && game.allowSpectators;
     };
 
-    const watchGame = (event, game) => {
+    const watchGame = (event: React.MouseEvent, game: LobbyGame) => {
         event.preventDefault();
 
         if(!username) {
@@ -56,16 +90,16 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
         }
     };
 
-    const removeGame = (event, game) => {
+    const removeGame = (event: React.MouseEvent, game: LobbyGame) => {
         event.preventDefault();
         socket.emit("removegame", game.id);
     };
 
-    const gameList = games?.map((game) => {
-        const players: any[] = game.players ? Object.values(game.players) : [];
+    const gameList = games?.map((game: LobbyGame) => {
+        const players: LobbyGamePlayer[] = game.players ? Object.values<LobbyGamePlayer>(game.players) : [];
         const playerCount = players.length;
-        const modeLabel = gameModeLabels[game.gameMode];
-        const modeModifier = gameModeModifiers[game.gameMode] || "";
+        const modeLabel = game.gameMode ? gameModeLabels[game.gameMode] : undefined;
+        const modeModifier = (game.gameMode && gameModeModifiers[game.gameMode]) || "";
 
         return (
             <div key={ game.id } className={ `game-row${modeModifier ? ` ${modeModifier}` : ""}${game.node && isAdmin ? ` ${game.node}` : ""}` }>
@@ -111,7 +145,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, s
 
 InnerGameList.displayName = "GameList";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         currentGame: state.games.currentGame,
         isAdmin: state.auth.isAdmin,

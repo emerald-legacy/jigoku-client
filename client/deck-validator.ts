@@ -1,9 +1,26 @@
 /// <reference lib="dom" />
 import axios from "axios";
 import GameModes from "./GameModes.js";
+import type { Deck, DeckCard, Pack } from "./types/deck.js";
+
+interface CachedValue {
+    expiryTime?: number;
+    [key: string]: any;
+}
+
+interface ValidateOptions {
+    packs?: Pack[];
+    gameMode?: string;
+    includeExtendedStatus?: boolean;
+}
+
+interface ValidateResult {
+    valid: boolean | undefined;
+    extendedStatus?: string[];
+}
 
 class ValidatorCache {
-    updateCache(key, value) {
+    updateCache(key: string, value: CachedValue) {
         if(typeof window === "undefined") {
             return;
         }
@@ -16,7 +33,7 @@ class ValidatorCache {
         localStorage.setItem(key, json);
     }
 
-    getCache(key) {
+    getCache(key: string): CachedValue | null {
         if(typeof window === "undefined") {
             return null;
         }
@@ -41,20 +58,20 @@ class ValidatorCache {
 }
 
 class DeckValidator {
-    packs: any;
-    gameMode: any;
-    cache: any;
+    packs: Pack[] | undefined;
+    gameMode: string;
+    cache: ValidatorCache;
 
-    constructor(packs, gameMode) {
+    constructor(packs: Pack[] | undefined, gameMode: string) {
         this.packs = packs;
         this.gameMode = gameMode;
         this.cache = new ValidatorCache();
     }
 
-    async validateDeck(deck) {
-        let allCards = (deck.provinceCards || []).concat(deck.dynastyCards || []).concat(deck.conflictCards || []).concat(deck.role || []).concat(deck.stronghold || []);
-        let cardCountByName = {};
-        allCards.forEach((cardQuantity) => {
+    async validateDeck(deck: Deck): Promise<ValidateResult> {
+        let allCards: DeckCard[] = (deck.provinceCards || []).concat(deck.dynastyCards || []).concat(deck.conflictCards || []).concat(deck.role || []).concat(deck.stronghold || []);
+        let cardCountByName: Record<string, number> = {};
+        allCards.forEach((cardQuantity: DeckCard) => {
             if(cardQuantity.card) {
                 cardCountByName[cardQuantity.card.id] = 0;
                 cardCountByName[cardQuantity.card.id] += cardQuantity.count;
@@ -77,7 +94,7 @@ class DeckValidator {
         const cachedValue = this.cache.getCache(key);
 
         if(cachedValue) {
-            return cachedValue;
+            return cachedValue as ValidateResult;
         }
 
         try {
@@ -97,7 +114,7 @@ class DeckValidator {
     }
 }
 
-export default async function validateDeck(deck, options) {
+export default async function validateDeck(deck: Deck, options?: ValidateOptions) {
     options = Object.assign({ includeExtendedStatus: true }, options);
 
     let validator = new DeckValidator(options.packs, options.gameMode || "");

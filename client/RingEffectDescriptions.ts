@@ -22,7 +22,7 @@ const RingEffectDescriptions = {
     skirmish: skirmishEffects
 };
 
-export function getRingEffect(gameMode, element) {
-    const modeEffects = RingEffectDescriptions[gameMode] || defaultEffects;
+export function getRingEffect(gameMode: string | undefined, element: string) {
+    const modeEffects: Record<string, string> = (RingEffectDescriptions as Record<string, Record<string, string>>)[gameMode || ""] || defaultEffects;
     return modeEffects[element] || "";
 }

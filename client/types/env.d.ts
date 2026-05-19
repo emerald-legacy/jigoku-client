@@ -26,4 +26,14 @@ declare global {
     }
 }
 
+declare module "emoji-js" {
+    export default class EmojiConvertor {
+        replace_colons(str: string): string;
+        replace_emoticons(str: string): string;
+        replace_emoticons_with_colons(str: string): string;
+        replace_unified(str: string): string;
+        [key: string]: any;
+    }
+}
+
 export {};

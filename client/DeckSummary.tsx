@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import DeckStatus from "./DeckStatus";
 import DeckStats from "./DeckStats";
@@ -11,10 +11,10 @@ interface DeckSummaryProps {
 }
 
 function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
-    const [cardToShow, setCardToShow] = useState(undefined);
-    const [packIdToShow, setPackIdToShow] = useState(undefined);
+    const [cardToShow, setCardToShow] = useState<any>(undefined);
+    const [packIdToShow, setPackIdToShow] = useState<string | undefined>(undefined);
 
-    const onCardMouseOver = (event, id, packId) => {
+    const onCardMouseOver = (event: React.MouseEvent, id: string, packId?: string) => {
         const cardToDisplay = Object.values(cards || {}).find((card: any) => id === card.id);
         setCardToShow(cardToDisplay);
         setPackIdToShow(packId);
@@ -27,7 +27,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
 
     const formatValue = deck?.format?.value;
 
-    const getCardImagePath = (card, packId) => {
+    const getCardImagePath = (card: any, packId?: string) => {
         if(!card) {
             return "";
         }
@@ -37,9 +37,8 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
 
     const getCardsToRender = () => {
         const cardsToRender = [];
-        const groupedCards = {};
+        const groupedCards: Record<string, any[]> = {};
 
-        // Combine all card arrays
         const allCardArrays = [
             deck.stronghold,
             deck.role,
@@ -51,7 +50,6 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
             .flat()
             .filter((card) => card && card.card);
 
-        // Group cards by type
         for(const card of combinedCards) {
             let type = card.card.type;
 
@@ -65,7 +63,6 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
             }
         }
 
-        // Render each group
         for(const [key, cardList] of Object.entries(groupedCards) as [string, any[]][]) {
             const cardElements = [];
             let count = 0;
@@ -102,7 +99,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
         return cardsToRender;
     };
 
-    const getDeckCount = (deckCards) => {
+    const getDeckCount = (deckCards?: { count: number }[]) => {
         let count = 0;
         if(deckCards) {
             for(const card of deckCards) {

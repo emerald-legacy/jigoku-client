@@ -96,7 +96,7 @@ class App extends React.Component<AppProps> {
             "/register": () => <Register />,
             "/decks": () => <Decks />,
             "/decks/add": () => <AddDeck />,
-            "/decks/edit": params => <EditDeck deckId={ params.deckId } />,
+            "/decks/edit": (params: { deckId: string }) => <EditDeck { ...{ deckId: params.deckId } as any } />,
             "/play": () => (this.props.currentGame && this.props.currentGame.started) ? <GameBoard /> : <GameLobby />,
             "/how-to-play": () => <HowToPlay />,
             "/about": () => <About />,
@@ -404,7 +404,7 @@ class App extends React.Component<AppProps> {
                 component = <AddDeck />;
                 break;
             case "/decks/edit":
-                component = <EditDeck deckId={ arg } />;
+                component = <EditDeck { ...{ deckId: arg } as any } />;
                 break;
             case "/play":
                 if(this.props.currentGame && this.props.currentGame.started) {
@@ -542,7 +542,7 @@ class App extends React.Component<AppProps> {
         }
 
         return (<div className={ backgroundClass }>
-            <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" currentPath={ this.props.path } numGames={ this.props.games.length } />
+            <NavBar { ...{ leftMenu, rightMenu, title: "Jigoku Online", currentPath: this.props.path, numGames: this.props.games.length } as any } />
             <div className="container">
                 <ErrorBoundary navigate={ this.props.navigate } errorPath={ this.props.path } message={ "We're sorry - something's gone wrong." }>
                     <React.Suspense fallback={ null }>

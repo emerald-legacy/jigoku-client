@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
@@ -6,8 +6,10 @@ import Input from "./FormComponents/Input";
 import Checkbox from "./FormComponents/Checkbox";
 
 import * as actions from "./actions";
+import type { RootState } from "./types/redux";
+import type { User } from "./types/user";
 
-const defaultPermissions = {
+const defaultPermissions: Record<string, boolean> = {
     canEditNews: false,
     canManageUsers: false
 };
@@ -17,8 +19,19 @@ const permissionsList = [
     { name: "canManageUsers", label: "User Manager" }
 ];
 
-export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUser, findUser, loading, saveUser, userSaved }) {
-    const [permissions, setPermissions] = useState(currentUser ? (currentUser.permissions || defaultPermissions) : defaultPermissions);
+interface InnerUserAdminProps {
+    apiError?: string;
+    apiStatus?: number;
+    clearUserStatus: () => any;
+    currentUser?: User;
+    findUser: (username: string) => any;
+    loading?: boolean;
+    saveUser: (user: User) => any;
+    userSaved?: boolean;
+}
+
+export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUser, findUser, loading, saveUser, userSaved }: InnerUserAdminProps) {
+    const [permissions, setPermissions] = useState<Record<string, boolean>>(currentUser ? (currentUser.permissions || defaultPermissions) : defaultPermissions);
     const [username, setUsername] = useState("");
 
     useEffect(() => {
@@ -34,23 +47,25 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
         }
     }, [userSaved, clearUserStatus]);
 
-    const onUsernameChange = (event) => {
+    const onUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value);
     };
 
-    const onFindClick = (event) => {
+    const onFindClick = (event: React.MouseEvent) => {
         event.preventDefault();
         findUser(username);
     };
 
-    const onSaveClick = (event) => {
+    const onSaveClick = (event: React.MouseEvent) => {
         event.preventDefault();
-        currentUser.permissions = permissions;
-        saveUser(currentUser);
+        if(currentUser) {
+            currentUser.permissions = permissions;
+            saveUser(currentUser);
+        }
     };
 
-    const onPermissionToggle = (field, event) => {
-        setPermissions(prev => ({
+    const onPermissionToggle = (field: string, event: React.ChangeEvent<HTMLInputElement>) => {
+        setPermissions((prev: Record<string, boolean>) => ({
             ...prev,
             [field]: event.target.checked
         }));
@@ -76,7 +91,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
                 name={ `permissions.${permission.name}` }
                 label={ permission.label }
                 fieldClass="col-sm-offset-3 col-sm-4"
-                onChange={ (e) => onPermissionToggle(permission.name, e) }
+                onChange={ (e: React.ChangeEvent<HTMLInputElement>) => onPermissionToggle(permission.name, e) }
                 checked={ permissions[permission.name] }
             />
         ));
@@ -124,7 +139,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
 
 InnerUserAdmin.displayName = "UserAdmin";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         apiError: state.api.message,
         apiStatus: state.api.status,
@@ -134,6 +149,6 @@ function mapStateToProps(state) {
     };
 }
 
-const UserAdmin = connect(mapStateToProps, actions)(InnerUserAdmin);
+const UserAdmin: React.ComponentType = connect(mapStateToProps, actions)(InnerUserAdmin);
 
 export default UserAdmin;

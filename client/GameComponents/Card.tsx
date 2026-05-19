@@ -7,8 +7,10 @@ import CardCounters from "./CardCounters";
 import CardPile from "./CardPile";
 import AbilityUsedMarker from "./AbilityUsedMarker";
 import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl.js";
+import type { Card as CardType, MenuItem, Player } from "../types/game";
+import type { AnimationEvent } from "../types/redux";
 
-const shortNames = {
+const shortNames: Record<string, string> = {
     honor: "H",
     stand: "T",
     poison: "O",
@@ -18,14 +20,19 @@ const shortNames = {
     vengeance: "N"
 };
 
-// Native implementation of finding nearest element matching selector
-function findNearestElement(element, selector) {
+interface CounterValue {
+    count: number;
+    fade?: boolean;
+    shortName?: string;
+}
+
+function findNearestElement(element: Element, selector: string): Element | null {
     const rect = element.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
     const candidates = document.querySelectorAll(selector);
-    let nearest = null;
+    let nearest: Element | null = null;
     let minDistance = Infinity;
 
     candidates.forEach(candidate => {
@@ -48,9 +55,37 @@ function findNearestElement(element, selector) {
     return nearest;
 }
 
-function Card(props) {
+interface CardProps {
+    card: CardType | { facedown: boolean; isDynasty?: boolean; isConflict?: boolean };
+    className?: string;
+    declaring?: boolean;
+    disableMouseOver?: boolean;
+    id?: string;
+    isMe?: boolean;
+    onClick?: (card: CardType) => void;
+    onAnimationEnd?: (uuid: string) => void;
+    onCloseClick?: () => void;
+    onDragDrop?: (card: CardType, source: string, target: string) => void;
+    onDragStart?: (event: React.DragEvent<HTMLElement>) => void;
+    onTouchMove?: (event: React.TouchEvent) => void;
+    onMenuItemClick?: (card: CardType, menuItem: MenuItem) => void;
+    onMouseOut?: ((card?: CardType) => void) | null;
+    onMouseOver?: ((card: CardType) => void) | null;
+    orientation?: string;
+    pendingAnimations?: AnimationEvent[];
+    player?: Player;
+    popupLocation?: string;
+    showStats?: boolean;
+    size?: string;
+    source?: string;
+    style?: React.CSSProperties;
+    title?: string;
+    wrapped?: boolean;
+}
+
+function Card(props: CardProps) {
     const {
-        card,
+        card: cardInput,
         className,
         declaring,
         disableMouseOver,
@@ -75,12 +110,14 @@ function Card(props) {
         wrapped = true
     } = props;
 
+    const card = cardInput as CardType;
+
     const [showPopup, setShowPopup] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
-    const [touchStart, setTouchStart] = useState(null);
-    const cardRef = useRef(null);
+    const [touchStart, setTouchStart] = useState<{ left: number; top: number } | null>(null);
+    const cardRef = useRef<HTMLDivElement | null>(null);
 
-    const handleMouseOver = (cardData) => {
+    const handleMouseOver = (cardData: CardType) => {
         if(onMouseOver) {
             onMouseOver(cardData);
         }
@@ -92,23 +129,24 @@ function Card(props) {
         }
     };
 
-    const onCardDragStart = (event, cardData, sourceArea) => {
+    const onCardDragStart = (event: React.DragEvent<HTMLElement>, cardData: CardType, sourceArea: string | undefined) => {
         const dragData = { card: cardData, source: sourceArea };
         event.dataTransfer.setData("Text", JSON.stringify(dragData));
     };
 
-    const onTouchMove = (event) => {
+    const onTouchMove = (event: React.TouchEvent<HTMLElement>) => {
         event.preventDefault();
         const touch = event.targetTouches[0];
-        event.currentTarget.style.left = `${touch.screenX - 32}px`;
-        event.currentTarget.style.top = `${touch.screenY - 42}px`;
-        event.currentTarget.style.position = "fixed";
+        const target = event.currentTarget as HTMLElement;
+        target.style.left = `${touch.screenX - 32}px`;
+        target.style.top = `${touch.screenY - 42}px`;
+        target.style.position = "fixed";
     };
 
-    const getReactComponentFromDOMNode = (dom) => {
+    const getReactComponentFromDOMNode = (dom: Element): any => {
         for(const key in dom) {
             if(key.indexOf("__reactInternalInstance$") === 0) {
-                const compInternals = dom[key]._currentElement;
+                const compInternals = (dom as any)[key]._currentElement;
                 const compWrapper = compInternals._owner;
                 const comp = compWrapper._instance;
                 return comp;
@@ -117,12 +155,12 @@ function Card(props) {
         return null;
     };
 
-    const onTouchStart = (event) => {
-        const rect = event.currentTarget.getBoundingClientRect();
+    const onTouchStart = (event: React.TouchEvent<HTMLElement>) => {
+        const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
         setTouchStart({ left: rect.left, top: rect.top });
     };
 
-    const onTouchEnd = (event) => {
+    const onTouchEnd = (event: React.TouchEvent<HTMLElement>) => {
         const target = event.currentTarget;
         const targetRect = target.getBoundingClientRect();
         const nearestPile = findNearestElement(target, ".card-pile, .hand, .player-board");
@@ -164,7 +202,7 @@ function Card(props) {
         event.currentTarget.style.position = "initial";
     };
 
-    const handleClick = (event, cardData) => {
+    const handleClick = (event: React.MouseEvent, cardData: CardType) => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -183,15 +221,15 @@ function Card(props) {
         }
     };
 
-    const handleMenuItemClick = (menuItem) => {
+    const handleMenuItemClick = (menuItem: MenuItem) => {
         if(onMenuItemClick) {
             onMenuItemClick(card, menuItem);
             setShowMenu(prev => !prev);
         }
     };
 
-    const getCountersForCard = (cardData) => {
-        const counters = {};
+    const getCountersForCard = (cardData: CardType): Record<string, CounterValue> => {
+        const counters: Record<string, CounterValue | undefined> = {};
         let statusFlag = 1;
         if(cardData.isHonored) {
             statusFlag *= 2;
@@ -212,20 +250,19 @@ function Card(props) {
         }
 
         if(cardData.tokens) {
-            Object.entries(cardData.tokens).forEach(([key, token]) => {
+            Object.entries(cardData.tokens).forEach(([key, token]: [string, number]) => {
                 counters[key] = { count: token, fade: cardData.type === "attachment", shortName: shortNames[key] };
             });
         }
 
         if(cardData.attachments) {
-            cardData.attachments.forEach(attachment => {
+            cardData.attachments.forEach((attachment: CardType) => {
                 Object.assign(counters, getCountersForCard(attachment));
             });
         }
 
-        // Filter out undefined, null, or negative counters
-        const filteredCounters = {};
-        Object.entries(counters).forEach(([key, counter]) => {
+        const filteredCounters: Record<string, CounterValue> = {};
+        Object.entries(counters).forEach(([key, counter]: [string, CounterValue | undefined]) => {
             if(counter != null && !(typeof counter === "number" && counter < 0)) { // eslint-disable-line eqeqeq
                 filteredCounters[key] = counter;
             }
@@ -284,7 +321,7 @@ function Card(props) {
         const attachmentCount = source === "play area" && card.attachments ? card.attachments.length : 0;
         const attachments = card.attachments || [];
         let totalTiers = 0;
-        attachments.forEach(attachment => {
+        attachments.forEach((attachment: CardType) => {
             if(attachment.bowed) {
                 totalTiers += 1;
             }
@@ -358,7 +395,7 @@ function Card(props) {
         }
 
         let index = 1;
-        const attachmentElements = card.attachments.map(attachment => {
+        const attachmentElements = card.attachments.map((attachment: CardType) => {
             const returnedAttachment = (
                 <Card
                     key={ attachment.uuid }
@@ -372,7 +409,7 @@ function Card(props) {
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
                     onClick={ onClick }
                     onMenuItemClick={ onMenuItemClick }
-                    onDragStart={ ev => onCardDragStart(ev, attachment, source) }
+                    onDragStart={ (ev: React.DragEvent<HTMLElement>) => onCardDragStart(ev, attachment, source) }
                     size={ size }
                 />
             );
@@ -433,7 +470,7 @@ function Card(props) {
         return getCardImageUrl(card.id, card.packId);
     };
 
-    const onCloseClickHandler = (event) => {
+    const onCloseClickHandler = (event: React.MouseEvent) => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -444,7 +481,7 @@ function Card(props) {
         }
     };
 
-    const onPopupCardClick = (cardData) => {
+    const onPopupCardClick = (cardData: CardType) => {
         setShowPopup(false);
 
         if(onClick) {
@@ -463,11 +500,11 @@ function Card(props) {
     const getPopup = () => {
         let cardIndex = 0;
 
-        const cardList = (card.attachments || []).map(attachmentCard => {
-            let cardKey = cardIndex++;
-            let displayCard = attachmentCard;
+        const cardList = (card.attachments || []).map((attachmentCard: CardType) => {
+            let cardKey: string | number = cardIndex++;
+            let displayCard: CardType = attachmentCard;
             if(!isMe) {
-                displayCard = { facedown: true, isDynasty: attachmentCard.isDynasty, isConflict: attachmentCard.isConflict };
+                displayCard = { facedown: true, isDynasty: attachmentCard.isDynasty, isConflict: attachmentCard.isConflict } as CardType;
             } else {
                 cardKey = attachmentCard.uuid;
             }
@@ -536,7 +573,7 @@ function Card(props) {
             return <div />;
         }
 
-        const anim = pendingAnimations?.find(a => "targetUuid" in a && a.targetUuid === card.uuid);
+        const anim = pendingAnimations?.find((a: AnimationEvent) => "targetUuid" in a && a.targetUuid === card.uuid);
         const animReadies = anim && "effect" in anim && anim.effect === "ready";
         const displayBowed = !animReadies && (orientation === "bowed" || card.bowed);
 
@@ -609,9 +646,9 @@ function Card(props) {
             <div
                 className={ frameClassName }
                 ref={ cardRef }
-                onTouchMove={ ev => onTouchMove(ev) }
-                onTouchEnd={ ev => onTouchEnd(ev) }
-                onTouchStart={ ev => onTouchStart(ev) }
+                onTouchMove={ (ev: React.TouchEvent<HTMLDivElement>) => onTouchMove(ev) }
+                onTouchEnd={ (ev: React.TouchEvent<HTMLDivElement>) => onTouchEnd(ev) }
+                onTouchStart={ (ev: React.TouchEvent<HTMLDivElement>) => onTouchStart(ev) }
             >
                 { getCardOrder() }
                 <div
@@ -620,8 +657,8 @@ function Card(props) {
                     id={ id }
                     onMouseOver={ disableMouseOver ? null : () => handleMouseOver(card) }
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
-                    onClick={ ev => handleClick(ev, card) }
-                    onDragStart={ ev => onCardDragStart(ev, card, source) }
+                    onClick={ (ev: React.MouseEvent) => handleClick(ev, card) }
+                    onDragStart={ (ev: React.DragEvent<HTMLElement>) => onCardDragStart(ev, card, source) }
                     onAnimationEnd={ anim && onAnimationEnd ? () => onAnimationEnd(card.uuid) : undefined }
                     draggable
                 >

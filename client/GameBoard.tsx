@@ -7,7 +7,7 @@ import Draggable from "react-draggable";
 import type { Socket } from "socket.io-client";
 
 import type { RootState, AnimationEvent } from "./types/redux";
-import type { GameState } from "./types/game";
+import type { GameState, Card as CardType, Ring as RingType, Player, MenuItem, Spectator, GameMessage, MessageFragment } from "./types/game";
 import type { User } from "./types/user";
 
 import PlayerStatsBox from "./GameComponents/PlayerStatsBox";
@@ -146,13 +146,13 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         }
     }
 
-    getMessagesFromPlayers(messages) {
+    getMessagesFromPlayers(messages: GameMessage[]) {
         return messages.filter(
-            (message) => (message.message instanceof Array) && message.message.some((fragment) => !!fragment.name)
+            (message: GameMessage) => (message.message instanceof Array) && message.message.some((fragment: MessageFragment) => !!fragment.name)
         );
     }
 
-    updateContextMenu(props) {
+    updateContextMenu(props: GameBoardProps) {
         if(!props.currentGame) {
             return;
         }
@@ -182,7 +182,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
                 menuOptions.unshift({ text: "Concede", onClick: this.onConcedeClick });
             }
 
-            let spectators = props.currentGame.spectators.map(spectator => {
+            let spectators = props.currentGame.spectators.map((spectator: Spectator) => {
                 return <li key={ spectator.name }>{ spectator.name }</li>;
             });
 
@@ -200,7 +200,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         }
     }
 
-    setContextMenu(menu) {
+    setContextMenu(menu: any[]) {
         if(this.props.setContextMenu) {
             this.props.setContextMenu(menu);
         }
@@ -253,7 +253,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         this.props.closeGameSocket();
     }
 
-    onMouseOver(card) {
+    onMouseOver(card: MessageFragment) {
         this.props.zoomCard(card);
     }
 
@@ -261,7 +261,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         this.props.clearZoom();
     }
 
-    getCardImageUrl(card) {
+    getCardImageUrl(card: CardType) {
         if(!card || !card.id) {
             return "";
         }
@@ -271,7 +271,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         return getCardImageUrl(card.id, card.packId);
     }
 
-    onCardClick(card) {
+    onCardClick(card: CardType & { controller?: any; isProvince?: boolean }) {
         if(card && card.uuid) {
             this.props.sendGameMessage("cardClicked", card.uuid);
         } else if(card && card.location && card.controller) {
@@ -279,7 +279,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         }
     }
 
-    onRingClick(ring) {
+    onRingClick(ring: string) {
         this.props.sendGameMessage("ringClicked", ring);
     }
 
@@ -295,7 +295,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         this.setState({ showDynastyDeck: !this.state.showDynastyDeck });
     }
 
-    sendMessage(message) {
+    sendMessage(message: string) {
         if(message === "") {
             return;
         }
@@ -311,16 +311,16 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         this.props.sendGameMessage("shuffleDynastyDeck");
     }
 
-    onDragDrop(card, source, target) {
+    onDragDrop(card: CardType, source: string, target: string) {
         this.props.sendGameMessage("drop", card.uuid, source, target);
     }
 
-    onCardDragStart(event, card, source) {
+    onCardDragStart(event: React.DragEvent, card: CardType, source: string) {
         let dragData = { card: card, source: source };
         event.dataTransfer.setData("Text", JSON.stringify(dragData));
     }
 
-    getCardsInPlay(player, isMe) {
+    getCardsInPlay(player: Player & { id?: string }, isMe: boolean) {
         if(!player) {
             return [];
         }
@@ -356,25 +356,24 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
             sortedCards = sortedCards.reverse();
         }
 
-        // Group by type
-        const cardsByType = {};
-        sortedCards.forEach(card => {
-            const type = card.type;
+        const cardsByType: Record<string, CardType[]> = {};
+        sortedCards.forEach((card: CardType) => {
+            const type = card.type || "";
             if(!cardsByType[type]) {
                 cardsByType[type] = [];
             }
             cardsByType[type].push(card);
         });
 
-        let cardsByLocation = [];
-        let playerIsDefending = (player && conflict.defendingPlayerId && player.id.includes(conflict.defendingPlayerId));
+        let cardsByLocation: React.ReactNode[][] = [];
+        let playerIsDefending = (player && conflict.defendingPlayerId && player.id && player.id.includes(conflict.defendingPlayerId));
         let playerDeclaringParticipants = conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen));
 
         const pendingAnimations = this.props.pendingAnimations;
-        const onAnimationEnd = (uuid) => this.props.dispatch(clearAnimation(uuid));
+        const onAnimationEnd = (uuid: string) => this.props.dispatch(clearAnimation(uuid) as any);
 
-        Object.values<any[]>(cardsByType).forEach(cards => {
-            let cardsInPlay = cards.map((card: any) => {
+        Object.values<CardType[]>(cardsByType).forEach((cards: CardType[]) => {
+            let cardsInPlay = cards.map((card: CardType) => {
                 return (<Card key={ card.uuid } id={ card.uuid } source="play area" card={ card } disableMouseOver={ card.facedown && !card.code }
                     onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
                     showStats={ !disableCardStats } player={ player }
@@ -396,17 +395,17 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         return cardsByLocation;
     }
 
-    onCommand(command, arg, uuid, method) {
+    onCommand(command: string, arg: any, uuid: string, method: string) {
         let commandArg = arg;
 
         this.props.sendGameMessage(command, commandArg, uuid, method);
     }
 
-    onDragOver(event) {
+    onDragOver(event: React.DragEvent) {
         event.preventDefault();
     }
 
-    onDragDropEvent(event, target) {
+    onDragDropEvent(event: React.DragEvent, target: string) {
         event.stopPropagation();
         event.preventDefault();
 
@@ -424,23 +423,23 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         this.onDragDrop(dragData.card, dragData.source, target);
     }
 
-    onMenuItemClick(card, menuItem) {
+    onMenuItemClick(card: CardType, menuItem: MenuItem) {
         this.props.sendGameMessage("menuItemClick", card.uuid, menuItem);
     }
 
-    onRingMenuItemClick(ring, menuItem) {
+    onRingMenuItemClick(ring: RingType, menuItem: MenuItem) {
         this.props.sendGameMessage("ringMenuItemClick", ring, menuItem);
     }
 
-    onPromptedActionWindowToggle(option, value) {
+    onPromptedActionWindowToggle(option: string, value: boolean) {
         this.props.sendGameMessage("togglePromptedActionWindow", option, value);
     }
 
-    onTimerSettingToggle(option, value) {
+    onTimerSettingToggle(option: string, value: boolean) {
         this.props.sendGameMessage("toggleTimerSetting", option, value);
     }
 
-    onOptionSettingToggle(option, value) {
+    onOptionSettingToggle(option: string, value: any) {
         this.props.sendGameMessage("toggleOptionSetting", option, value);
     }
 
@@ -448,12 +447,12 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         this.props.sendGameMessage("menuButton", null, "pass");
     }
 
-    onSettingsClick(event) {
+    onSettingsClick(event: React.MouseEvent) {
         event.preventDefault();
         this.setState({ showSettingsModal: true });
     }
 
-    onToggleChatClick(event) {
+    onToggleChatClick(event: React.MouseEvent) {
         event.preventDefault();
         this.setState({
             showChat: !this.state.showChat,
@@ -461,7 +460,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         });
     }
 
-    onManualModeClick(event) {
+    onManualModeClick(event: React.MouseEvent) {
         event.preventDefault();
         this.props.sendGameMessage("toggleManualMode");
     }
@@ -472,7 +471,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         }
     }
 
-    getRings(owner, className) {
+    getRings(owner: string | null, className: string) {
         const thisPlayer = this.props.currentGame.players[this.props.username];
         const showRingEffects = thisPlayer?.optionSettings?.showRingEffects;
         const gameMode = this.props.currentGame.gameMode;
@@ -485,7 +484,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         </div>);
     }
 
-    getRemovedRings(owner, className) {
+    getRemovedRings(owner: string | null, className: string) {
         const thisPlayer = this.props.currentGame.players[this.props.username];
         const showRingEffects = thisPlayer?.optionSettings?.showRingEffects;
         const gameMode = this.props.currentGame.gameMode;
@@ -500,7 +499,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         );
     }
 
-    renderCenterBar(thisPlayer, otherPlayer, conflict) {
+    renderCenterBar(thisPlayer: any, otherPlayer: any, conflict: any) {
         var conflictElement;
         //if there's an active conflict, build the conflict tracker element
         if(conflict.attackingPlayerId) {
@@ -561,7 +560,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         return rings.air.removedFromGame || rings.earth.removedFromGame || rings.water.removedFromGame || rings.fire.removedFromGame || rings.void.removedFromGame;
     }
 
-    getCardsPlayedTracker(conflict, thisPlayer, otherPlayer) {
+    getCardsPlayedTracker(conflict: any, thisPlayer: any, otherPlayer: any) {
         const handImageStyle = { backgroundImage: "url(/img/conflictcard.png)" };
 
         if(!conflict.attackingPlayerId) {
@@ -582,9 +581,9 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         );
     }
 
-    getRingAttachments(thisPlayer, otherPlayer) {
-        var opponentRingAttachments = !!otherPlayer && !!this.props.currentGame.rings && this.getControlledRingAttachments(Object.values(this.props.currentGame.rings), otherPlayer);
-        var playerRingAttachments = !!thisPlayer && !!this.props.currentGame.rings && this.getControlledRingAttachments(Object.values(this.props.currentGame.rings), thisPlayer);
+    getRingAttachments(thisPlayer: Player, otherPlayer?: Player) {
+        var opponentRingAttachments: Record<string, CardType[]> = !!otherPlayer && !!this.props.currentGame.rings ? this.getControlledRingAttachments(Object.values<RingType>(this.props.currentGame.rings), otherPlayer) : {};
+        var playerRingAttachments: Record<string, CardType[]> = !!thisPlayer && !!this.props.currentGame.rings ? this.getControlledRingAttachments(Object.values<RingType>(this.props.currentGame.rings), thisPlayer) : {};
 
         return (<div className="ring-attachments__container">
             <div className="ring-attachments__container-inner">
@@ -598,7 +597,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         </div>);
     }
 
-    renderRingAttachments(element, attachments, amController) {
+    renderRingAttachments(element: string, attachments: CardType[], amController: boolean) {
         let ringAttachmentWidthModifier = 0.8;
         let attachmentOffset = 13 * ringAttachmentWidthModifier;
         let cardLayer = 45;
@@ -618,7 +617,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
             ? <div id={ `ring-attachments-${element}` } className="ring-attachments--element" style={ {marginLeft: `${(attachments.length - 1) * attachmentOffset}px`} } >
                 <img className="ring-attachments__ring-symbol" src={ `/img/military-${element}.png` } />
                 {
-                    attachments.map((card, index) => {
+                    attachments.map((card: CardType, index: number) => {
                         return (<div key={ card.uuid } className={ index !== 0 ? "ring-attachment--stacked" : "ring-attachment" } style={ {marginLeft: `${-1 * (index * attachmentOffset)}px`, zIndex: (cardLayer - index)} }>
                             <Card source="play area" card={ card } disableMouseOver={ card.facedown && !card.code }
                                 onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
@@ -632,19 +631,19 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
             : null;
     }
 
-    getControlledRingAttachments(rings, player) {
-        var ownedRingAttachments = [];
-        var getOwnedAttachmentsByElement = (ownedAttachments, ring) => {
-            ownedAttachments[ring.element] = (ring.attachments && ring.attachments.filter(card => this.isControlledByPlayer(card, player)));
+    getControlledRingAttachments(rings: RingType[], player: Player) {
+        var ownedRingAttachments: Record<string, CardType[]> = {};
+        var getOwnedAttachmentsByElement = (ownedAttachments: Record<string, CardType[]>, ring: RingType & { attachments?: CardType[] }) => {
+            ownedAttachments[ring.element] = (ring.attachments && ring.attachments.filter((card: CardType) => this.isControlledByPlayer(card, player))) || [];
             return ownedAttachments;
         };
 
         return rings.reduce(getOwnedAttachmentsByElement, ownedRingAttachments);
     }
-    isControlledByPlayer(card, player) {
-        return card.controller.name === player.name;
+    isControlledByPlayer(card: CardType & { controller?: { name?: string } }, player: Player) {
+        return card.controller?.name === player.name;
     }
-    renderSidebar(thisPlayer, otherPlayer) {
+    renderSidebar(thisPlayer: Player, otherPlayer?: Player) {
         let size = this.props.user.settings.cardSize;
         return (
             <div className={ `province-pane ${size}` }>
@@ -694,11 +693,11 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         );
     }
 
-    getPrompt(thisPlayer) {
+    getPrompt(thisPlayer: Player) {
         return (<div className="inset-pane">
             <ActivePlayerPrompt title={ thisPlayer.menuTitle }
                 buttons={ thisPlayer.buttons }
-                cards={ this.props.cards }
+                cards={ this.props.cards as unknown as CardType[] }
                 controls={ thisPlayer.controls }
                 promptTitle={ thisPlayer.promptTitle }
                 onButtonClick={ this.onCommand }
@@ -710,7 +709,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         </div>);
     }
 
-    getPlayerHand(thisPlayer) {
+    getPlayerHand(thisPlayer: Player) {
         let defaultPosition = {
             x: (window.innerWidth / 2) - 240,
             y: (window.innerHeight / 2)
@@ -739,19 +738,19 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
                         cardSize={ this.props.user.settings.cardSize }
                         pendingAnimations={ this.props.pendingAnimations }
                         playerName={ thisPlayer.name }
-                        onAnimationEnd={ (id) => this.props.dispatch(clearAnimation(id)) } />
+                        onAnimationEnd={ (id: string) => this.props.dispatch(clearAnimation(id) as any) } />
                 </div>
             </Draggable>);
         }
     }
 
-    getOpponentHand(otherPlayer) {
+    getOpponentHand(otherPlayer?: Player) {
         if(!otherPlayer || !otherPlayer.cardPiles.hand) {
             return null;
         }
 
         // Only show opponent hand if it has revealed cards (replay with hidden info)
-        const hasRevealedCards = otherPlayer.cardPiles.hand.some(c => !c.facedown && c.id);
+        const hasRevealedCards = otherPlayer.cardPiles.hand.some((c: CardType) => !c.facedown && c.id);
         if(!hasRevealedCards) {
             return null;
         }
@@ -783,7 +782,7 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
                     cardSize={ this.props.user.settings.cardSize }
                     pendingAnimations={ this.props.pendingAnimations }
                     playerName={ otherPlayer.name }
-                    onAnimationEnd={ (id) => this.props.dispatch(clearAnimation(id)) } />
+                    onAnimationEnd={ (id: string) => this.props.dispatch(clearAnimation(id) as any) } />
             </div>
         </Draggable>);
     }
@@ -808,16 +807,16 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
             return player.name !== thisPlayer.name;
         });
 
-        let thisPlayerCards = [];
+        let thisPlayerCards: React.ReactNode[] = [];
         let index = 0;
         let thisCardsInPlay = this.getCardsInPlay(thisPlayer, true);
-        thisCardsInPlay.forEach(cards => {
+        thisCardsInPlay.forEach((cards: React.ReactNode) => {
             thisPlayerCards.push(<div className={ `card-row our-side player-home${thisPlayer && thisPlayer.imperialFavor ? " favor" : ""}` } key={ `this-loc${index++}` }>{ cards }</div>);
         });
 
-        let otherPlayerCards = [];
+        let otherPlayerCards: React.ReactNode[] = [];
         if(otherPlayer) {
-            this.getCardsInPlay(otherPlayer, false).forEach(cards => {
+            this.getCardsInPlay(otherPlayer, false).forEach((cards: React.ReactNode) => {
                 otherPlayerCards.push(<div className={ `card-row player-home${otherPlayer.imperialFavor ? " favor" : ""}` } key={ `other-loc${index++}` }>{ cards }</div>);
             });
         }

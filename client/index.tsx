@@ -1,4 +1,5 @@
 import "./tailwind.css";
+// @ts-expect-error react-dom/client has no .d.ts in this layout
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { Toaster } from "sonner";
@@ -11,8 +12,9 @@ const store = configureStore();
 
 store.dispatch(navigate(window.location.pathname + window.location.search));
 
-window.onpopstate = function(e) {
-    store.dispatch(navigate(e.target.location.pathname));
+window.onpopstate = function(e: PopStateEvent) {
+    const target = e.target as Window;
+    store.dispatch(navigate(target.location.pathname));
 };
 
 if(window.user) {

@@ -1,14 +1,25 @@
-import { useState, memo } from "react";
+import React, { useState, memo } from "react";
 
 import CardCounters from "./CardCounters";
 import CardMenu from "./CardMenu";
 import { getRingEffect } from "../RingEffectDescriptions.js";
+import type { Ring as RingType, MenuItem } from "../types/game";
 
-function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode }) {
+interface RingProps {
+    onClick?: (ringElement: string) => void;
+    onMenuItemClick?: (ring: RingType, menuItem: MenuItem) => void;
+    owner?: string;
+    ring: RingType;
+    size?: string;
+    showRingEffects?: boolean;
+    gameMode?: string;
+}
+
+function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode }: RingProps) {
     const [showMenu, setShowMenu] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
 
-    const handleClick = (event, ringElement) => {
+    const handleClick = (event: React.MouseEvent, ringElement: string) => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -22,7 +33,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
         }
     };
 
-    const handleMenuItemClick = (menuItem) => {
+    const handleMenuItemClick = (menuItem: MenuItem) => {
         if(onMenuItemClick) {
             onMenuItemClick(ring, menuItem);
             setShowMenu(!showMenu);
@@ -50,8 +61,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
             }
         }
 
-        // Filter out undefined, null, or negative counters
-        const filteredCounters = {};
+        const filteredCounters: Record<string, { count: number; fade?: boolean; shortName?: string }> = {};
         for(const [key, counter] of Object.entries(counters)) {
             if(counter != null && counter.count >= 0) { // eslint-disable-line eqeqeq
                 filteredCounters[key] = counter;

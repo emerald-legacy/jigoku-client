@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 import { connect } from "react-redux";
@@ -6,13 +6,21 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
 
-export function InnerResetPassword({ id, token, navigate }) {
+type ValidationMap = Record<string, string>;
+
+interface InnerResetPasswordProps {
+    id?: string;
+    token?: string;
+    navigate: (path: string) => any;
+}
+
+export function InnerResetPassword({ id, token, navigate }: InnerResetPasswordProps) {
     const [password, setPassword] = useState("");
     const [password1, setPassword1] = useState("");
-    const [validation, setValidation] = useState({});
+    const [validation, setValidation] = useState<ValidationMap>({});
     const [error, setError] = useState("");
 
-    const verifyPassword = (isSubmitting, currentPassword, currentPassword1) => {
+    const verifyPassword = (isSubmitting: boolean, currentPassword: string, currentPassword1: string): ValidationMap => {
         const newValidation = { ...validation };
         delete newValidation["password"];
 
@@ -32,13 +40,12 @@ export function InnerResetPassword({ id, token, navigate }) {
         return newValidation;
     };
 
-    const onSubmit = async (event) => {
+    const onSubmit = async (event: React.MouseEvent) => {
         event.preventDefault();
 
         setError("");
 
-        // Do synchronous validation
-        const newValidation = {};
+        const newValidation: ValidationMap = {};
         if(password.length < 6) {
             newValidation["password"] = "The password you specify must be at least 6 characters long";
         }
@@ -117,7 +124,7 @@ export function InnerResetPassword({ id, token, navigate }) {
                         id={ field.name }
                         placeholder={ field.placeholder }
                         value={ field.value }
-                        onChange={ (e) => field.onChange(e.target.value) }
+                        onChange={ (e: React.ChangeEvent<HTMLInputElement>) => field.onChange(e.target.value) }
                         onBlur={ field.blurCallback }
                     />
                     { validationMessage }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import { X } from "lucide-react";
@@ -6,6 +6,21 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 import Input from "./FormComponents/Input";
 
 import * as actions from "./actions";
+import type { RootState } from "./types/redux";
+import type { User } from "./types/user";
+
+interface InnerBlockListProps {
+    addBlockListEntry: (user: User | undefined, username: string) => any;
+    apiError?: string;
+    blockList?: string[];
+    blockListAdded?: boolean;
+    blockListDeleted?: boolean;
+    clearBlockListStatus: () => any;
+    loadBlockList: (user: User | undefined) => any;
+    loading?: boolean;
+    removeBlockListEntry: (user: User | undefined, username: string) => any;
+    user?: User;
+}
 
 export function InnerBlockList({
     addBlockListEntry,
@@ -18,7 +33,7 @@ export function InnerBlockList({
     loading,
     removeBlockListEntry,
     user
-}) {
+}: InnerBlockListProps) {
     const [username, setUsername] = useState("");
 
     useEffect(() => {
@@ -34,16 +49,16 @@ export function InnerBlockList({
         }
     }, [blockListAdded, blockListDeleted, clearBlockListStatus]);
 
-    const onUsernameChange = (event) => {
+    const onUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value);
     };
 
-    const onAddClick = (event) => {
+    const onAddClick = (event: React.MouseEvent) => {
         event.preventDefault();
         addBlockListEntry(user, username);
     };
 
-    const onRemoveClick = (usernameToRemove, event) => {
+    const onRemoveClick = (usernameToRemove: string, event: React.MouseEvent) => {
         event.preventDefault();
         removeBlockListEntry(user, usernameToRemove);
     };
@@ -69,7 +84,7 @@ export function InnerBlockList({
     } else if(apiError) {
         content = <AlertPanel type="error" message={ apiError } />;
     } else {
-        const blockListRows = blockList && blockList.map((blockedUser) => (
+        const blockListRows = blockList && blockList.map((blockedUser: string) => (
             <tr key={ blockedUser }>
                 <td>{ blockedUser }</td>
                 <td>
@@ -141,7 +156,7 @@ export function InnerBlockList({
 
 InnerBlockList.displayName = "BlockList";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         apiError: state.api.message,
         blockList: state.user.blockList,
@@ -152,6 +167,6 @@ function mapStateToProps(state) {
     };
 }
 
-const BlockList = connect(mapStateToProps, actions)(InnerBlockList);
+const BlockList: React.ComponentType = connect(mapStateToProps, actions)(InnerBlockList);
 
 export default BlockList;

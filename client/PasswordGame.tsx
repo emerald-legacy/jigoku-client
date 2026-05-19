@@ -1,28 +1,38 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { connect } from "react-redux";
+import type { Socket } from "socket.io-client";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import * as actions from "./actions";
+import type { RootState } from "./types/redux";
 
-export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordGame, passwordJoinType, socket }) {
+interface InnerPasswordGameProps {
+    cancelPasswordJoin: () => any;
+    passwordError?: string;
+    passwordGame?: { id: string; name: string };
+    passwordJoinType?: string;
+    socket?: Socket;
+}
+
+export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordGame, passwordJoinType, socket }: InnerPasswordGameProps) {
     const [password, setPassword] = useState("");
 
-    const onJoinClick = (event) => {
+    const onJoinClick = (event: React.MouseEvent) => {
         event.preventDefault();
 
         if(passwordJoinType === "Join") {
-            socket.emit("joingame", passwordGame.id, password);
+            socket?.emit("joingame", passwordGame?.id, password);
         } else if(passwordJoinType === "Watch") {
-            socket.emit("watchgame", passwordGame.id, password);
+            socket?.emit("watchgame", passwordGame?.id, password);
         }
     };
 
-    const onCancelClick = (event) => {
+    const onCancelClick = (event: React.MouseEvent) => {
         event.preventDefault();
         cancelPasswordJoin();
     };
 
-    const onPasswordChange = (event) => {
+    const onPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value);
     };
 
@@ -56,7 +66,7 @@ export function InnerPasswordGame({ cancelPasswordJoin, passwordError, passwordG
 
 InnerPasswordGame.displayName = "PasswordGame";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         passwordError: state.games.passwordError,
         passwordGame: state.games.passwordGame,
@@ -65,6 +75,6 @@ function mapStateToProps(state) {
     };
 }
 
-const PasswordGame = connect(mapStateToProps, actions)(InnerPasswordGame);
+const PasswordGame: React.ComponentType = connect(mapStateToProps, actions)(InnerPasswordGame);
 
 export default PasswordGame;

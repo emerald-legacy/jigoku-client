@@ -1,7 +1,15 @@
 import { useState } from "react";
+import type { ReactNode } from "react";
+// @ts-expect-error react-dom/server has no .d.ts in this layout
 import ReactDOMServer from "react-dom/server";
 
-function StatusPopOver({ children, show, status }) {
+interface StatusPopOverProps {
+    children: ReactNode;
+    show?: boolean;
+    status?: string;
+}
+
+function StatusPopOver({ children, show, status }: StatusPopOverProps) {
     const [isHovered, setIsHovered] = useState(false);
 
     const content = ReactDOMServer.renderToString(children);

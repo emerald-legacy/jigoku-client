@@ -4,8 +4,9 @@ import { connect } from "react-redux";
 import StatusPopOver from "./StatusPopOver";
 import validateDeck from "./deck-validator.js";
 import * as actions from "./actions";
+import type { Deck } from "./types/deck";
 
-function getDeckHash(deckToHash) {
+function getDeckHash(deckToHash: Deck | null | undefined) {
     if(!deckToHash) {
         return "";
     }
@@ -32,7 +33,7 @@ function getDeckHash(deckToHash) {
     return parts.sort().join("|");
 }
 
-function hasDeckContentChanged(oldDeck, newDeck) {
+function hasDeckContentChanged(oldDeck: Deck, newDeck: Deck) {
     if(oldDeck.format !== newDeck.format) {
         return true;
     }
@@ -47,8 +48,8 @@ interface InnerDeckStatusProps {
 
 export function InnerDeckStatus({ className: propsClassName, deck, updateDeckStatus }: InnerDeckStatusProps) {
     const [deckStatus, setDeckStatus] = useState<{ valid?: boolean; extendedStatus?: string[] }>({});
-    const validationTimeoutRef = useRef(null);
-    const prevDeckRef = useRef(null);
+    const validationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const prevDeckRef = useRef<Deck | null>(null);
 
     const clearValidationTimeout = useCallback(() => {
         if(validationTimeoutRef.current) {
@@ -57,7 +58,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         }
     }, []);
 
-    const getDeckStatusAsync = useCallback(async (deckToValidate, forceValidate = false) => {
+    const getDeckStatusAsync = useCallback(async (deckToValidate: Deck | null, forceValidate = false) => {
         const targetDeck = deckToValidate || deck;
         if(targetDeck.status && !forceValidate) {
             setDeckStatus(targetDeck.status);
@@ -82,7 +83,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         }
     }, [deck, updateDeckStatus]);
 
-    const scheduleValidation = useCallback((deckToSchedule) => {
+    const scheduleValidation = useCallback((deckToSchedule: Deck) => {
         clearValidationTimeout();
         validationTimeoutRef.current = setTimeout(() => {
             getDeckStatusAsync(deckToSchedule, true);

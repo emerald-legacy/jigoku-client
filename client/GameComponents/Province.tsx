@@ -1,27 +1,28 @@
-import { memo } from "react";
+import React, { memo } from "react";
 
 import Card from "./Card";
 import { tryParseJSON } from "../util.js";
+import type { Card as CardType, MenuItem } from "../types/game";
 
 interface ProvinceProps {
-    cards?: any;
-    cardCount?: any;
-    dynastyCard?: any;
-    hiddenDynastyCard?: any;
-    hiddenProvinceCard?: any;
-    isMe?: any;
-    onCardClick?: any;
-    onDragDrop?: any;
-    onMenuItemClick?: any;
-    onMouseOut?: any;
-    onMouseOver?: any;
+    cards?: CardType[];
+    cardCount?: number;
+    dynastyCard?: CardType[];
+    hiddenDynastyCard?: boolean;
+    hiddenProvinceCard?: boolean;
+    isMe?: boolean;
+    onCardClick?: (card: CardType) => void;
+    onDragDrop?: (card: CardType, source: string, target: string) => void;
+    onMenuItemClick?: (card: CardType, menuItem: MenuItem) => void;
+    onMouseOut?: (card: CardType) => void;
+    onMouseOver?: (card: CardType) => void;
     orientation?: string;
-    popupLocation?: any;
-    provinceCard?: any;
-    size?: any;
-    source?: any;
-    strongholdCard?: any;
-    title?: any;
+    popupLocation?: string;
+    provinceCard?: CardType;
+    size?: string;
+    source?: string;
+    strongholdCard?: CardType;
+    title?: string;
 }
 
 function Province({
@@ -44,20 +45,20 @@ function Province({
     strongholdCard: propsStrongholdCard,
     title
 }: ProvinceProps) {
-    const onDragOver = (event) => {
-        event.target.classList.add("highlight-panel");
+    const onDragOver = (event: React.DragEvent<HTMLElement>) => {
+        (event.target as HTMLElement).classList.add("highlight-panel");
         event.preventDefault();
     };
 
-    const onDragLeave = (event) => {
-        event.target.classList.remove("highlight-panel");
+    const onDragLeave = (event: React.DragEvent<HTMLElement>) => {
+        (event.target as HTMLElement).classList.remove("highlight-panel");
     };
 
-    const handleDragDrop = (event, target) => {
+    const handleDragDrop = (event: React.DragEvent<HTMLElement>, target: string | undefined) => {
         event.stopPropagation();
         event.preventDefault();
 
-        event.target.classList.remove("highlight-panel");
+        (event.target as HTMLElement).classList.remove("highlight-panel");
 
         const card = event.dataTransfer.getData("Text");
 
@@ -76,7 +77,7 @@ function Province({
         }
     };
 
-    const getWrapperStyle = (provinceCard) => {
+    const getWrapperStyle = (provinceCard: CardType) => {
         let wrapperStyle = {};
         let attachmentOffset = 13;
         let cardHeight = 84;
@@ -119,18 +120,18 @@ function Province({
     const headerText = title ? `${title} (${displayCardCount})` : "";
 
     let provinceCard =
-        propsProvinceCard || cards?.find((card) => card.isProvince);
+        propsProvinceCard || cards?.find((card: CardType) => card.isProvince);
     let dynastyCards =
-        dynastyCard || cards?.filter((card) => card.isDynasty) || [];
+        dynastyCard || cards?.filter((card: CardType) => card.isDynasty) || [];
     const strongholdCard =
-        propsStrongholdCard || cards?.find((card) => card.isStronghold);
+        propsStrongholdCard || cards?.find((card: CardType) => card.isStronghold);
 
     if(hiddenProvinceCard && provinceCard) {
         provinceCard = { ...provinceCard, facedown: true };
     }
 
     if(hiddenDynastyCard && dynastyCards.length > 0) {
-        dynastyCards = dynastyCards.map((card) => ({ ...card, facedown: true }));
+        dynastyCards = dynastyCards.map((card: CardType) => ({ ...card, facedown: true }));
     }
 
     let cardClassName = "";
@@ -171,7 +172,7 @@ function Province({
                 />
             ) : null }
             { dynastyCards.length > 0
-                ? dynastyCards.map((card) => {
+                ? dynastyCards.map((card: CardType) => {
                     return (
                         <Card
                             id={ card.uuid }

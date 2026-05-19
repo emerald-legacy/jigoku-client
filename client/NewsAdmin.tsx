@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { format } from "date-fns";
 
@@ -6,8 +6,26 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 import TextArea from "./FormComponents/TextArea";
 
 import * as actions from "./actions";
+import type { RootState } from "./types/redux";
 
-export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, loading, news, newsSaved }) {
+interface NewsItem {
+    datePublished: string;
+    poster: string;
+    text: string;
+    _id?: string;
+}
+
+interface InnerNewsAdminProps {
+    addNews: (text: string) => any;
+    apiError?: string;
+    clearNewsStatus: () => any;
+    loadNews: (opts: { forceLoad: boolean }) => any;
+    loading?: boolean;
+    news?: NewsItem[];
+    newsSaved?: boolean;
+}
+
+export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, loading, news, newsSaved }: InnerNewsAdminProps) {
     const [newsText, setNewsText] = useState("");
 
     useEffect(() => {
@@ -24,11 +42,11 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
         }
     }, [newsSaved, clearNewsStatus, loadNews]);
 
-    const onNewsTextChange = (event) => {
+    const onNewsTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         setNewsText(event.target.value);
     };
 
-    const onAddNews = (event) => {
+    const onAddNews = (event: React.MouseEvent) => {
         event.preventDefault();
         addNews(newsText);
         setNewsText("");
@@ -36,7 +54,7 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
 
     let content = null;
 
-    const renderedNews = news?.map((newsItem, index) => (
+    const renderedNews = news?.map((newsItem: NewsItem, index: number) => (
         <tr key={ index }>
             <td>{ format(new Date(newsItem.datePublished), "yyyy-MM-dd") }</td>
             <td>{ newsItem.poster }</td>
@@ -87,16 +105,16 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
 
 InnerNewsAdmin.displayName = "NewsAdmin";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         apiError: state.api.message,
-        loadNews: state.news.loadNews,
+        loadNews: (state.news as any).loadNews,
         loading: state.api.loading,
         news: state.news.news,
         newsSaved: state.news.newsSaved
     };
 }
 
-const NewsAdmin = connect(mapStateToProps, actions)(InnerNewsAdmin);
+const NewsAdmin: React.ComponentType = connect(mapStateToProps, actions)(InnerNewsAdmin);
 
 export default NewsAdmin;

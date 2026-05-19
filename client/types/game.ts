@@ -43,6 +43,24 @@ export interface Card {
     controller?: string;
     popupCards?: Card[];
     group?: string;
+    honor?: number;
+    showPopup?: boolean;
+    isProvince?: boolean;
+    isDynasty?: boolean;
+    isConflict?: boolean;
+    isStronghold?: boolean;
+    isBroken?: boolean;
+    inDanger?: boolean;
+    saved?: boolean;
+    unselectable?: boolean;
+    abilityLimits?: any;
+    strengthSummary?: any;
+    militarySkillSummary?: any;
+    politicalSkillSummary?: any;
+    glorySummary?: any;
+    childCards?: Card[];
+    order?: number;
+    code?: string;
 }
 
 export interface Ring {
@@ -55,6 +73,9 @@ export interface Ring {
     conflictType?: string;
     tokens?: CardToken;
     removedFromGame?: boolean;
+    selected?: boolean;
+    unselectable?: boolean;
+    type?: string;
 }
 
 export interface PlayerCardPiles {
@@ -76,6 +97,7 @@ export interface Player {
     user?: {
         emailHash?: string;
         name?: string;
+        username?: string;
         noAvatar?: boolean;
         settings?: UserSettings;
     };
@@ -124,12 +146,17 @@ export interface Button {
     disabled?: boolean;
     method?: string;
     timer?: number;
+    uuid?: string;
+    timerCancel?: boolean;
 }
 
 export interface Control {
     type: string;
     source: string;
     targets: string[];
+    command?: string;
+    uuid?: string;
+    method?: string;
 }
 
 export interface ClockState {
@@ -191,6 +218,7 @@ export interface UserSettings {
     optionSettings?: Record<string, any>;
     promptedActionWindows?: Record<string, boolean>;
     timerSettings?: Record<string, any>;
+    windowTimer?: number;
 }
 
 export interface OnlineUser {

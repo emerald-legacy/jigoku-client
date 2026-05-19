@@ -1,14 +1,17 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
+import type { RootState } from "./types/redux";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
 
+type ValidationMap = Record<string, string>;
+
 export function InnerForgotPassword() {
     const [username, setUsername] = useState("");
-    const [validation, setValidation] = useState({});
+    const [validation, setValidation] = useState<ValidationMap>({});
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -25,14 +28,13 @@ export function InnerForgotPassword() {
         return newValidation;
     };
 
-    const onSubmit = (event) => {
+    const onSubmit = (event: React.MouseEvent) => {
         event.preventDefault();
         grecaptcha.ready(() => {
-            grecaptcha.execute("6LdO-NMsAAAAAOetW0LZ70BAf12jY5Om101J9As2", { action: "submit" }).then(async (token) => {
+            grecaptcha.execute("6LdO-NMsAAAAAOetW0LZ70BAf12jY5Om101J9As2", { action: "submit" }).then(async (token: string) => {
                 setError("");
 
-                // Do synchronous validation to avoid stale state
-                const newValidation = {};
+                const newValidation: ValidationMap = {};
                 if(!username || username === "") {
                     newValidation["username"] = "Please enter your username";
                 }
@@ -141,7 +143,7 @@ export function InnerForgotPassword() {
 
 InnerForgotPassword.displayName = "ForgotPassword";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         socket: state.socket.socket
     };

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
 import { ChevronDown } from "lucide-react";
 
@@ -6,14 +6,39 @@ import Link from "./Link";
 import Avatar from "./Avatar";
 
 import * as actions from "./actions";
+import type { RootState } from "./types/redux";
 
-export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMenu, title }) {
-    const [showPopup, setShowPopup] = useState(undefined);
-    const [openDropdown, setOpenDropdown] = useState(null);
+interface NavMenuItem {
+    name: string;
+    path?: string;
+    childItems?: NavMenuItem[];
+    avatar?: boolean;
+    emailHash?: string;
+    disableGravatar?: boolean;
+}
+
+interface NavContextItem {
+    text: string;
+    onClick?: () => void;
+    popup?: React.ReactNode;
+}
+
+interface InnerNavBarProps {
+    context?: NavContextItem[];
+    currentPath?: string;
+    leftMenu?: NavMenuItem[];
+    numGames?: number;
+    rightMenu?: NavMenuItem[];
+    title?: string;
+}
+
+export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMenu, title }: InnerNavBarProps) {
+    const [showPopup, setShowPopup] = useState<NavContextItem | undefined>(undefined);
+    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [navbarCollapsed, setNavbarCollapsed] = useState(true);
-    const dropdownRef = useRef(null);
+    const dropdownRef = useRef<HTMLLIElement | null>(null);
 
-    const onMenuItemMouseOver = (menuItem) => {
+    const onMenuItemMouseOver = (menuItem: NavContextItem) => {
         setShowPopup(menuItem);
     };
 
@@ -21,20 +46,19 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
         setShowPopup(undefined);
     };
 
-    const handleDropdownToggle = (menuItemName, event) => {
+    const handleDropdownToggle = (menuItemName: string, event: React.MouseEvent) => {
         event.preventDefault();
         event.stopPropagation();
-        setOpenDropdown(prev => prev === menuItemName ? null : menuItemName);
+        setOpenDropdown((prev: string | null) => prev === menuItemName ? null : menuItemName);
     };
 
     const handleNavbarToggle = () => {
         setNavbarCollapsed(prev => !prev);
     };
 
-    // Close dropdown when clicking outside
     useEffect(() => {
-        const handleClickOutside = (event) => {
-            if(openDropdown && dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        const handleClickOutside = (event: MouseEvent) => {
+            if(openDropdown && dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setOpenDropdown(null);
             }
         };
@@ -43,12 +67,12 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
         return () => document.removeEventListener("click", handleClickOutside);
     }, [openDropdown]);
 
-    const renderMenuItem = (menuItem) => {
+    const renderMenuItem = (menuItem: NavMenuItem) => {
         if(menuItem.childItems) {
             let className = "dropdown";
             const isOpen = openDropdown === menuItem.name;
 
-            if(menuItem.childItems.some(item => item.path === currentPath)) {
+            if(menuItem.childItems.some((item: NavMenuItem) => item.path === currentPath)) {
                 className += " active";
             }
 
@@ -56,7 +80,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
                 className += " open";
             }
 
-            const childItems = menuItem.childItems.map(item => (
+            const childItems = menuItem.childItems.map((item: NavMenuItem) => (
                 <li key={ item.name } className={ item.path === currentPath ? "active" : "" } onClick={ () => setOpenDropdown(null) }><Link href={ item.path }>{ item.name }</Link></li>
             ));
 
@@ -84,7 +108,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
 
     const numGamesElement = numGames !== undefined ? <li><span>{ `${numGames} Games` }</span></li> : null;
 
-    const contextMenu = context?.map(menuItem => (
+    const contextMenu = context?.map((menuItem: NavContextItem) => (
         <li key={ menuItem.text } style={ { position: "relative" } }
             onMouseOver={ () => onMenuItemMouseOver(menuItem) }
             onMouseOut={ onMenuItemMouseOut }
@@ -93,8 +117,8 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
                 href="javascript:void(0)"
                 onClick={ menuItem.onClick ? (event) => {
                     event.preventDefault();
-                    menuItem.onClick();
-                } : null }
+                    menuItem.onClick!();
+                } : undefined }
             >
                 { menuItem.text }
             </a>
@@ -133,12 +157,12 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
 
 InnerNavBar.displayName = "NavBar";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         context: state.navigation.context
     };
 }
 
-const NavBar = connect(mapStateToProps, actions)(InnerNavBar);
+const NavBar: React.ComponentType = connect(mapStateToProps, actions)(InnerNavBar);
 
 export default NavBar;

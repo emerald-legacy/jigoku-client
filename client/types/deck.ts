@@ -2,7 +2,7 @@
 
 export interface DeckCard {
     count: number;
-    card: import("./game").Card;
+    card: import("./game.js").Card;
     pack_id?: string;
 }
 
@@ -15,6 +15,7 @@ export interface Pack {
     _id: string;
     name: string;
     code: string;
+    id?: string;
 }
 
 export interface Format {
@@ -23,13 +24,15 @@ export interface Format {
 }
 
 export interface DeckStatus {
-    basicRules: boolean;
-    factionRules: boolean;
-    noUnreleasedCards: boolean;
-    officialRole: boolean;
+    basicRules?: boolean;
+    factionRules?: boolean;
+    noUnreleasedCards?: boolean;
+    officialRole?: boolean;
     provinceCount?: number;
     dynastyCount?: number;
     conflictCount?: number;
+    valid?: boolean;
+    extendedStatus?: string[];
 }
 
 export interface Deck {

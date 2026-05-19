@@ -1,16 +1,26 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
+import type { Socket } from "socket.io-client";
+import type { RootState } from "./types/redux";
 
 import Link from "./Link";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
 
-export function InnerLogin({ login, navigate, socket }) {
+type ValidationMap = Record<string, string>;
+
+interface InnerLoginProps {
+    login: (payload: any) => any;
+    navigate: (path: string) => any;
+    socket?: Socket;
+}
+
+export function InnerLogin({ login, navigate, socket }: InnerLoginProps) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [validation, setValidation] = useState({});
+    const [validation, setValidation] = useState<ValidationMap>({});
     const [error, setError] = useState("");
 
     const verifyUsername = () => {
@@ -37,13 +47,12 @@ export function InnerLogin({ login, navigate, socket }) {
         return newValidation;
     };
 
-    const onLogin = async (event) => {
+    const onLogin = async (event: React.MouseEvent) => {
         event.preventDefault();
 
         setError("");
 
-        // Do synchronous validation to avoid stale state issues
-        const newValidation = {};
+        const newValidation: ValidationMap = {};
         if(!username || username === "") {
             newValidation["username"] = "Please enter your username";
         }
@@ -162,12 +171,12 @@ export function InnerLogin({ login, navigate, socket }) {
 
 InnerLogin.displayName = "Login";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         socket: state.socket.socket
     };
 }
 
-const Login = connect(mapStateToProps, actions)(InnerLogin);
+const Login: React.ComponentType = connect(mapStateToProps, actions)(InnerLogin);
 
 export default Login;

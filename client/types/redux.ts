@@ -42,6 +42,7 @@ export interface ChatState {
 export interface NewsState {
     news?: any[];
     newsSaved?: boolean;
+    newsLoading?: boolean;
 }
 
 export interface ApiState {

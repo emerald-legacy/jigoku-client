@@ -1,5 +1,28 @@
 import { useState } from "react";
 
+interface ClanMatchup {
+    winRate: number;
+    wins: number;
+    played: number;
+}
+
+interface ClanStat {
+    clan: string;
+    gamesPlayed: number;
+    wins: number;
+    matchups?: Record<string, ClanMatchup>;
+}
+
+interface ModeStats {
+    totalGames: number;
+    clanStats: ClanStat[];
+    mostSuccessfulClans?: { clan: string; winRate: number }[];
+}
+
+interface GameStatsProps {
+    stats?: Record<string, ModeStats>;
+}
+
 const clanOrder = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
 const tabs = [
@@ -9,9 +32,9 @@ const tabs = [
     { key: "stronghold", label: "Imperial" }
 ];
 
-function GameStats({ stats }) {
+function GameStats({ stats }: GameStatsProps) {
     const [activeTab, setActiveTab] = useState("all");
-    const [expandedClan, setExpandedClan] = useState(null);
+    const [expandedClan, setExpandedClan] = useState<string | null>(null);
 
     if(!stats) {
         return null;
@@ -19,11 +42,11 @@ function GameStats({ stats }) {
 
     const modeStats = stats[activeTab];
 
-    const toggleClan = (clan) => {
+    const toggleClan = (clan: string) => {
         setExpandedClan(expandedClan === clan ? null : clan);
     };
 
-    const handleTabChange = (key) => {
+    const handleTabChange = (key: string) => {
         setActiveTab(key);
         setExpandedClan(null);
     };

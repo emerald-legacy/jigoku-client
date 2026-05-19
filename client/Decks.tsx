@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
@@ -7,6 +7,26 @@ import Link from "./Link";
 import DeckRow from "./DeckRow";
 
 import * as actions from "./actions";
+import type { Deck } from "./types/deck";
+import type { Card } from "./types/game";
+import type { RootState } from "./types/redux";
+
+interface InnerDecksProps {
+    apiError?: string;
+    cards?: Record<string, Card>;
+    deckDeleted?: boolean;
+    deckStats?: Record<string, any>;
+    decks?: Deck[];
+    loading?: boolean;
+    navigate: (path: string) => any;
+    selectedDeck?: Deck;
+    clearDeckStatus: (payload?: any) => any;
+    deleteDeck: (payload: any) => any;
+    deleteDecks: (payload: any) => any;
+    loadDeckStats: () => any;
+    loadDecksWithLazyValidation: () => any;
+    selectDeck: (deck: Deck) => any;
+}
 
 export function InnerDecks({
     apiError,
@@ -23,9 +43,9 @@ export function InnerDecks({
     navigate,
     selectDeck,
     selectedDeck
-}) {
+}: InnerDecksProps) {
     const [showDelete, setShowDelete] = useState(false);
-    const [selectedDeckIds, setSelectedDeckIds] = useState([]);
+    const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([]);
     const [showDeleteSelected, setShowDeleteSelected] = useState(false);
 
     useEffect(() => {
@@ -42,48 +62,48 @@ export function InnerDecks({
         }
     }, [deckDeleted, clearDeckStatus]);
 
-    const handleDeleteClick = (event) => {
+    const handleDeleteClick = (event: React.MouseEvent) => {
         event.preventDefault();
         setShowDelete(prev => !prev);
     };
 
-    const handleEditClick = (event) => {
+    const handleEditClick = (event: React.MouseEvent) => {
         event.preventDefault();
         navigate("/decks/edit");
     };
 
-    const handleConfirmDeleteClick = (event) => {
+    const handleConfirmDeleteClick = (event: React.MouseEvent) => {
         event.preventDefault();
         deleteDeck(selectedDeck);
         setShowDelete(false);
     };
 
-    const handleToggleSelectAll = (event) => {
+    const handleToggleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
         if(event.target.checked) {
-            const allDeckIds = decks.map(deck => deck._id);
+            const allDeckIds = (decks || []).map((deck: Deck) => deck._id).filter((id): id is string => Boolean(id));
             setSelectedDeckIds(allDeckIds);
         } else {
             setSelectedDeckIds([]);
         }
     };
 
-    const handleToggleSelectDeck = (deckId) => {
+    const handleToggleSelectDeck = (deckId: string) => {
         setSelectedDeckIds(prev => {
             const index = prev.indexOf(deckId);
             if(index === -1) {
                 return [...prev, deckId];
             }
-            return prev.filter(id => id !== deckId);
+            return prev.filter((id: string) => id !== deckId);
 
         });
     };
 
-    const handleDeleteSelectedClick = (event) => {
+    const handleDeleteSelectedClick = (event: React.MouseEvent) => {
         event.preventDefault();
         setShowDeleteSelected(prev => !prev);
     };
 
-    const handleConfirmDeleteSelectedClick = (event) => {
+    const handleConfirmDeleteSelectedClick = (event: React.MouseEvent) => {
         event.preventDefault();
         if(selectedDeckIds.length > 0) {
             deleteDecks(selectedDeckIds);
@@ -121,14 +141,14 @@ export function InnerDecks({
             );
         }
 
-        const deckList = decks ? decks.map((deck, index) => (
+        const deckList = decks ? decks.map((deck: Deck, index: number) => (
             <DeckRow
                 key={ deck.name + index.toString() }
                 deck={ deck }
                 onClick={ () => selectDeck(deck) }
                 active={ selectedDeck && deck._id === selectedDeck._id }
                 showCheckbox
-                isSelected={ selectedDeckIds.includes(deck._id) }
+                isSelected={ deck._id ? selectedDeckIds.includes(deck._id) : false }
                 onCheckboxChange={ handleToggleSelectDeck }
             />
         )) : [];
@@ -148,7 +168,7 @@ export function InnerDecks({
                                 <button className="btn btn-danger" onClick={ handleConfirmDeleteClick }>Delete</button>
                             ) }
                         </div>
-                        <DeckSummary deck={ selectedDeck } cards={ cards } stats={ deckStats && selectedDeck ? deckStats[selectedDeck._id] : undefined } />
+                        <DeckSummary deck={ selectedDeck } cards={ cards } stats={ deckStats && selectedDeck && selectedDeck._id ? deckStats[selectedDeck._id] : undefined } />
                     </div>
                 </div>
             );
@@ -209,7 +229,7 @@ export function InnerDecks({
 
 InnerDecks.displayName = "Decks";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         apiError: state.api.message,
         cards: state.cards.cards,
@@ -221,6 +241,6 @@ function mapStateToProps(state) {
     };
 }
 
-const Decks = connect(mapStateToProps, actions)(InnerDecks);
+const Decks: React.ComponentType = connect(mapStateToProps, actions)(InnerDecks);
 
 export default Decks;

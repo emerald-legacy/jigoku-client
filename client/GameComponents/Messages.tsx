@@ -1,7 +1,9 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
+// @ts-expect-error - emoji-js has no type definitions
 import EmojiConvertor from "emoji-js";
 import { CheckCircle, Info, AlertCircle, AlertTriangle } from "lucide-react";
 import Avatar from "../Avatar";
+import type { GameMessage, MessageFragment } from "../types/game";
 
 const iconsConflict = ["military", "political"];
 
@@ -9,7 +11,7 @@ const iconsElement = ["air", "earth", "fire", "water", "void"];
 
 const iconsClan = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
-const otherIcons = {
+const otherIcons: Record<string, { className: string; imageSrc: string }> = {
     fate: { className: "icon-fate", imageSrc: "/img/Fate.png" },
     honor: { className: "icon-honor", imageSrc: "/img/Honor.png" },
     card: { className: "icon-card", imageSrc: "/img/cards/conflictcardback.png" },
@@ -18,11 +20,19 @@ const otherIcons = {
 
 const emoji = new EmojiConvertor();
 
-function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
-    const highlightedCardIdRef = useRef(null);
+interface InnerMessagesProps {
+    messages?: GameMessage[];
+    onCardMouseOut?: (fragment: MessageFragment) => void;
+    onCardMouseOver?: (fragment: MessageFragment) => void;
+}
 
-    const handleMouseOver = (fragment) => {
-        const highlightedElement = document.getElementById(highlightedCardIdRef.current);
+type MessageInput = MessageFragment | string | number | null | undefined | MessageInput[];
+
+function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }: InnerMessagesProps) {
+    const highlightedCardIdRef = useRef<string | null>(null);
+
+    const handleMouseOver = (fragment: MessageFragment) => {
+        const highlightedElement = highlightedCardIdRef.current ? document.getElementById(highlightedCardIdRef.current) : null;
         if(highlightedCardIdRef.current && highlightedElement) {
             highlightedElement.classList.remove("highlight");
         }
@@ -39,7 +49,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
         }
     };
 
-    const handleMouseOut = (fragment) => {
+    const handleMouseOut = (fragment: MessageFragment) => {
         const element = document.getElementById(fragment.uuid);
 
         if(element) {
@@ -51,8 +61,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
         }
     };
 
-    const formatMessageText = (message) => {
-        // Handle non-array messages (strings, numbers, etc.)
+    const formatMessageText = (message: MessageInput): React.ReactNode => {
         if(!Array.isArray(message)) {
             if(message === null || message === undefined) {
                 return "";
@@ -63,15 +72,57 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
             if(typeof message === "number") {
                 return message;
             }
-            // Wrap single object in array to process it
             message = [message];
         }
 
         let index = 0;
-        return message.map((fragment, _key) => {
-            if(fragment === null || fragment === undefined) {
+        return message.map((rawFragment: MessageInput, _key: number): React.ReactNode => {
+            if(rawFragment === null || rawFragment === undefined) {
                 return "";
             }
+
+            if(typeof rawFragment === "string" && iconsConflict.includes(rawFragment)) {
+                return (
+                    <span className={ `icon-${rawFragment}` } key={ index++ }>
+                        <span className="hide-text">{ rawFragment }</span>
+                    </span>
+                );
+            }
+            if(typeof rawFragment === "string" && iconsElement.includes(rawFragment)) {
+                return (
+                    <span className={ `icon-element-${rawFragment}` } key={ index++ }>
+                        <span className="hide-text">{ rawFragment }</span>
+                    </span>
+                );
+            }
+            if(typeof rawFragment === "string" && iconsClan.includes(rawFragment)) {
+                return (
+                    <span className={ `icon-clan-${rawFragment}` } key={ index++ }>
+                        <span className="hide-text">{ rawFragment }</span>
+                    </span>
+                );
+            }
+            if(typeof rawFragment === "string" && otherIcons[rawFragment]) {
+                return (
+                    <img
+                        className={ otherIcons[rawFragment].className }
+                        key={ index++ }
+                        title={ rawFragment }
+                        src={ otherIcons[rawFragment].imageSrc }
+                    />
+                );
+            }
+            if(typeof rawFragment === "string") {
+                return emoji.replace_colons(rawFragment);
+            }
+            if(typeof rawFragment === "number") {
+                return rawFragment;
+            }
+            if(Array.isArray(rawFragment)) {
+                return formatMessageText(rawFragment);
+            }
+
+            const fragment = rawFragment as MessageFragment;
 
             if(fragment.alert) {
                 const alertMessage = formatMessageText(fragment.alert.message);
@@ -153,42 +204,8 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
                         { fragment.name }
                     </span>
                 );
-            } else if(iconsConflict.includes(fragment)) {
-                return (
-                    <span className={ `icon-${fragment}` } key={ index++ }>
-                        <span className="hide-text">{ fragment }</span>
-                    </span>
-                );
-            } else if(iconsElement.includes(fragment)) {
-                return (
-                    <span className={ `icon-element-${fragment}` } key={ index++ }>
-                        <span className="hide-text">{ fragment }</span>
-                    </span>
-                );
-            } else if(iconsClan.includes(fragment)) {
-                return (
-                    <span className={ `icon-clan-${fragment}` } key={ index++ }>
-                        <span className="hide-text">{ fragment }</span>
-                    </span>
-                );
-            } else if(otherIcons[fragment]) {
-                return (
-                    <img
-                        className={ otherIcons[fragment].className }
-                        key={ index++ }
-                        title={ fragment }
-                        src={ otherIcons[fragment].imageSrc }
-                    />
-                );
-            } else if(typeof fragment === "string") {
-                return emoji.replace_colons(fragment);
             } else if(fragment.isReactComponent) {
-                return fragment;
-            } else if(typeof fragment === "number") {
-                return fragment;
-            } else if(Array.isArray(fragment)) {
-                // Handle nested arrays
-                return formatMessageText(fragment);
+                return fragment as unknown as React.ReactNode;
             } else if(typeof fragment === "object" && fragment.name) {
                 // Handle objects with a name property (players, cards without id, etc.)
                 return fragment.name;
@@ -202,7 +219,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }) {
     };
 
     const getMessage = () => {
-        return messages?.map((message, index) => {
+        return messages?.map((message: GameMessage, index: number) => {
             return (
                 <div key={ `message${index}` } className="message">
                     { formatMessageText(message.message) }

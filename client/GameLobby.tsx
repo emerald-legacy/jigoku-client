@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import NewGame from "./NewGame";
@@ -9,9 +9,24 @@ import PasswordGame from "./PasswordGame";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
+import type { RootState } from "./types/redux";
+import type { GameState, MenuItem } from "./types/game";
 
-export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, newGame, passwordGame, loadGameStats, setContextMenu, startNewGame, username }) {
-    const [errorMessage, setErrorMessage] = useState(undefined);
+interface InnerGameLobbyProps {
+    bannerNotice?: string;
+    currentGame?: GameState;
+    gameStats?: any;
+    games: any[];
+    newGame?: boolean;
+    passwordGame?: any;
+    loadGameStats: () => any;
+    setContextMenu: (menu: MenuItem[]) => any;
+    startNewGame: () => any;
+    username?: string;
+}
+
+export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, newGame, passwordGame, loadGameStats, setContextMenu, startNewGame, username }: InnerGameLobbyProps) {
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         if(!currentGame) {
@@ -29,7 +44,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
         loadGameStats();
     }, [loadGameStats]);
 
-    const onNewGameClick = (event) => {
+    const onNewGameClick = (event: React.MouseEvent) => {
         event.preventDefault();
 
         if(!username) {
@@ -75,7 +90,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
 
 InnerGameLobby.displayName = "GameLobby";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         bannerNotice: state.chat.notice,
         currentGame: state.games.currentGame,
@@ -89,6 +104,6 @@ function mapStateToProps(state) {
     };
 }
 
-const GameLobby = connect(mapStateToProps, actions)(InnerGameLobby);
+const GameLobby: React.ComponentType = connect(mapStateToProps, actions)(InnerGameLobby);
 
 export default GameLobby;

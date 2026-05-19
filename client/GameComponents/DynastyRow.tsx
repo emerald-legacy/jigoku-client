@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import AdditionalCardPile from "./AdditionalCardPile";
 import CardPile from "./CardPile";
@@ -78,20 +78,20 @@ function DynastyRow({
     const [showConflictMenu, setShowConflictMenu] = useState(false);
     const [showDynastyMenu, setShowDynastyMenu] = useState(false);
 
-    const handleDragOver = (event) => {
-        event.target.classList.add("highlight-panel");
+    const handleDragOver = (event: React.DragEvent<HTMLElement>) => {
+        (event.target as HTMLElement).classList.add("highlight-panel");
         event.preventDefault();
     };
 
-    const handleDragLeave = (event) => {
-        event.target.classList.remove("highlight-panel");
+    const handleDragLeave = (event: React.DragEvent<HTMLElement>) => {
+        (event.target as HTMLElement).classList.remove("highlight-panel");
     };
 
-    const handleDragDrop = (event, target) => {
+    const handleDragDrop = (event: React.DragEvent<HTMLElement>, target: string) => {
         event.stopPropagation();
         event.preventDefault();
 
-        event.target.classList.remove("highlight-panel");
+        (event.target as HTMLElement).classList.remove("highlight-panel");
 
         const card = event.dataTransfer.getData("Text");
 
@@ -143,7 +143,7 @@ function DynastyRow({
     };
 
     /* eslint-disable @typescript-eslint/no-unused-vars */
-    const handleDiscardedCardClick = (event, cardId) => {
+    const handleDiscardedCardClick = (event: React.MouseEvent, cardId: string) => {
         event.preventDefault();
         event.stopPropagation();
 

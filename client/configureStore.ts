@@ -7,7 +7,7 @@ export default function createStore(initialState?: any) {
     const store = configureStore({
         reducer: rootReducer,
         preloadedState: initialState,
-        middleware: ((getDefaultMiddleware) =>
+        middleware: ((getDefaultMiddleware: any) =>
             getDefaultMiddleware({
                 serializableCheck: false,
                 immutableCheck: false

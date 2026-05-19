@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import type { RootState } from "./types/redux";
 
 import { X, Menu } from "lucide-react";
 import * as actions from "./actions";
@@ -35,11 +36,11 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: Inn
         setShowUsers(prev => !prev);
     };
 
-    let userList;
+    let userList: React.ReactNode[];
     if(!users) {
         userList = [];
     } else {
-        userList = users.map(user => (
+        userList = users.map((user: any) => (
             <div className="user-row" key={ user.name }>
                 <Avatar emailHash={ user.emailHash } forceDefault={ user.noAvatar } />
                 <span>{ user.name }</span>
@@ -134,7 +135,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: Inn
 
 InnerLobby.displayName = "Lobby";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         bannerNotice: state.chat.notice,
         loading: state.api.loading,

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 
 import DeckSummary from "./DeckSummary";
@@ -6,8 +6,21 @@ import DeckEditor from "./DeckEditor";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
+import type { RootState } from "./types/redux";
+import type { Deck } from "./types/deck";
 
-export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loading, navigate, saveDeck }) {
+interface InnerAddDeckProps {
+    addDeck: () => any;
+    apiError?: string;
+    cards?: Record<string, any>;
+    deck?: Deck;
+    deckSaved?: boolean;
+    loading?: boolean;
+    navigate: (path: string) => any;
+    saveDeck: (deck: any) => any;
+}
+
+export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loading, navigate, saveDeck }: InnerAddDeckProps) {
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
@@ -21,7 +34,7 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
         }
     }, [deckSaved, navigate]);
 
-    const handleAddDeck = (deckData) => {
+    const handleAddDeck = (deckData: any) => {
         saveDeck(deckData);
     };
 
@@ -59,9 +72,9 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
 
 InnerAddDeck.displayName = "InnerAddDeck";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
-        agendas: state.cards.factions,
+        agendas: state.cards.agendas,
         apiError: state.api.message,
         cards: state.cards.cards,
         deck: state.cards.selectedDeck,
@@ -73,6 +86,6 @@ function mapStateToProps(state) {
     };
 }
 
-const AddDeck = connect(mapStateToProps, actions)(InnerAddDeck);
+const AddDeck: React.ComponentType = connect(mapStateToProps, actions)(InnerAddDeck);
 
 export default AddDeck;

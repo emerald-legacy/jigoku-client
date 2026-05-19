@@ -143,7 +143,7 @@ async function validateDecksInBatches(decks: any[], dispatch: any, batchSize = 1
             } catch(_error) {
                 return {
                     deckId: deck._id,
-                    status: { valid: undefined, extendedStatus: ["Error Validating"] }
+                    status: { valid: undefined as boolean | undefined, extendedStatus: ["Error Validating"] }
                 };
             }
         });

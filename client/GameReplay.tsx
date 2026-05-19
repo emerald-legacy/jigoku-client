@@ -1,8 +1,25 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
+// @ts-expect-error react-dom has no .d.ts in this layout
 import { createPortal } from "react-dom";
 import { Upload, SkipBack, ChevronLeft, Play, Pause, ChevronRight, SkipForward } from "lucide-react";
 import { InnerGameBoard } from "./GameBoard";
 import { parseGameLog } from "./GameComponents/gameLogSerializer.js";
+
+interface ReplayControlsProps {
+    currentIndex: number;
+    totalStates: number;
+    isPlaying: boolean;
+    speedIndex: number;
+    showHiddenInfo: boolean;
+    onJumpToStart: () => void;
+    onJumpToEnd: () => void;
+    onStepBack: () => void;
+    onStepForward: () => void;
+    onTogglePlay: () => void;
+    onSpeedChange: (index: number) => void;
+    onToggleHiddenInfo: () => void;
+    onReset: () => void;
+}
 
 const speeds = [
     { label: "0.5x", delay: 2000 },
@@ -13,7 +30,7 @@ const speeds = [
 
 const noop = () => {};
 
-function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, showHiddenInfo, onJumpToStart, onJumpToEnd, onStepBack, onStepForward, onTogglePlay, onSpeedChange, onToggleHiddenInfo, onReset }) {
+function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, showHiddenInfo, onJumpToStart, onJumpToEnd, onStepBack, onStepForward, onTogglePlay, onSpeedChange, onToggleHiddenInfo, onReset }: ReplayControlsProps) {
     return (
         <div className="replay-bar">
             <div className="replay-controls">
@@ -83,7 +100,7 @@ function mergeHiddenInfo(state: any, hiddenInfo: any) {
         // Replace facedown hand cards with revealed data (hand lives at cardPiles.hand)
         if(info.hand && player.cardPiles?.hand) {
             merged.players[playerName].cardPiles = { ...player.cardPiles };
-            merged.players[playerName].cardPiles.hand = player.cardPiles.hand.map((card, i) => {
+            merged.players[playerName].cardPiles.hand = player.cardPiles.hand.map((card: any, i: number) => {
                 if(card.facedown && info.hand[i]) {
                     return { ...card, ...info.hand[i], facedown: false };
                 }
@@ -101,7 +118,7 @@ function mergeHiddenInfo(state: any, hiddenInfo: any) {
                 const provinceCards = player.provinces[key];
                 const hiddenCards = info.provinces[key];
                 if(provinceCards && hiddenCards) {
-                    merged.players[playerName].provinces[key] = provinceCards.map((card, i) => {
+                    merged.players[playerName].provinces[key] = provinceCards.map((card: any, i: number) => {
                         if(card.facedown && hiddenCards[i] && hiddenCards[i].type === "province") {
                             // Add id/name/packId so hover zoom shows the card, but keep facedown
                             return { ...card, id: hiddenCards[i].id, name: hiddenCards[i].name, packId: hiddenCards[i].packId };
@@ -116,7 +133,7 @@ function mergeHiddenInfo(state: any, hiddenInfo: any) {
         const hiddenStronghold = info.provinces?.stronghold;
         const hiddenChildren = info.strongholdChildren;
         if(strongholdCards && (hiddenStronghold || hiddenChildren)) {
-            merged.players[playerName].strongholdProvince = strongholdCards.map((card, i) => {
+            merged.players[playerName].strongholdProvince = strongholdCards.map((card: any, i: number) => {
                 let nextCard = card;
                 const hidden = hiddenStronghold?.[i];
                 if(card.facedown && hidden && (hidden.type === "stronghold" || hidden.type === "province")) {
@@ -125,7 +142,7 @@ function mergeHiddenInfo(state: any, hiddenInfo: any) {
                 if(card.isStronghold && Array.isArray(card.childCards) && hiddenChildren && hiddenChildren.length > 0) {
                     nextCard = {
                         ...nextCard,
-                        childCards: card.childCards.map((child, j) => {
+                        childCards: card.childCards.map((child: any, j: number) => {
                             const revealed = hiddenChildren[j];
                             if(child.facedown && revealed) {
                                 return { ...child, id: revealed.id, name: revealed.name, packId: revealed.packId };
@@ -189,7 +206,7 @@ function GameReplay() {
         };
     }, [isPlaying, speedIndex, totalStates]);
 
-    const handleFile = (file) => {
+    const handleFile = (file: File) => {
         setError(null);
 
         const reader = new FileReader();
@@ -210,7 +227,7 @@ function GameReplay() {
         reader.readAsArrayBuffer(file);
     };
 
-    const handleDrop = (e) => {
+    const handleDrop = (e: React.DragEvent) => {
         e.preventDefault();
         setDragOver(false);
         const file = e.dataTransfer.files[0];
@@ -219,7 +236,7 @@ function GameReplay() {
         }
     };
 
-    const handleDragOver = (e) => {
+    const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
         setDragOver(true);
     };
@@ -228,8 +245,8 @@ function GameReplay() {
         setDragOver(false);
     };
 
-    const handleFileInput = (e) => {
-        const file = e.target.files[0];
+    const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
         if(file) {
             handleFile(file);
         }
@@ -296,7 +313,7 @@ function GameReplay() {
     const currentState = (entry.hiddenInfo && showHiddenInfo) ? mergeHiddenInfo(baseState, entry.hiddenInfo) : baseState;
 
     const metadata = logData.metadata;
-    const playerNames = metadata.players.map((p) => p.name);
+    const playerNames = metadata.players.map((p: { name: string }) => p.name);
     // Use the downloading player as the perspective (bottom of board), fall back to first player
     const username = metadata.downloadedBy || playerNames[0] || "__replay_spectator__";
 
@@ -308,7 +325,7 @@ function GameReplay() {
         }
     };
 
-    const metaText = metadata.players.map((p) => `${p.name} (${p.faction})`).join(" vs ")
+    const metaText = metadata.players.map((p: { name: string; faction: string }) => `${p.name} (${p.faction})`).join(" vs ")
         + (metadata.winner ? ` — Winner: ${metadata.winner}` : "");
 
     return (

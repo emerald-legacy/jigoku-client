@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
+import type { Socket } from "socket.io-client";
+import type { RootState } from "./types/redux";
+import type { User } from "./types/user";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import Input from "./FormComponents/Input";
@@ -16,7 +19,13 @@ const windows = [
     { name: "fate", label: "Fate phase", style: "col-sm-4" }
 ];
 
-export function InnerProfile({ refreshUser, socket, user }) {
+interface InnerProfileProps {
+    refreshUser: (user: User, token: string) => any;
+    socket?: Socket;
+    user?: User & { promptedActionWindows?: Record<string, boolean> };
+}
+
+export function InnerProfile({ refreshUser, socket, user }: InnerProfileProps) {
     const [disableGravatar, setDisableGravatar] = useState(user?.settings?.disableGravatar || false);
     const [email, setEmail] = useState(user?.email || "");
     const [loading, setLoading] = useState(false);
@@ -41,7 +50,7 @@ export function InnerProfile({ refreshUser, socket, user }) {
         }
     }, [user]);
 
-    const handleChange = (field, event) => {
+    const handleChange = (field: string, event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         switch(field) {
             case "email":
@@ -59,28 +68,28 @@ export function InnerProfile({ refreshUser, socket, user }) {
         }
     };
 
-    const handleWindowToggle = (field, event) => {
-        setPromptedActionWindows(prev => ({
+    const handleWindowToggle = (field: string, event: React.ChangeEvent<HTMLInputElement>) => {
+        setPromptedActionWindows((prev: Record<string, boolean>) => ({
             ...prev,
             [field]: event.target.checked
         }));
     };
 
-    const handleTimerSettingToggle = (field, event) => {
-        setTimerSettings(prev => ({
+    const handleTimerSettingToggle = (field: string, event: React.ChangeEvent<HTMLInputElement>) => {
+        setTimerSettings((prev: Record<string, any>) => ({
             ...prev,
             [field]: event.target.checked
         }));
     };
 
-    const handleOptionSettingToggle = (field, event) => {
-        setOptionSettings(prev => ({
+    const handleOptionSettingToggle = (field: string, event: React.ChangeEvent<HTMLInputElement>) => {
+        setOptionSettings((prev: Record<string, any>) => ({
             ...prev,
             [field]: event.target.checked
         }));
     };
 
-    const verifyPassword = (isSubmitting) => {
+    const verifyPassword = (isSubmitting: boolean) => {
         const newValidation = { ...validation };
         delete newValidation.password;
 
@@ -115,7 +124,7 @@ export function InnerProfile({ refreshUser, socket, user }) {
         setValidation(newValidation);
     };
 
-    const handleSaveClick = async (event) => {
+    const handleSaveClick = async (event: React.MouseEvent) => {
         event.preventDefault();
 
         setErrorMessage(undefined);
@@ -175,7 +184,7 @@ export function InnerProfile({ refreshUser, socket, user }) {
         }
     };
 
-    const handleSlideStop = (event) => {
+    const handleSlideStop = (event: React.ChangeEvent<HTMLInputElement>) => {
         let value = parseInt(event.target.value);
 
         if(Number.isNaN(value)) {
@@ -193,11 +202,11 @@ export function InnerProfile({ refreshUser, socket, user }) {
         setWindowTimer(value);
     };
 
-    const handleBackgroundClick = (background) => {
+    const handleBackgroundClick = (background: string) => {
         setSelectedBackground(background);
     };
 
-    const handleCardClick = (size) => {
+    const handleCardClick = (size: string) => {
         setSelectedCardSize(size);
     };
 
@@ -543,13 +552,13 @@ export function InnerProfile({ refreshUser, socket, user }) {
 
 InnerProfile.displayName = "Profile";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         socket: state.socket.socket,
         user: state.auth.user
     };
 }
 
-const Profile = connect(mapStateToProps, actions)(InnerProfile);
+const Profile: React.ComponentType = connect(mapStateToProps, actions)(InnerProfile);
 
 export default Profile;
