@@ -1,20 +1,16 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-import { connect } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import AlertPanel from "./SiteComponents/AlertPanel";
-
-import * as actions from "./actions";
 
 type ValidationMap = Record<string, string>;
 
-interface InnerResetPasswordProps {
-    id?: string;
-    token?: string;
-    navigate: (path: string) => any;
-}
-
-export function InnerResetPassword({ id, token, navigate }: InnerResetPasswordProps) {
+export function InnerResetPassword() {
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id") ?? undefined;
+    const token = searchParams.get("token") ?? undefined;
     const [password, setPassword] = useState("");
     const [password1, setPassword1] = useState("");
     const [validation, setValidation] = useState<ValidationMap>({});
@@ -151,10 +147,4 @@ export function InnerResetPassword({ id, token, navigate }: InnerResetPasswordPr
 }
 InnerResetPassword.displayName = "ResetPassword";
 
-function mapStateToProps() {
-    return {};
-}
-
-const ResetPassword = connect(mapStateToProps, actions)(InnerResetPassword);
-
-export default ResetPassword;
+export default InnerResetPassword;

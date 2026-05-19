@@ -2,7 +2,9 @@ import React from "react";
 import axios from "axios";
 import { bindActionCreators } from "@reduxjs/toolkit";
 import type { Dispatch } from "@reduxjs/toolkit";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import type { NavigateFunction } from "react-router-dom";
 import { io } from "socket.io-client";
 import type { Socket } from "socket.io-client";
 import { setLobbySocket, setGameSocket, getGameSocket } from "./socket";
@@ -51,7 +53,6 @@ interface AppStateProps {
     currentGame?: GameState;
     currentGameId?: string;
     games: any[];
-    path: string;
     loggedIn?: boolean;
     token?: string;
     user?: User;
@@ -64,7 +65,6 @@ interface AppDispatchProps {
     loadPacks: ActionFn;
     loadFactions: ActionFn;
     loadFormats: ActionFn;
-    navigate: ActionFn;
     socketConnected: ActionFn;
     receiveGames: ActionFn;
     receiveUsers: ActionFn;
@@ -83,32 +83,60 @@ interface AppDispatchProps {
     setContextMenu: ActionFn;
 }
 
-type AppProps = AppStateProps & AppDispatchProps;
+interface AppRouterProps {
+    pathname: string;
+    navigate: NavigateFunction;
+}
+
+type AppProps = AppStateProps & AppDispatchProps & AppRouterProps;
+
+function PlayRoute() {
+    const currentGame = useSelector((state: RootState) => state.games.currentGame);
+    if(currentGame && currentGame.started) {
+        return <GameBoard />;
+    }
+    return <GameLobby />;
+}
+
+function NewsRoute({ canEdit }: { canEdit: boolean }) {
+    return canEdit ? <NewsAdmin /> : <Unauthorised />;
+}
+
+function UsersRoute({ canManage }: { canManage: boolean }) {
+    return canManage ? <UserAdmin /> : <Unauthorised />;
+}
+
+function AppRoutes({ permissions }: { permissions: Record<string, boolean> }) {
+    return (
+        <Routes>
+            <Route path="/" element={ <Lobby /> } />
+            <Route path="/login" element={ <Login /> } />
+            <Route path="/logout" element={ <Logout /> } />
+            <Route path="/register" element={ <Register /> } />
+            <Route path="/decks" element={ <Decks /> } />
+            <Route path="/decks/add" element={ <AddDeck /> } />
+            <Route path="/decks/edit" element={ <EditDeck /> } />
+            <Route path="/decks/edit/:deckId" element={ <EditDeck /> } />
+            <Route path="/play" element={ <PlayRoute /> } />
+            <Route path="/how-to-play" element={ <HowToPlay /> } />
+            <Route path="/about" element={ <About /> } />
+            <Route path="/community" element={ <Community /> } />
+            <Route path="/formats" element={ <Formats /> } />
+            <Route path="/forgot" element={ <ForgotPassword /> } />
+            <Route path="/reset-password" element={ <ResetPassword /> } />
+            <Route path="/profile" element={ <Profile /> } />
+            <Route path="/news" element={ <NewsRoute canEdit={ !!permissions.canEditNews } /> } />
+            <Route path="/unauth" element={ <Unauthorised /> } />
+            <Route path="/users" element={ <UsersRoute canManage={ !!permissions.canManageUsers } /> } />
+            <Route path="/blocklist" element={ <BlockList /> } />
+            <Route path="/replay" element={ <GameReplay /> } />
+            <Route path="*" element={ <NotFound /> } />
+        </Routes>
+    );
+}
 
 class App extends React.Component<AppProps> {
     static displayName = "Application";
-
-    constructor(props: AppProps) {
-        super(props);
-
-        this.paths = {
-            "/": () => <Lobby />,
-            "/login": () => <Login />,
-            "/register": () => <Register />,
-            "/decks": () => <Decks />,
-            "/decks/add": () => <AddDeck />,
-            "/decks/edit": (params: { deckId: string }) => <EditDeck deckId={ params.deckId } />,
-            "/play": () => (this.props.currentGame && this.props.currentGame.started) ? <GameBoard /> : <GameLobby />,
-            "/how-to-play": () => <HowToPlay />,
-            "/about": () => <About />,
-            "/community": () => <Community />,
-            "/formats": () => <Formats />,
-            "/forgot": () => <ForgotPassword />,
-            "/reset-password": params => <ResetPassword id={ params.id } token={ params.token } />,
-            "/profile": () => <Profile />,
-            "/news": () => <NewsAdmin />
-        };
-    }
 
     componentDidMount() {
         this.props.loadCards();
@@ -116,7 +144,6 @@ class App extends React.Component<AppProps> {
         this.props.loadFactions();
         this.props.loadFormats();
 
-        // Set up axios interceptor for global error handling (replaces jQuery ajaxError)
         this.axiosInterceptor = axios.interceptors.response.use(
             response => response,
             error => {
@@ -288,21 +315,8 @@ class App extends React.Component<AppProps> {
         }
     }
 
-    private paths: Record<string, (params?: any) => React.ReactNode>;
     private axiosInterceptor?: number;
     private lobbySocket?: Socket;
-
-    getUrlParameter(name: string) {
-        name = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
-        let regex = new RegExp(`[\\?&]${name}=([^&#]*)`);
-        let results = regex.exec(location.search);
-
-        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-    }
-
-    isNumeric(n: string | number) {
-        return !isNaN(parseFloat(String(n))) && isFinite(Number(n));
-    }
 
     render() {
         let rightMenu;
@@ -357,200 +371,15 @@ class App extends React.Component<AppProps> {
             leftMenu.push({ name: "Admin", childItems: adminMenuItems });
         }
 
-        let component: React.ReactNode = null;
-
-        let path = this.props.path;
-        let argIndex = path.lastIndexOf("/");
-        let arg;
-
-        let page = this.paths[path];
-        if(!page) {
-            if(argIndex !== -1 && argIndex !== 0) {
-                arg = path.substring(argIndex + 1);
-                path = path.substring(0, argIndex);
-            }
-
-            let page = this.paths[path];
-            if(!page) {
-                page = this.paths[this.props.path];
-                arg = undefined;
-            }
-        }
-
-        let idArg;
-        let tokenArg;
-        let index;
-        let gameBoardVisible = false;
-
-        index = path.indexOf("/reset-password");
-        if(index !== -1) {
-            idArg = this.getUrlParameter("id");
-            tokenArg = this.getUrlParameter("token");
-        }
-
-        switch(path) {
-            case "/":
-                component = <Lobby />;
-                break;
-            case "/login":
-                component = <Login />;
-                break;
-            case "/logout":
-                component = <Logout />;
-                break;
-            case "/register":
-                component = <Register />;
-                break;
-            case "/decks":
-                component = <Decks />;
-                break;
-            case "/decks/add":
-                component = <AddDeck />;
-                break;
-            case "/decks/edit":
-                component = <EditDeck deckId={ arg } />;
-                break;
-            case "/play":
-                if(this.props.currentGame && this.props.currentGame.started) {
-                    component = <GameBoard />;
-                    gameBoardVisible = true;
-                } else {
-                    component = <GameLobby />;
-                }
-
-                break;
-            case "/how-to-play":
-                component = <HowToPlay />;
-                break;
-            case "/about":
-                component = <About />;
-                break;
-            case "/community":
-                component = <Community />;
-                break;
-            case "/forgot":
-                component = <ForgotPassword />;
-                break;
-            case "/reset-password":
-                component = <ResetPassword id={ idArg } token={ tokenArg } />;
-                break;
-            case "/profile":
-                component = <Profile />;
-                break;
-            case "/news":
-                if(!permissions.canEditNews) {
-                    component = <Unauthorised />;
-                } else {
-                    component = <NewsAdmin />;
-                }
-
-                break;
-            case "/unauth":
-                component = <Unauthorised />;
-                break;
-            case "/users":
-                if(!permissions.canManageUsers) {
-                    component = <Unauthorised />;
-                } else {
-                    component = <UserAdmin />;
-                }
-
-                break;
-            case "/blocklist":
-                component = <BlockList />;
-                break;
-            case "/replay":
-                component = <GameReplay />;
-                break;
-            default:
-                component = <NotFound />;
-                break;
-        }
-
-        let backgroundClass = "bg";
-        if(gameBoardVisible && this.props.user) {
-            switch(this.props.user.settings.background) {
-                case "CRAB":
-                    backgroundClass = "bg-board-crab";
-                    break;
-                case "CRANE":
-                    backgroundClass = "bg-board-crane";
-                    break;
-                case "DRAGON":
-                    backgroundClass = "bg-board-dragon";
-                    break;
-                case "LION":
-                    backgroundClass = "bg-board-lion";
-                    break;
-                case "PHOENIX":
-                    backgroundClass = "bg-board-phoenix";
-                    break;
-                case "SCORPION":
-                    backgroundClass = "bg-board-scorpion";
-                    break;
-                case "UNICORN":
-                    backgroundClass = "bg-board-unicorn";
-                    break;
-                case "CRAB2":
-                    backgroundClass = "bg-board-crab2";
-                    break;
-                case "CRAB3":
-                    backgroundClass = "bg-board-crab3";
-                    break;
-                case "CRANE2":
-                    backgroundClass = "bg-board-crane2";
-                    break;
-                case "CRANE3":
-                    backgroundClass = "bg-board-crane3";
-                    break;
-                case "CRANE4":
-                    backgroundClass = "bg-board-crane4";
-                    break;
-                case "DRAGON2":
-                    backgroundClass = "bg-board-dragon2";
-                    break;
-                case "DRAGON3":
-                    backgroundClass = "bg-board-dragon3";
-                    break;
-                case "LION2":
-                    backgroundClass = "bg-board-lion2";
-                    break;
-                case "LION3":
-                    backgroundClass = "bg-board-lion3";
-                    break;
-                case "PHOENIX2":
-                    backgroundClass = "bg-board-phoenix2";
-                    break;
-                case "PHOENIX3":
-                    backgroundClass = "bg-board-phoenix3";
-                    break;
-                case "SCORPION2":
-                    backgroundClass = "bg-board-scorpion2";
-                    break;
-                case "SCORPION3":
-                    backgroundClass = "bg-board-scorpion3";
-                    break;
-                case "UNICORN2":
-                    backgroundClass = "bg-board-unicorn2";
-                    break;
-                case "UNICORN3":
-                    backgroundClass = "bg-board-unicorn3";
-                    break;
-                case "OTTER":
-                    backgroundClass = "bg-board-otter";
-                    break;
-                default:
-                    backgroundClass = "bg-board-default";
-                    break;
-            }
-        }
+        const gameBoardVisible = this.props.pathname === "/play" && !!this.props.currentGame && !!this.props.currentGame.started;
+        const backgroundClass = computeBackgroundClass(gameBoardVisible, this.props.user);
 
         return (<div className={ backgroundClass }>
-            <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" currentPath={ this.props.path } numGames={ this.props.games.length } />
+            <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" numGames={ this.props.games.length } />
             <div className="container">
-                <ErrorBoundary navigate={ this.props.navigate } errorPath={ this.props.path } message={ "We're sorry - something's gone wrong." }>
+                <ErrorBoundary navigate={ this.props.navigate } errorPath={ this.props.pathname } message={ "We're sorry - something's gone wrong." }>
                     <React.Suspense fallback={ null }>
-                        { component }
+                        <AppRoutes permissions={ permissions } />
                     </React.Suspense>
                 </ErrorBoundary>
             </div>
@@ -558,12 +387,45 @@ class App extends React.Component<AppProps> {
     }
 }
 
+const backgroundClassByBackground: Record<string, string> = {
+    CRAB: "bg-board-crab",
+    CRANE: "bg-board-crane",
+    DRAGON: "bg-board-dragon",
+    LION: "bg-board-lion",
+    PHOENIX: "bg-board-phoenix",
+    SCORPION: "bg-board-scorpion",
+    UNICORN: "bg-board-unicorn",
+    CRAB2: "bg-board-crab2",
+    CRAB3: "bg-board-crab3",
+    CRANE2: "bg-board-crane2",
+    CRANE3: "bg-board-crane3",
+    CRANE4: "bg-board-crane4",
+    DRAGON2: "bg-board-dragon2",
+    DRAGON3: "bg-board-dragon3",
+    LION2: "bg-board-lion2",
+    LION3: "bg-board-lion3",
+    PHOENIX2: "bg-board-phoenix2",
+    PHOENIX3: "bg-board-phoenix3",
+    SCORPION2: "bg-board-scorpion2",
+    SCORPION3: "bg-board-scorpion3",
+    UNICORN2: "bg-board-unicorn2",
+    UNICORN3: "bg-board-unicorn3",
+    OTTER: "bg-board-otter"
+};
+
+function computeBackgroundClass(gameBoardVisible: boolean, user?: User): string {
+    if(!gameBoardVisible || !user) {
+        return "bg";
+    }
+    const background = user.settings.background;
+    return (background && backgroundClassByBackground[background]) || "bg-board-default";
+}
+
 function mapStateToProps(state: RootState): AppStateProps {
     return {
         currentGame: state.games.currentGame,
         currentGameId: state.games.gameId,
         games: state.games.games,
-        path: state.navigation.path!,
         loggedIn: state.auth.loggedIn,
         token: state.auth.token,
         user: state.auth.user,
@@ -576,6 +438,10 @@ function mapDispatchToProps(dispatch: Dispatch): AppDispatchProps {
     return { ...(boundActions as Omit<AppDispatchProps, "dispatch">), dispatch };
 }
 
-const Application = connect(mapStateToProps, mapDispatchToProps)(App);
+const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
 
-export default Application;
+export default function Application() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    return <ConnectedApp pathname={ location.pathname } navigate={ navigate } />;
+}

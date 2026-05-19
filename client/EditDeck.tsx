@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { connect } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 
 import DeckSummary from "./DeckSummary";
 import DeckEditor from "./DeckEditor";
@@ -13,24 +14,24 @@ interface InnerEditDeckProps {
     apiError?: string;
     cards?: Record<string, any>;
     deck?: Deck;
-    deckId?: string;
     deckSaved?: boolean;
     loadDeck: (id?: string) => any;
     loading?: boolean;
-    navigate: (path: string) => any;
     saveDeck: (deck: any) => any;
-    setUrl: (url: string) => any;
 }
 
-export function InnerEditDeck({ apiError, cards, deck, deckId, deckSaved, loadDeck, loading, navigate, saveDeck, setUrl }: InnerEditDeckProps) {
+export function InnerEditDeck({ apiError, cards, deck, deckSaved, loadDeck, loading, saveDeck }: InnerEditDeckProps) {
+    const navigate = useNavigate();
+    const { deckId } = useParams<{ deckId: string }>();
+
     useEffect(() => {
         if(deckId) {
             loadDeck(deckId);
         } else if(deck) {
-            setUrl(`/decks/edit/${deck._id}`);
+            navigate(`/decks/edit/${deck._id}`, { replace: true });
             loadDeck(deck._id);
         }
-    }, [deckId, deck, loadDeck, setUrl]);
+    }, [deckId, deck, loadDeck, navigate]);
 
     useEffect(() => {
         if(deckSaved) {
@@ -92,10 +93,6 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-interface EditDeckOwnProps {
-    deckId?: string;
-}
-
-const EditDeck: React.ComponentType<EditDeckOwnProps> = connect(mapStateToProps, actions)(InnerEditDeck);
+const EditDeck = connect(mapStateToProps, actions)(InnerEditDeck);
 
 export default EditDeck;

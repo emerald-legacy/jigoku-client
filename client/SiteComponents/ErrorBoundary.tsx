@@ -5,7 +5,7 @@ interface ErrorBoundaryProps {
     children: ReactNode;
     errorPath?: string;
     message?: string;
-    navigate?: (path: string) => void;
+    navigate?: (path: string) => void | Promise<void>;
 }
 
 interface ErrorBoundaryState {

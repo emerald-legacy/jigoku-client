@@ -7,7 +7,7 @@ import * as actions from "./actions";
 import Avatar from "./Avatar";
 import News from "./SiteComponents/News";
 import AlertPanel from "./SiteComponents/AlertPanel";
-import Link from "./Link";
+import { Link } from "react-router-dom";
 
 interface InnerLobbyProps {
     bannerNotice?: string;
@@ -80,7 +80,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: Inn
             <div className="col-sm-offset-1 col-sm-10">
                 <div className="panel-title text-center">Getting Started</div>
                 <div className="panel panel-darker">
-                    <p>This site allows you to play Emerald Legacy in your browser. If you're new, head on over to the <Link href="/how-to-play">How To Play guide</Link> for a thorough explanation on how to use the site!</p>
+                    <p>This site allows you to play Emerald Legacy in your browser. If you're new, head on over to the <Link to="/how-to-play">How To Play guide</Link> for a thorough explanation on how to use the site!</p>
                 </div>
             </div>
 

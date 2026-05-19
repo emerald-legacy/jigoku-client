@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { getLobbySocket } from "./socket";
 
-import Link from "./Link";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
@@ -12,10 +12,10 @@ type ValidationMap = Record<string, string>;
 
 interface InnerLoginProps {
     login: (payload: any) => any;
-    navigate: (path: string) => any;
 }
 
-export function InnerLogin({ login, navigate }: InnerLoginProps) {
+export function InnerLogin({ login }: InnerLoginProps) {
+    const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [validation, setValidation] = useState<ValidationMap>({});
@@ -151,7 +151,7 @@ export function InnerLogin({ login, navigate }: InnerLoginProps) {
                     { fieldsToRender }
                     <div className="form-group">
                         <div className="col-sm-offset-2 col-sm-10">
-                            <Link href="/forgot">Forgot your password?</Link>
+                            <Link to="/forgot">Forgot your password?</Link>
                         </div>
                     </div>
                     <div className="form-group">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 import DeckSummary from "./DeckSummary";
 import DeckEditor from "./DeckEditor";
@@ -16,11 +17,11 @@ interface InnerAddDeckProps {
     deck?: Deck;
     deckSaved?: boolean;
     loading?: boolean;
-    navigate: (path: string) => any;
     saveDeck: (deck: any) => any;
 }
 
-export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loading, navigate, saveDeck }: InnerAddDeckProps) {
+export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loading, saveDeck }: InnerAddDeckProps) {
+    const navigate = useNavigate();
     const [ready, setReady] = useState(false);
 
     useEffect(() => {

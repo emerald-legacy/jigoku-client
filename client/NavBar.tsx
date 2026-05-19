@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { connect } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 
-import Link from "./Link";
 import Avatar from "./Avatar";
 
 import * as actions from "./actions";
@@ -25,14 +25,14 @@ interface NavContextItem {
 
 interface InnerNavBarProps {
     context?: NavContextItem[];
-    currentPath?: string;
     leftMenu?: NavMenuItem[];
     numGames?: number;
     rightMenu?: NavMenuItem[];
     title?: string;
 }
 
-export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMenu, title }: InnerNavBarProps) {
+export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: InnerNavBarProps) {
+    const currentPath = useLocation().pathname;
     const [showPopup, setShowPopup] = useState<NavContextItem | undefined>(undefined);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
     const [navbarCollapsed, setNavbarCollapsed] = useState(true);
@@ -81,7 +81,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
             }
 
             const childItems = menuItem.childItems.map((item: NavMenuItem) => (
-                <li key={ item.name } className={ item.path === currentPath ? "active" : "" } onClick={ () => setOpenDropdown(null) }><Link href={ item.path }>{ item.name }</Link></li>
+                <li key={ item.name } className={ item.path === currentPath ? "active" : "" } onClick={ () => setOpenDropdown(null) }><Link to={ item.path ?? "#" }>{ item.name }</Link></li>
             ));
 
             return (
@@ -100,7 +100,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
 
         const active = menuItem.path === currentPath ? "active" : "";
 
-        return <li key={ menuItem.name } className={ active }><Link href={ menuItem.path }>{ menuItem.name }</Link></li>;
+        return <li key={ menuItem.name } className={ active }><Link to={ menuItem.path ?? "#" }>{ menuItem.name }</Link></li>;
     };
 
     const leftMenuToRender = leftMenu?.map(renderMenuItem);
@@ -129,7 +129,7 @@ export function InnerNavBar({ context, currentPath, leftMenu, numGames, rightMen
     return (
         <nav className="navbar navbar-inverse no-highlight">
             <div className="max-w-[1170px] mx-auto px-4 flex items-center flex-wrap text-sm">
-                <Link href="/" className="text-gray-400 font-bold text-sm py-2 leading-tight mr-2">{ title }</Link>
+                <Link to="/" className="text-gray-400 font-bold text-sm py-2 leading-tight mr-2">{ title }</Link>
                 <button className="md:hidden p-2 text-gray-400 ml-auto"
                     type="button"
                     aria-expanded={ !navbarCollapsed }
@@ -164,7 +164,6 @@ function mapStateToProps(state: RootState) {
 }
 
 interface NavBarOwnProps {
-    currentPath?: string;
     leftMenu?: NavMenuItem[];
     numGames?: number;
     rightMenu?: NavMenuItem[];

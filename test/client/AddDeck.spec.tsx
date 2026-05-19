@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import { InnerAddDeck } from "../../client/AddDeck.tsx";
+
+const wrapper = ({ children }: { children: React.ReactNode }) => <MemoryRouter>{ children }</MemoryRouter>;
 
 // Mock child components to avoid complex dependencies
 vi.mock("../../client/DeckSummary.tsx", () => ({
@@ -44,14 +47,14 @@ describe("the <InnerAddDeck /> component", () => {
 
     describe("when initially mounted", () => {
         it("should call addDeck on mount", () => {
-            render(<InnerAddDeck { ...defaultProps } />);
+            render(<InnerAddDeck { ...defaultProps } />, { wrapper });
             expect(addDeck).toHaveBeenCalled();
         });
     });
 
     describe("when loading is true", () => {
         beforeEach(() => {
-            render(<InnerAddDeck { ...defaultProps } loading />);
+            render(<InnerAddDeck { ...defaultProps } loading />, { wrapper });
         });
 
         it("should display loading message", () => {
@@ -65,7 +68,7 @@ describe("the <InnerAddDeck /> component", () => {
 
     describe("when apiError is present", () => {
         beforeEach(() => {
-            render(<InnerAddDeck { ...defaultProps } apiError="Failed to load decks" />);
+            render(<InnerAddDeck { ...defaultProps } apiError="Failed to load decks" />, { wrapper });
         });
 
         it("should display the error message", () => {
@@ -80,7 +83,7 @@ describe("the <InnerAddDeck /> component", () => {
 
     describe("when not loading and no error", () => {
         beforeEach(() => {
-            render(<InnerAddDeck { ...defaultProps } deck={ { name: "My Deck" } } />);
+            render(<InnerAddDeck { ...defaultProps } deck={ { name: "My Deck" } } />, { wrapper });
         });
 
         it("should render the deck editor", () => {
@@ -104,7 +107,7 @@ describe("the <InnerAddDeck /> component", () => {
 
     describe("when deck is null", () => {
         beforeEach(() => {
-            render(<InnerAddDeck { ...defaultProps } deck={ null } />);
+            render(<InnerAddDeck { ...defaultProps } deck={ null } />, { wrapper });
         });
 
         it("should display \"New Deck\" as the title", () => {
@@ -116,7 +119,7 @@ describe("the <InnerAddDeck /> component", () => {
         // This test is skipped because componentWillUpdate is deprecated and behaves
         // differently in testing environments. The navigation logic works in production.
         it.skip("should navigate to /decks", () => {
-            const { rerender } = render(<InnerAddDeck { ...defaultProps } deckSaved={ false } />);
+            const { rerender } = render(<InnerAddDeck { ...defaultProps } deckSaved={ false } />, { wrapper });
             rerender(<InnerAddDeck { ...defaultProps } deckSaved />);
             expect(navigate).toHaveBeenCalled();
         });
@@ -124,7 +127,7 @@ describe("the <InnerAddDeck /> component", () => {
 
     describe("when onAddDeck is called", () => {
         it("should call saveDeck with the deck", () => {
-            render(<InnerAddDeck { ...defaultProps } />);
+            render(<InnerAddDeck { ...defaultProps } />, { wrapper });
 
             // Click the save button in our mocked DeckEditor
             const saveButton = screen.getByRole("button", { name: "Save" });

@@ -10,8 +10,6 @@ export type AnimationEvent =
     | { type: "honor"; playerName: string; amount: number };
 
 export interface NavigationState {
-    path?: string;
-    search?: string;
     context?: any;
 }
 

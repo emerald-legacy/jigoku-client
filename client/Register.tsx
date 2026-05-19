@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { connect } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getLobbySocket } from "./socket";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
@@ -9,11 +10,11 @@ import * as actions from "./actions";
 type ValidationMap = Record<string, string>;
 
 interface InnerRegisterProps {
-    navigate: (path: string) => void;
     register: (payload: { user: any; token: string }) => void;
 }
 
-export function InnerRegister({ navigate, register }: InnerRegisterProps) {
+export function InnerRegister({ register }: InnerRegisterProps) {
+    const navigate = useNavigate();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");

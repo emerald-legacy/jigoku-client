@@ -1,7 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render as rtlRender, screen, fireEvent, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import { InnerRegister } from "../../client/Register.tsx";
+
+const render = (ui: React.ReactElement) =>
+    rtlRender(ui, { wrapper: ({ children }: { children: React.ReactNode }) => <MemoryRouter>{ children }</MemoryRouter> });
 
 // Mock AlertPanel component
 vi.mock("../../client/SiteComponents/AlertPanel.tsx", () => ({

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import DeckSummary from "./DeckSummary";
-import Link from "./Link";
 import DeckRow from "./DeckRow";
 
 import * as actions from "./actions";
@@ -18,7 +18,6 @@ interface InnerDecksProps {
     deckStats?: Record<string, any>;
     decks?: Deck[];
     loading?: boolean;
-    navigate: (path: string) => any;
     selectedDeck?: Deck;
     clearDeckStatus: (payload?: any) => any;
     deleteDeck: (payload: any) => any;
@@ -40,10 +39,10 @@ export function InnerDecks({
     loadDeckStats,
     loadDecksWithLazyValidation,
     loading,
-    navigate,
     selectDeck,
     selectedDeck
 }: InnerDecksProps) {
+    const navigate = useNavigate();
     const [showDelete, setShowDelete] = useState(false);
     const [selectedDeckIds, setSelectedDeckIds] = useState<string[]>([]);
     const [showDeleteSelected, setShowDeleteSelected] = useState(false);
@@ -188,7 +187,7 @@ export function InnerDecks({
                                 { isAtLimit ? (
                                     <button className="btn btn-primary" disabled title="Maximum deck limit reached">New Deck</button>
                                 ) : (
-                                    <Link className="btn btn-primary" href="/decks/add">New Deck</Link>
+                                    <Link className="btn btn-primary" to="/decks/add">New Deck</Link>
                                 ) }
                                 { selectedDeckIds.length > 0 && (
                                     <button className="btn btn-danger" onClick={ handleDeleteSelectedClick }>
