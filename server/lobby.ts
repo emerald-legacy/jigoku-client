@@ -1,17 +1,19 @@
-const { Server } = require("socket.io");
-const Socket = require("./socket.js");
-const jwt = require("jsonwebtoken");
-const { differenceInSeconds } = require("date-fns");
+import { Server } from "socket.io";
+import jwt from "jsonwebtoken";
+import { differenceInSeconds } from "date-fns";
 
-const logger = require("./log.js");
-const version = new Date(require("../version.js").default);
-const PendingGame = require("./pendinggame.js");
-const GameRouter = require("./gamerouter.js");
-const DeckService = require("./services/DeckService.js");
-const CardService = require("./services/CardService.js");
-const validateDeck = require("../client/deck-validator").default;
-const Settings = require("./settings.js");
-const GetShadowlandsSummonables = require("./shadowLandsHelper.js");
+import Socket from "./socket.js";
+import logger from "./log.js";
+import versionString from "../version.js";
+import PendingGame from "./pendinggame.js";
+import GameRouter from "./gamerouter.js";
+import DeckService from "./services/DeckService.js";
+import CardService from "./services/CardService.js";
+import validateDeck from "../client/deck-validator.js";
+import * as Settings from "./settings.js";
+import GetShadowlandsSummonables from "./shadowLandsHelper.js";
+
+const version = new Date(versionString);
 
 const ONE_MINUTE = 60 * 1000;
 const FIVE_MINUTES = 5 * ONE_MINUTE;
@@ -741,4 +743,4 @@ class Lobby {
     }
 }
 
-module.exports = Lobby;
+export default Lobby;

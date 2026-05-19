@@ -1,10 +1,10 @@
-const db = require("../db.js");
-const DeckService = require("../services/DeckService.js");
-const DeckStatsService = require("../services/DeckStatsService.js");
-const { computeDeckContentHash } = require("../services/deckHashUtil.js");
-const { wrapAsync } = require("../util.js");
+import db from "../db.js";
+import DeckService from "../services/DeckService.js";
+import DeckStatsService from "../services/DeckStatsService.js";
+import { computeDeckContentHash } from "../services/deckHashUtil.js";
+import { wrapAsync } from "../util.js";
 
-module.exports.init = function(server) {
+export function init(server) {
     const deckService = new DeckService(db.getDb());
     const deckStatsService = new DeckStatsService(db.getDb());
 
@@ -172,4 +172,4 @@ module.exports.init = function(server) {
             deckIds: deckIds
         });
     }));
-};
+}

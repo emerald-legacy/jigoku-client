@@ -1,6 +1,6 @@
-const escapeRegex = require("../util.js").escapeRegex;
-const logger = require("../log.js");
-const { toObjectId } = require("../db.js");
+import { escapeRegex } from "../util.js";
+import logger from "../log.js";
+import { toObjectId } from "../db.js";
 
 class UserService {
     users: any;
@@ -119,4 +119,4 @@ class UserService {
     }
 }
 
-module.exports = UserService;
+export default UserService;

@@ -1,7 +1,7 @@
-const db = require("../db.js");
-const CardService = require("../services/CardService.js");
+import db from "../db.js";
+import CardService from "../services/CardService.js";
 
-module.exports.init = function(server) {
+export function init(server) {
     const cardService = new CardService(db.getDb());
 
     server.get("/api/cards", async function(req, res, next) {
@@ -45,4 +45,4 @@ module.exports.init = function(server) {
         ];
         res.send({ success: true, formats: formats });
     });
-};
+}

@@ -1,11 +1,12 @@
-const { WebSocketServer } = require("ws");
-const config = require("config");
-const logger = require("./log.js");
-const db = require("./db.js");
-const EventEmitter = require("events");
-const GameService = require("./services/GameService.js");
-const GameStatsService = require("./services/GameStatsService.js");
-const DeckStatsService = require("./services/DeckStatsService.js");
+import { WebSocketServer } from "ws";
+import config from "config";
+import { EventEmitter } from "node:events";
+
+import logger from "./log.js";
+import db from "./db.js";
+import GameService from "./services/GameService.js";
+import GameStatsService from "./services/GameStatsService.js";
+import DeckStatsService from "./services/DeckStatsService.js";
 
 const ONE_SECOND = 1000;
 const FIFTEEN_SECONDS = 15 * ONE_SECOND;
@@ -28,7 +29,7 @@ class GameRouter extends EventEmitter {
         this.deckStatsService = new DeckStatsService(db.getDb());
         this.connections = new Map();
 
-        this.init(config.lobbyWsUrl);
+        this.init(config.get("lobbyWsUrl"));
         setInterval(this.checkTimeouts.bind(this), FIFTEEN_SECONDS);
     }
 
@@ -42,7 +43,7 @@ class GameRouter extends EventEmitter {
         this.wss.on("connection", (ws, req) => {
             const parsed = new URL(req.url, "http://localhost");
             const identity = parsed.searchParams.get("identity");
-            const nodeSecret = config.has("nodeSecret") ? config.get("nodeSecret") : null;
+            const nodeSecret: string | null = config.has("nodeSecret") ? config.get("nodeSecret") : null;
 
             if(!identity) {
                 logger.error("WebSocket connection without identity, closing");
@@ -333,4 +334,4 @@ class GameRouter extends EventEmitter {
     }
 }
 
-module.exports = GameRouter;
+export default GameRouter;

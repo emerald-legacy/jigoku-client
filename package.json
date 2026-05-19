@@ -2,6 +2,7 @@
   "name": "jigoku-client",
   "version": "2.0.0",
   "description": "The client code for Jigoku, a browser based implementation of the Legend of the Five Rings LCG",
+  "type": "module",
   "main": "build/index.js",
   "scripts": {
     "test": "vitest run",

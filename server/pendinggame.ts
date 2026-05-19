@@ -1,9 +1,9 @@
-const { v1: uuidv1 } = require("uuid");
-const bcrypt = require("bcrypt");
+import { v1 as uuidv1 } from "uuid";
+import bcrypt from "bcrypt";
 
-const logger = require("./log.js");
-const GameChat = require("./game/gamechat.js");
-const GameModes = require("../client/GameModes").default;
+import logger from "./log.js";
+import GameChat from "./game/gamechat.js";
+import GameModes from "../client/GameModes.js";
 
 class PendingGame {
     owner: any;
@@ -339,4 +339,4 @@ class PendingGame {
     }
 }
 
-module.exports = PendingGame;
+export default PendingGame;

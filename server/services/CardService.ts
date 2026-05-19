@@ -1,4 +1,4 @@
-const logger = require("../log.js");
+import logger from "../log.js";
 
 class CardService {
     cards: any;
@@ -54,4 +54,4 @@ class CardService {
     }
 }
 
-module.exports = CardService;
+export default CardService;

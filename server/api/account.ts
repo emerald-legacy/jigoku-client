@@ -1,16 +1,16 @@
-const logger = require("../log.js");
-const bcrypt = require("bcrypt");
-const passport = require("passport");
-const config = require("config");
-const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
-const nodemailer = require("nodemailer");
-const { addHours, format } = require("date-fns");
-const db = require("../db.js");
-const UserService = require("../services/UserService.js");
-const Settings = require("../settings.js");
-const { wrapAsync } = require("../util.js");
-const axios = require("axios").default;
+import logger from "../log.js";
+import bcrypt from "bcrypt";
+import passport from "passport";
+import config from "config";
+import jwt from "jsonwebtoken";
+import crypto from "node:crypto";
+import nodemailer from "nodemailer";
+import { addHours, format } from "date-fns";
+import db from "../db.js";
+import UserService from "../services/UserService.js";
+import * as Settings from "../settings.js";
+import { wrapAsync } from "../util.js";
+import axios from "axios";
 
 function hashPassword(password, rounds) {
     return new Promise((resolve, reject) => {
@@ -41,9 +41,10 @@ let emailTransport = null;
 function getEmailTransport() {
     if(!emailTransport) {
         try {
-            const emailConfig = typeof config.emailPath === "string"
-                ? JSON.parse(config.emailPath)
-                : config.emailPath;
+            const emailPath = config.get("emailPath");
+            const emailConfig = typeof emailPath === "string"
+                ? JSON.parse(emailPath)
+                : emailPath;
             emailTransport = nodemailer.createTransport(emailConfig);
         } catch(_e) {
             throw new Error("Failed to initialise email transport: check EMAIL_PATH configuration");
@@ -71,7 +72,7 @@ function sendEmail(address, email) {
     });
 }
 
-module.exports.init = function (server) {
+export function init(server) {
     const userService = new UserService(db.getDb());
 
     async function checkAuth(req, res) {
@@ -145,7 +146,7 @@ module.exports.init = function (server) {
             await loginUser(req, newUser);
 
             const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeNewUser } = newUser;
-            res.send({ success: true, user: Settings.getUserWithDefaultsSet(safeNewUser), token: jwt.sign(safeNewUser, config.secret, { expiresIn: "7d" }) });
+            res.send({ success: true, user: Settings.getUserWithDefaultsSet(safeNewUser), token: jwt.sign(safeNewUser, config.get("secret"), { expiresIn: "7d" }) });
         } catch(err: any) {
             if(err.code === 11000) {
                 const field = err.keyPattern?.email ? "email" : "username";
@@ -182,7 +183,7 @@ module.exports.init = function (server) {
 
     server.post("/api/account/login", passport.authenticate("local"), function (req, res) {
         const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeUser } = (req.user as any) || {};
-        res.send({ success: true, user: safeUser, token: jwt.sign(safeUser, config.secret, { expiresIn: "7d" }) });
+        res.send({ success: true, user: safeUser, token: jwt.sign(safeUser, config.get("secret"), { expiresIn: "7d" }) });
     });
 
     server.post("/api/account/password-reset-finish", wrapAsync(async (req, res) => {
@@ -208,7 +209,7 @@ module.exports.init = function (server) {
                 return res.send({ success: false, message: "The reset token you have provided has expired" });
             }
 
-            const hmac = crypto.createHmac("sha512", config.hmacSecret);
+            const hmac = crypto.createHmac("sha512", config.get("hmacSecret"));
             const expectedToken = hmac.update("RESET " + user.username + " " + user.tokenExpires).digest("hex");
 
             if(!crypto.timingSafeEqual(Buffer.from(expectedToken), Buffer.from(req.body.token))) {
@@ -229,7 +230,7 @@ module.exports.init = function (server) {
 
     server.post("/api/account/password-reset", wrapAsync(async (req, res) => {
         // SECURITY FIX: Use config for captcha secret instead of hardcoded value
-        const captchaSecret = config.captchaKey;
+        const captchaSecret = config.has("captchaKey") ? config.get("captchaKey") : null;
         if(!captchaSecret) {
             logger.warn("CAPTCHA_KEY not configured, skipping captcha verification");
             return res.send({ success: false, message: "Server configuration error" });
@@ -257,7 +258,7 @@ module.exports.init = function (server) {
 
             const expiration = addHours(new Date(), 4);
             const formattedExpiration = format(expiration, "yyyyMMdd-HH:mm:ss");
-            const hmac = crypto.createHmac("sha512", config.hmacSecret);
+            const hmac = crypto.createHmac("sha512", config.get("hmacSecret"));
             const resetToken = hmac.update("RESET " + user.username + " " + formattedExpiration).digest("hex");
 
             await userService.setResetToken(user, resetToken, formattedExpiration);
@@ -300,7 +301,7 @@ module.exports.init = function (server) {
                         settings: user.settings,
                         promptedActionWindows: user.promptedActionWindows,
                         permissions: user.permissions || {}
-                    }, config.secret, { expiresIn: "7d" })
+                    }, config.get("secret"), { expiresIn: "7d" })
                 });
             })
             .catch(() => {
@@ -421,4 +422,4 @@ module.exports.init = function (server) {
 
         res.send({ success: true, message: "Block list entry removed successfully", username: req.params.entry.toLowerCase() });
     }));
-};
+}

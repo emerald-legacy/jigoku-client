@@ -1,10 +1,13 @@
+import http from "node:http";
+import https from "node:https";
+
 function escapeRegex(regex) {
     return regex.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
 }
 
 function httpRequest(url) {
     return new Promise((resolve, reject) => {
-        const lib = url.startsWith("https") ? require("https") : require("http");
+        const lib = url.startsWith("https") ? https : http;
         const request = lib.get(url, response => {
             if(response.statusCode < 200 || response.statusCode > 299) {
                 return reject(new Error("Failed to request, status code: " + response.statusCode));
@@ -57,9 +60,9 @@ function detectBinary(state, path = "", results = []) {
     return results;
 }
 
-module.exports = {
-    detectBinary: detectBinary,
-    escapeRegex: escapeRegex,
-    httpRequest: httpRequest,
-    wrapAsync: wrapAsync
+export {
+    detectBinary,
+    escapeRegex,
+    httpRequest,
+    wrapAsync
 };

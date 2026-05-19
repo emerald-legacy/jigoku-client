@@ -1,6 +1,6 @@
 /// <reference lib="dom" />
 import axios from "axios";
-import GameModes from "./GameModes";
+import GameModes from "./GameModes.js";
 
 class ValidatorCache {
     updateCache(key, value) {

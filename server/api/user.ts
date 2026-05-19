@@ -1,8 +1,8 @@
-const db = require("../db.js");
-const UserService = require("../services/UserService.js");
-const logger = require("../log.js");
+import db from "../db.js";
+import UserService from "../services/UserService.js";
+import logger from "../log.js";
 
-module.exports.init = function(server) {
+export function init(server) {
     const userService = new UserService(db.getDb());
 
     server.get("/api/user/:username", async function(req, res) {
@@ -65,4 +65,4 @@ module.exports.init = function(server) {
             res.send({ success: false, message: "An error occurred saving the user" });
         }
     });
-};
+}

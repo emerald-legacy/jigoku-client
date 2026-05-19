@@ -1,11 +1,12 @@
-const Server = require("./server.js");
-const Lobby = require("./lobby.js");
-const db = require("./db.js");
-const config = require("config");
+import config from "config";
+
+import Server from "./server.js";
+import Lobby from "./lobby.js";
+import db from "./db.js";
 
 async function runServer() {
     // Connect to database first
-    const database = await db.connect(config.dbPath);
+    const database = await db.connect(config.get("dbPath"));
 
     const server = new Server(process.env.NODE_ENV !== "production");
     await server.initDb();
@@ -24,4 +25,4 @@ async function runServer() {
     server.run();
 }
 
-module.exports = runServer;
+export default runServer;

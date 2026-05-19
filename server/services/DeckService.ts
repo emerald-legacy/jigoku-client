@@ -1,5 +1,5 @@
-const logger = require("../log.js");
-const { toObjectId } = require("../db.js");
+import logger from "../log.js";
+import { toObjectId } from "../db.js";
 
 class DeckService {
     decks: any;
@@ -82,4 +82,4 @@ class DeckService {
     }
 }
 
-module.exports = DeckService;
+export default DeckService;

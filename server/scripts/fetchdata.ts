@@ -1,12 +1,15 @@
 /*eslint no-console:0 */
-const fs = require("fs");
-const { Readable } = require("stream");
-const { pipeline } = require("stream/promises");
-const db = require("../db.js");
-const path = require("path");
-const sharp = require("sharp");
+import fs from "node:fs";
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import sharp from "sharp";
 
-const CardService = require("../services/CardService.js");
+import db from "../db.js";
+import CardService from "../services/CardService.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Project root: works for both source (server/scripts/) and compiled (build/server/scripts/)
 const projectRoot = path.resolve(__dirname, "..", "..", fs.existsSync(path.join(__dirname, "..", "..", "views")) ? "" : "..");

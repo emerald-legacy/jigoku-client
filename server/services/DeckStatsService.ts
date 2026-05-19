@@ -1,5 +1,5 @@
-const logger = require("../log.js");
-const { toObjectId } = require("../db.js");
+import logger from "../log.js";
+import { toObjectId } from "../db.js";
 
 const allClans = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
@@ -157,4 +157,4 @@ class DeckStatsService {
     }
 }
 
-module.exports = DeckStatsService;
+export default DeckStatsService;

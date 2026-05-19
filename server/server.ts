@@ -1,23 +1,27 @@
-const express = require("express");
-const app = express();
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
-const MongoStore = require("connect-mongo").default;
-const config = require("config");
-const passport = require("passport");
-const localStrategy = require("passport-local").Strategy;
-const logger = require("./log.js");
-const bcrypt = require("bcrypt");
-const api = require("./api");
-const path = require("path");
-const jwt = require("jsonwebtoken");
-const http = require("http");
-const helmet = require("helmet");
-const { rateLimit } = require("express-rate-limit");
-const db = require("./db.js");
+import express from "express";
+import cookieParser from "cookie-parser";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import config from "config";
+import passport from "passport";
+import { Strategy as localStrategy } from "passport-local";
+import bcrypt from "bcrypt";
+import path from "node:path";
+import jwt from "jsonwebtoken";
+import http from "node:http";
+import helmet from "helmet";
+import { rateLimit } from "express-rate-limit";
+import fs from "node:fs";
+import { fileURLToPath } from "node:url";
 
-const fs = require("fs");
-const UserService = require("./services/UserService.js");
+import logger from "./log.js";
+import * as api from "./api/index.js";
+import db from "./db.js";
+import UserService from "./services/UserService.js";
+import * as Settings from "./settings.js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const app = express();
 
 function safeJsonStringify(obj) {
     return (JSON.stringify(obj) ?? "null")
@@ -29,7 +33,6 @@ function safeJsonStringify(obj) {
 
 // Project root: works for both `tsx server/` (source) and `node build/server/` (compiled)
 const projectRoot = path.resolve(__dirname, "..", fs.existsSync(path.join(__dirname, "..", "views")) ? "" : "..");
-const Settings = require("./settings.js");
 
 // Rate limiting configuration
 const apiLimiter = rateLimit({
@@ -62,7 +65,7 @@ class Server {
     }
 
     async initDb() {
-        const database = await db.connect(config.dbPath);
+        const database = await db.connect(config.get("dbPath"));
         this.userService = new UserService(database);
     }
 
@@ -93,9 +96,9 @@ class Server {
             }
         };
 
-        checkSecret("SECRET", config.secret);
-        checkSecret("HMAC_SECRET", config.hmacSecret);
-        const nodeSecret = config.has("nodeSecret") ? config.get("nodeSecret") : null;
+        checkSecret("SECRET", config.get("secret"));
+        checkSecret("HMAC_SECRET", config.get("hmacSecret"));
+        const nodeSecret: string | null = config.has("nodeSecret") ? config.get("nodeSecret") : null;
         checkSecret("NODE_SECRET", nodeSecret);
 
         if(errors.length > 0) {
@@ -116,7 +119,7 @@ class Server {
                         scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://www.google.com", "https://www.gstatic.com"],
                         styleSrc: ["'self'", "'unsafe-inline'"],
                         imgSrc: ["'self'", "data:", "https:"],
-                        connectSrc: ["'self'", "wss:", "ws:", "https://www.emeralddb.org", "https://emeralddb.org"].concat(config.cspConnectSources || []),
+                        connectSrc: ["'self'", "wss:", "ws:", "https://www.emeralddb.org", "https://emeralddb.org"].concat(config.has("cspConnectSources") ? config.get("cspConnectSources") : []),
                         fontSrc: ["'self'", "data:"],
                         frameSrc: ["'self'", "https://www.google.com", "https://www.gstatic.com"],
                         objectSrc: ["'none'"],
@@ -128,22 +131,25 @@ class Server {
         );
 
         app.set("trust proxy", 1);
+        const cookieLifetime = config.has("cookieLifetime") ? config.get("cookieLifetime") : null;
+        const https = config.has("https") ? config.get("https") : false;
+        const domain = config.has("domain") ? config.get("domain") : null;
         app.use(session({
             store: MongoStore.create({
-                mongoUrl: config.dbPath,
-                ttl: config.cookieLifetime ? config.cookieLifetime / 1000 : 14 * 24 * 60 * 60 // Default 14 days in seconds
+                mongoUrl: config.get("dbPath"),
+                ttl: cookieLifetime ? cookieLifetime / 1000 : 14 * 24 * 60 * 60 // Default 14 days in seconds
             }),
             saveUninitialized: false,
             resave: false,
-            secret: config.secret,
+            secret: config.get("secret"),
             cookie: {
-                maxAge: config.cookieLifetime,
-                secure: config.https === true || config.https === "true",
+                maxAge: cookieLifetime ?? undefined,
+                secure: https === true || https === "true",
                 httpOnly: true, // SECURITY FIX: Prevent XSS access to cookies
                 sameSite: "lax",
                 // Omit domain for IP addresses — browsers handle IP cookies
                 // correctly only when no domain attribute is set
-                ...(config.domain && !/^\d+\.\d+\.\d+\.\d+$/.test(config.domain) ? { domain: config.domain } : {})
+                ...(domain && !/^\d+\.\d+\.\d+\.\d+$/.test(domain) ? { domain } : {})
             },
             name: "sessionId"
         }));
@@ -183,8 +189,7 @@ class Server {
         let useViteDev = false;
         if(this.isDeveloping) {
             try {
-                // @ts-expect-error vite is ESM-only and unresolvable under moduleResolution=node; resolved at runtime via dynamic import.
-                const { createServer } = (await import("vite")) as { createServer: (opts: any) => Promise<any> };
+                const { createServer } = await import("vite");
                 const vite = await createServer({
                     server: { middlewareMode: true },
                     appType: "custom"
@@ -225,7 +230,7 @@ class Server {
             if(authReq.user) {
                 const { blockList: _blockList, password: _pw, resetToken: _rt, tokenExpires: _te, ...safeUser } = authReq.user;
                 authReq.user = safeUser;
-                token = jwt.sign(safeUser, config.secret, { expiresIn: "1h" });
+                token = jwt.sign(safeUser, config.get("secret"), { expiresIn: "1h" });
             }
 
             // Extract asset paths from Vite manifest
@@ -262,7 +267,7 @@ class Server {
     }
 
     run() {
-        var port = config.lobby.port;
+        var port = config.get("lobby.port");
 
         this.server.listen(port, "0.0.0.0", function onStart(err) {
             if(err) {
@@ -337,4 +342,4 @@ class Server {
             });
     }
 }
-module.exports = Server;
+export default Server;

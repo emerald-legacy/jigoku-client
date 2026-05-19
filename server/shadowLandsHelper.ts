@@ -21,4 +21,4 @@ const GetShadowlandsSummonables = (cards) => {
     return val;
 };
 
-module.exports = GetShadowlandsSummonables;
+export default GetShadowlandsSummonables;

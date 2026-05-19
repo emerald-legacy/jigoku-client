@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+import crypto from "node:crypto";
 
 /**
  * Compute a deterministic SHA-256 hash of a deck's card content.
@@ -32,4 +32,4 @@ function normalizeCards(cards) {
         .sort();
 }
 
-module.exports = { computeDeckContentHash };
+export { computeDeckContentHash };

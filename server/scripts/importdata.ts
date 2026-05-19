@@ -1,8 +1,8 @@
 /*eslint no-console:0 */
-const db = require("../db.js");
-const fs = require("fs");
+import fs from "node:fs";
 
-const CardService = require("../services/CardService.js");
+import db from "../db.js";
+import CardService from "../services/CardService.js";
 
 async function main() {
     await db.connect("mongodb://127.0.0.1:27017/jigoku");
