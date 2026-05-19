@@ -6,7 +6,7 @@
     "sourceMap": true,
     "outDir": "build",
     "rootDir": ".",
-    "allowJs": true,
+    "allowJs": false,
     "strict": false,
     "lib": [
       "es2022"
