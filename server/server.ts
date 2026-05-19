@@ -66,13 +66,45 @@ class Server {
         this.userService = new UserService(database);
     }
 
+    validateConfig() {
+        const errors: string[] = [];
+        const MIN_SECRET_LEN = 16;
+        const FORBIDDEN_SECRETS = new Set([
+            "somethingverysecret",
+            "changeme",
+            "CHANGE_ME"
+        ]);
+
+        const checkSecret = (name: string, value: any) => {
+            if(value === undefined || value === null || value === "") {
+                errors.push(`${name} env var must be set (generate with: openssl rand -base64 32)`);
+                return;
+            }
+            if(typeof value !== "string") {
+                errors.push(`${name} env var must be a string`);
+                return;
+            }
+            if(FORBIDDEN_SECRETS.has(value)) {
+                errors.push(`${name} env var must not use the placeholder value '${value}'`);
+                return;
+            }
+            if(value.length < MIN_SECRET_LEN) {
+                errors.push(`${name} env var must be at least ${MIN_SECRET_LEN} characters`);
+            }
+        };
+
+        checkSecret("SECRET", config.secret);
+        checkSecret("HMAC_SECRET", config.hmacSecret);
+        const nodeSecret = config.has("nodeSecret") ? config.get("nodeSecret") : null;
+        checkSecret("NODE_SECRET", nodeSecret);
+
+        if(errors.length > 0) {
+            throw new Error("Config validation failed before server start:\n  - " + errors.join("\n  - "));
+        }
+    }
+
     async init() {
-        if(!config.secret || config.secret === "somethingverysecret") {
-            throw new Error("SECRET env var must be set to a strong random value before starting the server");
-        }
-        if(!config.hmacSecret) {
-            throw new Error("HMAC_SECRET env var must be set before starting the server");
-        }
+        this.validateConfig();
 
         // Security headers with Helmet v7
         app.use(
@@ -151,7 +183,8 @@ class Server {
         let useViteDev = false;
         if(this.isDeveloping) {
             try {
-                const { createServer } = await import("vite");
+                // @ts-expect-error vite is ESM-only and unresolvable under moduleResolution=node; resolved at runtime via dynamic import.
+                const { createServer } = (await import("vite")) as { createServer: (opts: any) => Promise<any> };
                 const vite = await createServer({
                     server: { middlewareMode: true },
                     appType: "custom"
@@ -190,9 +223,9 @@ class Server {
             const authReq = req;
 
             if(authReq.user) {
-                token = jwt.sign(authReq.user, config.secret, { expiresIn: "7d" });
-                const { blockList: _blockList, ...userWithoutBlockList } = authReq.user;
-                authReq.user = userWithoutBlockList;
+                const { blockList: _blockList, password: _pw, resetToken: _rt, tokenExpires: _te, ...safeUser } = authReq.user;
+                authReq.user = safeUser;
+                token = jwt.sign(safeUser, config.secret, { expiresIn: "1h" });
             }
 
             // Extract asset paths from Vite manifest

@@ -108,7 +108,7 @@ module.exports.init = function (server) {
             return res.send({ success: false, message: "No email specified" });
         }
 
-        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(req.body.email)) {
+        if(!/^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(req.body.email)) {
             return res.send({ success: false, message: "Please enter a valid email address" });
         }
 
@@ -181,7 +181,8 @@ module.exports.init = function (server) {
     });
 
     server.post("/api/account/login", passport.authenticate("local"), function (req, res) {
-        res.send({ success: true, user: req.user, token: jwt.sign(req.user, config.secret, { expiresIn: "7d" }) });
+        const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeUser } = (req.user as any) || {};
+        res.send({ success: true, user: safeUser, token: jwt.sign(safeUser, config.secret, { expiresIn: "7d" }) });
     });
 
     server.post("/api/account/password-reset-finish", wrapAsync(async (req, res) => {
@@ -330,11 +331,30 @@ module.exports.init = function (server) {
                 return res.status(404).send({ message: "Not found" });
             }
 
-            user.email = userToSet.email;
+            const isEmailChange = typeof userToSet.email === "string" && userToSet.email !== user.email;
+            const isPasswordChange = typeof userToSet.password === "string" && userToSet.password !== "";
+
+            if(isEmailChange || isPasswordChange) {
+                if(typeof userToSet.currentPassword !== "string" || userToSet.currentPassword === "") {
+                    return res.status(400).send({ success: false, message: "Current password is required to change email or password" });
+                }
+                const valid = await bcrypt.compare(userToSet.currentPassword, user.password);
+                if(!valid) {
+                    return res.status(403).send({ success: false, message: "Current password is incorrect" });
+                }
+            }
+
+            if(isEmailChange) {
+                if(!/^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/.test(userToSet.email)) {
+                    return res.send({ success: false, message: "Please enter a valid email address" });
+                }
+                user.email = userToSet.email;
+            }
+
             user.settings = userToSet.settings;
             user.promptedActionWindows = userToSet.promptedActionWindows;
 
-            if(userToSet.password && userToSet.password !== "") {
+            if(isPasswordChange) {
                 user.password = await hashPassword(userToSet.password, 10);
             }
 

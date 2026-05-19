@@ -58,12 +58,16 @@ class Socket extends EventEmitter {
     }
 
     onAuthenticate(token) {
-        jwt.verify(token, this.config.secret, (err, user) => {
+        jwt.verify(token, this.config.secret, { algorithms: ["HS256"] }, (err, user) => {
             if(err) {
                 logger.info(`JWT auth failed: ${err.message}`);
                 return;
             }
 
+            if(this.user && this.user.username !== user.username) {
+                this.socket.disconnect();
+                return;
+            }
             this.socket.request.user = user;
             this.user = user;
             this.emit("authenticate", this, user);

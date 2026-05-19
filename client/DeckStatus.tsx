@@ -1,58 +1,58 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { connect } from "react-redux";
 
 import StatusPopOver from "./StatusPopOver";
 import validateDeck from "./deck-validator.js";
 import * as actions from "./actions";
 
+function getDeckHash(deckToHash) {
+    if(!deckToHash) {
+        return "";
+    }
+
+    const parts = [];
+    const arrays = [
+        { name: "s", arr: deckToHash.stronghold },
+        { name: "r", arr: deckToHash.role },
+        { name: "p", arr: deckToHash.provinceCards },
+        { name: "d", arr: deckToHash.dynastyCards },
+        { name: "c", arr: deckToHash.conflictCards }
+    ];
+
+    for(const { name, arr } of arrays) {
+        if(arr && arr.length > 0) {
+            for(const cardEntry of arr) {
+                if(cardEntry.card) {
+                    parts.push(`${name}:${cardEntry.card.id}:${cardEntry.count}`);
+                }
+            }
+        }
+    }
+
+    return parts.sort().join("|");
+}
+
+function hasDeckContentChanged(oldDeck, newDeck) {
+    if(oldDeck.format !== newDeck.format) {
+        return true;
+    }
+    return getDeckHash(oldDeck) !== getDeckHash(newDeck);
+}
+
 export function InnerDeckStatus({ className: propsClassName, deck, updateDeckStatus }) {
     const [deckStatus, setDeckStatus] = useState({});
     const validationTimeoutRef = useRef(null);
     const prevDeckRef = useRef(null);
 
-    const getDeckHash = (deckToHash) => {
-        if(!deckToHash) {
-            return "";
+    const clearValidationTimeout = useCallback(() => {
+        if(validationTimeoutRef.current) {
+            clearTimeout(validationTimeoutRef.current);
+            validationTimeoutRef.current = null;
         }
+    }, []);
 
-        // Create a simple hash of the deck contents
-        const parts = [];
-        const arrays = [
-            { name: "s", arr: deckToHash.stronghold },
-            { name: "r", arr: deckToHash.role },
-            { name: "p", arr: deckToHash.provinceCards },
-            { name: "d", arr: deckToHash.dynastyCards },
-            { name: "c", arr: deckToHash.conflictCards }
-        ];
-
-        for(const { name, arr } of arrays) {
-            if(arr && arr.length > 0) {
-                for(const cardEntry of arr) {
-                    if(cardEntry.card) {
-                        parts.push(`${name}:${cardEntry.card.id}:${cardEntry.count}`);
-                    }
-                }
-            }
-        }
-
-        return parts.sort().join("|");
-    };
-
-    const hasDeckContentChanged = (oldDeck, newDeck) => {
-        // Check if format changed (affects validation rules)
-        if(oldDeck.format !== newDeck.format) {
-            return true;
-        }
-
-        // Compare deck card lists to see if content changed
-        const oldHash = getDeckHash(oldDeck);
-        const newHash = getDeckHash(newDeck);
-        return oldHash !== newHash;
-    };
-
-    const getDeckStatusAsync = async (deckToValidate, forceValidate = false) => {
+    const getDeckStatusAsync = useCallback(async (deckToValidate, forceValidate = false) => {
         const targetDeck = deckToValidate || deck;
-        // Only use cached status if not forcing validation
         if(targetDeck.status && !forceValidate) {
             setDeckStatus(targetDeck.status);
             return;
@@ -71,30 +71,18 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         });
         setDeckStatus(status);
 
-        // Update Redux store with validation result
         if(updateDeckStatus && targetDeck._id) {
             updateDeckStatus(targetDeck._id, status);
         }
-    };
+    }, [deck, updateDeckStatus]);
 
-    const clearValidationTimeout = () => {
-        if(validationTimeoutRef.current) {
-            clearTimeout(validationTimeoutRef.current);
-            validationTimeoutRef.current = null;
-        }
-    };
-
-    const scheduleValidation = (deckToSchedule) => {
-        // Clear any pending validation
+    const scheduleValidation = useCallback((deckToSchedule) => {
         clearValidationTimeout();
-
-        // Schedule validation for 1 second after the last change
         validationTimeoutRef.current = setTimeout(() => {
             getDeckStatusAsync(deckToSchedule, true);
         }, 1000);
-    };
+    }, [clearValidationTimeout, getDeckStatusAsync]);
 
-    // Handle deck changes (including initial mount when prevDeck is null)
     useEffect(() => {
         if(!deck) {
             return;
@@ -102,7 +90,6 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
 
         const prevDeck = prevDeckRef.current;
 
-        // If deck ID changed, validate immediately
         if(!prevDeck || prevDeck._id !== deck._id) {
             clearValidationTimeout();
             getDeckStatusAsync(deck);
@@ -110,20 +97,18 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
             return;
         }
 
-        // If deck content changed (same ID but different cards), debounce validation
         if(hasDeckContentChanged(prevDeck, deck)) {
             scheduleValidation(deck);
         }
 
         prevDeckRef.current = deck;
-    }, [deck, clearValidationTimeout, getDeckStatusAsync, hasDeckContentChanged, scheduleValidation]);
+    }, [deck, clearValidationTimeout, getDeckStatusAsync, scheduleValidation]);
 
-    // Cleanup on unmount
     useEffect(() => {
         return () => {
             clearValidationTimeout();
         };
-    }, []);
+    }, [clearValidationTimeout]);
 
     let statusName;
     let className = "deck-status";

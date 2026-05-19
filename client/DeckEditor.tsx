@@ -113,7 +113,7 @@ export function InnerDeckEditor({
             });
             setCardList(list);
         }
-    }, []);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const addCard = (card, number, packId, currentDeck) => {
         const deckCopy = copyDeck(currentDeck);

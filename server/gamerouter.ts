@@ -50,7 +50,13 @@ class GameRouter extends EventEmitter {
                 return;
             }
 
-            if(nodeSecret && parsed.searchParams.get("secret") !== nodeSecret) {
+            if(!nodeSecret) {
+                logger.error(`Game node ${identity} rejected: NODE_SECRET not configured on lobby`);
+                ws.close();
+                return;
+            }
+
+            if(parsed.searchParams.get("secret") !== nodeSecret) {
                 logger.error(`Game node ${identity} rejected: invalid secret`);
                 ws.close();
                 return;
