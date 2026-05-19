@@ -2,26 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 
-// Mock jQuery and its plugins
-vi.mock("jquery", () => {
-    const mockJQuery = vi.fn((selector) => ({
-        addClass: vi.fn(),
-        removeClass: vi.fn(),
-        modal: vi.fn(),
-        offset: vi.fn(() => ({ left: 0, top: 0 })),
-        scrollTop: vi.fn()
-    }));
-    mockJQuery.fn = { jquery: "3.6.0" };
-    return { default: mockJQuery };
-});
-
-// Mock react-redux-toastr
-vi.mock("react-redux-toastr", () => ({
-    toastr: {
-        confirm: vi.fn()
-    }
-}));
-
 // Mock react-draggable
 vi.mock("react-draggable", () => ({
     default: ({ children }) => <div data-testid="draggable">{ children }</div>

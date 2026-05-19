@@ -2,24 +2,6 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 
-// Mock jQuery and its plugins before importing the component
-vi.mock("jquery", () => {
-    const mockJQuery = vi.fn(() => ({
-        offset: vi.fn(() => ({ left: 0, top: 0 })),
-        width: vi.fn(() => 100),
-        height: vi.fn(() => 100),
-        nearest: vi.fn(() => []),
-        css: vi.fn(),
-        attr: vi.fn(() => ""),
-        addClass: vi.fn(),
-        removeClass: vi.fn()
-    }));
-    mockJQuery.fn = { jquery: "3.6.0" };
-    return { default: mockJQuery };
-});
-
-vi.mock("jquery-migrate", () => ({ default: {} }));
-vi.mock("jquery-nearest", () => ({ default: {} }));
 
 // Mock child components
 vi.mock("../../client/GameComponents/CardMenu.jsx", () => ({
