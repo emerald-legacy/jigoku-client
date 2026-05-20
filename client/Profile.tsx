@@ -16,6 +16,7 @@ import {
     validatePassword,
     type ProfileUserLike
 } from "./Profile.reducer";
+import { backgrounds, type BackgroundOption } from "./backgrounds";
 
 const windows = [
     { name: "dynasty", label: "Dynasty phase", style: "col-sm-4" },
@@ -24,6 +25,11 @@ const windows = [
     { name: "conflict", label: "During conflict", style: "col-sm-4" },
     { name: "fate", label: "Fate phase", style: "col-sm-4" }
 ];
+
+const backgroundRows: BackgroundOption[][] = [];
+for(let i = 0; i < backgrounds.length; i += 3) {
+    backgroundRows.push(backgrounds.slice(i, i + 3));
+}
 
 interface InnerProfileProps {
     user?: User & { promptedActionWindows?: Record<string, boolean> };
@@ -263,142 +269,16 @@ export function InnerProfile({ user }: InnerProfileProps) {
                             Game Board Background
                         </div>
                         <div className="panel">
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "none" }) }>
-                                    <img className={ `img-responsive${settings.background === "none" ? " selected" : ""}` }
-                                        src="img/blank.png" />
-                                    <span className="bg-label">None</span>
+                            { backgroundRows.map((row, rowIdx) => (
+                                <div className="row" key={ rowIdx }>
+                                    { row.map(bg => (
+                                        <div key={ bg.value } className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: bg.value }) }>
+                                            <img className={ `img-responsive${settings.background === bg.value ? " selected" : ""}` } src={ bg.thumbnail } />
+                                            <span className="bg-label">{ bg.label }</span>
+                                        </div>
+                                    )) }
                                 </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "CRAB" }) }>
-                                    <img className={ `img-responsive${settings.background === "CRAB" ? " selected" : ""}` }
-                                        src="/img/bgs/crab.jpg" />
-                                    <span className="bg-label">Crab</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "CRAB2" }) }>
-                                    <img className={ `img-responsive${settings.background === "CRAB2" ? " selected" : ""}` }
-                                        src="/img/bgs/crab2.jpg" />
-                                    <span className="bg-label">Crab 2</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "CRAB3" }) }>
-                                    <img className={ `img-responsive${settings.background === "CRAB3" ? " selected" : ""}` }
-                                        src="/img/bgs/crab3.jpg" />
-                                    <span className="bg-label">Crab 3</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "CRANE" }) }>
-                                    <img className={ `img-responsive${settings.background === "CRANE" ? " selected" : ""}` }
-                                        src="/img/bgs/crane.jpg" />
-                                    <span className="bg-label">Crane</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "CRANE2" }) }>
-                                    <img className={ `img-responsive${settings.background === "CRANE2" ? " selected" : ""}` }
-                                        src="/img/bgs/crane2.jpg" />
-                                    <span className="bg-label">Crane 2</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "CRANE3" }) }>
-                                    <img className={ `img-responsive${settings.background === "CRANE3" ? " selected" : ""}` }
-                                        src="/img/bgs/crane3.jpg" />
-                                    <span className="bg-label">Crane 3</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "CRANE4" }) }>
-                                    <img className={ `img-responsive${settings.background === "CRANE4" ? " selected" : ""}` }
-                                        src="/img/bgs/crane4.jpg" />
-                                    <span className="bg-label">Crane 4</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "DRAGON" }) }>
-                                    <img className={ `img-responsive${settings.background === "DRAGON" ? " selected" : ""}` }
-                                        src="/img/bgs/dragon.jpg" />
-                                    <span className="bg-label">Dragon</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "DRAGON2" }) }>
-                                    <img className={ `img-responsive${settings.background === "DRAGON2" ? " selected" : ""}` }
-                                        src="/img/bgs/dragon2.jpg" />
-                                    <span className="bg-label">Dragon 2</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "DRAGON3" }) }>
-                                    <img className={ `img-responsive${settings.background === "DRAGON3" ? " selected" : ""}` }
-                                        src="/img/bgs/dragon3.jpg" />
-                                    <span className="bg-label">Dragon 3</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "LION" }) }>
-                                    <img className={ `img-responsive${settings.background === "LION" ? " selected" : ""}` }
-                                        src="/img/bgs/lion.jpg" />
-                                    <span className="bg-label">Lion</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "LION2" }) }>
-                                    <img className={ `img-responsive${settings.background === "LION2" ? " selected" : ""}` }
-                                        src="/img/bgs/lion2.jpg" />
-                                    <span className="bg-label">Lion 2</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "LION3" }) }>
-                                    <img className={ `img-responsive${settings.background === "LION3" ? " selected" : ""}` }
-                                        src="/img/bgs/lion3.jpg" />
-                                    <span className="bg-label">Lion 3</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "OTTER" }) }>
-                                    <img className={ `img-responsive${settings.background === "OTTER" ? " selected" : ""}` }
-                                        src="/img/bgs/otter.jpg" />
-                                    <span className="bg-label">Otter</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "PHOENIX" }) }>
-                                    <img className={ `img-responsive${settings.background === "PHOENIX" ? " selected" : ""}` }
-                                        src="/img/bgs/phoenix.jpg" />
-                                    <span className="bg-label">Phoenix</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "PHOENIX2" }) }>
-                                    <img className={ `img-responsive${settings.background === "PHOENIX2" ? " selected" : ""}` }
-                                        src="/img/bgs/phoenix2.jpg" />
-                                    <span className="bg-label">Phoenix 2</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "PHOENIX3" }) }>
-                                    <img className={ `img-responsive${settings.background === "PHOENIX3" ? " selected" : ""}` }
-                                        src="/img/bgs/phoenix3.jpg" />
-                                    <span className="bg-label">Phoenix 3</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "SCORPION" }) }>
-                                    <img className={ `img-responsive${settings.background === "SCORPION" ? " selected" : ""}` }
-                                        src="/img/bgs/scorpion.jpg" />
-                                    <span className="bg-label">Scorpion</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "SCORPION2" }) }>
-                                    <img className={ `img-responsive${settings.background === "SCORPION2" ? " selected" : ""}` }
-                                        src="/img/bgs/scorpion2.jpg" />
-                                    <span className="bg-label">Scorpion 2</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "SCORPION3" }) }>
-                                    <img className={ `img-responsive${settings.background === "SCORPION3" ? " selected" : ""}` }
-                                        src="/img/bgs/scorpion3.jpg" />
-                                    <span className="bg-label">Scorpion 3</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "UNICORN" }) }>
-                                    <img className={ `img-responsive${settings.background === "UNICORN" ? " selected" : ""}` }
-                                        src="/img/bgs/unicorn.jpg" />
-                                    <span className="bg-label">Unicorn</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "UNICORN2" }) }>
-                                    <img className={ `img-responsive${settings.background === "UNICORN2" ? " selected" : ""}` }
-                                        src="/img/bgs/unicorn2.jpg" />
-                                    <span className="bg-label">Unicorn 2</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: "UNICORN3" }) }>
-                                    <img className={ `img-responsive${settings.background === "UNICORN3" ? " selected" : ""}` }
-                                        src="/img/bgs/unicorn3.jpg" />
-                                    <span className="bg-label">Unicorn 3</span>
-                                </div>
-                            </div>
+                            )) }
                         </div>
                     </div>
                     <div>

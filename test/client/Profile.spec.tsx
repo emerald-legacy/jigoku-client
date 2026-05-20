@@ -88,4 +88,21 @@ describe("<InnerProfile /> save flow", () => {
         fireEvent.click(screen.getByRole("button", { name: "Save" }));
         expect(await screen.findByText("server kaboom")).toBeInTheDocument();
     });
+
+    it("renders one picker tile per entry in the shared backgrounds data file (single source of truth across Profile and Application)", async () => {
+        const { backgrounds } = await import("../../client/backgrounds");
+        const { container } = render(<InnerProfile user={ userFixture as any } />);
+        const tiles = container.querySelectorAll(".panel .row .col-sm-4 .bg-label");
+        expect(tiles).toHaveLength(backgrounds.length);
+        expect(Array.from(tiles).map(el => el.textContent)).toEqual(backgrounds.map(bg => bg.label));
+    });
+
+    it("selecting a picker tile sets background in the assembled saveProfile payload", () => {
+        const { container } = render(<InnerProfile user={ userFixture as any } />);
+        const cranetile = Array.from(container.querySelectorAll(".col-sm-4"))
+            .find(el => el.querySelector(".bg-label")?.textContent === "Crane") as HTMLElement;
+        fireEvent.click(cranetile);
+        fireEvent.click(screen.getByRole("button", { name: "Save" }));
+        expect(saveProfileSpy.mock.calls[0][0].payload.settings.background).toBe("CRANE");
+    });
 });

@@ -13,6 +13,7 @@ import type { GameSocket } from "./socket";
 import type { RootState } from "./types/redux";
 import type { GameState } from "./types/game";
 import type { User } from "./types/user";
+import { backgroundClassByValue } from "./backgrounds";
 
 import Login from "./Login";
 import Logout from "./Logout";
@@ -387,38 +388,12 @@ class App extends React.Component<AppProps> {
     }
 }
 
-const backgroundClassByBackground: Record<string, string> = {
-    CRAB: "bg-board-crab",
-    CRANE: "bg-board-crane",
-    DRAGON: "bg-board-dragon",
-    LION: "bg-board-lion",
-    PHOENIX: "bg-board-phoenix",
-    SCORPION: "bg-board-scorpion",
-    UNICORN: "bg-board-unicorn",
-    CRAB2: "bg-board-crab2",
-    CRAB3: "bg-board-crab3",
-    CRANE2: "bg-board-crane2",
-    CRANE3: "bg-board-crane3",
-    CRANE4: "bg-board-crane4",
-    DRAGON2: "bg-board-dragon2",
-    DRAGON3: "bg-board-dragon3",
-    LION2: "bg-board-lion2",
-    LION3: "bg-board-lion3",
-    PHOENIX2: "bg-board-phoenix2",
-    PHOENIX3: "bg-board-phoenix3",
-    SCORPION2: "bg-board-scorpion2",
-    SCORPION3: "bg-board-scorpion3",
-    UNICORN2: "bg-board-unicorn2",
-    UNICORN3: "bg-board-unicorn3",
-    OTTER: "bg-board-otter"
-};
-
 function computeBackgroundClass(gameBoardVisible: boolean, user?: User): string {
     if(!gameBoardVisible || !user) {
         return "bg";
     }
     const background = user.settings.background;
-    return (background && backgroundClassByBackground[background]) || "bg-board-default";
+    return (background && backgroundClassByValue[background]) || "bg-board-default";
 }
 
 function mapStateToProps(state: RootState): AppStateProps {
