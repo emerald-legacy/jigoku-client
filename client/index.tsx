@@ -8,11 +8,12 @@ import configureStore from "./configureStore";
 import { login } from "./actions";
 import Application from "./Application";
 import ErrorBoundary from "./SiteComponents/ErrorBoundary";
+import bootstrap from "./bootstrap";
 
 const store = configureStore();
 
-if(window.user) {
-    store.dispatch(login({ user: window.user, token: window.authToken, isAdmin: window.user.admin }));
+if(bootstrap.user) {
+    store.dispatch(login({ user: bootstrap.user, token: bootstrap.token, isAdmin: bootstrap.user.admin }));
 }
 
 const container = document.getElementById("component");

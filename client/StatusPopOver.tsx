@@ -1,7 +1,5 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
-// @ts-expect-error react-dom/server has no .d.ts in this layout
-import ReactDOMServer from "react-dom/server";
 
 interface StatusPopOverProps {
     children: ReactNode;
@@ -12,9 +10,6 @@ interface StatusPopOverProps {
 function StatusPopOver({ children, show, status }: StatusPopOverProps) {
     const [isHovered, setIsHovered] = useState(false);
 
-    const content = ReactDOMServer.renderToString(children);
-
-    // If show is false, just render the status text without popover
     if(!show) {
         return <span>{ status }</span>;
     }
@@ -42,8 +37,7 @@ function StatusPopOver({ children, show, status }: StatusPopOverProps) {
                     } }
                 >
                     <div className="arrow" style={ { left: "50%" } } />
-                    { /* eslint-disable-next-line react/no-danger */ }
-                    <div className="popover-content" dangerouslySetInnerHTML={ { __html: content } } />
+                    <div className="popover-content">{ children }</div>
                 </div>
             ) }
         </span>

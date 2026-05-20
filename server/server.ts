@@ -23,14 +23,6 @@ import * as Settings from "./settings.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 
-function safeJsonStringify(obj) {
-    return (JSON.stringify(obj) ?? "null")
-        .replace(/</g, "\\u003c")
-        .replace(/>/g, "\\u003e")
-        .replace(/&/g, "\\u0026")
-        .replace(/\//g, "\\u002f");
-}
-
 // Project root: works for both `tsx server/` (source) and `node build/server/` (compiled)
 const projectRoot = path.resolve(__dirname, "..", fs.existsSync(path.join(__dirname, "..", "views")) ? "" : "..");
 
@@ -116,7 +108,7 @@ class Server {
                 contentSecurityPolicy: {
                     directives: {
                         defaultSrc: ["'self'"],
-                        scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://www.google.com", "https://www.gstatic.com"],
+                        scriptSrc: ["'self'", "'unsafe-eval'", "https://www.google.com", "https://www.gstatic.com"],
                         styleSrc: ["'self'", "'unsafe-inline'"],
                         imgSrc: ["'self'", "data:", "https:"],
                         connectSrc: ["'self'", "wss:", "ws:", "https://www.emeralddb.org", "https://emeralddb.org"].concat(config.has("cspConnectSources") ? config.get("cspConnectSources") : []),
@@ -242,15 +234,19 @@ class Server {
                 .filter(Boolean)
                 .map(f => "/" + f);
 
+            const bootstrapJson = JSON.stringify({
+                user: Settings.getUserWithDefaultsSet(authReq.user),
+                token: token,
+                cardImageVersion: cardImageVersion
+            });
+
             res.render("index", {
                 basedir: path.join(projectRoot, "views"),
-                userJson: safeJsonStringify(Settings.getUserWithDefaultsSet(authReq.user)),
-                token: token,
+                bootstrapJson: bootstrapJson,
                 production: !useViteDev,
                 bundleJs: bundleJs,
                 cssFiles: cssFiles,
-                preloadJs: preloadJs,
-                cardImageVersion: cardImageVersion
+                preloadJs: preloadJs
             });
         });
 

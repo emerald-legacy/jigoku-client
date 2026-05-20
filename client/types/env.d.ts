@@ -1,5 +1,3 @@
-import type { User } from "./user";
-
 declare global {
     const __BUILD_VERSION__: string;
 
@@ -7,12 +5,6 @@ declare global {
         ready(cb: () => void): void;
         execute(siteKey: string, opts: { action: string }): Promise<string>;
     };
-
-    interface Window {
-        user?: User & { admin?: boolean };
-        authToken?: string;
-        cardImageVersion?: string;
-    }
 
     interface ImportMetaEnv {
         readonly DEV: boolean;
