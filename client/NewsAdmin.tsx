@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 import { format } from "date-fns";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import TextArea from "./FormComponents/TextArea";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 
 interface NewsItem {
@@ -108,12 +110,15 @@ InnerNewsAdmin.displayName = "NewsAdmin";
 function mapStateToProps(state: RootState) {
     return {
         apiError: state.api.message,
-        loading: state.api.loading,
+        loading: state.news.loading,
         news: state.news.news,
         newsSaved: state.news.newsSaved
     };
 }
 
-const NewsAdmin: React.ComponentType = connect(mapStateToProps, actions)(InnerNewsAdmin);
-
-export default NewsAdmin;
+export default function NewsAdmin() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerNewsAdmin { ...props } { ...boundActions } />;
+}

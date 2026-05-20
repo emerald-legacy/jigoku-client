@@ -3,6 +3,7 @@ import type { CardsState } from "../types/deck";
 import { loadCards, loadPacks, loadFactions, loadFormats } from "../ReduxActions/cards";
 import { loadDeck, loadDecks, deleteDeck, deleteDecks, saveDeck } from "../ReduxActions/deck";
 import { loadDeckStats } from "../ReduxActions/deckstats";
+import { addLoadingMatchers } from "./loadingMatchers";
 
 function applySelectDeck(state: CardsState, deck: any): void {
     if(state.decks && state.decks.length !== 0) {
@@ -216,6 +217,7 @@ const cardsSlice = createSlice({
                 }
                 state.deckStats = action.payload.stats;
             });
+        addLoadingMatchers(builder, "cards");
     }
 });
 

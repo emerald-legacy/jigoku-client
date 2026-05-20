@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import StatusPopOver from "./StatusPopOver";
 import validateDeck from "./deck-validator.js";
 import * as actions from "./actions";
+import { useAppDispatch } from "./hooks";
 import type { Deck } from "./types/deck";
 
 function getDeckHash(deckToHash: Deck | null | undefined) {
@@ -157,10 +158,13 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
 
 InnerDeckStatus.displayName = "DeckStatus";
 
-function mapStateToProps() {
-    return {};
+interface DeckStatusOwnProps {
+    className?: string;
+    deck?: any;
 }
 
-const DeckStatus: React.ComponentType<{ className?: string; deck?: any }> = connect(mapStateToProps, actions)(InnerDeckStatus);
-
-export default DeckStatus;
+export default function DeckStatus(ownProps: DeckStatusOwnProps) {
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerDeckStatus { ...boundActions } { ...ownProps } />;
+}

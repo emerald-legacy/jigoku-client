@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import NewGame from "./NewGame";
 import GameList from "./GameList";
@@ -9,6 +10,7 @@ import PasswordGame from "./PasswordGame";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 import type { GameState, MenuItem } from "./types/game";
 
@@ -103,6 +105,9 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-const GameLobby: React.ComponentType = connect(mapStateToProps, actions)(InnerGameLobby);
-
-export default GameLobby;
+export default function GameLobby() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerGameLobby { ...props } { ...boundActions } />;
+}

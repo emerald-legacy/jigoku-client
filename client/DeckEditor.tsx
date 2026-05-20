@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { connect } from "react-redux";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import Input from "./FormComponents/Input";
 import Select from "./FormComponents/Select";
@@ -9,6 +10,7 @@ import TextArea from "./FormComponents/TextArea";
 import { preferredPackId } from "./cardImageUrl.js";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { Deck, DeckCard, Faction, Format, Pack } from "./types/deck";
 import type { Card } from "./types/game";
 import type { RootState } from "./types/redux";
@@ -467,7 +469,7 @@ function mapStateToProps(state: RootState) {
         decks: state.cards.decks,
         factions: state.cards.factions,
         formats: state.cards.formats,
-        loading: state.api.loading,
+        loading: state.cards.loading,
         packs: state.cards.packs
     };
 }
@@ -476,6 +478,9 @@ interface DeckEditorOwnProps {
     onDeckSave?: (deck: Deck | undefined) => any;
 }
 
-const DeckEditor: React.ComponentType<DeckEditorOwnProps> = connect(mapStateToProps, actions)(InnerDeckEditor);
-
-export default DeckEditor;
+export default function DeckEditor(ownProps: DeckEditorOwnProps) {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerDeckEditor { ...props } { ...boundActions } { ...ownProps } />;
+}

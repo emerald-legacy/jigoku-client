@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { AdminState } from "../types/redux";
 import { findUser, saveUser } from "../ReduxActions/admin";
+import { addLoadingMatchers } from "./loadingMatchers";
 
 const adminSlice = createSlice({
     name: "admin",
@@ -21,6 +22,7 @@ const adminSlice = createSlice({
             .addCase(saveUser.fulfilled, (state: AdminState) => {
                 state.userSaved = true;
             });
+        addLoadingMatchers(builder, "admin");
     }
 });
 

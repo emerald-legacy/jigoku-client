@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import Input from "./FormComponents/Input";
 import Checkbox from "./FormComponents/Checkbox";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 import type { User } from "./types/user";
 
@@ -144,11 +146,14 @@ function mapStateToProps(state: RootState) {
         apiError: state.api.message,
         apiStatus: state.api.status,
         currentUser: state.admin.currentUser,
-        loading: state.api.loading,
+        loading: state.admin.loading,
         userSaved: state.admin.userSaved
     };
 }
 
-const UserAdmin: React.ComponentType = connect(mapStateToProps, actions)(InnerUserAdmin);
-
-export default UserAdmin;
+export default function UserAdmin() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerUserAdmin { ...props } { ...boundActions } />;
+}

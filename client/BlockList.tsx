@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import { X } from "lucide-react";
 import AlertPanel from "./SiteComponents/AlertPanel";
 import Input from "./FormComponents/Input";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 import type { User } from "./types/user";
 
@@ -162,11 +164,14 @@ function mapStateToProps(state: RootState) {
         blockList: state.user.blockList,
         blockListAdded: state.user.blockListAdded,
         blockListDeleted: state.user.blockListDeleted,
-        loading: state.api.loading,
+        loading: state.user.loading,
         user: state.auth.user
     };
 }
 
-const BlockList: React.ComponentType = connect(mapStateToProps, actions)(InnerBlockList);
-
-export default BlockList;
+export default function BlockList() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerBlockList { ...props } { ...boundActions } />;
+}

@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import DeckRow from "./DeckRow";
@@ -8,6 +9,7 @@ import Avatar from "./Avatar";
 import DeckStatus from "./DeckStatus";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 import type { Spectator, UserSettings, MessageFragment } from "./types/game";
 
@@ -358,11 +360,14 @@ function mapStateToProps(state: RootState) {
         decks: state.cards.decks,
 
         host: state.socket.gameHost,
-        loading: state.api.loading,
+        loading: state.cards.loading,
         username: state.auth.username
     };
 }
 
-const PendingGame = connect(mapStateToProps, actions)(InnerPendingGame);
-
-export default PendingGame;
+export default function PendingGame() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerPendingGame { ...props } { ...boundActions } />;
+}

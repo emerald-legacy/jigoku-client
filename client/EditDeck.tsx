@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 import { useNavigate, useParams } from "react-router-dom";
 
 import DeckSummary from "./DeckSummary";
@@ -7,6 +8,7 @@ import DeckEditor from "./DeckEditor";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 import type { Deck } from "./types/deck";
 
@@ -89,10 +91,13 @@ function mapStateToProps(state: RootState) {
         deckSaved: state.cards.deckSaved,
         factions: state.cards.factions,
         formats: state.cards.formats,
-        loading: state.api.loading
+        loading: state.cards.loading
     };
 }
 
-const EditDeck = connect(mapStateToProps, actions)(InnerEditDeck);
-
-export default EditDeck;
+export default function EditDeck() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerEditDeck { ...props } { ...boundActions } />;
+}

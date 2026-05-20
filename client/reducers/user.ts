@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { UserState } from "../types/user";
 import { loadBlockList, addBlockListEntry, removeBlockListEntry } from "../ReduxActions/user";
+import { addLoadingMatchers } from "./loadingMatchers";
 
 const userSlice = createSlice({
     name: "user",
@@ -34,6 +35,7 @@ const userSlice = createSlice({
                 state.blockListDeleted = true;
                 state.blockList = state.blockList.filter((u: any) => u !== action.payload.username);
             });
+        addLoadingMatchers(builder, "user");
     }
 });
 

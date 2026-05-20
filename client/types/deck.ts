@@ -65,4 +65,5 @@ export interface CardsState {
     zoomCard?: any;
     singleDeck?: boolean;
     decksValidating?: boolean;
+    loading?: boolean;
 }

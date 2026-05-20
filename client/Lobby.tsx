@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 import type { RootState } from "./types/redux";
 
 import { X, Menu } from "lucide-react";
@@ -8,6 +9,8 @@ import Avatar from "./Avatar";
 import News from "./SiteComponents/News";
 import AlertPanel from "./SiteComponents/AlertPanel";
 import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import { loadServerVersion } from "./ReduxActions/serverVersion";
 
 interface InnerLobbyProps {
     bannerNotice?: string;
@@ -19,18 +22,16 @@ interface InnerLobbyProps {
 
 export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: InnerLobbyProps) {
     const [showUsers, setShowUsers] = useState(false);
-    const [serverVersions, setServerVersions] = useState([]);
+    const dispatch = useAppDispatch();
+    const serverVersions = useAppSelector(state => state.serverVersion.nodes);
 
     useEffect(() => {
         loadNews({ limit: 3 });
     }, [loadNews]);
 
     useEffect(() => {
-        fetch("/api/server-version")
-            .then(res => res.json())
-            .then(data => setServerVersions(data.nodes || []))
-            .catch(() => setServerVersions([]));
-    }, []);
+        dispatch(loadServerVersion());
+    }, [dispatch]);
 
     const handleBurgerClick = () => {
         setShowUsers(prev => !prev);
@@ -138,13 +139,15 @@ InnerLobby.displayName = "Lobby";
 function mapStateToProps(state: RootState) {
     return {
         bannerNotice: state.chat.notice,
-        loading: state.api.loading,
+        loading: state.news.loading,
         news: state.news.news,
-        newsLoading: state.news.newsLoading,
         users: state.games.users
     };
 }
 
-const Lobby: React.ComponentType = connect(mapStateToProps, actions, null)(InnerLobby);
-
-export default Lobby;
+export default function Lobby() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerLobby { ...props } { ...boundActions } />;
+}

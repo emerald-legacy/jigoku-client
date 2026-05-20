@@ -40,7 +40,7 @@ export interface ChatState {
 export interface NewsState {
     news?: any[];
     newsSaved?: boolean;
-    newsLoading?: boolean;
+    loading?: boolean;
 }
 
 export interface ApiState {
@@ -53,6 +53,7 @@ export interface ApiState {
 export interface AdminState {
     currentUser?: any;
     userSaved?: boolean;
+    loading?: boolean;
 }
 
 export interface RootState {
@@ -66,4 +67,5 @@ export interface RootState {
     api: ApiState;
     admin: AdminState;
     user: UserState;
+    serverVersion: import("../reducers/serverVersion").ServerVersionState;
 }

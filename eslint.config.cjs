@@ -203,7 +203,15 @@ module.exports = [
                 }
             }],
             "no-trailing-spaces": "error",
-            "jsx-quotes": ["warn", "prefer-double"]
+            "jsx-quotes": ["warn", "prefer-double"],
+
+            "no-restricted-imports": ["error", {
+                paths: [{
+                    name: "react-redux",
+                    importNames: ["connect"],
+                    message: "Use useAppSelector / useAppDispatch from ./hooks instead of the legacy connect() HOC."
+                }]
+            }]
         }
     },
     {

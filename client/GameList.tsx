@@ -1,11 +1,13 @@
-import React from "react";
-import { connect } from "react-redux";
+import React, { useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 import GameModes from "./GameModes";
 
 import { X } from "lucide-react";
 import Avatar from "./Avatar";
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { GameState, UserSettings } from "./types/game";
 import type { RootState } from "./types/redux";
 import { getLobbySocket } from "./socket";
@@ -152,6 +154,9 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-const GameList = connect(mapStateToProps, actions)(InnerGameList);
-
-export default GameList;
+export default function GameList() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerGameList { ...props } { ...boundActions } />;
+}

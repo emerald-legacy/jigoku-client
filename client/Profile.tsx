@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer } from "react";
-import { connect } from "react-redux";
+import { shallowEqual } from "react-redux";
 import type { RootState } from "./types/redux";
 import type { User } from "./types/user";
 
@@ -7,7 +7,7 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 import Input from "./FormComponents/Input";
 import Checkbox from "./FormComponents/Checkbox";
 
-import { useAppDispatch } from "./hooks";
+import { useAppDispatch, useAppSelector } from "./hooks";
 import { saveProfile } from "./ReduxActions/user";
 import {
     initProfileState,
@@ -344,6 +344,7 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-const Profile: React.ComponentType = connect(mapStateToProps)(InnerProfile);
-
-export default Profile;
+export default function Profile() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    return <InnerProfile { ...props } />;
+}

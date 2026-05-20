@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { connect } from "react-redux";
+import React, { useState, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 import { getLobbySocket } from "./socket";
 
@@ -74,6 +76,9 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-const PasswordGame: React.ComponentType = connect(mapStateToProps, actions)(InnerPasswordGame);
-
-export default PasswordGame;
+export default function PasswordGame() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerPasswordGame { ...props } { ...boundActions } />;
+}

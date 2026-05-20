@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { NewsState } from "../types/redux";
 import { loadNews, addNews } from "../ReduxActions/news";
+import { addLoadingMatchers } from "./loadingMatchers";
 
 const newsSlice = createSlice({
     name: "news",
@@ -22,6 +23,7 @@ const newsSlice = createSlice({
             .addCase(addNews.fulfilled, (state: NewsState) => {
                 state.newsSaved = true;
             });
+        addLoadingMatchers(builder, "news");
     }
 });
 

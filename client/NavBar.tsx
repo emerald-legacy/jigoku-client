@@ -1,11 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 import { Link, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 
 import Avatar from "./Avatar";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 
 interface NavMenuItem {
@@ -170,6 +172,9 @@ interface NavBarOwnProps {
     title?: string;
 }
 
-const NavBar: React.ComponentType<NavBarOwnProps> = connect(mapStateToProps, actions)(InnerNavBar);
-
-export default NavBar;
+export default function NavBar(ownProps: NavBarOwnProps) {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerNavBar { ...props } { ...boundActions } { ...ownProps } />;
+}

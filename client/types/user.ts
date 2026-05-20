@@ -29,4 +29,5 @@ export interface UserState {
     user?: User;
     username?: string;
     token?: string;
+    loading?: boolean;
 }

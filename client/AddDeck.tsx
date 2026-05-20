@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 import { useNavigate } from "react-router-dom";
 
 import DeckSummary from "./DeckSummary";
@@ -7,6 +8,7 @@ import DeckEditor from "./DeckEditor";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 import type { Deck } from "./types/deck";
 
@@ -82,10 +84,13 @@ function mapStateToProps(state: RootState) {
         deckSaved: state.cards.deckSaved,
         factions: state.cards.factions,
         formats: state.cards.formats,
-        loading: state.api.loading
+        loading: state.cards.loading
     };
 }
 
-const AddDeck: React.ComponentType = connect(mapStateToProps, actions)(InnerAddDeck);
-
-export default AddDeck;
+export default function AddDeck() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerAddDeck { ...props } { ...boundActions } />;
+}

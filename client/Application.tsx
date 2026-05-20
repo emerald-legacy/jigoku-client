@@ -1,12 +1,9 @@
-import React from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import axios from "axios";
 import { bindActionCreators } from "@reduxjs/toolkit";
-import type { Dispatch } from "@reduxjs/toolkit";
-import { connect, useSelector } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import type { NavigateFunction } from "react-router-dom";
 import { io } from "socket.io-client";
-import type { Socket } from "socket.io-client";
 import { setLobbySocket, setGameSocket, getGameSocket } from "./socket";
 import type { GameSocket } from "./socket";
 
@@ -47,49 +44,7 @@ import { toast } from "sonner";
 import version from "../version.js";
 
 import * as actions from "./actions";
-
-type ActionFn = (...args: any[]) => any;
-
-interface AppStateProps {
-    currentGame?: GameState;
-    currentGameId?: string;
-    games: any[];
-    loggedIn?: boolean;
-    token?: string;
-    user?: User;
-    username?: string;
-}
-
-interface AppDispatchProps {
-    dispatch: Dispatch;
-    loadCards: ActionFn;
-    loadPacks: ActionFn;
-    loadFactions: ActionFn;
-    loadFormats: ActionFn;
-    socketConnected: ActionFn;
-    receiveGames: ActionFn;
-    receiveUsers: ActionFn;
-    receiveNewGame: ActionFn;
-    receiveGameState: ActionFn;
-    clearGameState: ActionFn;
-    receivePasswordError: ActionFn;
-    receiveBannerNotice: ActionFn;
-    onGameHandoffReceived: ActionFn;
-    closeGameSocket: ActionFn;
-    gameSocketConnecting: ActionFn;
-    gameSocketDisconnect: ActionFn;
-    gameSocketReconnecting: ActionFn;
-    gameSocketConnected: ActionFn;
-    sendGameSocketConnectFailed: ActionFn;
-    setContextMenu: ActionFn;
-}
-
-interface AppRouterProps {
-    pathname: string;
-    navigate: NavigateFunction;
-}
-
-type AppProps = AppStateProps & AppDispatchProps & AppRouterProps;
+import { useAppDispatch, useAppSelector } from "./hooks";
 
 function PlayRoute() {
     const currentGame = useSelector((state: RootState) => state.games.currentGame);
@@ -136,45 +91,85 @@ function AppRoutes({ permissions }: { permissions: Record<string, boolean> }) {
     );
 }
 
-class App extends React.Component<AppProps> {
-    static displayName = "Application";
+function mapStateToProps(state: RootState) {
+    return {
+        currentGame: state.games.currentGame,
+        currentGameId: state.games.gameId,
+        games: state.games.games,
+        loggedIn: state.auth.loggedIn,
+        token: state.auth.token,
+        user: state.auth.user,
+        username: state.auth.username
+    };
+}
 
-    componentDidMount() {
-        this.props.loadCards();
-        this.props.loadPacks();
-        this.props.loadFactions();
-        this.props.loadFormats();
+function computeBackgroundClass(gameBoardVisible: boolean, user?: User): string {
+    if(!gameBoardVisible || !user) {
+        return "bg";
+    }
+    const background = user.settings.background;
+    return (background && backgroundClassByValue[background]) || "bg-board-default";
+}
 
-        this.axiosInterceptor = axios.interceptors.response.use(
+interface SocketHandlerState {
+    username?: string;
+    currentGameId?: string;
+    token?: string;
+    boundActions: ReturnType<typeof bindActionCreators<typeof actions, ReturnType<typeof useAppDispatch>>>;
+}
+
+export default function Application() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    const { currentGame, currentGameId, games, token, user, username } = useAppSelector(mapStateToProps, shallowEqual);
+
+    const stateRef = useRef<SocketHandlerState>({ username, currentGameId, token, boundActions });
+    useEffect(() => {
+        stateRef.current = { username, currentGameId, token, boundActions };
+    });
+
+    const navigateRef = useRef(navigate);
+    useEffect(() => {
+        navigateRef.current = navigate;
+    });
+
+    useEffect(() => {
+        const { boundActions: initialActions, token: initialToken } = stateRef.current;
+        initialActions.loadCards();
+        initialActions.loadPacks();
+        initialActions.loadFactions();
+        initialActions.loadFormats();
+
+        const axiosInterceptor = axios.interceptors.response.use(
             response => response,
             error => {
                 if(error.response) {
                     if(error.response.status === 401) {
-                        this.props.navigate("/login");
+                        navigateRef.current("/login");
                     } else if(error.response.status === 403) {
-                        this.props.navigate("/unauth");
+                        navigateRef.current("/unauth");
                     }
                 }
                 return Promise.reject(error);
             }
         );
 
-        let socket = io(window.location.origin, {
+        const socket = io(window.location.origin, {
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
             reconnectionAttempts: Infinity,
             auth: {
-                token: this.props.token,
+                token: initialToken,
                 version: version
             }
         });
-
-        this.lobbySocket = socket;
         setLobbySocket(socket);
 
         socket.on("connect", () => {
-            this.props.socketConnected();
+            stateRef.current.boundActions.socketConnected();
         });
 
         socket.on("disconnect", () => {
@@ -183,35 +178,36 @@ class App extends React.Component<AppProps> {
 
         socket.on("reconnect", () => {
             toast.success("The reconnection to the lobby has been successful", { description: "Reconnected" });
-            this.props.socketConnected();
+            stateRef.current.boundActions.socketConnected();
         });
 
         socket.on("games", games => {
-            this.props.receiveGames(games);
+            stateRef.current.boundActions.receiveGames(games);
         });
 
         socket.on("users", users => {
-            this.props.receiveUsers(users);
+            stateRef.current.boundActions.receiveUsers(users);
         });
 
         socket.on("newgame", game => {
-            this.props.receiveNewGame(game);
+            stateRef.current.boundActions.receiveNewGame(game);
         });
 
         socket.on("gamestate", game => {
-            if(game.started && game.players?.[this.props.username]) {
+            const { username: liveUsername, boundActions: liveActions } = stateRef.current;
+            if(game.started && game.players?.[liveUsername || ""]) {
                 recordState(game);
             }
-            this.props.receiveGameState(game, this.props.username);
+            liveActions.receiveGameState(game, liveUsername);
         });
 
         socket.on("cleargamestate", () => {
             clearRecording();
-            this.props.clearGameState();
+            stateRef.current.boundActions.clearGameState();
         });
 
         socket.on("passworderror", message => {
-            this.props.receivePasswordError(message);
+            stateRef.current.boundActions.receivePasswordError(message);
         });
 
         socket.on("handoff", server => {
@@ -221,22 +217,23 @@ class App extends React.Component<AppProps> {
                 url += `:${server.port}`;
             }
 
-            this.props.onGameHandoffReceived(server);
+            const { currentGameId: liveGameId, token: liveToken, boundActions: liveActions } = stateRef.current;
+            liveActions.onGameHandoffReceived(server);
 
-            if(getGameSocket() && this.props.currentGameId !== server.gameId) {
-                this.props.closeGameSocket();
+            if(getGameSocket() && liveGameId !== server.gameId) {
+                liveActions.closeGameSocket();
             }
 
-            this.props.gameSocketConnecting(`${url}/${server.name}`);
+            liveActions.gameSocketConnecting(`${url}/${server.name}`);
 
-            let gameSocket: GameSocket = io(url, {
+            const gameSocket: GameSocket = io(url, {
                 path: `/${server.name}/socket.io`,
                 reconnection: true,
                 reconnectionDelay: 2000,
                 reconnectionDelayMax: 10000,
                 reconnectionAttempts: 20,
                 auth: {
-                    token: this.props.token
+                    token: liveToken
                 }
             });
             setGameSocket(gameSocket);
@@ -249,39 +246,38 @@ class App extends React.Component<AppProps> {
                 if(!gameSocket.gameClosing) {
                     toast.error("You have been disconnected from the game server", { description: "Connection lost" });
                 }
-
-                this.props.gameSocketDisconnect();
+                stateRef.current.boundActions.gameSocketDisconnect();
             });
 
             gameSocket.io.on("reconnect_attempt", (attemptNumber) => {
                 toast.info(`Attempt number ${attemptNumber} to reconnect..`, { description: "Reconnecting" });
-
-                this.props.gameSocketReconnecting(attemptNumber);
+                stateRef.current.boundActions.gameSocketReconnecting(attemptNumber);
             });
 
             gameSocket.on("reconnect", () => {
                 toast.success("The reconnection has been successful", { description: "Reconnected" });
-                this.props.gameSocketConnected();
+                stateRef.current.boundActions.gameSocketConnected();
             });
 
             gameSocket.on("reconnect_failed", () => {
                 toast.error("Given up trying to connect to the server", { description: "Reconnect failed" });
-                this.props.sendGameSocketConnectFailed();
+                stateRef.current.boundActions.sendGameSocketConnectFailed();
             });
 
             gameSocket.on("connect", () => {
-                this.props.gameSocketConnected();
+                stateRef.current.boundActions.gameSocketConnected();
             });
 
             gameSocket.on("gamestate", game => {
-                const isPlayer = !!game.players?.[this.props.username];
+                const { username: liveUsername, boundActions: gameActions } = stateRef.current;
+                const isPlayer = !!game.players?.[liveUsername || ""];
                 if(isPlayer && game.started && !game.winner) {
                     startRecording();
                 }
                 if(isPlayer) {
                     recordState(game);
                 }
-                this.props.receiveGameState(game, this.props.username);
+                gameActions.receiveGameState(game, liveUsername);
             });
 
             gameSocket.on("hiddeninfo", data => {
@@ -290,133 +286,99 @@ class App extends React.Component<AppProps> {
 
             gameSocket.on("cleargamestate", () => {
                 clearRecording();
-                this.props.clearGameState();
+                stateRef.current.boundActions.clearGameState();
             });
         });
 
         socket.on("banner", notice => {
-            this.props.receiveBannerNotice(notice);
+            stateRef.current.boundActions.receiveBannerNotice(notice);
         });
-    }
 
-    componentDidUpdate(prevProps: AppProps) {
-        if(prevProps.currentGame && !this.props.currentGame) {
-            this.props.setContextMenu([]);
-        }
-    }
-
-    componentWillUnmount() {
-        if(this.lobbySocket) {
-            this.lobbySocket.removeAllListeners();
-            this.lobbySocket.disconnect();
+        return () => {
+            socket.removeAllListeners();
+            socket.disconnect();
             setLobbySocket(null);
+            axios.interceptors.response.eject(axiosInterceptor);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only setup; stateRef + navigateRef carry the always-current values that handlers need
+    }, []);
+
+    const prevCurrentGameRef = useRef<GameState | undefined>(undefined);
+    useEffect(() => {
+        if(prevCurrentGameRef.current && !currentGame) {
+            boundActions.setContextMenu([]);
         }
-        if(this.axiosInterceptor !== undefined) {
-            axios.interceptors.response.eject(this.axiosInterceptor);
-        }
-    }
+        prevCurrentGameRef.current = currentGame;
+    }, [currentGame, boundActions]);
 
-    private axiosInterceptor?: number;
-    private lobbySocket?: Socket;
-
-    render() {
-        let rightMenu;
-
-        if(!this.props.user) {
-            rightMenu = [
-                { name: "Login", path: "/login" },
-                { name: "Register", path: "/register" }
-            ];
-        } else {
-            rightMenu = [
-                {
-                    name: this.props.user.username, childItems: [
-                        { name: "Profile", path: "/profile" },
-                        { name: "Block List", path: "/blocklist" },
-                        { name: "Logout", path: "/logout" }
-                    ], avatar: true, emailHash: this.props.user.emailHash, disableGravatar: this.props.user.settings.disableGravatar
-                }
-            ];
-        }
-
-        let leftMenu = [
-            { name: "Decks", path: "/decks" },
-            { name: "Play", path: "/play" },
-            { name: "Replay", path: "/replay" },
+    let rightMenu;
+    if(!user) {
+        rightMenu = [
+            { name: "Login", path: "/login" },
+            { name: "Register", path: "/register" }
+        ];
+    } else {
+        rightMenu = [
             {
-                name: "Help", childItems: [
-                    { name: "How To Play", path: "/how-to-play" },
-                    { name: "About", path: "/about" },
-                    { name: "Community", path: "/community" },
-                    { name: "Formats", path: "/formats" }
-                ]
+                name: user.username,
+                childItems: [
+                    { name: "Profile", path: "/profile" },
+                    { name: "Block List", path: "/blocklist" },
+                    { name: "Logout", path: "/logout" }
+                ],
+                avatar: true,
+                emailHash: user.emailHash,
+                disableGravatar: user.settings.disableGravatar
             }
         ];
+    }
 
-        let adminMenuItems: { name: string; path: string }[] = [];
-        let permissions: Record<string, boolean> = {};
+    const leftMenu = [
+        { name: "Decks", path: "/decks" },
+        { name: "Play", path: "/play" },
+        { name: "Replay", path: "/replay" },
+        {
+            name: "Help", childItems: [
+                { name: "How To Play", path: "/how-to-play" },
+                { name: "About", path: "/about" },
+                { name: "Community", path: "/community" },
+                { name: "Formats", path: "/formats" }
+            ]
+        }
+    ];
 
-        if(this.props.user && this.props.user.permissions) {
-            permissions = this.props.user.permissions;
+    const adminMenuItems: { name: string; path: string }[] = [];
+    let permissions: Record<string, boolean> = {};
 
-            if(permissions.canEditNews) {
-                adminMenuItems.push({ name: "News", path: "/news" });
-            }
+    if(user && user.permissions) {
+        permissions = user.permissions;
 
-            if(permissions.canManageUsers) {
-                adminMenuItems.push({ name: "Users", path: "/users" });
-            }
+        if(permissions.canEditNews) {
+            adminMenuItems.push({ name: "News", path: "/news" });
         }
 
-        if(adminMenuItems.length > 0) {
-            leftMenu.push({ name: "Admin", childItems: adminMenuItems });
+        if(permissions.canManageUsers) {
+            adminMenuItems.push({ name: "Users", path: "/users" });
         }
+    }
 
-        const gameBoardVisible = this.props.pathname === "/play" && !!this.props.currentGame && !!this.props.currentGame.started;
-        const backgroundClass = computeBackgroundClass(gameBoardVisible, this.props.user);
+    if(adminMenuItems.length > 0) {
+        leftMenu.push({ name: "Admin", childItems: adminMenuItems });
+    }
 
-        return (<div className={ backgroundClass }>
-            <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" numGames={ this.props.games.length } />
+    const gameBoardVisible = location.pathname === "/play" && !!currentGame && !!currentGame.started;
+    const backgroundClass = computeBackgroundClass(gameBoardVisible, user);
+
+    return (
+        <div className={ backgroundClass }>
+            <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" numGames={ games.length } />
             <div className="container">
-                <ErrorBoundary navigate={ this.props.navigate } errorPath={ this.props.pathname } message={ "We're sorry - something's gone wrong." }>
+                <ErrorBoundary navigate={ navigate } errorPath={ location.pathname } message={ "We're sorry - something's gone wrong." }>
                     <React.Suspense fallback={ null }>
                         <AppRoutes permissions={ permissions } />
                     </React.Suspense>
                 </ErrorBoundary>
             </div>
-        </div>);
-    }
-}
-
-function computeBackgroundClass(gameBoardVisible: boolean, user?: User): string {
-    if(!gameBoardVisible || !user) {
-        return "bg";
-    }
-    const background = user.settings.background;
-    return (background && backgroundClassByValue[background]) || "bg-board-default";
-}
-
-function mapStateToProps(state: RootState): AppStateProps {
-    return {
-        currentGame: state.games.currentGame,
-        currentGameId: state.games.gameId,
-        games: state.games.games,
-        loggedIn: state.auth.loggedIn,
-        token: state.auth.token,
-        user: state.auth.user,
-        username: state.auth.username
-    };
-}
-
-function mapDispatchToProps(dispatch: Dispatch): AppDispatchProps {
-    const boundActions = bindActionCreators(actions as unknown as Record<string, ActionFn>, dispatch);
-    return { ...(boundActions as Omit<AppDispatchProps, "dispatch">), dispatch };
-}
-
-const ConnectedApp = connect(mapStateToProps, mapDispatchToProps)(App);
-
-export default function Application() {
-    const location = useLocation();
-    const navigate = useNavigate();
-    return <ConnectedApp pathname={ location.pathname } navigate={ navigate } />;
+        </div>
+    );
 }

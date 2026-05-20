@@ -1,8 +1,10 @@
-import React, { useState } from "react";
-import { connect } from "react-redux";
+import React, { useState, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 import GameModes from "./GameModes";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 import { getLobbySocket } from "./socket";
 
@@ -269,6 +271,9 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-const NewGame = connect(mapStateToProps, actions)(InnerNewGame);
-
-export default NewGame;
+export default function NewGame() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerNewGame { ...props } { ...boundActions } />;
+}
