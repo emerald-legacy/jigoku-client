@@ -342,6 +342,7 @@ function GameReplay() {
                 zoomCard={ setCardToZoom }
                 clearZoom={ () => setCardToZoom(null) }
                 dispatch={ noop as never }
+                boundActions={ {} }
                 sendGameMessage={ noop }
                 closeGameSocket={ noop }
                 setContextMenu={ noop }

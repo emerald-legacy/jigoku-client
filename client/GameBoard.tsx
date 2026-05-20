@@ -1,11 +1,8 @@
-import React, { createRef } from "react";
-import type { RefObject } from "react";
-import { connect } from "react-redux";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { bindActionCreators } from "@reduxjs/toolkit";
-import type { Dispatch } from "@reduxjs/toolkit";
 import Draggable from "react-draggable";
 
-import type { RootState, AnimationEvent } from "./types/redux";
+import type { AnimationEvent } from "./types/redux";
 import type { GameState, Card as CardType, Ring as RingType, Player, MenuItem, Spectator, GameMessage, MessageFragment } from "./types/game";
 import type { User } from "./types/user";
 
@@ -30,135 +27,200 @@ import { makeCardsInPlayGrouper } from "./selectors/cardsInPlay";
 import HonorChangeOverlay from "./GameComponents/HonorChangeOverlay";
 import CenterBar from "./GameComponents/CenterBar";
 import PlayerSidebar from "./GameComponents/PlayerSidebar";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import type { AppDispatch } from "./hooks";
 
 type ActionFn = (...args: any[]) => any;
 
-interface GameBoardStateProps {
+type ContextMenuOption =
+    | { text: string; onClick: (...args: any[]) => any }
+    | { text: string; popup: React.ReactNode };
+
+export interface InnerGameBoardProps {
     cardToZoom?: any;
     cards?: Record<string, any>;
     currentGame?: GameState;
     pendingAnimations?: AnimationEvent[];
     user?: User;
     username?: string;
+    dispatch: AppDispatch | ((action: any) => any);
+    boundActions: Record<string, ActionFn>;
+    sendGameMessage?: ActionFn;
+    closeGameSocket?: ActionFn;
+    setContextMenu?: ActionFn;
+    zoomCard?: ActionFn;
+    clearZoom?: ActionFn;
 }
 
-interface GameBoardDispatchProps {
-    dispatch: Dispatch;
-    clearZoom: ActionFn;
-    closeGameSocket: ActionFn;
-    sendGameMessage: ActionFn;
-    setContextMenu: ActionFn;
-    zoomCard: ActionFn;
+function getMessagesFromPlayers(messages: GameMessage[]) {
+    return messages.filter(
+        (message: GameMessage) => (message.message instanceof Array) && message.message.some((fragment: MessageFragment) => !!fragment.name)
+    );
 }
 
-type GameBoardProps = GameBoardStateProps & GameBoardDispatchProps;
-
-interface GameBoardState {
-    cardToZoom?: any;
-    showChat: boolean;
-    showChatAlert: boolean;
-    showConflictDeck: boolean;
-    showDynastyDeck: boolean;
-    spectating: boolean;
-    showActionWindowsMenu: boolean;
-    showCardMenu: Record<string, boolean>;
-    showSettingsModal: boolean;
-}
-
-export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardState> {
-    static displayName = "GameBoard";
-
-    constructor(props: GameBoardProps) {
-        super(props);
-
-        this.draggableRef = createRef();
-        this.opponentDraggableRef = createRef();
-
-        this.onMouseOut = this.onMouseOut.bind(this);
-        this.onMouseOver = this.onMouseOver.bind(this);
-        this.onRingClick = this.onRingClick.bind(this);
-        this.onCardClick = this.onCardClick.bind(this);
-        this.onConflictClick = this.onConflictClick.bind(this);
-        this.onDynastyClick = this.onDynastyClick.bind(this);
-        this.onDragDrop = this.onDragDrop.bind(this);
-        this.onCommand = this.onCommand.bind(this);
-        this.onConcedeClick = this.onConcedeClick.bind(this);
-        this.onLeaveClick = this.onLeaveClick.bind(this);
-        this.onConflictShuffleClick = this.onConflictShuffleClick.bind(this);
-        this.onDynastyShuffleClick = this.onDynastyShuffleClick.bind(this);
-        this.onMenuItemClick = this.onMenuItemClick.bind(this);
-        this.onRingMenuItemClick = this.onRingMenuItemClick.bind(this);
-        this.onManualModeClick = this.onManualModeClick.bind(this);
-        this.onSettingsClick = this.onSettingsClick.bind(this);
-        this.onToggleChatClick = this.onToggleChatClick.bind(this);
-        this.onDownloadLogClick = this.onDownloadLogClick.bind(this);
-        this.onTimerExpired = this.onTimerExpired.bind(this);
-        this.sendMessage = this.sendMessage.bind(this);
-
-        this.boundActions = bindActionCreators(actions, props.dispatch);
-
-        this.groupCardsInPlayForMe = makeCardsInPlayGrouper();
-        this.groupCardsInPlayForOther = makeCardsInPlayGrouper();
-
-        this.state = {
-            cardToZoom: undefined,
-            showChat: true,
-            showChatAlert: false,
-            showConflictDeck: false,
-            showDynastyDeck: false,
-            spectating: true,
-            showActionWindowsMenu: false,
-            showCardMenu: {},
-            showSettingsModal: false
-        };
+function computeImageUrl(card?: CardType) {
+    if(!card || !card.id) {
+        return "";
     }
-
-    componentDidMount() {
-        this.updateContextMenu(this.props);
+    if(card.facedownId) {
+        return getCardImageUrl(card.facedownId, card.facedownPackId);
     }
+    return getCardImageUrl(card.id, card.packId);
+}
 
-    componentDidUpdate(prevProps: GameBoardProps) {
-        if(prevProps.currentGame !== this.props.currentGame || prevProps.username !== this.props.username) {
-            this.updateContextMenu(this.props);
+export function InnerGameBoard(props: InnerGameBoardProps) {
+    const { cardToZoom, cards, currentGame, pendingAnimations, user, username, dispatch, boundActions } = props;
+
+    const sendGameMessage = (props.sendGameMessage ?? boundActions.sendGameMessage) as ActionFn;
+    const closeGameSocket = (props.closeGameSocket ?? boundActions.closeGameSocket) as ActionFn;
+    const setContextMenu = (props.setContextMenu ?? boundActions.setContextMenu) as ActionFn;
+    const zoomCard = (props.zoomCard ?? boundActions.zoomCard) as ActionFn;
+    const clearZoom = (props.clearZoom ?? boundActions.clearZoom) as ActionFn;
+
+    const [showChat, setShowChat] = useState(true);
+    const [showChatAlert, setShowChatAlert] = useState(false);
+    const [showConflictDeck, setShowConflictDeck] = useState(false);
+    const [showDynastyDeck, setShowDynastyDeck] = useState(false);
+    const [spectating, setSpectating] = useState(true);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+    const draggableRef = useRef<any>(null);
+    const opponentDraggableRef = useRef<any>(null);
+    const prevPlayerMsgCount = useRef(0);
+
+    const groupCardsInPlayForMe = useMemo(() => makeCardsInPlayGrouper(), []);
+    const groupCardsInPlayForOther = useMemo(() => makeCardsInPlayGrouper(), []);
+
+    const isGameActive = () => {
+        if(!currentGame || currentGame.winner) {
+            return false;
         }
-        this.notifyOfNewMessages(this.props, prevProps);
-    }
+        let thisPlayer = currentGame.players[username];
+        if(!thisPlayer) {
+            thisPlayer = Object.values(currentGame.players).sort((a, b) => a.name.localeCompare(b.name))[0];
+        }
+        const otherPlayer = Object.values(currentGame.players).find(p => p.name !== thisPlayer.name);
+        if(!otherPlayer || otherPlayer.disconnected || otherPlayer.left) {
+            return false;
+        }
+        return true;
+    };
 
-    private draggableRef: RefObject<any>;
-    private opponentDraggableRef: RefObject<any>;
-    private boundActions: Record<string, ActionFn>;
-    private groupCardsInPlayForMe: ReturnType<typeof makeCardsInPlayGrouper>;
-    private groupCardsInPlayForOther: ReturnType<typeof makeCardsInPlayGrouper>;
+    const onConcedeClick = () => sendGameMessage("concede");
 
-    notifyOfNewMessages(currentProps: GameBoardProps, prevProps: GameBoardProps) {
-        if(currentProps.currentGame && !this.state.showChat) {
-            const prevLength = this.getMessagesFromPlayers(prevProps.currentGame?.messages || []).length;
-            const currentLength = this.getMessagesFromPlayers(currentProps.currentGame.messages || []).length;
-
-            if(prevLength < currentLength) {
-                this.setState({ showChatAlert: true });
+    const onLeaveClick = () => {
+        if(!spectating && isGameActive()) {
+            if(window.confirm("Your game is not finished, are you sure you want to leave?")) {
+                sendGameMessage("leavegame");
+                closeGameSocket();
             }
+            return;
         }
-    }
+        sendGameMessage("leavegame");
+        closeGameSocket();
+    };
 
-    getMessagesFromPlayers(messages: GameMessage[]) {
-        return messages.filter(
-            (message: GameMessage) => (message.message instanceof Array) && message.message.some((fragment: MessageFragment) => !!fragment.name)
-        );
-    }
+    const onMouseOver = (card: MessageFragment) => zoomCard(card);
+    const onMouseOut = () => clearZoom();
 
-    updateContextMenu(props: GameBoardProps) {
-        if(!props.currentGame) {
+    const onCardClick = (card: CardType & { controller?: any; isProvince?: boolean }) => {
+        if(card && card.uuid) {
+            sendGameMessage("cardClicked", card.uuid);
+        } else if(card && card.location && card.controller) {
+            sendGameMessage("facedownCardClicked", card.location, card.controller.name, card.isProvince);
+        }
+    };
+
+    const onRingClick = (ring: string) => sendGameMessage("ringClicked", ring);
+
+    const onConflictClick = () => {
+        sendGameMessage("showConflictDeck");
+        setShowConflictDeck(prev => !prev);
+    };
+
+    const onDynastyClick = () => {
+        sendGameMessage("showDynastyDeck");
+        setShowDynastyDeck(prev => !prev);
+    };
+
+    const sendMessage = (message: string) => {
+        if(message === "") {
+            return;
+        }
+        sendGameMessage("chat", message);
+    };
+
+    const onConflictShuffleClick = () => sendGameMessage("shuffleConflictDeck");
+    const onDynastyShuffleClick = () => sendGameMessage("shuffleDynastyDeck");
+
+    const onDragDrop = (card: CardType, source: string, target: string) =>
+        sendGameMessage("drop", card.uuid, source, target);
+
+    const onCommand = (command: string, arg: any, uuid: string, method: string) =>
+        sendGameMessage(command, arg, uuid, method);
+
+    const onDragOver = (event: React.DragEvent) => event.preventDefault();
+
+    const onDragDropEvent = (event: React.DragEvent, target: string) => {
+        event.stopPropagation();
+        event.preventDefault();
+        const card = event.dataTransfer.getData("Text");
+        if(!card) {
+            return;
+        }
+        const dragData = tryParseJSON(card);
+        if(!dragData) {
+            return;
+        }
+        onDragDrop(dragData.card, dragData.source, target);
+    };
+
+    const onMenuItemClick = (card: CardType, menuItem: MenuItem) =>
+        sendGameMessage("menuItemClick", card.uuid, menuItem);
+
+    const onRingMenuItemClick = (ring: RingType, menuItem: MenuItem) =>
+        sendGameMessage("ringMenuItemClick", ring, menuItem);
+
+    const onPromptedActionWindowToggle = (option: string, value: boolean) =>
+        sendGameMessage("togglePromptedActionWindow", option, value);
+
+    const onTimerSettingToggle = (option: string, value: boolean) =>
+        sendGameMessage("toggleTimerSetting", option, value);
+
+    const onOptionSettingToggle = (option: string, value: any) =>
+        sendGameMessage("toggleOptionSetting", option, value);
+
+    const onTimerExpired = () => sendGameMessage("menuButton", null, "pass");
+
+    const onSettingsClick = (event: React.MouseEvent) => {
+        event.preventDefault();
+        setShowSettingsModal(true);
+    };
+
+    const onToggleChatClick = (event: React.MouseEvent) => {
+        event.preventDefault();
+        setShowChat(prev => !prev);
+        setShowChatAlert(prev => showChat && prev);
+    };
+
+    const onManualModeClick = (event: React.MouseEvent) => {
+        event.preventDefault();
+        sendGameMessage("toggleManualMode");
+    };
+
+    const onDownloadLogClick = () => {
+        if(currentGame) {
+            downloadGameLog(currentGame, username);
+        }
+    };
+
+    useEffect(() => {
+        if(!currentGame) {
             return;
         }
 
-        let thisPlayer = props.currentGame.players[props.username];
-
-        if(thisPlayer) {
-            this.setState({ spectating: false });
-        } else {
-            this.setState({ spectating: true });
-        }
+        const thisPlayer = currentGame.players[username];
+        setSpectating(!thisPlayer);
 
         if(thisPlayer && thisPlayer.selectCard) {
             document.body.classList.add("select-cursor");
@@ -166,554 +228,346 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
             document.body.classList.remove("select-cursor");
         }
 
-        type ContextMenuOption =
-            | { text: string; onClick: (...args: any[]) => any }
-            | { text: string; popup: React.ReactNode };
-        let menuOptions: ContextMenuOption[] = [
-            { text: "Leave Game", onClick: this.onLeaveClick }
+        if(!setContextMenu) {
+            return;
+        }
+
+        const menuOptions: ContextMenuOption[] = [
+            { text: "Leave Game", onClick: onLeaveClick }
         ];
 
-        if(props.currentGame && props.currentGame.started) {
-            if(Object.values<any>(props.currentGame.players).find(p => {
-                return p.name === props.username;
-            })) {
-                menuOptions.unshift({ text: "Concede", onClick: this.onConcedeClick });
+        if(currentGame.started) {
+            if(Object.values<any>(currentGame.players).find(p => p.name === username)) {
+                menuOptions.unshift({ text: "Concede", onClick: onConcedeClick });
             }
 
-            let spectators = props.currentGame.spectators.map((spectator: Spectator) => {
-                return <li key={ spectator.name }>{ spectator.name }</li>;
-            });
+            const spectators = currentGame.spectators.map((spectator: Spectator) => (
+                <li key={ spectator.name }>{ spectator.name }</li>
+            ));
 
-            let spectatorPopup = (
+            const spectatorPopup = (
                 <ul className="spectators-popup absolute-panel">
                     { spectators }
                 </ul>
             );
 
-            menuOptions.unshift({ text: `Spectators: ${props.currentGame.spectators.length}`, popup: spectatorPopup });
-
-            this.setContextMenu(menuOptions);
+            menuOptions.unshift({ text: `Spectators: ${currentGame.spectators.length}`, popup: spectatorPopup });
+            setContextMenu(menuOptions);
         } else {
-            this.setContextMenu([]);
+            setContextMenu([]);
         }
-    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- handler closures stable; deps mirror old componentDidUpdate guard
+    }, [currentGame, username]);
 
-    setContextMenu(menu: any[]) {
-        if(this.props.setContextMenu) {
-            this.props.setContextMenu(menu);
-        }
-    }
-
-    onConcedeClick() {
-        this.props.sendGameMessage("concede");
-    }
-
-    isGameActive() {
-        if(!this.props.currentGame) {
-            return false;
-        }
-
-        if(this.props.currentGame.winner) {
-            return false;
-        }
-
-        let thisPlayer = this.props.currentGame.players[this.props.username];
-        if(!thisPlayer) {
-            thisPlayer = Object.values(this.props.currentGame.players).sort((a, b) => a.name.localeCompare(b.name))[0];
-        }
-
-        let otherPlayer = Object.values(this.props.currentGame.players).find(player => {
-            return player.name !== thisPlayer.name;
-        });
-
-        if(!otherPlayer) {
-            return false;
-        }
-
-        if(otherPlayer.disconnected || otherPlayer.left) {
-            return false;
-        }
-
-        return true;
-    }
-
-    onLeaveClick() {
-        if(!this.state.spectating && this.isGameActive()) {
-            if(window.confirm("Your game is not finished, are you sure you want to leave?")) {
-                this.props.sendGameMessage("leavegame");
-                this.props.closeGameSocket();
-            }
-
+    useEffect(() => {
+        if(!currentGame) {
             return;
         }
-
-        this.props.sendGameMessage("leavegame");
-        this.props.closeGameSocket();
-    }
-
-    onMouseOver(card: MessageFragment) {
-        this.props.zoomCard(card);
-    }
-
-    onMouseOut() {
-        this.props.clearZoom();
-    }
-
-    getCardImageUrl(card: CardType) {
-        if(!card || !card.id) {
-            return "";
+        const currentCount = getMessagesFromPlayers(currentGame.messages || []).length;
+        if(!showChat && currentCount > prevPlayerMsgCount.current) {
+            setShowChatAlert(true);
         }
-        if(card.facedownId) {
-            return getCardImageUrl(card.facedownId, card.facedownPackId);
-        }
-        return getCardImageUrl(card.id, card.packId);
+        prevPlayerMsgCount.current = currentCount;
+    }, [currentGame, showChat]);
+
+    if(!currentGame) {
+        return <div>Waiting for server...</div>;
     }
 
-    onCardClick(card: CardType & { controller?: any; isProvince?: boolean }) {
-        if(card && card.uuid) {
-            this.props.sendGameMessage("cardClicked", card.uuid);
-        } else if(card && card.location && card.controller) {
-            this.props.sendGameMessage("facedownCardClicked", card.location, card.controller.name, card.isProvince);
-        }
+    let thisPlayer = currentGame.players[username];
+    if(!thisPlayer) {
+        thisPlayer = Object.values(currentGame.players).sort((a, b) => a.name.localeCompare(b.name))[0];
+    }
+    if(!thisPlayer) {
+        return <div>Waiting for game to have players or close...</div>;
     }
 
-    onRingClick(ring: string) {
-        this.props.sendGameMessage("ringClicked", ring);
-    }
+    const otherPlayer = Object.values(currentGame.players).find(p => p.name !== thisPlayer.name);
+    const manualMode = currentGame.manualMode;
 
-    onConflictClick() {
-        this.props.sendGameMessage("showConflictDeck");
-
-        this.setState({ showConflictDeck: !this.state.showConflictDeck });
-    }
-
-    onDynastyClick() {
-        this.props.sendGameMessage("showDynastyDeck");
-
-        this.setState({ showDynastyDeck: !this.state.showDynastyDeck });
-    }
-
-    sendMessage(message: string) {
-        if(message === "") {
-            return;
-        }
-
-        this.props.sendGameMessage("chat", message);
-    }
-
-    onConflictShuffleClick() {
-        this.props.sendGameMessage("shuffleConflictDeck");
-    }
-
-    onDynastyShuffleClick() {
-        this.props.sendGameMessage("shuffleDynastyDeck");
-    }
-
-    onDragDrop(card: CardType, source: string, target: string) {
-        this.props.sendGameMessage("drop", card.uuid, source, target);
-    }
-
-    onCardDragStart(event: React.DragEvent, card: CardType, source: string) {
-        let dragData = { card: card, source: source };
-        event.dataTransfer.setData("Text", JSON.stringify(dragData));
-    }
-
-    getCardsInPlay(player: Player & { id?: string }, isMe: boolean) {
+    const buildCardsInPlay = (player: Player & { id?: string }, isMe: boolean): React.ReactNode[][] => {
         if(!player) {
             return [];
         }
-
-        const conflict = this.props.currentGame.conflict;
-        const cardSize = this.props.user.settings.cardSize;
-        const disableCardStats = this.props.user.settings.optionSettings.disableCardStats;
-        const pendingAnimations = this.props.pendingAnimations;
-
-        const grouper = isMe ? this.groupCardsInPlayForMe : this.groupCardsInPlayForOther;
+        const conflict = currentGame.conflict;
+        const cardSize = user.settings.cardSize;
+        const disableCardStats = user.settings.optionSettings.disableCardStats;
+        const grouper = isMe ? groupCardsInPlayForMe : groupCardsInPlayForOther;
         const cardsByType = grouper(player.cardPiles.cardsInPlay, isMe);
-
-        const playerIsDefending = (player && conflict.defendingPlayerId && player.id && player.id.includes(conflict.defendingPlayerId));
+        const playerIsDefending = !!(player && conflict.defendingPlayerId && player.id && player.id.includes(conflict.defendingPlayerId));
         const playerDeclaringParticipants = conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen));
+        const onAnimationEnd = (uuid: string) => dispatch(clearAnimation(uuid));
 
-        const onAnimationEnd = (uuid: string) => this.props.dispatch(clearAnimation(uuid));
-
-        return cardsByType.map((cards: CardType[]) => cards.map((card: CardType) => (
-            <Card key={ card.uuid } id={ card.uuid } source="play area" card={ card } disableMouseOver={ card.facedown && !card.code }
-                onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
-                showStats={ !disableCardStats } player={ player }
-                onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ cardSize } isMe={ isMe } declaring={ playerDeclaringParticipants }
-                pendingAnimations={ pendingAnimations } onAnimationEnd={ onAnimationEnd } />
+        return cardsByType.map((cardGroup: CardType[]) => cardGroup.map((card: CardType) => (
+            <Card
+                key={ card.uuid }
+                id={ card.uuid }
+                source="play area"
+                card={ card }
+                disableMouseOver={ card.facedown && !card.code }
+                onMenuItemClick={ onMenuItemClick }
+                onMouseOver={ onMouseOver }
+                onMouseOut={ onMouseOut }
+                showStats={ !disableCardStats }
+                player={ player }
+                onClick={ onCardClick }
+                onDragDrop={ onDragDrop }
+                size={ cardSize }
+                isMe={ isMe }
+                declaring={ playerDeclaringParticipants }
+                pendingAnimations={ pendingAnimations }
+                onAnimationEnd={ onAnimationEnd }
+            />
         )));
-    }
+    };
 
-    onCommand(command: string, arg: any, uuid: string, method: string) {
-        let commandArg = arg;
+    const thisPlayerCards: React.ReactNode[] = [];
+    let index = 0;
+    buildCardsInPlay(thisPlayer, true).forEach((cardRow: React.ReactNode) => {
+        thisPlayerCards.push(
+            <div className={ `card-row our-side player-home${thisPlayer.imperialFavor ? " favor" : ""}` } key={ `this-loc${index++}` }>
+                { cardRow }
+            </div>
+        );
+    });
 
-        this.props.sendGameMessage(command, commandArg, uuid, method);
-    }
-
-    onDragOver(event: React.DragEvent) {
-        event.preventDefault();
-    }
-
-    onDragDropEvent(event: React.DragEvent, target: string) {
-        event.stopPropagation();
-        event.preventDefault();
-
-        let card = event.dataTransfer.getData("Text");
-        if(!card) {
-            return;
-        }
-
-        let dragData = tryParseJSON(card);
-
-        if(!dragData) {
-            return;
-        }
-
-        this.onDragDrop(dragData.card, dragData.source, target);
-    }
-
-    onMenuItemClick(card: CardType, menuItem: MenuItem) {
-        this.props.sendGameMessage("menuItemClick", card.uuid, menuItem);
-    }
-
-    onRingMenuItemClick(ring: RingType, menuItem: MenuItem) {
-        this.props.sendGameMessage("ringMenuItemClick", ring, menuItem);
-    }
-
-    onPromptedActionWindowToggle(option: string, value: boolean) {
-        this.props.sendGameMessage("togglePromptedActionWindow", option, value);
-    }
-
-    onTimerSettingToggle(option: string, value: boolean) {
-        this.props.sendGameMessage("toggleTimerSetting", option, value);
-    }
-
-    onOptionSettingToggle(option: string, value: any) {
-        this.props.sendGameMessage("toggleOptionSetting", option, value);
-    }
-
-    onTimerExpired() {
-        this.props.sendGameMessage("menuButton", null, "pass");
-    }
-
-    onSettingsClick(event: React.MouseEvent) {
-        event.preventDefault();
-        this.setState({ showSettingsModal: true });
-    }
-
-    onToggleChatClick(event: React.MouseEvent) {
-        event.preventDefault();
-        this.setState({
-            showChat: !this.state.showChat,
-            showChatAlert: this.state.showChat && this.state.showChatAlert
+    const otherPlayerCards: React.ReactNode[] = [];
+    if(otherPlayer) {
+        buildCardsInPlay(otherPlayer, false).forEach((cardRow: React.ReactNode) => {
+            otherPlayerCards.push(
+                <div className={ `card-row player-home${otherPlayer.imperialFavor ? " favor" : ""}` } key={ `other-loc${index++}` }>
+                    { cardRow }
+                </div>
+            );
         });
     }
 
-    onManualModeClick(event: React.MouseEvent) {
-        event.preventDefault();
-        this.props.sendGameMessage("toggleManualMode");
-    }
-
-    onDownloadLogClick() {
-        if(this.props.currentGame) {
-            downloadGameLog(this.props.currentGame, this.props.username);
+    const renderPlayerHand = () => {
+        if(spectating) {
+            return null;
         }
-    }
-
-    getPrompt(thisPlayer: Player) {
-        return (<div className="inset-pane">
-            <ActivePlayerPrompt title={ thisPlayer.menuTitle }
-                buttons={ thisPlayer.buttons }
-                cards={ this.props.cards }
-                controls={ thisPlayer.controls }
-                promptTitle={ thisPlayer.promptTitle }
-                onButtonClick={ this.onCommand }
-                onMouseOver={ this.onMouseOver }
-                onMouseOut={ this.onMouseOut }
-                user={ this.props.user }
-                onTimerExpired={ this.onTimerExpired }
-                phase={ thisPlayer.phase } />
-        </div>);
-    }
-
-    getPlayerHand(thisPlayer: Player) {
-        let defaultPosition = {
+        const defaultPosition = {
             x: (window.innerWidth / 2) - 240,
             y: (window.innerHeight / 2)
         };
-
-        var handBounds = {
+        const handBounds = {
             left: 0,
             right: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 490,
             top: 0,
             bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 160
         };
-
-        if(!this.state.spectating) {
-            return (<Draggable handle=".grip"
-                nodeRef={ this.draggableRef }
-                bounds= { handBounds }
-                defaultPosition={ defaultPosition } >
-                <div ref={ this.draggableRef } className="player-home-row-container">
+        return (
+            <Draggable handle=".grip" nodeRef={ draggableRef } bounds={ handBounds } defaultPosition={ defaultPosition }>
+                <div ref={ draggableRef } className="player-home-row-container">
                     <PlayerHand
                         cards={ thisPlayer.cardPiles.hand }
-                        isMe={ !this.state.spectating }
-                        onCardClick={ this.onCardClick }
-                        onDragDrop={ this.onDragDrop }
-                        onMouseOut={ this.onMouseOut }
-                        onMouseOver={ this.onMouseOver }
-                        cardSize={ this.props.user.settings.cardSize }
-                        pendingAnimations={ this.props.pendingAnimations }
+                        isMe={ !spectating }
+                        onCardClick={ onCardClick }
+                        onDragDrop={ onDragDrop }
+                        onMouseOut={ onMouseOut }
+                        onMouseOver={ onMouseOver }
+                        cardSize={ user.settings.cardSize }
+                        pendingAnimations={ pendingAnimations }
                         playerName={ thisPlayer.name }
-                        onAnimationEnd={ (id: string) => this.props.dispatch(clearAnimation(id)) } />
+                        onAnimationEnd={ (id: string) => dispatch(clearAnimation(id)) }
+                    />
                 </div>
-            </Draggable>);
-        }
-    }
+            </Draggable>
+        );
+    };
 
-    getOpponentHand(otherPlayer?: Player) {
+    const renderOpponentHand = () => {
         if(!otherPlayer || !otherPlayer.cardPiles.hand) {
             return null;
         }
-
-        // Only show opponent hand if it has revealed cards (replay with hidden info)
         const hasRevealedCards = otherPlayer.cardPiles.hand.some((c: CardType) => !c.facedown && c.id);
         if(!hasRevealedCards) {
             return null;
         }
-
-        let defaultPosition = {
+        const defaultPosition = {
             x: (window.innerWidth / 2) - 240,
             y: 50
         };
-
-        var handBounds = {
+        const handBounds = {
             left: 0,
             right: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 490,
             top: 0,
             bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 160
         };
-
-        return (<Draggable handle=".grip"
-            nodeRef={ this.opponentDraggableRef }
-            bounds={ handBounds }
-            defaultPosition={ defaultPosition } >
-            <div ref={ this.opponentDraggableRef } className="player-home-row-container opponent-hand-container">
-                <PlayerHand
-                    cards={ otherPlayer.cardPiles.hand }
-                    isMe
-                    onCardClick={ this.onCardClick }
-                    onDragDrop={ this.onDragDrop }
-                    onMouseOut={ this.onMouseOut }
-                    onMouseOver={ this.onMouseOver }
-                    cardSize={ this.props.user.settings.cardSize }
-                    pendingAnimations={ this.props.pendingAnimations }
-                    playerName={ otherPlayer.name }
-                    onAnimationEnd={ (id: string) => this.props.dispatch(clearAnimation(id)) } />
-            </div>
-        </Draggable>);
-    }
-
-    render() {
-        if(!this.props.currentGame) {
-            return <div>Waiting for server...</div>;
-        }
-
-        let manualMode = this.props.currentGame.manualMode;
-
-        let thisPlayer = this.props.currentGame.players[this.props.username];
-        if(!thisPlayer) {
-            thisPlayer = Object.values(this.props.currentGame.players).sort((a, b) => a.name.localeCompare(b.name))[0];
-        }
-
-        if(!thisPlayer) {
-            return <div>Waiting for game to have players or close...</div>;
-        }
-
-        let otherPlayer = Object.values(this.props.currentGame.players).find(player => {
-            return player.name !== thisPlayer.name;
-        });
-
-        let thisPlayerCards: React.ReactNode[] = [];
-        let index = 0;
-        let thisCardsInPlay = this.getCardsInPlay(thisPlayer, true);
-        thisCardsInPlay.forEach((cards: React.ReactNode) => {
-            thisPlayerCards.push(<div className={ `card-row our-side player-home${thisPlayer && thisPlayer.imperialFavor ? " favor" : ""}` } key={ `this-loc${index++}` }>{ cards }</div>);
-        });
-
-        let otherPlayerCards: React.ReactNode[] = [];
-        if(otherPlayer) {
-            this.getCardsInPlay(otherPlayer, false).forEach((cards: React.ReactNode) => {
-                otherPlayerCards.push(<div className={ `card-row player-home${otherPlayer.imperialFavor ? " favor" : ""}` } key={ `other-loc${index++}` }>{ cards }</div>);
-            });
-        }
-
-        // for(let i = thisPlayerCards.length; i < 2; i++) {
-        //     thisPlayerCards.push(<div className="card-row player-home" key={ 'this-empty' + i } />);
-        // }
-
-        // for(let i = otherPlayerCards.length; i < 2; i++) {
-        //     thisPlayerCards.push(<div className="card-row player-home" key={ 'other-empty' + i } />);
-        // }
-
         return (
-            <div className="game-board">
-                <GameSettingsModal
-                    show={ this.state.showSettingsModal }
-                    thisPlayer={ thisPlayer }
-                    onClose={ () => this.setState({ showSettingsModal: false }) }
-                    onPromptedActionWindowToggle={ this.onPromptedActionWindowToggle.bind(this) }
-                    onTimerSettingToggle={ this.onTimerSettingToggle.bind(this) }
-                    onOptionSettingToggle={ this.onOptionSettingToggle.bind(this) }
-                />
-                <HonorChangeOverlay
-                    animations={ this.props.pendingAnimations || [] }
-                    onDismiss={ () => {
-                        for(const a of this.props.pendingAnimations || []) {
-                            if(a.type === "honor") {
-                                this.props.dispatch(clearAnimation(a.playerName));
-                            }
+            <Draggable handle=".grip" nodeRef={ opponentDraggableRef } bounds={ handBounds } defaultPosition={ defaultPosition }>
+                <div ref={ opponentDraggableRef } className="player-home-row-container opponent-hand-container">
+                    <PlayerHand
+                        cards={ otherPlayer.cardPiles.hand }
+                        isMe
+                        onCardClick={ onCardClick }
+                        onDragDrop={ onDragDrop }
+                        onMouseOut={ onMouseOut }
+                        onMouseOver={ onMouseOver }
+                        cardSize={ user.settings.cardSize }
+                        pendingAnimations={ pendingAnimations }
+                        playerName={ otherPlayer.name }
+                        onAnimationEnd={ (id: string) => dispatch(clearAnimation(id)) }
+                    />
+                </div>
+            </Draggable>
+        );
+    };
+
+    return (
+        <div className="game-board">
+            <GameSettingsModal
+                show={ showSettingsModal }
+                thisPlayer={ thisPlayer }
+                onClose={ () => setShowSettingsModal(false) }
+                onPromptedActionWindowToggle={ onPromptedActionWindowToggle }
+                onTimerSettingToggle={ onTimerSettingToggle }
+                onOptionSettingToggle={ onOptionSettingToggle }
+            />
+            <HonorChangeOverlay
+                animations={ pendingAnimations || [] }
+                onDismiss={ () => {
+                    for(const a of pendingAnimations || []) {
+                        if(a.type === "honor") {
+                            dispatch(clearAnimation(a.playerName));
                         }
-                    } }
+                    }
+                } }
+            />
+            <div className="inset-pane">
+                <ActivePlayerPrompt
+                    title={ thisPlayer.menuTitle }
+                    buttons={ thisPlayer.buttons }
+                    cards={ cards }
+                    controls={ thisPlayer.controls }
+                    promptTitle={ thisPlayer.promptTitle }
+                    onButtonClick={ onCommand }
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    user={ user }
+                    onTimerExpired={ onTimerExpired }
+                    phase={ thisPlayer.phase }
                 />
-                { this.getPrompt(thisPlayer) }
-                { this.getPlayerHand(thisPlayer) }
-                { this.getOpponentHand(otherPlayer) }
-                { /* Disabled: status in sidebar
-                    !thisPlayer.optionSettings.showStatusInSidebar &&
-                    <div className="player-stats-row">
-                        <PlayerStatsRow
-                            clockState={ otherPlayer ? otherPlayer.clock : null }
-                            stats={ otherPlayer ? otherPlayer.stats : null }
-                            user={ otherPlayer ? otherPlayer.user : null }
-                            firstPlayer={ otherPlayer && otherPlayer.firstPlayer }
-                            otherPlayer
-                            handSize={ otherPlayer && otherPlayer.cardPiles.hand ? otherPlayer.cardPiles.hand.length : 0 }
-                        />
-                    </div>
-                */ }
-                <div className={ `main-window ${this.props.user.settings.cardSize}` }>
-                    <PlayerSidebar
+            </div>
+            { renderPlayerHand() }
+            { renderOpponentHand() }
+            <div className={ `main-window ${user.settings.cardSize}` }>
+                <PlayerSidebar
+                    thisPlayer={ thisPlayer }
+                    otherPlayer={ otherPlayer }
+                    cardSize={ user.settings.cardSize }
+                    showRingEffects={ thisPlayer?.optionSettings?.showRingEffects }
+                    gameMode={ currentGame.gameMode }
+                    rings={ currentGame.rings }
+                    spectating={ spectating }
+                    manualMode={ manualMode }
+                    boundActions={ boundActions }
+                    onRingClick={ onRingClick }
+                    onRingMenuItemClick={ onRingMenuItemClick }
+                />
+                <div className={ `play-area${user.settings.cardSize ? ` ${user.settings.cardSize}` : ""}` }>
+                    <OpponentBoardArea
+                        otherPlayer={ otherPlayer }
+                        otherPlayerCards={ otherPlayerCards }
+                        cardSize={ user.settings.cardSize }
+                        gameMode={ currentGame.gameMode }
+                        skirmishMode={ currentGame.skirmishMode }
+                        onCardClick={ onCardClick }
+                        onMouseOver={ onMouseOver }
+                        onMouseOut={ onMouseOut }
+                        onMenuItemClick={ onMenuItemClick }
+                    />
+                    <CenterBar
+                        currentGame={ currentGame }
                         thisPlayer={ thisPlayer }
                         otherPlayer={ otherPlayer }
-                        cardSize={ this.props.user.settings.cardSize }
+                        cardSize={ user.settings.cardSize }
                         showRingEffects={ thisPlayer?.optionSettings?.showRingEffects }
-                        gameMode={ this.props.currentGame.gameMode }
-                        rings={ this.props.currentGame.rings }
-                        spectating={ this.state.spectating }
-                        manualMode={ this.props.currentGame.manualMode }
-                        boundActions={ this.boundActions }
-                        onRingClick={ this.onRingClick }
-                        onRingMenuItemClick={ this.onRingMenuItemClick }
+                        onRingClick={ onRingClick }
+                        onRingMenuItemClick={ onRingMenuItemClick }
+                        onCardClick={ onCardClick }
+                        onDragDrop={ onDragDrop }
+                        onMenuItemClick={ onMenuItemClick }
+                        onMouseOver={ onMouseOver }
+                        onMouseOut={ onMouseOut }
                     />
-                    <div className={ `play-area${this.props.user.settings.cardSize ? ` ${this.props.user.settings.cardSize}` : ""}` }>
-                        <OpponentBoardArea
-                            otherPlayer={ otherPlayer }
-                            otherPlayerCards={ otherPlayerCards }
-                            cardSize={ this.props.user.settings.cardSize }
-                            gameMode={ this.props.currentGame.gameMode }
-                            skirmishMode={ this.props.currentGame.skirmishMode }
-                            onCardClick={ this.onCardClick }
-                            onMouseOver={ this.onMouseOver }
-                            onMouseOut={ this.onMouseOut }
-                            onMenuItemClick={ this.onMenuItemClick }
-                        />
-                        <CenterBar
-                            currentGame={ this.props.currentGame }
-                            thisPlayer={ thisPlayer }
-                            otherPlayer={ otherPlayer }
-                            cardSize={ this.props.user.settings.cardSize }
-                            showRingEffects={ thisPlayer?.optionSettings?.showRingEffects }
-                            onRingClick={ this.onRingClick }
-                            onRingMenuItemClick={ this.onRingMenuItemClick }
-                            onCardClick={ this.onCardClick }
-                            onDragDrop={ this.onDragDrop }
-                            onMenuItemClick={ this.onMenuItemClick }
-                            onMouseOver={ this.onMouseOver }
-                            onMouseOut={ this.onMouseOut }
-                        />
-                        <MyBoardArea
-                            thisPlayer={ thisPlayer }
-                            thisPlayerCards={ thisPlayerCards }
-                            cardSize={ this.props.user.settings.cardSize }
-                            spectating={ this.state.spectating }
-                            manualMode={ manualMode }
-                            gameMode={ this.props.currentGame.gameMode }
-                            skirmishMode={ this.props.currentGame.skirmishMode }
-                            showConflictDeck={ this.state.showConflictDeck }
-                            showDynastyDeck={ this.state.showDynastyDeck }
-                            onCardClick={ this.onCardClick }
-                            onMouseOver={ this.onMouseOver }
-                            onMouseOut={ this.onMouseOut }
-                            onMenuItemClick={ this.onMenuItemClick }
-                            onDragDrop={ this.onDragDrop }
-                            onConflictClick={ this.onConflictClick }
-                            onDynastyClick={ this.onDynastyClick }
-                            onConflictShuffleClick={ this.onConflictShuffleClick }
-                            onDynastyShuffleClick={ this.onDynastyShuffleClick }
-                            onDragOver={ this.onDragOver }
-                            onDropToPlayArea={ event => this.onDragDropEvent(event, "play area") }
-                        />
-                    </div>
-                    <div className="right-side">
-                        <CardZoom imageUrl={ this.props.cardToZoom ? this.getCardImageUrl(this.props.cardToZoom) : "" }
-                            orientation={ this.props.cardToZoom ? this.props.cardToZoom.type === "plot" ? "horizontal" : "vertical" : "vertical" }
-                            show={ !!this.props.cardToZoom } cardName={ this.props.cardToZoom ? this.props.cardToZoom.name : null } />
-                        <Chat
-                            visible={ this.state.showChat }
-                            messages={ this.props.currentGame.messages }
-                            onMouseOver={ this.onMouseOver }
-                            onMouseOut={ this.onMouseOut }
-                            sendMessage={ this.sendMessage }
-                        />
-                        <Controls
-                            onSettingsClick={ this.onSettingsClick }
-                            onManualModeClick={ this.onManualModeClick }
-                            onDownloadLogClick={ this.onDownloadLogClick }
-                            onToggleChatClick={ this.onToggleChatClick }
-                            showDownloadLog={ !!this.props.currentGame.winner }
-                            showChatAlert={ this.state.showChatAlert }
-                            manualModeEnabled={ manualMode }
-                            showManualMode={ !this.state.spectating }
-                        />
-                    </div>
+                    <MyBoardArea
+                        thisPlayer={ thisPlayer }
+                        thisPlayerCards={ thisPlayerCards }
+                        cardSize={ user.settings.cardSize }
+                        spectating={ spectating }
+                        manualMode={ manualMode }
+                        gameMode={ currentGame.gameMode }
+                        skirmishMode={ currentGame.skirmishMode }
+                        showConflictDeck={ showConflictDeck }
+                        showDynastyDeck={ showDynastyDeck }
+                        onCardClick={ onCardClick }
+                        onMouseOver={ onMouseOver }
+                        onMouseOut={ onMouseOut }
+                        onMenuItemClick={ onMenuItemClick }
+                        onDragDrop={ onDragDrop }
+                        onConflictClick={ onConflictClick }
+                        onDynastyClick={ onDynastyClick }
+                        onConflictShuffleClick={ onConflictShuffleClick }
+                        onDynastyShuffleClick={ onDynastyShuffleClick }
+                        onDragOver={ onDragOver }
+                        onDropToPlayArea={ event => onDragDropEvent(event, "play area") }
+                    />
                 </div>
-                { /* Disabled: status in sidebar
-                    !thisPlayer.optionSettings.showStatusInSidebar &&
-                    <div className="player-stats-row our-side">
-                        <PlayerStatsRow
-                            { ...this.boundActions }
-                            clockState={ thisPlayer.clock }
-                            stats={ thisPlayer.stats }
-                            showControls={ !this.state.spectating && manualMode }
-                            user={ thisPlayer.user }
-                            firstPlayer={ thisPlayer.firstPlayer }
-                            otherPlayer={ false }
-                            spectating={ this.state.spectating }
-                            handSize={ thisPlayer.cardPiles.hand ? thisPlayer.cardPiles.hand.length : 0 } />
-                    </div>
-                */ }
-            </div>);
-    }
+                <div className="right-side">
+                    <CardZoom
+                        imageUrl={ cardToZoom ? computeImageUrl(cardToZoom) : "" }
+                        orientation={ cardToZoom ? cardToZoom.type === "plot" ? "horizontal" : "vertical" : "vertical" }
+                        show={ !!cardToZoom }
+                        cardName={ cardToZoom ? cardToZoom.name : null }
+                    />
+                    <Chat
+                        visible={ showChat }
+                        messages={ currentGame.messages }
+                        onMouseOver={ onMouseOver }
+                        onMouseOut={ onMouseOut }
+                        sendMessage={ sendMessage }
+                    />
+                    <Controls
+                        onSettingsClick={ onSettingsClick }
+                        onManualModeClick={ onManualModeClick }
+                        onDownloadLogClick={ onDownloadLogClick }
+                        onToggleChatClick={ onToggleChatClick }
+                        showDownloadLog={ !!currentGame.winner }
+                        showChatAlert={ showChatAlert }
+                        manualModeEnabled={ manualMode }
+                        showManualMode={ !spectating }
+                    />
+                </div>
+            </div>
+        </div>
+    );
 }
 
-function mapStateToProps(state: RootState): GameBoardStateProps {
-    return {
-        cardToZoom: state.cards.zoomCard,
-        cards: state.cards.cards,
-        currentGame: state.games.currentGame,
-        pendingAnimations: state.games.pendingAnimations,
-        user: state.auth.user,
-        username: state.auth.username
-    };
+export default function GameBoard() {
+    const dispatch = useAppDispatch();
+    const cardToZoom = useAppSelector(state => state.cards.zoomCard);
+    const cards = useAppSelector(state => state.cards.cards);
+    const currentGame = useAppSelector(state => state.games.currentGame);
+    const pendingAnimations = useAppSelector(state => state.games.pendingAnimations);
+    const user = useAppSelector(state => state.auth.user);
+    const username = useAppSelector(state => state.auth.username);
+
+    const boundActions = useMemo(
+        () => bindActionCreators(actions as unknown as Record<string, ActionFn>, dispatch),
+        [dispatch]
+    );
+
+    return (
+        <InnerGameBoard
+            cardToZoom={ cardToZoom }
+            cards={ cards }
+            currentGame={ currentGame }
+            pendingAnimations={ pendingAnimations }
+            user={ user }
+            username={ username }
+            dispatch={ dispatch }
+            boundActions={ boundActions }
+        />
+    );
 }
-
-function mapDispatchToProps(dispatch: Dispatch): GameBoardDispatchProps {
-    const boundActions = bindActionCreators(actions as unknown as Record<string, ActionFn>, dispatch);
-    return { ...(boundActions as Omit<GameBoardDispatchProps, "dispatch">), dispatch };
-}
-
-const GameBoard = connect(mapStateToProps, mapDispatchToProps)(InnerGameBoard);
-
-export default GameBoard;
