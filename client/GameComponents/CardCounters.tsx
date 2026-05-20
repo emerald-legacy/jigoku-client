@@ -4,7 +4,7 @@ import FateCounter from "./FateCounter";
 import HonorCounter from "./HonorCounter";
 import HonorStatusCounter from "./HonorStatusCounter";
 
-interface CounterData {
+export interface CounterData {
     count: number;
     fade?: boolean;
     cancel?: boolean;

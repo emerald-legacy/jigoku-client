@@ -43,7 +43,6 @@ export interface Card {
     controller?: string;
     popupCards?: Card[];
     group?: string;
-    honor?: number;
     showPopup?: boolean;
     isProvince?: boolean;
     isDynasty?: boolean;
