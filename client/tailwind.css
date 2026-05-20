@@ -253,9 +253,10 @@
     .dropdown { @apply relative; }
     .dropdown-toggle { @apply cursor-pointer flex items-center gap-1; }
     .dropdown-menu {
-        @apply absolute top-full left-0 bg-gray-800 border border-gray-600 rounded shadow-lg min-w-[160px] z-50 list-none p-1 m-0 hidden;
+        @apply absolute top-full left-0 bg-gray-800 border border-gray-600 rounded shadow-lg z-50 list-none p-1 m-0 hidden whitespace-nowrap;
     }
-    .dropdown-menu li a { @apply block px-3 py-1 text-white no-underline hover:bg-gray-700 rounded leading-normal; }
+    .dropdown-menu li { @apply block; }
+    .dropdown-menu li a { @apply block w-full px-3 py-1 text-white no-underline hover:bg-gray-700 rounded leading-normal; }
     .dropdown-item { @apply block px-3 py-1 text-white no-underline hover:bg-gray-700 rounded cursor-pointer; }
     .dropdown.open .dropdown-menu { @apply block; }
 
