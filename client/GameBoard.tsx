@@ -32,6 +32,7 @@ import { getCardImageUrl } from "./cardImageUrl.js";
 
 import * as actions from "./actions";
 import { clearAnimation } from "./ReduxActions/game";
+import { makeCardsInPlayGrouper } from "./selectors/cardsInPlay";
 import HonorChangeOverlay from "./GameComponents/HonorChangeOverlay";
 
 type ActionFn = (...args: any[]) => any;
@@ -101,7 +102,8 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
 
         this.boundActions = bindActionCreators(actions, props.dispatch);
 
-        this._cardsInPlayCache = {};
+        this.groupCardsInPlayForMe = makeCardsInPlayGrouper();
+        this.groupCardsInPlayForOther = makeCardsInPlayGrouper();
 
         this.state = {
             cardToZoom: undefined,
@@ -131,7 +133,8 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
     private draggableRef: RefObject<any>;
     private opponentDraggableRef: RefObject<any>;
     private boundActions: Record<string, ActionFn>;
-    private _cardsInPlayCache: Record<string, any>;
+    private groupCardsInPlayForMe: ReturnType<typeof makeCardsInPlayGrouper>;
+    private groupCardsInPlayForOther: ReturnType<typeof makeCardsInPlayGrouper>;
 
     notifyOfNewMessages(currentProps: GameBoardProps, prevProps: GameBoardProps) {
         if(currentProps.currentGame && !this.state.showChat) {
@@ -326,74 +329,26 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
             return [];
         }
 
-        let cacheKey = isMe ? "me" : "other";
-        let cached = this._cardsInPlayCache[cacheKey];
-        let conflict = this.props.currentGame.conflict;
-        let cardSize = this.props.user.settings.cardSize;
-        let disableCardStats = this.props.user.settings.optionSettings.disableCardStats;
-        let pendingAnimationsRef = this.props.pendingAnimations;
-
-        if(cached &&
-            cached.cardsInPlay === player.cardPiles.cardsInPlay &&
-            cached.conflict === conflict &&
-            cached.cardSize === cardSize &&
-            cached.disableCardStats === disableCardStats &&
-            cached.pendingAnimations === pendingAnimationsRef) {
-            return cached.result;
-        }
-
-        let sortedCards = [...player.cardPiles.cardsInPlay].sort((a, b) => {
-            if(a.type < b.type) {
-                return -1;
-            }
-            if(a.type > b.type) {
-                return 1;
-            }
-            return 0;
-        });
-
-        if(!isMe) {
-            // we want locations on the bottom, other side wants locations on top
-            sortedCards = sortedCards.reverse();
-        }
-
-        const cardsByType: Record<string, CardType[]> = {};
-        sortedCards.forEach((card: CardType) => {
-            const type = card.type || "";
-            if(!cardsByType[type]) {
-                cardsByType[type] = [];
-            }
-            cardsByType[type].push(card);
-        });
-
-        let cardsByLocation: React.ReactNode[][] = [];
-        let playerIsDefending = (player && conflict.defendingPlayerId && player.id && player.id.includes(conflict.defendingPlayerId));
-        let playerDeclaringParticipants = conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen));
-
+        const conflict = this.props.currentGame.conflict;
+        const cardSize = this.props.user.settings.cardSize;
+        const disableCardStats = this.props.user.settings.optionSettings.disableCardStats;
         const pendingAnimations = this.props.pendingAnimations;
+
+        const grouper = isMe ? this.groupCardsInPlayForMe : this.groupCardsInPlayForOther;
+        const cardsByType = grouper(player.cardPiles.cardsInPlay, isMe);
+
+        const playerIsDefending = (player && conflict.defendingPlayerId && player.id && player.id.includes(conflict.defendingPlayerId));
+        const playerDeclaringParticipants = conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen));
+
         const onAnimationEnd = (uuid: string) => this.props.dispatch(clearAnimation(uuid));
 
-        Object.values<CardType[]>(cardsByType).forEach((cards: CardType[]) => {
-            let cardsInPlay = cards.map((card: CardType) => {
-                return (<Card key={ card.uuid } id={ card.uuid } source="play area" card={ card } disableMouseOver={ card.facedown && !card.code }
-                    onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
-                    showStats={ !disableCardStats } player={ player }
-                    onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ cardSize } isMe={ isMe } declaring={ playerDeclaringParticipants }
-                    pendingAnimations={ pendingAnimations } onAnimationEnd={ onAnimationEnd }/>);
-            });
-            cardsByLocation.push(cardsInPlay);
-        });
-
-        this._cardsInPlayCache[cacheKey] = {
-            cardsInPlay: player.cardPiles.cardsInPlay,
-            conflict,
-            cardSize,
-            disableCardStats,
-            pendingAnimations: pendingAnimationsRef,
-            result: cardsByLocation
-        };
-
-        return cardsByLocation;
+        return cardsByType.map((cards: CardType[]) => cards.map((card: CardType) => (
+            <Card key={ card.uuid } id={ card.uuid } source="play area" card={ card } disableMouseOver={ card.facedown && !card.code }
+                onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
+                showStats={ !disableCardStats } player={ player }
+                onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ cardSize } isMe={ isMe } declaring={ playerDeclaringParticipants }
+                pendingAnimations={ pendingAnimations } onAnimationEnd={ onAnimationEnd } />
+        )));
     }
 
     onCommand(command: string, arg: any, uuid: string, method: string) {
