@@ -271,9 +271,13 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-export default function NewGame() {
+interface NewGameOwnProps {
+    defaultGameName?: string;
+}
+
+export default function NewGame(ownProps: NewGameOwnProps) {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerNewGame { ...props } { ...boundActions } />;
+    return <InnerNewGame { ...props } { ...boundActions } { ...ownProps } />;
 }

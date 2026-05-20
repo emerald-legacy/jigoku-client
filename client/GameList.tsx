@@ -154,9 +154,13 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-export default function GameList() {
+interface GameListOwnProps {
+    games?: LobbyGame[];
+}
+
+export default function GameList(ownProps: GameListOwnProps) {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerGameList { ...props } { ...boundActions } />;
+    return <InnerGameList { ...props } { ...boundActions } { ...ownProps } />;
 }

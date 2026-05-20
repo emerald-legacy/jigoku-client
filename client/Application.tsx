@@ -111,18 +111,23 @@ function computeBackgroundClass(gameBoardVisible: boolean, user?: User): string 
     return (background && backgroundClassByValue[background]) || "bg-board-default";
 }
 
+type BoundActions = Record<string, (...args: any[]) => any>;
+
 interface SocketHandlerState {
     username?: string;
     currentGameId?: string;
     token?: string;
-    boundActions: ReturnType<typeof bindActionCreators<typeof actions, ReturnType<typeof useAppDispatch>>>;
+    boundActions: BoundActions;
 }
 
 export default function Application() {
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    const boundActions = useMemo<BoundActions>(
+        () => bindActionCreators(actions as unknown as Record<string, (...args: any[]) => any>, dispatch),
+        [dispatch]
+    );
     const { currentGame, currentGameId, games, token, user, username } = useAppSelector(mapStateToProps, shallowEqual);
 
     const stateRef = useRef<SocketHandlerState>({ username, currentGameId, token, boundActions });
