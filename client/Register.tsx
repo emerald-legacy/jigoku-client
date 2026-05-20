@@ -1,20 +1,16 @@
 import React, { useState } from "react";
-import axios from "axios";
-import { connect } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getLobbySocket } from "./socket";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
-import * as actions from "./actions";
+
+import { useAppDispatch } from "./hooks";
+import { registerUser, checkUsername } from "./ReduxActions/auth";
 
 type ValidationMap = Record<string, string>;
 
-interface InnerRegisterProps {
-    register: (payload: { user: any; token: string }) => void;
-}
-
-export function InnerRegister({ register }: InnerRegisterProps) {
+export function Register() {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -40,16 +36,12 @@ export function InnerRegister({ register }: InnerRegisterProps) {
             return newValidation;
         }
 
-        axios
-            .post("/api/account/check-username", { username: currentUsername })
-            .then((response) => {
-                if(response.data.message) {
-                    newValidation["username"] = response.data.message;
-                }
-            })
-            .finally(() => {
-                setValidation({ ...newValidation });
-            });
+        checkUsername(currentUsername).then((data) => {
+            if(data.message) {
+                newValidation["username"] = data.message;
+            }
+            setValidation({ ...newValidation });
+        });
 
         return newValidation;
     };
@@ -105,19 +97,17 @@ export function InnerRegister({ register }: InnerRegisterProps) {
         setValidation(newValidation);
     };
 
-    const onRegister = (event: React.MouseEvent) => {
+    const onRegister = async (event: React.MouseEvent) => {
         event.preventDefault();
 
         setError("");
 
         let combinedValidation: ValidationMap = {};
 
-        // Check email
         if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
             combinedValidation["email"] = "Please enter a valid email address";
         }
 
-        // Check password
         if(password.length < 6) {
             combinedValidation["password"] =
                 "The password you specify must be at least 6 characters long";
@@ -130,7 +120,6 @@ export function InnerRegister({ register }: InnerRegisterProps) {
                 "The passwords you have specified do not match";
         }
 
-        // Check username
         if(username.length < 3 || username.length > 15) {
             combinedValidation["username"] =
                 "Username must be between 3 and 15 characters long";
@@ -142,7 +131,6 @@ export function InnerRegister({ register }: InnerRegisterProps) {
 
         setValidation(combinedValidation);
 
-        // Check if any validation errors exist
         const hasErrors = Object.values(combinedValidation).some(
             (message) => message && message !== ""
         );
@@ -154,22 +142,12 @@ export function InnerRegister({ register }: InnerRegisterProps) {
             return;
         }
 
-        axios
-            .post("/api/account/register", { username, password, email })
-            .then((response) => {
-                const data = response.data;
-                if(!data.success) {
-                    setError(data.message);
-                    return;
-                }
-
-                register({ user: data.user, token: data.token });
-                getLobbySocket()?.emit("authenticate", data.token);
-                navigate("/");
-            })
-            .catch(() => {
-                setError("Could not communicate with the server.  Please try again later.");
-            });
+        try {
+            await dispatch(registerUser({ username, password, email })).unwrap();
+            navigate("/");
+        } catch(err: any) {
+            setError(err?.message || "Could not communicate with the server.  Please try again later.");
+        }
     };
 
     const fields = [
@@ -269,8 +247,6 @@ export function InnerRegister({ register }: InnerRegisterProps) {
     );
 }
 
-InnerRegister.displayName = "Register";
-
-const Register = connect(null, actions)(InnerRegister);
+Register.displayName = "Register";
 
 export default Register;

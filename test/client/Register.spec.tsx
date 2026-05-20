@@ -1,11 +1,24 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render as rtlRender, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
 import React from "react";
-import { InnerRegister } from "../../client/Register.tsx";
+import { Register } from "../../client/Register.tsx";
+
+const makeTestStore = () => configureStore({
+    reducer: { auth: (state = {}) => state, api: (state = {}) => state },
+    middleware: (m) => m({ serializableCheck: false, immutableCheck: false })
+});
 
 const render = (ui: React.ReactElement) =>
-    rtlRender(ui, { wrapper: ({ children }: { children: React.ReactNode }) => <MemoryRouter>{ children }</MemoryRouter> });
+    rtlRender(ui, {
+        wrapper: ({ children }: { children: React.ReactNode }) => (
+            <Provider store={ makeTestStore() }>
+                <MemoryRouter>{ children }</MemoryRouter>
+            </Provider>
+        )
+    });
 
 // Mock AlertPanel component
 vi.mock("../../client/SiteComponents/AlertPanel.tsx", () => ({
@@ -21,7 +34,7 @@ vi.mock("axios", () => ({
 
 import axios from "axios";
 
-describe("the <InnerRegister /> component", () => {
+describe("the <Register /> component", () => {
     let registerSpy;
     let socketSpy;
     let navigateSpy;
@@ -41,7 +54,7 @@ describe("the <InnerRegister /> component", () => {
     describe("when initially rendered", () => {
         beforeEach(() => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -76,7 +89,7 @@ describe("the <InnerRegister /> component", () => {
         describe("and the username input is changed", () => {
             it("should update the username value", () => {
                 render(
-                    <InnerRegister
+                    <Register
                         register={ registerSpy }
                         socket={ socketSpy }
                         navigate={ navigateSpy }
@@ -93,7 +106,7 @@ describe("the <InnerRegister /> component", () => {
         describe("and the email input is changed", () => {
             it("should update the email value", () => {
                 render(
-                    <InnerRegister
+                    <Register
                         register={ registerSpy }
                         socket={ socketSpy }
                         navigate={ navigateSpy }
@@ -111,7 +124,7 @@ describe("the <InnerRegister /> component", () => {
     describe("username validation", () => {
         it("should show error when username is blank", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -130,7 +143,7 @@ describe("the <InnerRegister /> component", () => {
 
         it("should show error when username is too long", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -148,7 +161,7 @@ describe("the <InnerRegister /> component", () => {
 
         it("should show error when username is too short", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -166,7 +179,7 @@ describe("the <InnerRegister /> component", () => {
 
         it("should show error when username has invalid characters", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -184,7 +197,7 @@ describe("the <InnerRegister /> component", () => {
 
         it("should not show error for valid username", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -205,7 +218,7 @@ describe("the <InnerRegister /> component", () => {
     describe("email validation", () => {
         it("should show error when email is blank", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -223,7 +236,7 @@ describe("the <InnerRegister /> component", () => {
 
         it("should show error for invalid email format", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -241,7 +254,7 @@ describe("the <InnerRegister /> component", () => {
 
         it("should not show error for valid email", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -262,7 +275,7 @@ describe("the <InnerRegister /> component", () => {
     describe("password validation", () => {
         it("should show error when password is too short", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -280,7 +293,7 @@ describe("the <InnerRegister /> component", () => {
 
         it("should show error when passwords do not match", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -301,7 +314,7 @@ describe("the <InnerRegister /> component", () => {
 
         it("should not show error when passwords match and are long enough", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -325,7 +338,7 @@ describe("the <InnerRegister /> component", () => {
     describe("form submission", () => {
         it("should show error when validation fails", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -344,7 +357,7 @@ describe("the <InnerRegister /> component", () => {
 
         it("should not call axios when validation fails", async () => {
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }
@@ -368,7 +381,7 @@ describe("the <InnerRegister /> component", () => {
             );
 
             render(
-                <InnerRegister
+                <Register
                     register={ registerSpy }
                     socket={ socketSpy }
                     navigate={ navigateSpy }

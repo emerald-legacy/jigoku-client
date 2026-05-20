@@ -1,13 +1,16 @@
 import React, { useState } from "react";
-import axios from "axios";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
+import { useAppDispatch } from "./hooks";
+import { finishPasswordReset } from "./ReduxActions/auth";
+
 type ValidationMap = Record<string, string>;
 
-export function InnerResetPassword() {
+export function ResetPassword() {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const [searchParams] = useSearchParams();
     const id = searchParams.get("id") ?? undefined;
     const token = searchParams.get("token") ?? undefined;
@@ -59,20 +62,10 @@ export function InnerResetPassword() {
         }
 
         try {
-            const response = await axios.post("/api/account/password-reset-finish", {
-                id: id,
-                token: token,
-                newPassword: password
-            });
-
-            if(!response.data.success) {
-                setError(response.data.message);
-                return;
-            }
-
+            await dispatch(finishPasswordReset({ id: id!, token: token!, newPassword: password })).unwrap();
             navigate("/login");
-        } catch{
-            setError("Could not communicate with the server.  Please try again later.");
+        } catch(err: any) {
+            setError(err?.message || "Could not communicate with the server.  Please try again later.");
         }
     };
 
@@ -145,6 +138,6 @@ export function InnerResetPassword() {
         </div>
     );
 }
-InnerResetPassword.displayName = "ResetPassword";
+ResetPassword.displayName = "ResetPassword";
 
-export default InnerResetPassword;
+export default ResetPassword;

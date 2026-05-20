@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { connect } from "react-redux";
-import { getLobbySocket } from "./socket";
 import type { RootState } from "./types/redux";
 import type { User } from "./types/user";
 
@@ -9,7 +7,8 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 import Input from "./FormComponents/Input";
 import Checkbox from "./FormComponents/Checkbox";
 
-import * as actions from "./actions";
+import { useAppDispatch } from "./hooks";
+import { saveProfile } from "./ReduxActions/user";
 
 const windows = [
     { name: "dynasty", label: "Dynasty phase", style: "col-sm-4" },
@@ -20,11 +19,11 @@ const windows = [
 ];
 
 interface InnerProfileProps {
-    refreshUser: (user: User, token: string) => any;
     user?: User & { promptedActionWindows?: Record<string, boolean> };
 }
 
-export function InnerProfile({ refreshUser, user }: InnerProfileProps) {
+export function InnerProfile({ user }: InnerProfileProps) {
+    const dispatch = useAppDispatch();
     const [disableGravatar, setDisableGravatar] = useState(user?.settings?.disableGravatar || false);
     const [email, setEmail] = useState(user?.email || "");
     const [loading, setLoading] = useState(false);
@@ -149,35 +148,26 @@ export function InnerProfile({ refreshUser, user }: InnerProfileProps) {
         setLoading(true);
 
         try {
-            const response = await axios.put(`/api/account/${user.username}`, {
-                data: JSON.stringify({
-                    email: email,
+            await dispatch(saveProfile({
+                user,
+                payload: {
+                    email,
                     password: newPassword,
-                    currentPassword: currentPassword,
-                    promptedActionWindows: promptedActionWindows,
+                    currentPassword,
+                    promptedActionWindows,
                     settings: {
-                        disableGravatar: disableGravatar,
-                        windowTimer: windowTimer,
-                        optionSettings: optionSettings,
-                        timerSettings: timerSettings,
+                        disableGravatar,
+                        windowTimer,
+                        optionSettings,
+                        timerSettings,
                         background: selectedBackground,
                         cardSize: selectedCardSize
                     }
-                })
-            });
-
-            const data = response.data;
-
-            if(data.success) {
-                setSuccessMessage("Profile saved successfully.  Please note settings changed here will only apply at the start of your next game");
-                getLobbySocket()?.emit("authenticate", data.token);
-                refreshUser(data.user, data.token);
-            } else {
-                setErrorMessage(data.message);
-            }
-        } catch(error) {
-            const e = error as { response?: { data?: { message?: string } } };
-            setErrorMessage(e.response?.data?.message || "An error occurred while saving your profile");
+                }
+            })).unwrap();
+            setSuccessMessage("Profile saved successfully.  Please note settings changed here will only apply at the start of your next game");
+        } catch(err: any) {
+            setErrorMessage(err?.message || "An error occurred while saving your profile");
         } finally {
             setLoading(false);
         }
@@ -557,6 +547,6 @@ function mapStateToProps(state: RootState) {
     };
 }
 
-const Profile: React.ComponentType = connect(mapStateToProps, actions)(InnerProfile);
+const Profile: React.ComponentType = connect(mapStateToProps)(InnerProfile);
 
 export default Profile;
