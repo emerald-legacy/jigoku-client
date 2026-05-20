@@ -1,24 +1,30 @@
 import type { Dispatch } from "redux";
 import { getLobbySocket, getGameSocket, setGameSocket } from "../socket";
+import {
+    socketConnected,
+    socketDisconnected,
+    gameSocketConnected,
+    gameSocketConnecting,
+    gameSocketConnectFailed,
+    gameSocketClosed,
+    socketMessageSent,
+    gameSocketConnectError,
+    gameSocketDisconnect,
+    gameSocketReconnecting
+} from "../reducers/socket";
 
-export function socketConnected() {
-    return {
-        type: "SOCKET_CONNECTED" as const
-    };
-}
-
-export function socketDisconnected() {
-    return {
-        type: "SOCKET_DISCONNECTED" as const
-    };
-}
-
-export function socketMessageSent(message: string) {
-    return {
-        type: "SOCKET_MESSAGE_SENT" as const,
-        message: message
-    };
-}
+export {
+    socketConnected,
+    socketDisconnected,
+    gameSocketConnected,
+    gameSocketConnecting,
+    gameSocketConnectFailed,
+    gameSocketClosed,
+    socketMessageSent,
+    gameSocketConnectError,
+    gameSocketDisconnect,
+    gameSocketReconnecting
+};
 
 export function sendSocketMessage(message: string, ...args: any[]) {
     return (dispatch: Dispatch) => {
@@ -40,44 +46,6 @@ export function sendGameMessage(message: string, ...args: any[]) {
     };
 }
 
-export function gameSocketConnected() {
-    return {
-        type: "GAME_SOCKET_CONNECTED" as const
-    };
-}
-
-export function gameSocketConnectError() {
-    return {
-        type: "GAME_SOCKET_CONNECT_ERROR" as const
-    };
-}
-
-export function gameSocketDisconnect() {
-    return {
-        type: "GAME_SOCKET_DISCONNETED" as const
-    };
-}
-
-export function gameSocketReconnecting(attemptNumber?: number) {
-    return {
-        type: "GAME_SOCKET_RECONNECTED" as const,
-        attemptNumber
-    };
-}
-
-export function gameSocketConnecting(host: string) {
-    return {
-        type: "GAME_SOCKET_CONNECTING" as const,
-        host: host
-    };
-}
-
-export function gameSocketConnectFailed() {
-    return {
-        type: "GAME_SOCKET_CONNECT_FAILED" as const
-    };
-}
-
 export function sendGameSocketConnectFailed() {
     return (dispatch: Dispatch) => {
         const socket = getLobbySocket();
@@ -88,16 +56,9 @@ export function sendGameSocketConnectFailed() {
     };
 }
 
-export function gameSocketClosed(message?: string) {
-    return {
-        type: "GAME_SOCKET_CLOSED" as const,
-        message: message
-    };
-}
-
 export function gameSocketClose() {
     return (dispatch: Dispatch) => {
-        return dispatch(gameSocketClosed());
+        return dispatch(gameSocketClosed(undefined));
     };
 }
 
@@ -109,6 +70,6 @@ export function closeGameSocket() {
             socket.close();
             setGameSocket(null);
         }
-        return dispatch(gameSocketClosed());
+        return dispatch(gameSocketClosed(undefined));
     };
 }

@@ -1,37 +1,53 @@
-import { SocketState } from "../types/redux";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import type { SocketState } from "../types/redux";
 
-export default function(state: SocketState = {} as SocketState, action: any): SocketState {
-    switch(action.type) {
-        case "SOCKET_CONNECTED":
-            return Object.assign({}, state, {
-                connected: true
-            });
-        case "SOCKET_DISCONNECTED":
-            return Object.assign({}, state, {
-                connected: false
-            });
-        case "GAME_SOCKET_CONNECTED":
-            return Object.assign({}, state, {
-                gameConnected: true,
-                gameConnecting: false
-            });
-        case "GAME_SOCKET_CONNECTING":
-            return Object.assign({}, state, {
-                gameConnecting: true,
-                gameHost: action.host
-            });
-        case "GAME_SOCKET_CONNECT_FAILED":
-            return Object.assign({}, state, {
-                gameConnecting: false,
-                gameHost: undefined
-            });
-        case "GAME_SOCKET_CLOSED":
-            return Object.assign({}, state, {
-                gameConnected: false,
-                gameConnecting: false,
-                gameHost: undefined
-            });
+const socketSlice = createSlice({
+    name: "socket",
+    initialState: {} as SocketState,
+    reducers: {
+        socketConnected(state) {
+            state.connected = true;
+        },
+        socketDisconnected(state) {
+            state.connected = false;
+        },
+        gameSocketConnected(state) {
+            state.gameConnected = true;
+            state.gameConnecting = false;
+        },
+        gameSocketConnecting(state, action: PayloadAction<string>) {
+            state.gameConnecting = true;
+            state.gameHost = action.payload;
+        },
+        gameSocketConnectFailed(state) {
+            state.gameConnecting = false;
+            state.gameHost = undefined;
+        },
+        gameSocketClosed(state, _action: PayloadAction<string | undefined>) {
+            state.gameConnected = false;
+            state.gameConnecting = false;
+            state.gameHost = undefined;
+        },
+        socketMessageSent(_state, _action: PayloadAction<string>) {
+            // no-op; emitted for devtools traceability
+        },
+        gameSocketConnectError(_state) {
+            // no-op; emitted for devtools traceability
+        },
+        gameSocketDisconnect(_state) {
+            // no-op; emitted for devtools traceability
+        },
+        gameSocketReconnecting(_state, _action: PayloadAction<number | undefined>) {
+            // no-op; emitted for devtools traceability
+        }
     }
+});
 
-    return state;
-}
+export const {
+    socketConnected, socketDisconnected,
+    gameSocketConnected, gameSocketConnecting, gameSocketConnectFailed,
+    gameSocketClosed, socketMessageSent, gameSocketConnectError,
+    gameSocketDisconnect, gameSocketReconnecting
+} = socketSlice.actions;
+
+export default socketSlice.reducer;
