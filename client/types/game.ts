@@ -136,6 +136,8 @@ export interface Player {
     additionalPiles?: Record<string, { cards: Card[]; title?: string }>;
     disconnected?: boolean;
     deck?: { selected?: boolean; status?: any; name?: string };
+    id?: string;
+    cardsPlayedThisConflict?: number;
 }
 
 export interface Button {

@@ -9,31 +9,27 @@ import type { RootState, AnimationEvent } from "./types/redux";
 import type { GameState, Card as CardType, Ring as RingType, Player, MenuItem, Spectator, GameMessage, MessageFragment } from "./types/game";
 import type { User } from "./types/user";
 
-import PlayerStatsBox from "./GameComponents/PlayerStatsBox";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- used in commented-out sidebar stats feature
 import PlayerStatsRow from "./GameComponents/PlayerStatsRow";
 import PlayerHand from "./GameComponents/PlayerHand";
-import DynastyRow from "./GameComponents/DynastyRow";
-import StrongholdRow from "./GameComponents/StrongholdRow";
-import Ring from "./GameComponents/Ring";
-import HonorFan from "./GameComponents/HonorFan";
+import GameSettingsModal from "./GameComponents/GameSettingsModal";
+import OpponentBoardArea from "./GameComponents/OpponentBoardArea";
+import MyBoardArea from "./GameComponents/MyBoardArea";
 import ActivePlayerPrompt from "./GameComponents/ActivePlayerPrompt";
-import Avatar from "./Avatar";
 import CardZoom from "./GameComponents/CardZoom";
 import Card from "./GameComponents/Card";
 import Chat from "./GameComponents/Chat";
 import Controls from "./GameComponents/Controls";
-import CardPile from "./GameComponents/CardPile";
-import GameConfiguration from "./GameComponents/GameConfiguration";
 import { tryParseJSON } from "./util.js";
 import { downloadGameLog } from "./GameComponents/gameLogSerializer.js";
-import GameModes from "./GameModes";
 import { getCardImageUrl } from "./cardImageUrl.js";
 
 import * as actions from "./actions";
 import { clearAnimation } from "./ReduxActions/game";
 import { makeCardsInPlayGrouper } from "./selectors/cardsInPlay";
 import HonorChangeOverlay from "./GameComponents/HonorChangeOverlay";
+import CenterBar from "./GameComponents/CenterBar";
+import PlayerSidebar from "./GameComponents/PlayerSidebar";
 
 type ActionFn = (...args: any[]) => any;
 
@@ -75,7 +71,6 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
     constructor(props: GameBoardProps) {
         super(props);
 
-        this.modalRef = createRef();
         this.draggableRef = createRef();
         this.opponentDraggableRef = createRef();
 
@@ -129,7 +124,6 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         this.notifyOfNewMessages(this.props, prevProps);
     }
 
-    private modalRef: RefObject<HTMLDivElement | null>;
     private draggableRef: RefObject<any>;
     private opponentDraggableRef: RefObject<any>;
     private boundActions: Record<string, ActionFn>;
@@ -427,228 +421,6 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         }
     }
 
-    getRings(owner: string | null, className: string) {
-        const thisPlayer = this.props.currentGame.players[this.props.username];
-        const showRingEffects = thisPlayer?.optionSettings?.showRingEffects;
-        const gameMode = this.props.currentGame.gameMode;
-        return (<div className={ className } >
-            { !this.props.currentGame.rings.air.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.air } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-            { !this.props.currentGame.rings.earth.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.earth } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-            { !this.props.currentGame.rings.fire.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.fire } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-            { !this.props.currentGame.rings.void.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.void } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-            { !this.props.currentGame.rings.water.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.water } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-        </div>);
-    }
-
-    getRemovedRings(owner: string | null, className: string) {
-        const thisPlayer = this.props.currentGame.players[this.props.username];
-        const showRingEffects = thisPlayer?.optionSettings?.showRingEffects;
-        const gameMode = this.props.currentGame.gameMode;
-        return (
-            <div className={ className }>
-                { this.props.currentGame.rings.air.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.air } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-                { this.props.currentGame.rings.earth.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.earth } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-                { this.props.currentGame.rings.fire.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.fire } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-                { this.props.currentGame.rings.void.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.void } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-                { this.props.currentGame.rings.water.removedFromGame ? <Ring owner={ owner } ring={ this.props.currentGame.rings.water } onClick={ this.onRingClick } size={ this.props.user.settings.cardSize } onMenuItemClick={ this.onRingMenuItemClick } showRingEffects={ showRingEffects } gameMode={ gameMode } /> : null }
-            </div>
-        );
-    }
-
-    renderCenterBar(thisPlayer: any, otherPlayer: any, conflict: any) {
-        var conflictElement;
-        //if there's an active conflict, build the conflict tracker element
-        if(conflict.attackingPlayerId) {
-            let thisPlayerSkill = "-";
-            let otherPlayerSkill = "-";
-            if(otherPlayer && otherPlayer.id.includes(conflict.attackingPlayerId)) {
-                otherPlayerSkill = (conflict.attackerSkill !== undefined) ? conflict.attackerSkill : "-";
-                thisPlayerSkill = (conflict.defenderSkill !== undefined && !conflict.unopposed) ? conflict.defenderSkill : "-";
-            } else if(otherPlayer && otherPlayer.id.includes(conflict.defendingPlayerId)) {
-                otherPlayerSkill = (conflict.defenderSkill !== undefined && !conflict.unopposed) ? conflict.defenderSkill : "-";
-                thisPlayerSkill = (conflict.attackerSkill !== undefined) ? conflict.attackerSkill : "-";
-            } else {
-                //games with no opponent should still show conflict skill
-                thisPlayerSkill = (conflict.attackerSkill !== undefined) ? conflict.attackerSkill : "-";
-            }
-            let conflictClass = `icon-${conflict.type} conflict-${conflict.type} icon-medium skill-symbol`;
-
-            conflictElement = (<div>
-                <div className="conflict-panel">
-                    <div className="phase-display conflict-count-top">
-                        { otherPlayerSkill }
-                    </div>
-                    <div className="phase-display conflict-separator">
-                        vs
-                    </div>
-                    <div className="phase-display conflict-count-bottom">
-                        { thisPlayerSkill }
-                    </div>
-                </div>
-                <div className="conflict-panel">
-                    <div className="phase-display">
-                        <span className={ conflictClass } >&nbsp;</span>
-                        { conflict.elements && conflict.elements.includes("fire") && <span className="icon-element-fire">&nbsp;</span> }
-                        { conflict.elements && conflict.elements.includes("water") && <span className="icon-element-water">&nbsp;</span> }
-                        { conflict.elements && conflict.elements.includes("earth") && <span className="icon-element-earth">&nbsp;</span> }
-                        { conflict.elements && conflict.elements.includes("air") && <span className="icon-element-air">&nbsp;</span> }
-                        { conflict.elements && conflict.elements.includes("void") && <span className="icon-element-void" /> }
-                    </div>
-                </div>
-
-            </div>);
-        } else {
-            conflictElement = <div />;
-        }
-
-        return (<div className="center-bar">
-            { this.getRings(null, "ring-panel") }
-            { this.anyRemovedRings() ? this.getRemovedRings(null, "ring-panel removed-rings") : null }
-            { conflictElement }
-            { this.getCardsPlayedTracker(conflict, thisPlayer, otherPlayer) }
-            { this.getRingAttachments(thisPlayer, otherPlayer) }
-        </div>);
-    }
-
-    anyRemovedRings() {
-        const rings = this.props.currentGame.rings;
-
-        return rings.air.removedFromGame || rings.earth.removedFromGame || rings.water.removedFromGame || rings.fire.removedFromGame || rings.void.removedFromGame;
-    }
-
-    getCardsPlayedTracker(conflict: any, thisPlayer: any, otherPlayer: any) {
-        const handImageStyle = { backgroundImage: "url(/img/conflictcard.png)" };
-
-        if(!conflict.attackingPlayerId) {
-            return null;
-        }
-
-        return (
-            <div className="cards-played-tracker__container">
-                <div className="cards-played-tracker cards-played-tracker--opponent">
-                    <div className="stat-image undefined" style={ handImageStyle } />
-                    <div className="cards-played-tracker__count" >{ otherPlayer && otherPlayer.cardsPlayedThisConflict || 0 }</div>
-                </div>
-                <div className="cards-played-tracker cards-played-tracker--me">
-                    <div className="stat-image undefined" style={ handImageStyle } />
-                    <div className="cards-played-tracker__count" >{ thisPlayer.cardsPlayedThisConflict || 0 }</div>
-                </div>
-            </div>
-        );
-    }
-
-    getRingAttachments(thisPlayer: Player, otherPlayer?: Player) {
-        var opponentRingAttachments: Record<string, CardType[]> = !!otherPlayer && !!this.props.currentGame.rings ? this.getControlledRingAttachments(Object.values<RingType>(this.props.currentGame.rings), otherPlayer) : {};
-        var playerRingAttachments: Record<string, CardType[]> = !!thisPlayer && !!this.props.currentGame.rings ? this.getControlledRingAttachments(Object.values<RingType>(this.props.currentGame.rings), thisPlayer) : {};
-
-        return (<div className="ring-attachments__container">
-            <div className="ring-attachments__container-inner">
-                <div className="ring-attachments ring-attachments--opponent">
-                    { Object.keys(opponentRingAttachments).map(key => this.renderRingAttachments(key, opponentRingAttachments[key], true)) }
-                </div>
-                <div className="ring-attachments ring-attachments--me">
-                    { Object.keys(playerRingAttachments).map(key => this.renderRingAttachments(key, playerRingAttachments[key], true)) }
-                </div>
-            </div>
-        </div>);
-    }
-
-    renderRingAttachments(element: string, attachments: CardType[], amController: boolean) {
-        let ringAttachmentWidthModifier = 0.8;
-        let attachmentOffset = 13 * ringAttachmentWidthModifier;
-        let cardLayer = 45;
-        switch(this.props.user.settings.cardSize) {
-            case "large":
-                attachmentOffset *= 1.4;
-                break;
-            case "small":
-                attachmentOffset *= 0.8;
-                break;
-            case "x-large":
-                attachmentOffset *= 2;
-                break;
-        }
-
-        return attachments.length
-            ? <div id={ `ring-attachments-${element}` } className="ring-attachments--element" style={ {marginLeft: `${(attachments.length - 1) * attachmentOffset}px`} } >
-                <img className="ring-attachments__ring-symbol" src={ `/img/military-${element}.png` } />
-                {
-                    attachments.map((card: CardType, index: number) => {
-                        return (<div key={ card.uuid } className={ index !== 0 ? "ring-attachment--stacked" : "ring-attachment" } style={ {marginLeft: `${-1 * (index * attachmentOffset)}px`, zIndex: (cardLayer - index)} }>
-                            <Card source="play area" card={ card } disableMouseOver={ card.facedown && !card.code }
-                                onMenuItemClick={ this.onMenuItemClick } onMouseOver={ this.onMouseOver } onMouseOut={ this.onMouseOut }
-                                showStats={ false }
-                                onClick={ this.onCardClick } onDragDrop={ this.onDragDrop } size={ this.props.user.settings.cardSize } isMe={ amController }
-                            />
-                        </div>);
-                    })
-                }
-            </div>
-            : null;
-    }
-
-    getControlledRingAttachments(rings: RingType[], player: Player) {
-        var ownedRingAttachments: Record<string, CardType[]> = {};
-        var getOwnedAttachmentsByElement = (ownedAttachments: Record<string, CardType[]>, ring: RingType & { attachments?: CardType[] }) => {
-            ownedAttachments[ring.element] = (ring.attachments && ring.attachments.filter((card: CardType) => this.isControlledByPlayer(card, player))) || [];
-            return ownedAttachments;
-        };
-
-        return rings.reduce(getOwnedAttachmentsByElement, ownedRingAttachments);
-    }
-    isControlledByPlayer(card: CardType & { controller?: { name?: string } }, player: Player) {
-        return card.controller?.name === player.name;
-    }
-    renderSidebar(thisPlayer: Player, otherPlayer?: Player) {
-        let size = this.props.user.settings.cardSize;
-        return (
-            <div className={ `province-pane ${size}` }>
-                <div className="player-nameplate">
-                    <Avatar emailHash={ otherPlayer && otherPlayer.user ? otherPlayer.user.emailHash : "unknown" } />
-                    <div className="player-name">
-                        { otherPlayer && otherPlayer.user ? otherPlayer.user.username : "Noone" }
-                    </div>
-                </div>
-                <div className={ `sidebar-pane their-side ${size}` }>
-                    { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ otherPlayer?.showBid ?? 0 } /> }
-                    { this.getRings(otherPlayer ? otherPlayer.name : "\0", `claimed-pool their-pool ${size || ""}`) }
-                    <div className="sidebar-pane their-side">
-                        <PlayerStatsBox
-                            clockState={ otherPlayer ? otherPlayer.clock : null }
-                            stats={ otherPlayer ? otherPlayer.stats : null }
-                            user={ otherPlayer ? otherPlayer.user : null }
-                            firstPlayer={ otherPlayer && otherPlayer.firstPlayer }
-                            handSize={ otherPlayer && otherPlayer.cardPiles.hand ? otherPlayer.cardPiles.hand.length : 0 }
-                            otherPlayer
-                            size={ size }
-                        />
-                    </div>
-                </div>
-                <div className="sidebar-pane our-side">
-                    <PlayerStatsBox
-                        { ...this.boundActions }
-                        clockState={ thisPlayer.clock }
-                        stats={ thisPlayer.stats }
-                        showControls={ !this.state.spectating && this.props.currentGame.manualMode }
-                        user={ thisPlayer.user }
-                        firstPlayer={ thisPlayer.firstPlayer }
-                        otherPlayer={ false }
-                        spectating={ this.state.spectating }
-                        size={ size }
-                        handSize={ thisPlayer.cardPiles.hand ? thisPlayer.cardPiles.hand.length : 0 } />
-                    { this.getRings(thisPlayer ? thisPlayer.name : "\0", `claimed-pool my-pool ${size || ""}`) }
-                    { thisPlayer.hideProvinceDeck && <HonorFan size={ size } value={ thisPlayer.showBid ?? 0 } /> }
-                </div>
-                <div className="player-nameplate our-side">
-                    <Avatar emailHash={ thisPlayer.user ? thisPlayer.user.emailHash : "unknown" } />
-                    <div className="player-name">
-                        { thisPlayer.user ? thisPlayer.user.username : "Noone" }
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     getPrompt(thisPlayer: Player) {
         return (<div className="inset-pane">
             <ActivePlayerPrompt title={ thisPlayer.menuTitle }
@@ -785,30 +557,16 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
         //     thisPlayerCards.push(<div className="card-row player-home" key={ 'other-empty' + i } />);
         // }
 
-        let popup = (
-            <div id="settings-modal" ref={ this.modalRef } className={ `modal fade ${this.state.showSettingsModal ? "in" : ""}` } style={ { display: this.state.showSettingsModal ? "block" : "none" } } tabIndex={ -1 } role="dialog">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content settings-popup row">
-                        <div className="modal-header">
-                            <button type="button" className="close" aria-label="Close" onClick={ () => this.setState({ showSettingsModal: false }) }><span aria-hidden="true">×</span></button>
-                            <h4 className="modal-title">Game Configuration</h4>
-                        </div>
-                        <div className="modal-body col-xs-12">
-                            <GameConfiguration actionWindows={ thisPlayer.promptedActionWindows } timerSettings={ thisPlayer.timerSettings }
-                                optionSettings={ thisPlayer.optionSettings } onOptionSettingToggle={ this.onOptionSettingToggle.bind(this) }
-                                onToggle={ this.onPromptedActionWindowToggle.bind(this) } onTimerSettingToggle={ this.onTimerSettingToggle.bind(this) }
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>);
-
-        let backdrop = this.state.showSettingsModal ? <div className="modal-backdrop fade in" onClick={ () => this.setState({ showSettingsModal: false }) } /> : null;
-
         return (
             <div className="game-board">
-                { popup }
-                { backdrop }
+                <GameSettingsModal
+                    show={ this.state.showSettingsModal }
+                    thisPlayer={ thisPlayer }
+                    onClose={ () => this.setState({ showSettingsModal: false }) }
+                    onPromptedActionWindowToggle={ this.onPromptedActionWindowToggle.bind(this) }
+                    onTimerSettingToggle={ this.onTimerSettingToggle.bind(this) }
+                    onOptionSettingToggle={ this.onOptionSettingToggle.bind(this) }
+                />
                 <HonorChangeOverlay
                     animations={ this.props.pendingAnimations || [] }
                     onDismiss={ () => {
@@ -836,108 +594,67 @@ export class InnerGameBoard extends React.Component<GameBoardProps, GameBoardSta
                     </div>
                 */ }
                 <div className={ `main-window ${this.props.user.settings.cardSize}` }>
-                    { this.renderSidebar(thisPlayer, otherPlayer) }
+                    <PlayerSidebar
+                        thisPlayer={ thisPlayer }
+                        otherPlayer={ otherPlayer }
+                        cardSize={ this.props.user.settings.cardSize }
+                        showRingEffects={ thisPlayer?.optionSettings?.showRingEffects }
+                        gameMode={ this.props.currentGame.gameMode }
+                        rings={ this.props.currentGame.rings }
+                        spectating={ this.state.spectating }
+                        manualMode={ this.props.currentGame.manualMode }
+                        boundActions={ this.boundActions }
+                        onRingClick={ this.onRingClick }
+                        onRingMenuItemClick={ this.onRingMenuItemClick }
+                    />
                     <div className={ `play-area${this.props.user.settings.cardSize ? ` ${this.props.user.settings.cardSize}` : ""}` }>
-                        <div className={ `player-board their-side${this.props.user.settings.cardSize ? ` ${this.props.user.settings.cardSize}` : ""}` }>
-                            <div className="player-deck-row">
-                                <DynastyRow
-                                    conflictDiscardPile={ otherPlayer ? otherPlayer.cardPiles.conflictDiscardPile : [] }
-                                    conflictDeck={ otherPlayer ? otherPlayer.cardPiles.conflictDeck : [] }
-                                    conflictDeckTopCard={ otherPlayer ? otherPlayer.conflictDeckTopCard : null }
-                                    dynastyDiscardPile={ otherPlayer ? otherPlayer.cardPiles.dynastyDiscardPile : [] }
-                                    dynastyDeck={ otherPlayer ? otherPlayer.cardPiles.dynastyDeck : [] }
-                                    dynastyDeckTopCard={ otherPlayer ? otherPlayer.dynastyDeckTopCard : null }
-                                    removedFromGame={ otherPlayer ? otherPlayer.cardPiles.removedFromGame : [] }
-                                    numConflictCards={ otherPlayer ? otherPlayer.numConflictCards : 0 }
-                                    numDynastyCards={ otherPlayer ? otherPlayer.numDynastyCards : 0 }
-                                    province1Cards={ otherPlayer ? otherPlayer.provinces.one : [] }
-                                    province2Cards={ otherPlayer ? otherPlayer.provinces.two : [] }
-                                    province3Cards={ otherPlayer ? otherPlayer.provinces.three : [] }
-                                    province4Cards={ otherPlayer ? otherPlayer.provinces.four : [] }
-                                    onCardClick={ this.onCardClick }
-                                    onMouseOver={ this.onMouseOver }
-                                    onMouseOut={ this.onMouseOut }
-                                    otherPlayer= { otherPlayer }
-                                    isSkirmish = { this.props.currentGame.skirmishMode || this.props.currentGame.gameMode === GameModes.Skirmish }
-                                    cardSize={ this.props.user.settings.cardSize } />
-                            </div>
-                            { otherPlayerCards }
-                            <StrongholdRow
-                                onCardClick={ this.onCardClick }
-                                onMouseOver={ this.onMouseOver }
-                                onMouseOut={ this.onMouseOut }
-                                otherPlayer= { otherPlayer }
-                                strongholdProvinceCards={ otherPlayer ? otherPlayer.strongholdProvince : [] }
-                                role={ otherPlayer ? otherPlayer.role : null }
-                                isSkirmish = { this.props.currentGame.skirmishMode || this.props.currentGame.gameMode === GameModes.Skirmish }
-                                cardSize={ this.props.user.settings.cardSize }
-                            />
-                        </div>
-                        { this.renderCenterBar(thisPlayer, otherPlayer, this.props.currentGame.conflict) }
-                        <div className={ `player-board our-side${this.props.user.settings.cardSize ? ` ${this.props.user.settings.cardSize}` : ""}` } onDragOver={ this.onDragOver }
-                            onDrop={ event => this.onDragDropEvent(event, "play area") } >
-                            <StrongholdRow isMe={ !this.state.spectating }
-                                spectating={ this.state.spectating }
-                                onCardClick={ this.onCardClick }
-                                onDragDrop={ this.onDragDrop }
-                                onMenuItemClick={ this.onMenuItemClick }
-                                onMouseOver={ this.onMouseOver }
-                                onMouseOut={ this.onMouseOut }
-                                strongholdProvinceCards={ thisPlayer.strongholdProvince }
-                                role={ thisPlayer.role }
-                                thisPlayer ={ thisPlayer }
-                                isSkirmish = { this.props.currentGame.skirmishMode || this.props.currentGame.gameMode === GameModes.Skirmish }
-                                cardSize={ this.props.user.settings.cardSize } />
-                            {
-                                !thisPlayer.hideProvinceDeck &&
-                                <div className="province-group our-side no-highlight">
-                                    <CardPile
-                                        className="province-deck"
-                                        title="Province Deck" source="province deck"
-                                        cards={ thisPlayer.cardPiles.provinceDeck }
-                                        hiddenTopCard
-                                        onMouseOver={ this.onMouseOver }
-                                        onMouseOut={ this.onMouseOut }
-                                        onCardClick={ this.onCardClick }
-                                        onDragDrop={ this.onDragDrop }
-                                        disableMenu={ this.state.spectating }
-                                        closeOnClick
-                                        size={ this.props.user.settings.cardSize } />
-                                </div>
-                            }
-                            { thisPlayerCards }
-                            <div className="player-deck-row our-side">
-                                <DynastyRow isMe={ !this.state.spectating }
-                                    conflictDiscardPile={ thisPlayer.cardPiles.conflictDiscardPile }
-                                    conflictDeck={ thisPlayer.cardPiles.conflictDeck }
-                                    conflictDeckTopCard={ thisPlayer.conflictDeckTopCard }
-                                    dynastyDiscardPile={ thisPlayer.cardPiles.dynastyDiscardPile }
-                                    dynastyDeck={ thisPlayer.cardPiles.dynastyDeck }
-                                    dynastyDeckTopCard={ thisPlayer.dynastyDeckTopCard }
-                                    removedFromGame={ thisPlayer.cardPiles.removedFromGame }
-                                    onCardClick={ this.onCardClick }
-                                    onConflictClick={ this.onConflictClick }
-                                    onDynastyClick={ this.onDynastyClick }
-                                    onMouseOver={ this.onMouseOver }
-                                    onMouseOut={ this.onMouseOut }
-                                    manualMode={ manualMode }
-                                    numConflictCards={ thisPlayer.numConflictCards }
-                                    numDynastyCards={ thisPlayer.numDynastyCards }
-                                    onConflictShuffleClick={ this.onConflictShuffleClick }
-                                    onDynastyShuffleClick={ this.onDynastyShuffleClick }
-                                    province1Cards={ thisPlayer.provinces.one }
-                                    province2Cards={ thisPlayer.provinces.two }
-                                    province3Cards={ thisPlayer.provinces.three }
-                                    province4Cards={ thisPlayer.provinces.four }
-                                    showConflictDeck={ this.state.showConflictDeck }
-                                    showDynastyDeck={ this.state.showDynastyDeck }
-                                    onDragDrop={ this.onDragDrop }
-                                    spectating={ this.state.spectating }
-                                    onMenuItemClick={ this.onMenuItemClick }
-                                    isSkirmish = { this.props.currentGame.skirmishMode || this.props.currentGame.gameMode === GameModes.Skirmish }
-                                    cardSize={ this.props.user.settings.cardSize } />
-                            </div>
-                        </div>
+                        <OpponentBoardArea
+                            otherPlayer={ otherPlayer }
+                            otherPlayerCards={ otherPlayerCards }
+                            cardSize={ this.props.user.settings.cardSize }
+                            gameMode={ this.props.currentGame.gameMode }
+                            skirmishMode={ this.props.currentGame.skirmishMode }
+                            onCardClick={ this.onCardClick }
+                            onMouseOver={ this.onMouseOver }
+                            onMouseOut={ this.onMouseOut }
+                            onMenuItemClick={ this.onMenuItemClick }
+                        />
+                        <CenterBar
+                            currentGame={ this.props.currentGame }
+                            thisPlayer={ thisPlayer }
+                            otherPlayer={ otherPlayer }
+                            cardSize={ this.props.user.settings.cardSize }
+                            showRingEffects={ thisPlayer?.optionSettings?.showRingEffects }
+                            onRingClick={ this.onRingClick }
+                            onRingMenuItemClick={ this.onRingMenuItemClick }
+                            onCardClick={ this.onCardClick }
+                            onDragDrop={ this.onDragDrop }
+                            onMenuItemClick={ this.onMenuItemClick }
+                            onMouseOver={ this.onMouseOver }
+                            onMouseOut={ this.onMouseOut }
+                        />
+                        <MyBoardArea
+                            thisPlayer={ thisPlayer }
+                            thisPlayerCards={ thisPlayerCards }
+                            cardSize={ this.props.user.settings.cardSize }
+                            spectating={ this.state.spectating }
+                            manualMode={ manualMode }
+                            gameMode={ this.props.currentGame.gameMode }
+                            skirmishMode={ this.props.currentGame.skirmishMode }
+                            showConflictDeck={ this.state.showConflictDeck }
+                            showDynastyDeck={ this.state.showDynastyDeck }
+                            onCardClick={ this.onCardClick }
+                            onMouseOver={ this.onMouseOver }
+                            onMouseOut={ this.onMouseOut }
+                            onMenuItemClick={ this.onMenuItemClick }
+                            onDragDrop={ this.onDragDrop }
+                            onConflictClick={ this.onConflictClick }
+                            onDynastyClick={ this.onDynastyClick }
+                            onConflictShuffleClick={ this.onConflictShuffleClick }
+                            onDynastyShuffleClick={ this.onDynastyShuffleClick }
+                            onDragOver={ this.onDragOver }
+                            onDropToPlayArea={ event => this.onDragDropEvent(event, "play area") }
+                        />
                     </div>
                     <div className="right-side">
                         <CardZoom imageUrl={ this.props.cardToZoom ? this.getCardImageUrl(this.props.cardToZoom) : "" }
@@ -997,6 +714,6 @@ function mapDispatchToProps(dispatch: Dispatch): GameBoardDispatchProps {
     return { ...(boundActions as Omit<GameBoardDispatchProps, "dispatch">), dispatch };
 }
 
-const GameBoard = connect(mapStateToProps, mapDispatchToProps, null, { forwardRef: true })(InnerGameBoard);
+const GameBoard = connect(mapStateToProps, mapDispatchToProps)(InnerGameBoard);
 
 export default GameBoard;
