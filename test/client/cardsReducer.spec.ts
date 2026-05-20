@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { configureStore } from "@reduxjs/toolkit";
-import cardsReducer, { selectDeck, addDeck, updateDeck } from "../../client/reducers/cards";
+import cardsReducer, { selectDeck, addDeck, updateDeck, receiveDecksUnvalidated } from "../../client/reducers/cards";
 import { loadCards, loadFactions } from "../../client/ReduxActions/cards";
 import { loadDecks } from "../../client/ReduxActions/deck";
 
@@ -76,5 +76,28 @@ describe("cards reducer", () => {
         const sel = store.getState().cards.selectedDeck;
         expect(sel?._id).toBe("x");
         expect(sel?.stronghold?.[0]?.card?.id).toBe("c1");
+    });
+
+    it("receiveDecksUnvalidated hydrates card stubs from the catalog so DeckSummary can render name/type (regression: was discarding processDecks return value, leaving stubs unhydrated)", () => {
+        store.dispatch(receiveDecksUnvalidated([
+            {
+                _id: "x",
+                name: "X",
+                faction: { name: "Crab", value: "crab" },
+                conflictCards: [{ count: 3, card: { id: "c1" }, pack_id: "core" }],
+                dynastyCards: [], provinceCards: [], role: [], stronghold: []
+            }
+        ]));
+        const sel = store.getState().cards.selectedDeck;
+        expect(sel?.conflictCards?.[0]?.card).toMatchObject({ id: "c1", name: "Card 1", type: "character" });
+    });
+
+    it("receiveDecksUnvalidated still selects the first deck even when only stubs are sent (preserves the existing selection flow)", () => {
+        store.dispatch(receiveDecksUnvalidated([
+            { _id: "first", name: "First", faction: { name: "Crab", value: "crab" }, conflictCards: [], dynastyCards: [], provinceCards: [], role: [], stronghold: [] },
+            { _id: "second", name: "Second", faction: { name: "Crab", value: "crab" }, conflictCards: [], dynastyCards: [], provinceCards: [], role: [], stronghold: [] }
+        ]));
+        expect(store.getState().cards.selectedDeck?._id).toBe("first");
+        expect(store.getState().cards.decksValidating).toBe(true);
     });
 });

@@ -89,9 +89,8 @@ const cardsSlice = createSlice({
             state.deckSaved = false;
         },
         receiveDecksUnvalidated(state, action: PayloadAction<any[]>) {
-            processDecks(action.payload, state);
             state.singleDeck = false;
-            state.decks = action.payload;
+            state.decks = processDecks(action.payload, state);
             state.decksValidating = true;
             applySelectDeck(state, state.decks[0]);
         },
