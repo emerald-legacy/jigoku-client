@@ -10,29 +10,20 @@ interface NewsProps {
 }
 
 function News({ news }: NewsProps) {
-    const icons = ["military", "political"];
-
     if(!news || news.length === 0) {
         return (
-            <div className="news-container">
-                <div className="military-container">There is no site news at the moment</div>
-            </div>
+            <div className="news-empty">The court is silent. No dispatches at this hour.</div>
         );
     }
 
-    const newsItems = news.map((newsItem, index) => (
-        <NewsItem
-            key={ newsItem.datePublished }
-            icon={ icons[index % 2] }
-            date={ newsItem.datePublished }
-            text={ newsItem.text }
-        />
-    ));
-
     return (
-        <div className="news-container">
-            { newsItems }
-        </div>
+        <ol className="news-list">
+            { news.map((item) => (
+                <li key={ item.datePublished } className="news-list-item">
+                    <NewsItem date={ item.datePublished } text={ item.text } />
+                </li>
+            )) }
+        </ol>
     );
 }
 
