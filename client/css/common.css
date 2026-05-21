@@ -25,44 +25,71 @@
 }
 
 .deck-select-modal {
-    background-color: rgba(30, 30, 30, 0.95);
-    border: 1px solid rgba(71, 58, 56, 0.65);
-    color: white;
+    position: relative;
+    background: linear-gradient(180deg, rgba(20, 22, 18, 0.96), rgba(12, 14, 10, 0.96));
+    border: 1px solid rgba(120, 180, 80, 0.22);
+    border-radius: 6px;
+    color: rgba(232, 234, 220, 0.96);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
+    overflow: hidden;
+}
+
+.deck-select-modal::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.55), transparent);
+    pointer-events: none;
 }
 
 .deck-select-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
-    border-bottom: 1px solid rgba(71, 58, 56, 0.65);
+    padding: 10px 16px;
+    background: linear-gradient(180deg, rgba(34, 50, 20, 0.85), rgba(20, 30, 12, 0.7));
+    border-bottom: 1px solid rgba(120, 180, 80, 0.18);
 }
 
 .deck-select-title {
-    font-size: 14px;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1rem;
     font-weight: 600;
-    color: white;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(232, 234, 220, 0.96);
 }
 
 .deck-select-close {
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(180, 200, 150, 0.55);
     font-size: 20px;
     line-height: 1;
-    padding: 0;
+    padding: 0 4px;
     cursor: pointer;
+    transition: color 0.15s;
 
     &:hover {
-        color: white;
+        color: rgba(150, 220, 90, 1);
     }
 }
 
 .deck-select-list {
     max-height: 60vh;
     overflow-y: auto;
-    padding: 4px;
+    padding: 10px 14px 14px;
+    scrollbar-color: rgba(120, 180, 80, 0.35) rgba(0, 0, 0, 0.3);
+    scrollbar-width: thin;
 }
+.deck-select-list::-webkit-scrollbar { width: 8px; }
+.deck-select-list::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+.deck-select-list::-webkit-scrollbar-thumb {
+    background: rgba(120, 180, 80, 0.3);
+    border-radius: 4px;
+}
+.deck-select-list::-webkit-scrollbar-thumb:hover { background: rgba(120, 180, 80, 0.5); }
 
 .deck-import-body {
     padding: 10px 12px;
@@ -94,19 +121,20 @@
 
 .panel {
     position: relative;
-    background-color: rgba(0, 0, 0, 0.65);
-    color: white;
+    background: linear-gradient(180deg, rgba(20, 22, 18, 0.85), rgba(12, 14, 10, 0.85));
+    color: rgba(232, 234, 220, 0.96);
     font-size: 14px;
-    margin: 5px;
-    padding: 10px;
-    border: 1px solid rgba(71, 58, 56, 0.65);
+    margin: 0 5px 5px 5px;
+    padding: 12px 14px;
+    border: 1px solid rgba(120, 180, 80, 0.20);
+    border-top: none;
     overflow: visible;
-    border-radius: 0 0 5px 5px;
-    top: -5px;
+    border-radius: 0 0 6px 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
 .panel-darker {
-    background-color: rgba(0, 0, 0, 0.75);
+    background: linear-gradient(180deg, rgba(14, 16, 12, 0.92), rgba(8, 10, 6, 0.92));
 }
 
 .absolute-panel {

@@ -208,23 +208,29 @@
 }
 
 .deck-status {
-    padding: 2px 8px;
+    padding: 2px 9px;
     border-radius: 3px;
-    font-size: 12px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 10px;
     font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
     white-space: nowrap;
-    color: white;
 
     &.valid {
-        background: var(--color-success);
+        background: linear-gradient(180deg, rgba(54, 80, 30, 0.95), rgba(34, 50, 20, 0.85));
+        color: rgba(180, 240, 110, 0.95);
+        border: 1px solid rgba(120, 180, 80, 0.40);
     }
 
     &.casual-play {
         background: var(--color-warning);
+        color: white;
     }
 
     &.invalid {
         background: var(--color-danger);
+        color: white;
     }
 }
 
@@ -266,7 +272,7 @@
 
 .game-list-container {
     position: absolute;
-    top: 33px;
+    top: 34px;
     bottom: 0px;
     left: 15px;
     right: 15px;

@@ -25,7 +25,10 @@
 
 .popup {
     z-index: var(--layer-card-menu);
-    background-color: rgba(0, 0, 0, 0.85);
+    background: linear-gradient(180deg, rgba(20, 22, 18, 0.92), rgba(12, 14, 10, 0.92));
+    border: 1px solid rgba(120, 180, 80, 0.20);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 
     & a {
         display: inline-block;
@@ -149,23 +152,91 @@
 }
 
 .settings-popup {
-    background: var(--color-background);
-
-    & .modal-header {
-        background: var(--color-tertiary);
-    }
+    background: linear-gradient(180deg, rgba(20, 22, 18, 0.96), rgba(12, 14, 10, 0.96));
+    border: 1px solid rgba(120, 180, 80, 0.20);
+    border-radius: 6px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    position: relative;
 }
 
-.close {
-    color: var(--color-foreground);
+.settings-popup::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.55), transparent);
+    pointer-events: none;
+}
 
-    & :hover {
-        color: var(--color-info);
-    }
+.settings-popup .modal-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    flex: 0 0 100%;
+    padding: 10px 16px;
+    background: linear-gradient(180deg, rgba(34, 50, 20, 0.85), rgba(20, 30, 12, 0.7));
+    border-bottom: 1px solid rgba(120, 180, 80, 0.18);
+    border-radius: 6px 6px 0 0;
+    box-sizing: border-box;
+}
+
+.settings-popup .modal-body {
+    width: 100%;
+    flex: 0 0 100%;
+    box-sizing: border-box;
+}
+
+.settings-popup .modal-title {
+    margin: 0;
+    flex: 1;
+    text-align: center;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.2;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(230, 235, 210, 0.95);
+}
+
+.settings-popup .close {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    padding: 0 4px;
+    color: rgba(180, 200, 150, 0.55);
+    cursor: pointer;
+    transition: color 0.15s;
+    float: none;
+}
+
+.settings-popup .close:hover {
+    color: rgba(150, 220, 90, 1);
 }
 
 .modal-title {
     text-align: center;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(230, 235, 210, 0.95);
+}
+
+.close {
+    color: var(--color-foreground);
+    float: right;
+}
+
+.close:hover {
+    color: var(--color-info);
 }
 
 .message {

@@ -2,9 +2,9 @@ import React, { useState, useEffect, useMemo } from "react";
 import { shallowEqual } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
 import { format } from "date-fns";
+import { ScrollText, Feather } from "lucide-react";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
-import TextArea from "./FormComponents/TextArea";
 
 import * as actions from "./actions";
 import { useAppSelector, useAppDispatch } from "./hooks";
@@ -41,61 +41,91 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
         setNewsText(event.target.value);
     };
 
-    const onAddNews = (event: React.MouseEvent) => {
+    const onSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        addNews(newsText);
+        const text = newsText.trim();
+        if(!text) {
+            return;
+        }
+        addNews(text);
         setNewsText("");
     };
 
-    let content = null;
+    const canSubmit = newsText.trim().length > 0;
 
-    const renderedNews = news?.map((newsItem: NewsItem, index: number) => (
-        <tr key={ index }>
-            <td>{ newsItem.datePublished ? format(new Date(newsItem.datePublished), "yyyy-MM-dd") : "" }</td>
-            <td>{ newsItem.poster }</td>
-            <td>{ newsItem.text }</td>
-        </tr>
-    ));
+    return (
+        <div className="news-admin">
+            { newsSaved ? <AlertPanel message="Dispatch published." type="success" /> : null }
+            { apiError ? <AlertPanel type="error" message={ apiError } /> : null }
 
-    let successPanel = null;
+            <div className="row">
+                <div className="col-sm-7">
+                    <div className="panel-title">
+                        <Feather size={ 14 } className="panel-title-icon" />
+                        <span>Publish a dispatch</span>
+                    </div>
+                    <div className="panel panel-darker news-admin-compose">
+                        <form onSubmit={ onSubmit }>
+                            <textarea
+                                className="news-admin-textarea"
+                                placeholder={ "Compose the next dispatch. URLs auto-linkify; line breaks are kept. Markup: <b>, <i>, <em>, <strong>, <br>." }
+                                value={ newsText }
+                                onChange={ onNewsTextChange }
+                                rows={ 6 }
+                            />
+                            <div className="news-admin-actions">
+                                <span className="news-admin-hint">
+                                    { newsText.length > 0 ? `${newsText.length} character${newsText.length === 1 ? "" : "s"}` : "" }
+                                </span>
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary"
+                                    disabled={ !canSubmit }
+                                >
+                                    Publish
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
 
-    if(newsSaved) {
-        successPanel = (
-            <AlertPanel message="News added successfully" type="success" />
-        );
-    }
-
-    if(loading) {
-        content = <div>Loading news from the server...</div>;
-    } else if(apiError) {
-        content = <AlertPanel type="error" message={ apiError } />;
-    } else {
-        content = (
-            <div>
-                { successPanel }
-                <table className="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Poster</th>
-                            <th>Text</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        { renderedNews }
-                    </tbody>
-                </table>
-
-                <form className="form">
-                    <TextArea name="newsText" label="Add news item" value={ newsText } onChange={ onNewsTextChange } />
-
-                    <button type="submit" className="btn btn-primary" onClick={ onAddNews }>Add</button>
-                </form>
+                <div className="col-sm-5">
+                    <div className="panel-title">
+                        <ScrollText size={ 14 } className="panel-title-icon" />
+                        <span>Recent dispatches</span>
+                    </div>
+                    <div className="panel panel-darker news-admin-list-panel">
+                        { loading ? (
+                            <div className="news-admin-empty">Unfurling the scroll&hellip;</div>
+                        ) : !news || news.length === 0 ? (
+                            <div className="news-admin-empty">No dispatches yet.</div>
+                        ) : (
+                            <ol className="news-admin-list">
+                                { news.map((item: NewsItem, index: number) => {
+                                    const date = item.datePublished ? new Date(item.datePublished) : null;
+                                    return (
+                                        <li key={ index } className="news-admin-list-item">
+                                            <div className="news-admin-item-meta">
+                                                <span className="news-admin-item-day">{ date ? format(date, "dd") : "--" }</span>
+                                                <span className="news-admin-item-monthyear">
+                                                    <span>{ date ? format(date, "MMM").toUpperCase() : "" }</span>
+                                                    <span>{ date ? format(date, "yyyy") : "" }</span>
+                                                </span>
+                                            </div>
+                                            <div className="news-admin-item-body">
+                                                <div className="news-admin-item-text">{ item.text }</div>
+                                                <div className="news-admin-item-poster">{ item.poster }</div>
+                                            </div>
+                                        </li>
+                                    );
+                                }) }
+                            </ol>
+                        ) }
+                    </div>
+                </div>
             </div>
-        );
-    }
-
-    return content;
+        </div>
+    );
 }
 
 InnerNewsAdmin.displayName = "NewsAdmin";

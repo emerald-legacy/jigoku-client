@@ -15,7 +15,6 @@ import ActivePlayerPrompt from "./GameComponents/ActivePlayerPrompt";
 import CardZoom from "./GameComponents/CardZoom";
 import Card from "./GameComponents/Card";
 import Chat from "./GameComponents/Chat";
-import Controls from "./GameComponents/Controls";
 import { tryParseJSON } from "./util";
 import { downloadGameLog } from "./GameComponents/gameLogSerializer";
 import { getCardImageUrl } from "./cardImageUrl";
@@ -525,8 +524,6 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
                         onMouseOver={ (fragment: MessageFragment) => zoomCard(fragment) }
                         onMouseOut={ onMouseOut }
                         sendMessage={ sendMessage }
-                    />
-                    <Controls
                         onSettingsClick={ onSettingsClick }
                         onManualModeClick={ onManualModeClick }
                         onDownloadLogClick={ onDownloadLogClick }

@@ -115,16 +115,6 @@ describe("the <InnerAddDeck /> component", () => {
         });
     });
 
-    describe("when deckSaved becomes true", () => {
-        // This test is skipped because componentWillUpdate is deprecated and behaves
-        // differently in testing environments. The navigation logic works in production.
-        it.skip("should navigate to /decks", () => {
-            const { rerender } = render(<InnerAddDeck { ...defaultProps } deckSaved={ false } />, { wrapper });
-            rerender(<InnerAddDeck { ...defaultProps } deckSaved />);
-            expect(navigate).toHaveBeenCalled();
-        });
-    });
-
     describe("when onAddDeck is called", () => {
         it("should call saveDeck with the deck", () => {
             render(<InnerAddDeck { ...defaultProps } />, { wrapper });

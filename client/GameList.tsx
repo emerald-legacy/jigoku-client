@@ -43,7 +43,7 @@ interface InnerGameListProps {
 
 const gameModeLabels: Record<string, string> = {
     [GameModes.Skirmish]: "SKIRMISH",
-    [GameModes.Stronghold]: "IMPERIAL",
+    [GameModes.Stronghold]: "STRONGHOLD",
     [GameModes.Emerald]: "EMERALD",
     [GameModes.Obsidian]: "OBSIDIAN",
     [GameModes.Sanctuary]: "SANCTUARY"

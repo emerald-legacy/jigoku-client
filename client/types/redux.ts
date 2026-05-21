@@ -38,8 +38,9 @@ export interface PendingGameInfo {
 export type CardAnimationEvent = { type: "water" | "fire" | "void"; targetUuid: string; effect: string };
 export type PlayerAnimationEvent = { type: "earth" | "air"; playerName: string; effect: string };
 export type HonorAnimationEvent = { type: "honor"; playerName: string; amount: number };
+export type FateAnimationEvent = { type: "fate"; playerName: string; amount: number };
 
-export type AnimationEvent = CardAnimationEvent | PlayerAnimationEvent | HonorAnimationEvent;
+export type AnimationEvent = CardAnimationEvent | PlayerAnimationEvent | HonorAnimationEvent | FateAnimationEvent;
 
 export function isCardAnimation(a: AnimationEvent): a is CardAnimationEvent {
     return a.type === "water" || a.type === "fire" || a.type === "void";

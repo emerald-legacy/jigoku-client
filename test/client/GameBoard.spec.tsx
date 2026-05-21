@@ -56,10 +56,6 @@ vi.mock("../../client/GameComponents/Chat.tsx", () => ({
     default: () => <div data-testid="chat">Chat</div>
 }));
 
-vi.mock("../../client/GameComponents/Controls.tsx", () => ({
-    default: () => <div data-testid="controls">Controls</div>
-}));
-
 vi.mock("../../client/GameComponents/CardPile.tsx", () => ({
     default: () => <div data-testid="card-pile">CardPile</div>
 }));
@@ -183,10 +179,6 @@ describe("the <GameBoard /> component", () => {
 
         it("should render the chat component", () => {
             expect(screen.getByTestId("chat")).toBeInTheDocument();
-        });
-
-        it("should render the controls component", () => {
-            expect(screen.getByTestId("controls")).toBeInTheDocument();
         });
 
         it("should render the card zoom component", () => {

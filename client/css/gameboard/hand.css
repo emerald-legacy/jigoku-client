@@ -2,16 +2,28 @@
     margin: 5px;
     margin-bottom: 0;
     padding: 5px 0;
-    border: 1px solid var(--color-header-border);
-    border-radius: 4px 4px 0 0;
-    border-bottom: none;
-    background: var(--color-header-bg);
+    border: 1px solid rgba(120, 180, 80, 0.20);
+    border-radius: 6px 6px 0 0;
+    border-bottom: 1px solid rgba(120, 180, 80, 0.12);
+    background: linear-gradient(180deg, rgba(34, 50, 20, 0.85), rgba(20, 30, 12, 0.7));
+    color: rgba(230, 235, 210, 0.95);
     text-align: center;
     text-transform: uppercase;
     width: 480px;
     position: relative;
-    font-weight: bold;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.14em;
     transition: width 0.35s ease-out;
+
+    &::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.55), transparent);
+    }
 
     &.small {
         width: calc(var(--card-sm-width) * 7.5);

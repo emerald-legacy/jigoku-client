@@ -39,7 +39,7 @@ export function init(server) {
         const formats = [
             { name: "Emerald", value: "emerald" },
             { name: "Sanctuary", value: "sanctuary" },
-            { name: "Imperial", value: "stronghold" },
+            { name: "Stronghold", value: "stronghold" },
             { name: "Skirmish", value: "skirmish" },
             { name: "Obsidian", value: "obsidian" }
         ];

@@ -19,77 +19,149 @@
     }
 }
 
-.chat {
+/* === Chat (self-contained card at bottom-right) === */
+.chat-card {
     pointer-events: auto;
-    position: relative;
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    width: 410px;
+    height: calc(100% - 360px);
+    min-height: 200px;
     display: flex;
     flex-direction: column;
-    top: auto;
-    bottom: auto;
-    margin: 5px 0;
-    right: 5px;
-    height: calc(100% - 360px);
-    -webkit-transition: width 1s ease, right 0.5s ease;
-    transition: width 1s ease, right 0.5s ease;
+    background: linear-gradient(180deg, rgba(20, 22, 18, 0.92), rgba(12, 14, 10, 0.92));
+    border: 1px solid rgba(120, 180, 80, 0.22);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     overflow: hidden;
-
-    &.collapsed {
-        width: 0;
-        right: 30px;
-    }
-
-    & .messages {
-        position: relative;
-        top: auto;
-        bottom: auto;
-    }
-
-    & form {
-        position: relative;
-        top: auto;
-        bottom: auto;
-        left: auto;
-        right: auto;
-    }
+    transition: height 0.25s ease-out;
+    z-index: var(--layer-chat);
 }
 
-.controls {
-    pointer-events: auto;
-    z-index: var(--layer-popups);
+.chat-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.55), transparent);
+    pointer-events: none;
+}
+
+.chat-card-collapsed {
+    height: 40px;
+    min-height: 40px;
+}
+
+.chat-card-body {
+    flex: 1 1 auto;
+    min-height: 0;
     display: flex;
-    justify-content: end;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat-card-collapsed .chat-card-body {
+    display: none;
+}
+
+.chat-messages {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 8px 10px;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 13px;
+    line-height: 1.5;
+    color: rgb(232, 234, 220);
+    scrollbar-color: rgba(120, 180, 80, 0.35) rgba(0, 0, 0, 0.3);
+    scrollbar-width: thin;
+}
+.chat-messages::-webkit-scrollbar { width: 8px; }
+.chat-messages::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+.chat-messages::-webkit-scrollbar-thumb {
+    background: rgba(120, 180, 80, 0.3);
+    border-radius: 4px;
+}
+.chat-messages::-webkit-scrollbar-thumb:hover { background: rgba(120, 180, 80, 0.5); }
+
+.chat-input-row {
+    padding: 6px 8px;
+    border-top: 1px solid rgba(120, 180, 80, 0.12);
+}
+
+.chat-input {
+    width: 100%;
+    background: rgba(20, 22, 18, 0.6);
+    color: rgba(232, 234, 220, 0.96);
+    border: 1px solid rgba(120, 180, 80, 0.20);
+    border-radius: 3px;
+    padding: 4px 8px;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 13px;
+    box-shadow: none;
+}
+
+.chat-input:focus {
+    border-color: rgba(150, 220, 90, 0.55);
+    outline: none;
+    background: rgba(20, 22, 18, 0.85);
+}
+
+.chat-input::placeholder {
+    color: rgba(180, 200, 150, 0.45);
+    font-style: italic;
+}
+
+.chat-controls {
+    flex: 0 0 auto;
+    display: flex;
     align-items: center;
-    padding: 5px;
-    margin: 0;
-    top: 0;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 4px 8px;
+    border-top: 1px solid rgba(120, 180, 80, 0.12);
+    height: 40px;
+    box-sizing: border-box;
+}
 
-    & .btn {
-        position: relative;
-        vertical-align: middle;
+.chat-control-btn {
+    position: relative;
+    background: transparent;
+    border: none;
+    padding: 4px 8px;
+    color: rgba(180, 200, 150, 0.65);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 12px;
+    transition: color 0.15s;
+}
 
-        &:hover svg {
-            color: #fff;
-        }
-    }
+.chat-control-label {
+    letter-spacing: 0.02em;
+}
 
-    & svg {
-        color: var(--color-primary);
-    }
+.chat-control-btn:hover {
+    color: rgba(150, 220, 90, 1);
+}
 
-    & .auto {
-        & svg {
-            color: var(--color-strength);
-        }
-    }
+.chat-control-btn.manual {
+    color: rgba(212, 74, 61, 0.85);
+}
+.chat-control-btn.manual:hover {
+    color: rgba(232, 90, 75, 1);
+}
 
-    & .with-alert {
-        & svg.lucide-alert-circle {
-            color: var(--color-header-bg);
-            position: absolute;
-            top: -5px;
-            right: 0;
-            width: 20px;
-            height: 20px;
-        }
-    }
+.chat-control-alert {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    color: rgba(220, 80, 70, 1);
+}
+
+.chat-card-collapsed .chat-control-btn[title="Toggle chat"] {
+    color: rgba(150, 220, 90, 0.85);
 }

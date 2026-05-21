@@ -27,6 +27,6 @@ export const loadNews = createAsyncThunk(
 
 export const addNews = createAsyncThunk(
     "news/add",
-    (newsText: string, { rejectWithValue }) => apiCall(() => axios.put("/api/news", { text: newsText }), rejectWithValue),
+    (newsText: string, { rejectWithValue }) => apiCall(() => axios.post("/api/news", { text: newsText }), rejectWithValue),
     { condition: (_, { getState }) => !!(getState() as RootState).news.news }
 );

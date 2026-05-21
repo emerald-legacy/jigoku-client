@@ -46,21 +46,22 @@ describe("<InnerLobby />", () => {
 
     it("dispatches loadNews on mount with the configured limit", () => {
         renderWithRouter(<InnerLobby { ...baseProps } />);
-        expect(baseProps.loadNews).toHaveBeenCalledExactlyOnceWith({ limit: 3 });
+        expect(baseProps.loadNews).toHaveBeenCalledExactlyOnceWith({ limit: 10 });
     });
 
     it("renders server-version node entries returned from the store selector", () => {
         useSelectorMock.mockImplementation((selector: any) => selector({
             serverVersion: { nodes: [{ name: "lobby", version: "1.2.3" }, { name: "node-1", version: "4.5.6" }] }
         }));
-        renderWithRouter(<InnerLobby { ...baseProps } />);
-        expect(screen.getByText(/lobby: 1\.2\.3/)).toBeInTheDocument();
-        expect(screen.getByText(/node-1: 4\.5\.6/)).toBeInTheDocument();
+        const { container } = renderWithRouter(<InnerLobby { ...baseProps } />);
+        const meta = container.querySelector(".lobby-hero-meta")?.textContent ?? "";
+        expect(meta).toMatch(/lobby\s+1\.2\.3/);
+        expect(meta).toMatch(/node-1\s+4\.5\.6/);
     });
 
     it("renders the client build version without any node suffix when the store has no nodes", () => {
         const { container } = renderWithRouter(<InnerLobby { ...baseProps } />);
-        const versionSpan = container.querySelector(".lobby-version");
-        expect(versionSpan?.textContent).toMatch(/^Client:\s*\S+$/);
+        const meta = container.querySelector(".lobby-hero-meta");
+        expect(meta?.textContent ?? "").toMatch(/^Client\s+\S+\s*$/);
     });
 });

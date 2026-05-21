@@ -371,33 +371,5 @@ describe("the <Register /> component", () => {
             // Since we didn't blur any fields, it shouldn't be called
             expect(axios.post).not.toHaveBeenCalledWith("/api/account/register", expect.anything());
         });
-
-        // This test is skipped because the Register component has complex async validation
-        // that requires reCAPTCHA and username availability checks that are difficult to
-        // fully mock in the test environment. The form submission works in production.
-        it.skip("should call axios with correct data when form is valid", async () => {
-            axios.post.mockImplementation(() =>
-                Promise.resolve({ data: { success: true, user: {}, token: "test-token" } })
-            );
-
-            render(
-                <Register
-                    register={ registerSpy }
-                    socket={ socketSpy }
-                    navigate={ navigateSpy }
-                />
-            );
-
-            fireEvent.change(screen.getByPlaceholderText("Username"), { target: { value: "validuser" } });
-            fireEvent.change(screen.getByPlaceholderText("email Address"), { target: { value: "valid@email.com" } });
-            fireEvent.change(screen.getByPlaceholderText("Password"), { target: { value: "validpassword" } });
-            fireEvent.change(screen.getByPlaceholderText("Password (again)"), { target: { value: "validpassword" } });
-
-            fireEvent.click(screen.getByRole("button", { name: "Register" }));
-
-            await waitFor(() => {
-                expect(axios.post).toHaveBeenCalledWith("/api/account/register", expect.anything());
-            });
-        });
     });
 });

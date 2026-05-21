@@ -241,7 +241,7 @@ class GameRouter extends EventEmitter {
                 const arg = message.arg || {};
                 this.workers[identityStr] = {
                     identity: identityStr,
-                    maxGames: arg.maxGames ?? 0,
+                    maxGames: arg.maxGames || 20,
                     numGames: 0,
                     address: arg.address ?? "",
                     port: arg.port ?? 0,
