@@ -4,6 +4,61 @@
     display: block;
 }
 
+/* === Format badges (matches GameList game-badge-mode) === */
+.format-badge {
+    display: inline-block;
+    margin-left: 0.55rem;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: white;
+    vertical-align: middle;
+}
+.format-badge-emerald,
+.format-badge-sanctuary {
+    background: rgba(51, 102, 0, 0.7);
+}
+.format-badge-imperial,
+.format-badge-skirmish {
+    background: rgb(180, 150, 40);
+}
+.format-badge-obsidian {
+    background: rgb(190, 40, 40);
+}
+.format-meta {
+    display: inline-block;
+    margin-left: 0.55rem;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(160, 180, 140, 0.65);
+    vertical-align: middle;
+}
+
+.format-section + .format-section {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(120, 180, 80, 0.15);
+    position: relative;
+}
+
+.format-section + .format-section::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.55), transparent);
+}
+
 /* === News admin === */
 .news-admin {
     width: 100%;
