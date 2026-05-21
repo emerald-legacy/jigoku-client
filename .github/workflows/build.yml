@@ -21,8 +21,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: TypeScript compile
+      - name: TypeScript compile (server)
         run: npx tsc
+
+      - name: TypeScript typecheck (client)
+        run: npm run typecheck
 
       - name: Lint
         run: npm run lint
