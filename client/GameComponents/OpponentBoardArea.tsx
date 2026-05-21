@@ -2,7 +2,7 @@ import React from "react";
 import DynastyRow from "./DynastyRow";
 import StrongholdRow from "./StrongholdRow";
 import type { Card as CardType, MenuItem, Player } from "../types/game";
-import GameModes from "../GameModes";
+import GameModes from "../../shared/GameModes";
 
 interface OpponentBoardAreaProps {
     otherPlayer?: Player;
@@ -11,7 +11,7 @@ interface OpponentBoardAreaProps {
     gameMode?: string;
     skirmishMode?: boolean;
     onCardClick: (card: CardType) => void;
-    onMouseOver: (card: any) => void;
+    onMouseOver: (card: CardType) => void;
     onMouseOut: () => void;
     onMenuItemClick: (card: CardType, menuItem: MenuItem) => void;
 }

@@ -17,8 +17,8 @@
   },
   "include": [
     "server/**/*",
+    "shared/**/*",
     "index.ts",
-    "client/GameModes.ts",
     "client/deck-validator.ts"
   ],
   "exclude": [
