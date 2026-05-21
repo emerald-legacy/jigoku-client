@@ -216,6 +216,7 @@
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 16px;
+    padding-bottom: 20px;
 }
 
 .full-height {
@@ -278,8 +279,18 @@
 
 .about-container {
     overflow-y: auto;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
+}
+
+.about-container code {
+    display: inline-block;
+    padding: 1px 6px;
+    background: rgba(34, 50, 20, 0.55);
+    border: 1px solid rgba(120, 180, 80, 0.25);
+    border-radius: 3px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: rgba(180, 240, 110, 0.95);
 }
 
 .rbt-input {
