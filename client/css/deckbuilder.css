@@ -239,16 +239,32 @@
     right: 15px;
 }
 
-.deck-mon {
-    max-width: 140px;
+.deck-mon,
+.deck-alliance-mon {
     height: auto !important;
     padding-right: 10px;
+    filter:
+        drop-shadow(0 0 18px rgba(150, 220, 90, 0.18))
+        drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55))
+        drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
+    transition: filter 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.deck-mon {
+    max-width: 140px;
 }
 
 .deck-alliance-mon {
     max-width: 100px;
-    height: auto !important;
-    padding-right: 10px;
+}
+
+.deck-mon:hover,
+.deck-alliance-mon:hover {
+    filter:
+        drop-shadow(0 0 26px rgba(150, 220, 90, 0.32))
+        drop-shadow(0 10px 16px rgba(0, 0, 0, 0.6))
+        drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
+    transform: translateY(-2px) scale(1.03);
 }
 
 .add-card-button {
