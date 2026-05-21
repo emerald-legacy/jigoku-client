@@ -214,7 +214,7 @@ export function InnerNewGame({ cancelNewGame, connected, defaultGameName, loadDe
                             </label>
                             <label className="radio-inline">
                                 <input type="radio" onChange={ () => handleRulesRadioChange(GameModes.Stronghold) } checked={ isGameModeSelected(GameModes.Stronghold) } />
-                                Imperial
+                                Stronghold
                             </label>
                             <label className="radio-inline">
                                 <input type="radio" onChange={ () => handleRulesRadioChange(GameModes.Skirmish) } checked={ isGameModeSelected(GameModes.Skirmish) } />

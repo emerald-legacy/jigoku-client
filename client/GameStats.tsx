@@ -29,7 +29,7 @@ const tabs = [
     { key: "all", label: "All" },
     { key: "emerald", label: "Emerald" },
     { key: "sanctuary", label: "Sanctuary" },
-    { key: "stronghold", label: "Imperial" }
+    { key: "stronghold", label: "Stronghold" }
 ];
 
 function GameStats({ stats }: GameStatsProps) {
