@@ -12,6 +12,7 @@ config/local*
 server/logs/*.gz
 build/
 !tsconfig.json
+!tsconfig.client.json
 !package-lock.json
 .idea/
 assets/
