@@ -335,6 +335,11 @@ body {
     height: 100%;
     width: 100%;
     background-color: var(--color-background);
+    background-image: url("/img/bgs/main.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
     color: var(--color-foreground);
 }
 
