@@ -74,11 +74,11 @@
         padding: 6px 8px;
     }
 
-    /* Allow the chat-card itself to grow to accommodate the wider control bar */
+    /* Keep chat-card at the same fixed size as normal play */
     & .right-side .chat-card {
-        height: auto;
+        height: calc(100% - 360px);
         min-height: 200px;
-        max-height: calc(100% - 20px);
+        max-height: calc(100% - 360px);
     }
 }
 
