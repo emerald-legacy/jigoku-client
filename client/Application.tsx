@@ -310,7 +310,6 @@ export default function Application() {
             name: "Help", childItems: [
                 { name: "How To Play", path: "/how-to-play" },
                 { name: "About", path: "/about" },
-                { name: "Community", path: "/community" },
                 { name: "Formats", path: "/formats" }
             ]
         }

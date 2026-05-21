@@ -83,8 +83,8 @@ function About() {
                     </a>
                     . Check out the code and instructions on there on how to get started and hack
                     away! See the card implementation status list above to have a look at what
-                    needs to be done. If you want to join the dev Discord, there's a link on the{ " " }
-                    <Link to="/community">Community</Link> page.
+                    needs to be done. If you want to join the dev Discord, hop in{ " " }
+                    <a target="_blank" rel="noopener noreferrer" href="https://discord.gg/tMzhyND">here</a>.
                 </p>
 
                 <h3>Support the Project</h3>

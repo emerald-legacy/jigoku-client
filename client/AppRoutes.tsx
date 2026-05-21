@@ -15,7 +15,6 @@ const AddDeck = React.lazy(() => import("./AddDeck"));
 const EditDeck = React.lazy(() => import("./EditDeck"));
 const HowToPlay = React.lazy(() => import("./HowToPlay"));
 const About = React.lazy(() => import("./About"));
-const Community = React.lazy(() => import("./Community"));
 const Formats = React.lazy(() => import("./Formats"));
 const ForgotPassword = React.lazy(() => import("./ForgotPassword"));
 const ResetPassword = React.lazy(() => import("./ResetPassword"));
@@ -38,7 +37,6 @@ export default function AppRoutes({ permissions }: { permissions: Record<string,
             <Route path="/play" element={ <PlayRoute /> } />
             <Route path="/how-to-play" element={ <HowToPlay /> } />
             <Route path="/about" element={ <About /> } />
-            <Route path="/community" element={ <Community /> } />
             <Route path="/formats" element={ <Formats /> } />
             <Route path="/forgot" element={ <ForgotPassword /> } />
             <Route path="/reset-password" element={ <ResetPassword /> } />
