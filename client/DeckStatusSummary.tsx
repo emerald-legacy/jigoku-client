@@ -1,5 +1,5 @@
 import { Check, X } from "lucide-react";
-import GameModes from "./GameModes";
+import GameModes from "../shared/GameModes";
 
 interface DeckStatusSummaryStatus {
     basicRules?: boolean;

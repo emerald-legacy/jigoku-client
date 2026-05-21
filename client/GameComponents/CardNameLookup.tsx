@@ -1,17 +1,20 @@
 import { useState } from "react";
 
 import Typeahead from "../FormComponents/Typeahead";
+import type { TypeaheadOption } from "../FormComponents/Typeahead";
+import type { Card } from "../types/game";
 
 interface CardNameLookupProps {
-    cards: Record<string, any>;
+    cards: Record<string, Card>;
     onCardSelected?: (cardName: string | null) => void;
 }
 
 function CardNameLookup({ cards, onCardSelected }: CardNameLookupProps) {
     const [cardName, setCardName] = useState<string | null>(null);
 
-    const onCardNameChange = (card: any[]) => {
-        setCardName(card[0]);
+    const onCardNameChange = (card: TypeaheadOption[]) => {
+        const first = card[0];
+        setCardName(typeof first === "string" ? first : null);
     };
 
     const onDoneClick = () => {
@@ -20,7 +23,7 @@ function CardNameLookup({ cards, onCardSelected }: CardNameLookupProps) {
         }
     };
 
-    const cardOptions = [...new Set(Object.values(cards).map((card: any) => card.name))];
+    const cardOptions = [...new Set(Object.values(cards).map((card: Card) => card.name))];
 
     return (
         <div>

@@ -1,15 +1,33 @@
+import type { Collection, Db, ObjectId } from "mongodb";
+
 import { escapeRegex } from "../util.js";
 import logger from "../log.js";
 import { toObjectId } from "../db.js";
 
-class UserService {
-    users: any;
+export interface UserRecord {
+    _id?: ObjectId;
+    username: string;
+    email?: string;
+    emailHash?: string;
+    password?: string;
+    registered?: Date;
+    admin?: boolean;
+    settings?: Record<string, unknown>;
+    promptedActionWindows?: Record<string, boolean>;
+    permissions?: Record<string, boolean>;
+    blockList?: string[];
+    resetToken?: string;
+    tokenExpires?: string;
+}
 
-    constructor(db) {
-        this.users = db.collection("users");
+class UserService {
+    users: Collection<UserRecord>;
+
+    constructor(db: Db) {
+        this.users = db.collection<UserRecord>("users");
     }
 
-    async getUserByUsername(username) {
+    async getUserByUsername(username: string) {
         try {
             return await this.users.findOne({
                 username: { $regex: new RegExp("^" + escapeRegex(username.toLowerCase()) + "$", "i") }
@@ -20,7 +38,7 @@ class UserService {
         }
     }
 
-    async getUserByEmail(email) {
+    async getUserByEmail(email: string) {
         try {
             return await this.users.findOne({
                 email: { $regex: new RegExp("^" + escapeRegex(email.toLowerCase()) + "$", "i") }
@@ -31,7 +49,7 @@ class UserService {
         }
     }
 
-    async getUserById(id) {
+    async getUserById(id: string) {
         try {
             return await this.users.findOne({ _id: toObjectId(id) });
         } catch(err) {
@@ -40,7 +58,7 @@ class UserService {
         }
     }
 
-    async addUser(user) {
+    async addUser(user: UserRecord) {
         try {
             await this.users.insertOne(user);
             return user;
@@ -50,8 +68,8 @@ class UserService {
         }
     }
 
-    async update(user) {
-        const toSet: any = {
+    async update(user: UserRecord) {
+        const toSet: Partial<UserRecord> = {
             email: user.email,
             settings: user.settings,
             promptedActionWindows: user.promptedActionWindows,
@@ -70,7 +88,7 @@ class UserService {
         }
     }
 
-    async updateBlockList(user) {
+    async updateBlockList(user: UserRecord) {
         try {
             return await this.users.updateOne(
                 { username: user.username },
@@ -82,7 +100,7 @@ class UserService {
         }
     }
 
-    async setResetToken(user, token, tokenExpiration) {
+    async setResetToken(user: UserRecord, token: string, tokenExpiration: string) {
         try {
             return await this.users.updateOne(
                 { username: user.username },
@@ -94,7 +112,7 @@ class UserService {
         }
     }
 
-    async setPassword(user, password) {
+    async setPassword(user: UserRecord, password: string) {
         try {
             return await this.users.updateOne(
                 { username: user.username },
@@ -106,7 +124,7 @@ class UserService {
         }
     }
 
-    async clearResetToken(user) {
+    async clearResetToken(user: UserRecord) {
         try {
             return await this.users.updateOne(
                 { username: user.username },

@@ -23,10 +23,15 @@ async function runStats() {
 
     console.info("" + games.length, "total games");
 
-    let players: any = {};
-    let factions: any = {};
-    let alliances: any = {};
-    let factionAlliances: any = {};
+    interface WinLossStat {
+        name: string;
+        wins: number;
+        losses: number;
+    }
+
+    let players: Record<string, WinLossStat> = {};
+    let factions: Record<string, WinLossStat> = {};
+    let factionAlliances: Record<string, WinLossStat> = {};
 
     games.forEach(game => {
         if(Object.keys(game.players).length !== 2) {
@@ -50,28 +55,21 @@ async function runStats() {
                 factions[player.faction] = { name: player.faction, wins: 0, losses: 0 };
             }
 
-            if(!alliances[player.alliance]) {
-                alliances[player.alliance] = { name: player.alliance, wins: 0, losses: 0 };
-            }
-
             if(!factionAlliances[player.faction + player.agenda]) {
                 factionAlliances[player.faction + player.agenda] = { name: player.faction + " / " + player.agenda, wins: 0, losses: 0 };
             }
 
             var playerStat = players[player.name];
             var factionStat = factions[player.faction];
-            var allianceStat = alliances[player.alliance];
             var factionAllianceStat = factionAlliances[player.faction + player.agenda];
 
             if(player.name === game.winner) {
                 playerStat.wins++;
                 factionStat.wins++;
-                allianceStat.wins++;
                 factionAllianceStat.wins++;
             } else {
                 playerStat.losses++;
                 factionStat.losses++;
-                allianceStat.losses++;
                 factionAllianceStat.losses++;
             }
         });
@@ -95,13 +93,6 @@ async function runStats() {
 
     let factionWinRates = Object.values(factions).map(faction => {
         let games = faction.wins + faction.losses;
-
-        return { name: faction.name, wins: faction.wins, losses: faction.losses, winRate: Math.round(((faction.wins / games) * 100)) };
-    });
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    let allianceWinRates = Object.values(alliances).map(faction => {
-        let games = alliances.wins + alliances.losses;
 
         return { name: faction.name, wins: faction.wins, losses: faction.losses, winRate: Math.round(((faction.wins / games) * 100)) };
     });

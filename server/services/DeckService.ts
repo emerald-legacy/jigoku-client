@@ -1,14 +1,23 @@
+import type { Collection, Db, Filter } from "mongodb";
+import type { Deck } from "../../client/types/deck.js";
+
 import logger from "../log.js";
 import { toObjectId } from "../db.js";
 
-class DeckService {
-    decks: any;
+export interface DeckRecord extends Deck {
+    username?: string;
+    deckName?: string;
+    id?: string;
+}
 
-    constructor(db) {
-        this.decks = db.collection("decks");
+class DeckService {
+    decks: Collection<DeckRecord>;
+
+    constructor(db: Db) {
+        this.decks = db.collection<DeckRecord>("decks");
     }
 
-    async getById(id) {
+    async getById(id: string) {
         try {
             return await this.decks.findOne({ _id: toObjectId(id) });
         } catch(err) {
@@ -17,22 +26,22 @@ class DeckService {
         }
     }
 
-    async findByUserName(userName, options: any = {}) {
-        const query: any = { username: userName };
+    async findByUserName(userName: string, options: { format?: string } = {}) {
+        const query: Filter<DeckRecord> = { username: userName };
 
         if(options.format) {
-            query["format.value"] = options.format;
+            (query as Record<string, unknown>)["format.value"] = options.format;
         }
 
         return this.decks.find(query).sort({ lastUpdated: -1 }).toArray();
     }
 
-    async countByUserName(userName) {
+    async countByUserName(userName: string) {
         return this.decks.countDocuments({ username: userName });
     }
 
-    async create(deck) {
-        const properties = {
+    async create(deck: DeckRecord) {
+        const properties: Partial<DeckRecord> = {
             username: deck.username,
             name: deck.deckName,
             provinceCards: deck.provinceCards,
@@ -43,15 +52,15 @@ class DeckService {
             faction: deck.faction,
             alliance: deck.alliance,
             format: deck.format,
-            lastUpdated: new Date()
+            lastUpdated: new Date().toISOString()
         };
 
-        const result = await this.decks.insertOne(properties);
+        const result = await this.decks.insertOne(properties as DeckRecord);
         return { ...properties, _id: result.insertedId };
     }
 
-    async update(deck) {
-        const properties = {
+    async update(deck: DeckRecord) {
+        const properties: Partial<DeckRecord> = {
             name: deck.deckName,
             provinceCards: deck.provinceCards,
             stronghold: deck.stronghold,
@@ -61,22 +70,22 @@ class DeckService {
             faction: deck.faction,
             alliance: deck.alliance,
             format: deck.format,
-            lastUpdated: new Date()
+            lastUpdated: new Date().toISOString()
         };
 
         return this.decks.updateOne({ _id: toObjectId(deck.id) }, { $set: properties });
     }
 
-    async delete(id) {
+    async delete(id: string) {
         return this.decks.deleteOne({ _id: toObjectId(id) });
     }
 
-    async findByIds(ids) {
+    async findByIds(ids: string[]) {
         const objectIds = ids.map(id => toObjectId(id));
         return this.decks.find({ _id: { $in: objectIds } }).toArray();
     }
 
-    async deleteMany(ids) {
+    async deleteMany(ids: string[]) {
         const objectIds = ids.map(id => toObjectId(id));
         return this.decks.deleteMany({ _id: { $in: objectIds } });
     }

@@ -3,7 +3,7 @@ import DynastyRow from "./DynastyRow";
 import StrongholdRow from "./StrongholdRow";
 import CardPile from "./CardPile";
 import type { Card as CardType, MenuItem, Player } from "../types/game";
-import GameModes from "../GameModes";
+import GameModes from "../../shared/GameModes";
 
 interface MyBoardAreaProps {
     thisPlayer: Player;
@@ -16,7 +16,7 @@ interface MyBoardAreaProps {
     showConflictDeck: boolean;
     showDynastyDeck: boolean;
     onCardClick: (card: CardType) => void;
-    onMouseOver: (card: any) => void;
+    onMouseOver: (card: CardType) => void;
     onMouseOut: () => void;
     onMenuItemClick: (card: CardType, menuItem: MenuItem) => void;
     onDragDrop: (card: CardType, source: string, target: string) => void;

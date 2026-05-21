@@ -10,18 +10,25 @@ const windows = [
     { name: "fate", label: "Fate phase", style: "col-sm-4" }
 ];
 
+interface TimerSettings {
+    windowTimer?: number;
+    events?: boolean;
+    eventsInDeck?: boolean;
+    [key: string]: unknown;
+}
+
 interface GameConfigurationProps {
     actionWindows: Record<string, boolean>;
     onOptionSettingToggle?: (option: string, value: boolean) => void;
     onTimerSettingToggle?: (option: string, value: boolean) => void;
     onToggle?: (option: string, value: boolean) => void;
     optionSettings: Record<string, boolean>;
-    timerSettings: Record<string, any>;
+    timerSettings: TimerSettings;
 }
 
 function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettingToggle, onToggle, optionSettings, timerSettings }: GameConfigurationProps) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [windowTimer, setWindowTimer] = useState<number>(timerSettings.windowTimer);
+    const [windowTimer, setWindowTimer] = useState<number>(timerSettings.windowTimer ?? 0);
 
     const handleToggle = (option: string, value: boolean) => {
         if(onToggle) {
@@ -94,7 +101,7 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
                             label="Show timer for opponent's events"
                             fieldClass="col-sm-6"
                             onChange={ (e) => handleTimerSettingToggle("events", e) }
-                            checked={ timerSettings.events }
+                            checked={ !!timerSettings.events }
                         />
                         <Checkbox
                             name="timerSettings.eventsInDeck"
@@ -102,7 +109,7 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
                             label="Show timer for events in your deck"
                             fieldClass="col-sm-6"
                             onChange={ (e) => handleTimerSettingToggle("eventsInDeck", e) }
-                            checked={ timerSettings.eventsInDeck }
+                            checked={ !!timerSettings.eventsInDeck }
                         />
                     </div>
                 </div>

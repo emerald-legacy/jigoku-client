@@ -1,11 +1,12 @@
+import React from "react";
 import { Menu, AlertCircle, Wrench, Settings, Download } from "lucide-react";
 
 interface ControlsProps {
     manualModeEnabled?: boolean;
-    onDownloadLogClick?: (event?: any) => void;
-    onManualModeClick?: (event?: any) => void;
-    onSettingsClick?: (event?: any) => void;
-    onToggleChatClick?: (event?: any) => void;
+    onDownloadLogClick?: (event?: React.MouseEvent) => void;
+    onManualModeClick?: (event?: React.MouseEvent) => void;
+    onSettingsClick?: (event?: React.MouseEvent) => void;
+    onToggleChatClick?: (event?: React.MouseEvent) => void;
     showChatAlert?: boolean;
     showDownloadLog?: boolean;
     showManualMode?: boolean;

@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { shallowEqual } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
 import { toast } from "sonner";
-import GameModes from "./GameModes";
+import GameModes from "../shared/GameModes";
 
 import { X } from "lucide-react";
 import Avatar from "./Avatar";
@@ -162,5 +162,6 @@ export default function GameList(ownProps: GameListOwnProps) {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerGameList { ...props } { ...boundActions } { ...ownProps } />;
+    const merged = { ...props, ...boundActions, ...ownProps } as unknown as InnerGameListProps;
+    return <InnerGameList { ...merged } />;
 }

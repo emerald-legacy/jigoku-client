@@ -1,11 +1,12 @@
 /// <reference lib="dom" />
 import axios from "axios";
-import GameModes from "./GameModes.js";
+import GameModes from "../shared/GameModes.js";
 import type { Deck, DeckCard, Pack } from "./types/deck.js";
 
 interface CachedValue {
     expiryTime?: number;
-    [key: string]: any;
+    valid?: boolean | undefined;
+    extendedStatus?: string[];
 }
 
 interface ValidateOptions {

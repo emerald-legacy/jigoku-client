@@ -12,15 +12,15 @@ import type { RootState } from "./types/redux";
 import type { User } from "./types/user";
 
 interface InnerBlockListProps {
-    addBlockListEntry: (arg: { user: User | undefined; username: string }) => any;
+    addBlockListEntry: (arg: { user: User | undefined; username: string }) => void;
     apiError?: string;
     blockList?: string[];
     blockListAdded?: boolean;
     blockListDeleted?: boolean;
-    clearBlockListStatus: () => any;
-    loadBlockList: (user: User | undefined) => any;
+    clearBlockListStatus: () => void;
+    loadBlockList: (user: User | undefined) => void;
     loading?: boolean;
-    removeBlockListEntry: (arg: { user: User | undefined; username: string }) => any;
+    removeBlockListEntry: (arg: { user: User | undefined; username: string }) => void;
     user?: User;
 }
 
@@ -173,5 +173,6 @@ export default function BlockList() {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerBlockList { ...props } { ...boundActions } />;
+    const merged = { ...props, ...boundActions } as InnerBlockListProps;
+    return <InnerBlockList { ...merged } />;
 }

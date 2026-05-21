@@ -3,8 +3,8 @@ import Draggable from "react-draggable";
 import { X } from "lucide-react";
 
 import Card from "./Card";
-import { tryParseJSON } from "../util.js";
-import type { Card as CardType } from "../types/game";
+import { tryParseJSON } from "../util";
+import type { Card as CardType, MenuItem } from "../types/game";
 
 interface PopupMenuItem {
     text: string;
@@ -25,7 +25,7 @@ interface CardPileProps {
     onCardClick?: (card: CardType) => void;
     onCloseClick?: () => void;
     onDragDrop?: (card: CardType, source: string, target: string) => void;
-    onMenuItemClick?: (card: CardType, menuItem: any) => void;
+    onMenuItemClick?: (card: CardType, menuItem: MenuItem) => void;
     onMouseOut?: (card: CardType) => void;
     onMouseOver?: (card: CardType) => void;
     onTouchMove?: (event: React.TouchEvent) => void;

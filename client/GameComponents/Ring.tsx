@@ -2,7 +2,7 @@ import React, { useState, memo } from "react";
 
 import CardCounters from "./CardCounters";
 import CardMenu from "./CardMenu";
-import { getRingEffect } from "../RingEffectDescriptions.js";
+import { getRingEffect } from "../RingEffectDescriptions";
 import type { Ring as RingType, MenuItem } from "../types/game";
 
 interface RingProps {

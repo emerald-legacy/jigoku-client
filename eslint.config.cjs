@@ -166,6 +166,7 @@ module.exports = [
             "no-undef": "off", // TypeScript handles this
             "no-unused-vars": "off",
             "@typescript-eslint/no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" }],
+            "@typescript-eslint/no-explicit-any": ["error", { fixToUnknown: true }],
 
             // Code style rules
             "indent": ["error", 4, { SwitchCase: 1 }],

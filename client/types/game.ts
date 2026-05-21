@@ -12,6 +12,22 @@ export interface MenuItem {
     method?: string;
 }
 
+export interface AbilityLimit {
+    max: number;
+    current: number;
+    exhausted: boolean;
+}
+
+export interface SkillModifier {
+    name: string;
+    amount: number;
+}
+
+export interface SkillSummary {
+    stat: number;
+    modifiers: SkillModifier[];
+}
+
 export interface Card {
     uuid: string;
     id: string;
@@ -40,7 +56,7 @@ export interface Card {
     isDishonored?: boolean;
     isHonored?: boolean;
     isTainted?: boolean;
-    controller?: string;
+    controller?: string | { name: string };
     popupCards?: Card[];
     group?: string;
     showPopup?: boolean;
@@ -52,11 +68,11 @@ export interface Card {
     inDanger?: boolean;
     saved?: boolean;
     unselectable?: boolean;
-    abilityLimits?: any;
-    strengthSummary?: any;
-    militarySkillSummary?: any;
-    politicalSkillSummary?: any;
-    glorySummary?: any;
+    abilityLimits?: AbilityLimit[];
+    strengthSummary?: SkillSummary;
+    militarySkillSummary?: SkillSummary;
+    politicalSkillSummary?: SkillSummary;
+    glorySummary?: SkillSummary;
     childCards?: Card[];
     order?: number;
     code?: string;
@@ -84,7 +100,26 @@ export interface PlayerCardPiles {
     conflictDiscardPile: Card[];
     dynastyDiscardPile: Card[];
     removedFromGame: Card[];
-    [key: string]: Card[];
+    cardsInPlay?: Card[];
+    provinceDeck?: Card[];
+    [key: string]: Card[] | undefined;
+}
+
+export interface PlayerOptionSettings {
+    markCardsUnselectable?: boolean;
+    cancelOwnAbilities?: boolean;
+    orderForcedAbilities?: boolean;
+    confirmOneClick?: boolean;
+    disableCardStats?: boolean;
+    sortHandByName?: boolean;
+    showRingEffects?: boolean;
+}
+
+export interface AdditionalPile {
+    cards: Card[];
+    title?: string;
+    isPrivate?: boolean;
+    area?: string;
 }
 
 export interface Player {
@@ -102,6 +137,7 @@ export interface Player {
     };
     stats?: Record<string, number>;
     cardPiles: PlayerCardPiles;
+    id?: string;
     provinces: {
         one: Card[];
         two: Card[];
@@ -111,8 +147,8 @@ export interface Player {
     strongholdProvince?: Card[];
     clock?: ClockState;
     promptedActionWindows?: Record<string, boolean>;
-    timerSettings?: Record<string, any>;
-    optionSettings?: Record<string, any>;
+    timerSettings?: Record<string, unknown>;
+    optionSettings?: PlayerOptionSettings;
     imperialFavor?: string;
     firstPlayer?: boolean;
     left?: boolean;
@@ -132,10 +168,9 @@ export interface Player {
     selectRing?: boolean;
     phase?: string;
     controls?: Control[];
-    additionalPiles?: Record<string, { cards: Card[]; title?: string }>;
+    additionalPiles?: Record<string, AdditionalPile>;
     disconnected?: boolean;
-    deck?: { selected?: boolean; status?: any; name?: string };
-    id?: string;
+    deck?: { selected?: boolean; status?: unknown; name?: string };
     cardsPlayedThisConflict?: number;
 }
 
@@ -151,14 +186,36 @@ export interface Button {
     timerCancel?: boolean;
 }
 
-export interface Control {
-    type: string;
+export interface TargetingDescriptor {
+    type?: string;
+    name?: string;
+    id?: string;
+    element?: string;
+    isDynasty?: boolean;
+    isConflict?: boolean;
+    packId?: string;
+    facedown?: boolean;
+}
+
+export interface TargetingControl {
+    type: "targeting";
+    source: TargetingDescriptor;
+    targets: TargetingDescriptor[];
+    command?: string;
+    uuid?: string;
+    method?: string;
+}
+
+export interface CardNameControl {
+    type: "card-name";
     source: string;
     targets: string[];
     command?: string;
     uuid?: string;
     method?: string;
 }
+
+export type Control = TargetingControl | CardNameControl;
 
 export interface ClockState {
     mode: string;
@@ -169,6 +226,8 @@ export interface ClockState {
     manuallyPaused?: boolean;
     name?: string;
     delayToStartClock?: number;
+    stateId?: string | number;
+    timePeriod?: number;
 }
 
 export interface Spectator {
@@ -185,12 +244,31 @@ export interface MessageFragment {
         type: string;
         message: string[];
     };
-    [key: string]: any;
+    uuid?: string;
+    id?: string;
+    type?: string;
+    label?: string;
+    element?: string;
+    emailHash?: string;
+    noAvatar?: boolean;
+    isReactComponent?: boolean;
 }
 
 export interface GameMessage {
     message: MessageFragment[];
     timestamp?: number;
+}
+
+export interface ConflictInfo {
+    attackingPlayerId?: string;
+    defendingPlayerId?: string;
+    attackerSkill?: number;
+    defenderSkill?: number;
+    unopposed?: boolean;
+    type?: string;
+    elements?: string[];
+    declarationComplete?: boolean;
+    defendersChosen?: boolean;
 }
 
 export interface GameState {
@@ -206,7 +284,7 @@ export interface GameState {
     finishedAt?: string;
     rings?: Record<string, Ring>;
     conflictDeclared?: boolean;
-    conflict?: any;
+    conflict?: ConflictInfo;
     phase?: string;
     manualMode?: boolean;
     skirmishMode?: boolean;
@@ -216,9 +294,9 @@ export interface UserSettings {
     cardSize?: string;
     background?: string;
     disableGravatar?: boolean;
-    optionSettings?: Record<string, any>;
+    optionSettings?: PlayerOptionSettings;
     promptedActionWindows?: Record<string, boolean>;
-    timerSettings?: Record<string, any>;
+    timerSettings?: Record<string, unknown>;
     windowTimer?: number;
 }
 

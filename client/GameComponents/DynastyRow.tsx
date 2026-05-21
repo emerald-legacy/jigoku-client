@@ -1,43 +1,45 @@
 import React, { useState } from "react";
 
 import AdditionalCardPile from "./AdditionalCardPile";
+import type { AdditionalPile } from "./AdditionalCardPile";
 import CardPile from "./CardPile";
 import Province from "./Province";
-import { tryParseJSON } from "../util.js";
+import { tryParseJSON } from "../util";
+import type { Card, MenuItem, Player } from "../types/game";
 
 interface DynastyRowProps {
-    additionalPiles?: any;
-    cardSize?: any;
-    conflictDeck?: any;
-    conflictDeckTopCard?: any;
-    conflictDiscardPile?: any;
-    dynastyDeck?: any;
-    dynastyDeckTopCard?: any;
-    dynastyDiscardPile?: any;
-    isMe?: any;
-    isSkirmish?: any;
-    manualMode?: any;
-    numConflictCards?: any;
-    numDynastyCards?: any;
-    onCardClick?: any;
-    onConflictClick?: any;
-    onConflictShuffleClick?: any;
-    onDiscardedCardClick?: any;
-    onDragDrop?: any;
-    onDynastyClick?: any;
-    onDynastyShuffleClick?: any;
-    onMenuItemClick?: any;
-    onMouseOut?: any;
-    onMouseOver?: any;
-    otherPlayer?: any;
-    province1Cards?: any;
-    province2Cards?: any;
-    province3Cards?: any;
-    province4Cards?: any;
-    removedFromGame?: any;
-    showConflictDeck?: any;
-    showDynastyDeck?: any;
-    spectating?: any;
+    additionalPiles?: Record<string, AdditionalPile>;
+    cardSize?: string;
+    conflictDeck?: Card[];
+    conflictDeckTopCard?: Card | null;
+    conflictDiscardPile?: Card[];
+    dynastyDeck?: Card[];
+    dynastyDeckTopCard?: Card | null;
+    dynastyDiscardPile?: Card[];
+    isMe?: boolean;
+    isSkirmish?: boolean;
+    manualMode?: boolean;
+    numConflictCards?: number;
+    numDynastyCards?: number;
+    onCardClick?: (card: Card) => void;
+    onConflictClick?: () => void;
+    onConflictShuffleClick?: () => void;
+    onDiscardedCardClick?: (cardId: string) => void;
+    onDragDrop?: (card: Card, source: string, target: string) => void;
+    onDynastyClick?: () => void;
+    onDynastyShuffleClick?: () => void;
+    onMenuItemClick?: (card: Card, menuItem: MenuItem) => void;
+    onMouseOut?: (card: Card) => void;
+    onMouseOver?: (card: Card) => void;
+    otherPlayer?: Player;
+    province1Cards?: Card[];
+    province2Cards?: Card[];
+    province3Cards?: Card[];
+    province4Cards?: Card[];
+    removedFromGame?: Card[];
+    showConflictDeck?: boolean;
+    showDynastyDeck?: boolean;
+    spectating?: boolean;
 }
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -190,9 +192,9 @@ function DynastyRow({
     if(!additionalPiles) {
         additionalPilesElements = [];
     } else {
-        const piles = Object.values<any>(additionalPiles).filter(pile => pile.cards.length > 0 && pile.area === "player row");
+        const piles = Object.values(additionalPiles).filter((pile: AdditionalPile) => pile.cards.length > 0 && pile.area === "player row");
         let index = 0;
-        additionalPilesElements = piles.map((pile: any) => (
+        additionalPilesElements = piles.map((pile: AdditionalPile) => (
             <AdditionalCardPile
                 key={ `additional-pile-${index++}` }
                 className="additional-cards"

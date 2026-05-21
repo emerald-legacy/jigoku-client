@@ -10,7 +10,7 @@ declare global {
         readonly DEV: boolean;
         readonly PROD: boolean;
         readonly MODE: string;
-        readonly [key: string]: any;
+        readonly [key: string]: unknown;
     }
 
     interface ImportMeta {
@@ -24,7 +24,7 @@ declare module "emoji-js" {
         replace_emoticons(str: string): string;
         replace_emoticons_with_colons(str: string): string;
         replace_unified(str: string): string;
-        [key: string]: any;
+        [key: string]: unknown;
     }
 }
 

@@ -2,20 +2,26 @@ import React, { useState } from "react";
 
 import DeckStatus from "./DeckStatus";
 import DeckStats from "./DeckStats";
-import { getCardImageUrl, preferredPackId } from "./cardImageUrl.js";
+import { getCardImageUrl, preferredPackId, type CardWithVersions } from "./cardImageUrl";
+import type { Card } from "./types/game";
+import type { Deck, DeckCard } from "./types/deck";
+
+type DeckCardWithSide = Card & { side?: string };
+
+type DeckStatsProp = React.ComponentProps<typeof DeckStats>["stats"];
 
 interface DeckSummaryProps {
-    cards?: Record<string, any>;
-    deck?: any;
-    stats?: any;
+    cards?: Record<string, Card>;
+    deck?: Deck;
+    stats?: DeckStatsProp;
 }
 
 function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
-    const [cardToShow, setCardToShow] = useState<any>(undefined);
+    const [cardToShow, setCardToShow] = useState<Card | undefined>(undefined);
     const [packIdToShow, setPackIdToShow] = useState<string | undefined>(undefined);
 
     const onCardMouseOver = (event: React.MouseEvent, id: string, packId?: string) => {
-        const cardToDisplay = Object.values(cards || {}).find((card: any) => id === card.id);
+        const cardToDisplay = Object.values(cards || {}).find((card: Card) => id === card.id);
         setCardToShow(cardToDisplay);
         setPackIdToShow(packId);
     };
@@ -25,19 +31,22 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
         setPackIdToShow(undefined);
     };
 
-    const formatValue = deck?.format?.value;
+    const formatValue = deck?.format?.value || "";
 
-    const getCardImagePath = (card: any, packId?: string) => {
+    const getCardImagePath = (card: Card | undefined, packId?: string) => {
         if(!card) {
             return "";
         }
-        const effectivePackId = packId || preferredPackId(card, formatValue);
+        const effectivePackId = packId || preferredPackId(card as CardWithVersions, formatValue);
         return getCardImageUrl(card.id, effectivePackId);
     };
 
     const getCardsToRender = () => {
-        const cardsToRender = [];
-        const groupedCards: Record<string, any[]> = {};
+        if(!deck) {
+            return [];
+        }
+        const cardsToRender: React.ReactNode[] = [];
+        const groupedCards: Record<string, DeckCard[]> = {};
 
         const allCardArrays = [
             deck.stronghold,
@@ -48,13 +57,14 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
         ];
         const combinedCards = allCardArrays
             .flat()
-            .filter((card) => card && card.card);
+            .filter((card): card is DeckCard => !!(card && card.card));
 
         for(const card of combinedCards) {
-            let type = card.card.type;
+            const innerCard = card.card as DeckCardWithSide;
+            let type = innerCard.type || "";
 
             if(type === "character" || type === "event") {
-                type = card.card.side + ` ${type}`;
+                type = (innerCard.side || "") + ` ${type}`;
             }
             if(!groupedCards[type]) {
                 groupedCards[type] = [card];
@@ -63,8 +73,8 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
             }
         }
 
-        for(const [key, cardList] of Object.entries(groupedCards) as [string, any[]][]) {
-            const cardElements = [];
+        for(const [key, cardList] of Object.entries(groupedCards)) {
+            const cardElements: React.ReactNode[] = [];
             let count = 0;
 
             for(const card of cardList) {
@@ -85,7 +95,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
                         </span>
                     </div>
                 );
-                count += parseInt(card.count);
+                count += card.count;
             }
 
             cardsToRender.push(
@@ -99,7 +109,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
         return cardsToRender;
     };
 
-    const getDeckCount = (deckCards?: { count: number }[]) => {
+    const getDeckCount = (deckCards?: DeckCard[]) => {
         let count = 0;
         if(deckCards) {
             for(const card of deckCards) {

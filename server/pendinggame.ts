@@ -3,33 +3,70 @@ import bcrypt from "bcrypt";
 
 import logger from "./log.js";
 import GameChat from "./game/gamechat.js";
-import GameModes from "../client/GameModes.js";
+import GameModes from "../shared/GameModes.js";
+
+export interface PendingGameOwner {
+    username: string;
+    blockList?: string[];
+    [key: string]: unknown;
+}
+
+export interface PendingGamePlayer {
+    id: string;
+    name: string;
+    user?: { username: string; emailHash?: string; settings?: Record<string, unknown> };
+    emailHash?: string;
+    owner?: boolean;
+    deck?: { name?: string; selected?: boolean; status?: unknown; faction?: { name: string; value: string }; [key: string]: unknown };
+    faction?: { name: string; value: string; cardData?: { code: string } };
+    agenda?: { cardData?: { code: string } };
+    left?: boolean;
+    disconnected?: boolean;
+    settings?: Record<string, unknown>;
+}
+
+export interface PendingGameDetails {
+    name: string;
+    spectators?: boolean;
+    spectatorSquelch?: boolean;
+    gameMode?: string;
+    gameType?: string;
+    clocks?: unknown;
+    password?: string;
+}
+
+interface PendingGameNode {
+    identity: string;
+    address?: string;
+    port?: number;
+    protocol?: string;
+}
 
 class PendingGame {
-    owner: any;
-    players: any;
-    spectators: any;
-    id: any;
-    name: any;
-    allowSpectators: any;
-    spectatorSquelch: any;
-    skirmishMode: any;
-    gameMode: any;
-    gameType: any;
-    clocks: any;
-    createdAt: any;
-    gameChat: any;
-    node: any;
-    started: any;
-    password: any;
+    owner: PendingGameOwner;
+    players: Record<string, PendingGamePlayer>;
+    spectators: Record<string, PendingGamePlayer>;
+    id: string;
+    name: string;
+    allowSpectators: boolean;
+    spectatorSquelch?: boolean;
+    skirmishMode: boolean;
+    gameMode?: string;
+    gameType?: string;
+    clocks?: unknown;
+    createdAt: Date;
+    gameChat: GameChat;
+    node: PendingGameNode | null;
+    started: boolean;
+    password?: string;
 
-    constructor(owner, details) {
+    constructor(owner: PendingGameOwner, details: PendingGameDetails) {
         this.owner = owner;
         this.players = {};
         this.spectators = {};
         this.id = uuidv1();
         this.name = details.name;
-        this.allowSpectators = details.spectators;
+        this.allowSpectators = details.spectators ?? true;
         this.spectatorSquelch = details.spectatorSquelch;
         this.skirmishMode = details.gameMode === GameModes.Skirmish;
         this.gameMode = details.gameMode;
@@ -42,26 +79,26 @@ class PendingGame {
     }
 
     // Getters
-    getPlayersAndSpectators() {
+    getPlayersAndSpectators(): Record<string, PendingGamePlayer> {
         return Object.assign({}, this.players, this.spectators);
     }
 
-    getPlayers() {
+    getPlayers(): Record<string, PendingGamePlayer> {
         return this.players;
     }
 
-    getPlayerOrSpectator(playerName) {
+    getPlayerOrSpectator(playerName: string) {
         return this.getPlayersAndSpectators()[playerName];
     }
 
-    getPlayerByName(playerName) {
+    getPlayerByName(playerName: string) {
         return this.players[playerName];
     }
 
     getSaveState() {
         var players = Object.values(this.getPlayers()).map(player => {
             return {
-                faction: player.faction.name,
+                faction: player.faction?.name ?? "",
                 name: player.name
             };
         });
@@ -75,17 +112,16 @@ class PendingGame {
     }
 
     // Helpers
-    setupFaction(player, faction) {
-        player.faction = {};
+    setupFaction(player: PendingGamePlayer, faction: { name: string; value: string }) {
         player.faction = faction;
     }
 
     // Actions
-    addMessage(...args: any[]) {
-        this.gameChat.addMessage(...args);
+    addMessage(message: string, ...args: unknown[]) {
+        this.gameChat.addMessage(message, ...args);
     }
 
-    addPlayer(id, user) {
+    addPlayer(id: string, user: { username: string; emailHash?: string }) {
         this.players[user.username] = {
             id: id,
             name: user.username,
@@ -95,7 +131,7 @@ class PendingGame {
         };
     }
 
-    addSpectator(id, user) {
+    addSpectator(id: string, user: { username: string; emailHash?: string }) {
         this.spectators[user.username] = {
             id: id,
             name: user.username,
@@ -104,7 +140,7 @@ class PendingGame {
         };
     }
 
-    newGame(id, user, password, callback) {
+    newGame(id: string, user: { username: string; emailHash?: string }, password: string | undefined, callback: (err?: Error | null, message?: string) => void) {
         if(password) {
             bcrypt.hash(password, 10, (err, hash) => {
                 if(err) {
@@ -127,11 +163,11 @@ class PendingGame {
         }
     }
 
-    isUserBlocked(user) {
+    isUserBlocked(user: { username: string }) {
         return this.owner.blockList && this.owner.blockList.includes(user.username.toLowerCase());
     }
 
-    join(id, user, password, callback) {
+    join(id: string, user: { username: string; emailHash?: string }, password: string | undefined, callback: (err?: Error | null, message?: string) => void) {
         if(Object.keys(this.players).length === 2 || this.started) {
             return;
         }
@@ -161,7 +197,7 @@ class PendingGame {
         }
     }
 
-    watch(id, user, password, callback) {
+    watch(id: string, user: { username: string; emailHash?: string }, password: string | undefined, callback: (err?: Error | null, message?: string) => void) {
         if(!this.allowSpectators) {
             callback(new Error("Join not permitted"));
 
@@ -196,7 +232,7 @@ class PendingGame {
         }
     }
 
-    leave(playerName) {
+    leave(playerName: string) {
         var player = this.getPlayerOrSpectator(playerName);
         if(!player) {
             return;
@@ -219,7 +255,7 @@ class PendingGame {
         }
     }
 
-    disconnect(playerName) {
+    disconnect(playerName: string) {
         var player = this.getPlayerOrSpectator(playerName);
         if(!player) {
             return;
@@ -238,7 +274,7 @@ class PendingGame {
         }
     }
 
-    chat(playerName, message) {
+    chat(playerName: string, message: string) {
         var player = this.getPlayerOrSpectator(playerName);
         if(!player) {
             return;
@@ -247,7 +283,7 @@ class PendingGame {
         this.addMessage("{0} {1}", player, message);
     }
 
-    selectDeck(playerName, deck) {
+    selectDeck(playerName: string, deck: PendingGamePlayer["deck"] & { faction: { name: string; value: string } }) {
         var player = this.getPlayerByName(playerName);
         if(!player) {
             return;
@@ -268,7 +304,7 @@ class PendingGame {
         return !Object.values(this.getPlayersAndSpectators()).some(player => this.hasActivePlayer(player.name));
     }
 
-    isOwner(playerName) {
+    isOwner(playerName: string) {
         var player = this.players[playerName];
 
         if(!player || !player.owner) {
@@ -278,17 +314,17 @@ class PendingGame {
         return true;
     }
 
-    hasActivePlayer(playerName) {
+    hasActivePlayer(playerName: string) {
         return this.players[playerName] && !this.players[playerName].left && !this.players[playerName].disconnected || this.spectators[playerName];
     }
 
     // Summary
-    getSummary(activePlayer) {
-        var playerSummaries = {};
+    getSummary(activePlayer?: string) {
+        var playerSummaries: Record<string, unknown> = {};
         var playersInGame = Object.values(this.players).filter(player => !player.left);
 
         playersInGame.forEach(player => {
-            var deck = undefined;
+            var deck: Record<string, unknown> = {};
 
             if(activePlayer === player.name && player.deck) {
                 deck = { name: player.deck.name, selected: player.deck.selected, status: player.deck.status };
@@ -299,10 +335,10 @@ class PendingGame {
             }
 
             playerSummaries[player.name] = {
-                agenda: this.started && player.agenda ? player.agenda.cardData.code : undefined,
+                agenda: this.started && player.agenda ? player.agenda.cardData?.code : undefined,
                 deck: activePlayer ? deck : {},
                 emailHash: player.emailHash,
-                faction: this.started && player.faction ? player.faction.value : undefined,
+                faction: this.started && player.faction ? (player.faction.value ?? player.faction.cardData?.code) : undefined,
                 id: player.id,
                 left: player.left,
                 name: player.name,

@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 
 import Card from "./Card";
-import { tryParseJSON } from "../util.js";
+import { tryParseJSON } from "../util";
 import type { Card as CardType, MenuItem } from "../types/game";
 
 interface ProvinceProps {

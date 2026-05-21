@@ -50,9 +50,12 @@ export function ForgotPassword() {
                     await dispatch(requestPasswordReset({ username, captcha: token })).unwrap();
                     setSubmitting(false);
                     setSuccess("Your request was submitted, if you have an account, an email will have been sent to the address you used to register with more instructions. This request could end up in your Spam folder, so make sure to check there if you do not see it.");
-                } catch(err: any) {
+                } catch(err) {
                     setSubmitting(false);
-                    setError(err?.message || "Could not communicate with the server.  Please try again later.");
+                    const message = err instanceof Error
+                        ? err.message
+                        : typeof err === "string" ? err : undefined;
+                    setError(message || "Could not communicate with the server.  Please try again later.");
                 }
             });
         });

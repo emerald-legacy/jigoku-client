@@ -3,7 +3,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Upload, SkipBack, ChevronLeft, Play, Pause, ChevronRight, SkipForward } from "lucide-react";
 import { InnerGameBoard } from "./GameBoard";
-import { parseGameLog } from "./GameComponents/gameLogSerializer.js";
+import { parseGameLog } from "./GameComponents/gameLogSerializer";
+import type { Card, GameState } from "./types/game";
+import type { HiddenInfo, PlayerHiddenInfo } from "./gameStateRecorder";
 
 interface ReplayControlsProps {
     currentIndex: number;
@@ -82,14 +84,14 @@ function ReplayControls({ currentIndex, totalStates, isPlaying, speedIndex, show
  * - Province cards (type 'province'): card data added but kept facedown (visible on hover only)
  * - Dynasty cards on provinces: left untouched (never revealed)
  */
-function mergeHiddenInfo(state: any, hiddenInfo: any) {
+function mergeHiddenInfo(state: GameState, hiddenInfo: HiddenInfo | undefined): GameState {
     if(!state.players || !hiddenInfo) {
         return state;
     }
 
-    const merged = { ...state, players: { ...state.players } };
+    const merged: GameState = { ...state, players: { ...state.players } };
 
-    for(const [playerName, info] of Object.entries<any>(hiddenInfo)) {
+    for(const [playerName, info] of Object.entries(hiddenInfo) as [string, PlayerHiddenInfo][]) {
         const player = merged.players[playerName];
         if(!player) {
             continue;
@@ -97,30 +99,25 @@ function mergeHiddenInfo(state: any, hiddenInfo: any) {
 
         merged.players[playerName] = { ...player };
 
-        // Replace facedown hand cards with revealed data (hand lives at cardPiles.hand)
         if(info.hand && player.cardPiles?.hand) {
             merged.players[playerName].cardPiles = { ...player.cardPiles };
-            merged.players[playerName].cardPiles.hand = player.cardPiles.hand.map((card: any, i: number) => {
-                if(card.facedown && info.hand[i]) {
+            merged.players[playerName].cardPiles.hand = player.cardPiles.hand.map((card: Card, i: number) => {
+                if(card.facedown && info.hand && info.hand[i]) {
                     return { ...card, ...info.hand[i], facedown: false };
                 }
                 return card;
             });
         }
 
-        // For province cards (type 'province' only): add card data but keep facedown
-        // so they appear as card backs on the board but show the real card on hover/zoom.
-        // Dynasty cards (characters/holdings) on provinces are left untouched.
         if(info.provinces && player.provinces) {
-            const provinceKeys = ["one", "two", "three", "four"];
+            const provinceKeys: ("one" | "two" | "three" | "four")[] = ["one", "two", "three", "four"];
             merged.players[playerName].provinces = { ...player.provinces };
             for(const key of provinceKeys) {
                 const provinceCards = player.provinces[key];
                 const hiddenCards = info.provinces[key];
                 if(provinceCards && hiddenCards) {
-                    merged.players[playerName].provinces[key] = provinceCards.map((card: any, i: number) => {
+                    merged.players[playerName].provinces[key] = provinceCards.map((card: Card, i: number) => {
                         if(card.facedown && hiddenCards[i] && hiddenCards[i].type === "province") {
-                            // Add id/name/packId so hover zoom shows the card, but keep facedown
                             return { ...card, id: hiddenCards[i].id, name: hiddenCards[i].name, packId: hiddenCards[i].packId };
                         }
                         return card;
@@ -133,8 +130,8 @@ function mergeHiddenInfo(state: any, hiddenInfo: any) {
         const hiddenStronghold = info.provinces?.stronghold;
         const hiddenChildren = info.strongholdChildren;
         if(strongholdCards && (hiddenStronghold || hiddenChildren)) {
-            merged.players[playerName].strongholdProvince = strongholdCards.map((card: any, i: number) => {
-                let nextCard = card;
+            merged.players[playerName].strongholdProvince = strongholdCards.map((card: Card, i: number) => {
+                let nextCard: Card = card;
                 const hidden = hiddenStronghold?.[i];
                 if(card.facedown && hidden && (hidden.type === "stronghold" || hidden.type === "province")) {
                     nextCard = { ...nextCard, id: hidden.id, name: hidden.name, packId: hidden.packId };
@@ -142,7 +139,7 @@ function mergeHiddenInfo(state: any, hiddenInfo: any) {
                 if(card.isStronghold && Array.isArray(card.childCards) && hiddenChildren && hiddenChildren.length > 0) {
                     nextCard = {
                         ...nextCard,
-                        childCards: card.childCards.map((child: any, j: number) => {
+                        childCards: card.childCards.map((child: Card, j: number) => {
                             const revealed = hiddenChildren[j];
                             if(child.facedown && revealed) {
                                 return { ...child, id: revealed.id, name: revealed.name, packId: revealed.packId };

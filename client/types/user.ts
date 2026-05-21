@@ -7,11 +7,11 @@ export interface User {
     emailHash?: string;
     noAvatar?: boolean;
     registered?: string;
-    settings?: import("./game").UserSettings;
+    settings?: import("./game.js").UserSettings;
     permissions?: Record<string, boolean>;
     disabled?: boolean;
     verified?: boolean;
-    linkedAccounts?: Record<string, any>;
+    linkedAccounts?: Record<string, unknown>;
 }
 
 export interface AuthState {

@@ -44,12 +44,12 @@ const authLimiter = rateLimit({
 });
 
 class Server {
-    isDeveloping: any;
-    app: any;
-    server: any;
-    userService: any;
+    isDeveloping: boolean;
+    app: express.Express;
+    server: http.Server;
+    userService!: UserService;
 
-    constructor(isDeveloping) {
+    constructor(isDeveloping: boolean) {
         this.isDeveloping = isDeveloping;
         this.app = app;
         // @ts-ignore
@@ -70,7 +70,7 @@ class Server {
             "CHANGE_ME"
         ]);
 
-        const checkSecret = (name: string, value: any) => {
+        const checkSecret = (name: string, value: unknown) => {
             if(value === undefined || value === null || value === "") {
                 errors.push(`${name} env var must be set (generate with: openssl rand -base64 32)`);
                 return;
@@ -251,7 +251,7 @@ class Server {
         });
 
         // Define error middleware last
-        app.use(function(err, req, res, next) {
+        app.use(function(err: Error, req: express.Request, res: express.Response, next: express.NextFunction) {
             logger.error(`Unhandled error on ${req.method} ${req.url}: ${err}`);
             if(res.headersSent) {
                 return next(err);
@@ -265,7 +265,7 @@ class Server {
     run() {
         var port = config.get("lobby.port");
 
-        this.server.listen(port, "0.0.0.0", function onStart(err) {
+        this.server.listen(port as number, "0.0.0.0", function onStart(err?: Error) {
             if(err) {
                 logger.error(`Server listen error: ${err}`);
             }
@@ -274,7 +274,7 @@ class Server {
         });
     }
 
-    async verifyUser(username, password, done) {
+    async verifyUser(username: string, password: string, done: (err: Error | null, user?: Record<string, unknown> | false, info?: { message: string }) => void) {
         try {
             const user = await this.userService.getUserByUsername(username);
 
@@ -282,7 +282,7 @@ class Server {
                 return done(null, false, { message: "Invalid username/password" });
             }
 
-            const valid = await bcrypt.compare(password, user.password);
+            const valid = await bcrypt.compare(password, user.password || "");
 
             if(!valid) {
                 return done(null, false, { message: "Invalid username/password" });
@@ -309,13 +309,13 @@ class Server {
         }
     }
 
-    serializeUser(user, done) {
+    serializeUser(user: { _id: unknown }, done: (err: Error | null, id?: unknown) => void) {
         if(user) {
             done(null, user._id);
         }
     }
 
-    deserializeUser(id, done) {
+    deserializeUser(id: string, done: (err: Error | null, user?: Record<string, unknown>) => void) {
         this.userService.getUserById(id)
             .then(user => {
                 if(!user) {

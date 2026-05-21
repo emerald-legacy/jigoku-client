@@ -1,27 +1,63 @@
 // Redux store types
 
-import type { GameState, OnlineUser } from "./game";
-import type { AuthState, UserState } from "./user";
-import type { CardsState } from "./deck";
+import type { GameState, OnlineUser } from "./game.js";
+import type { AuthState, UserState, User } from "./user.js";
+import type { CardsState } from "./deck.js";
 
-export type AnimationEvent =
-    | { type: "water" | "fire" | "void"; targetUuid: string; effect: string }
-    | { type: "earth" | "air"; playerName: string; effect: string }
-    | { type: "honor"; playerName: string; amount: number };
+export interface NewsItem {
+    _id?: string;
+    text: string;
+    poster?: string;
+    datePublished?: Date | string;
+    deleted?: boolean;
+}
+
+export interface PendingPlayer {
+    name: string;
+    user?: User;
+    deck?: import("./deck.js").Deck;
+    [key: string]: unknown;
+}
+
+export interface PendingGameInfo {
+    id?: string;
+    name?: string;
+    owner?: string;
+    started?: boolean;
+    gameType?: string;
+    gameFormat?: string;
+    gameMode?: string;
+    allowSpectators?: boolean;
+    players?: Record<string, PendingPlayer>;
+    spectators?: Record<string, PendingPlayer>;
+    node?: string;
+    createdAt?: string;
+    [key: string]: unknown;
+}
+
+export type CardAnimationEvent = { type: "water" | "fire" | "void"; targetUuid: string; effect: string };
+export type PlayerAnimationEvent = { type: "earth" | "air"; playerName: string; effect: string };
+export type HonorAnimationEvent = { type: "honor"; playerName: string; amount: number };
+
+export type AnimationEvent = CardAnimationEvent | PlayerAnimationEvent | HonorAnimationEvent;
+
+export function isCardAnimation(a: AnimationEvent): a is CardAnimationEvent {
+    return a.type === "water" || a.type === "fire" || a.type === "void";
+}
 
 export interface NavigationState {
-    context?: any;
+    context?: { x: number; y: number; menuId?: string } | undefined;
 }
 
 export interface GamesState {
-    games: any[];
+    games: PendingGameInfo[];
     currentGame?: GameState;
     newGame?: boolean;
     users?: OnlineUser[];
-    passwordGame?: any;
+    passwordGame?: PendingGameInfo;
     passwordJoinType?: string;
     passwordError?: string;
-    gameStats?: any;
+    gameStats?: Record<string, unknown>;
     gameId?: string;
     pendingAnimations?: AnimationEvent[];
 }
@@ -38,7 +74,7 @@ export interface ChatState {
 }
 
 export interface NewsState {
-    news?: any[];
+    news?: NewsItem[];
     newsSaved?: boolean;
     loading?: boolean;
 }
@@ -51,7 +87,7 @@ export interface ApiState {
 }
 
 export interface AdminState {
-    currentUser?: any;
+    currentUser?: User;
     userSaved?: boolean;
     loading?: boolean;
 }
@@ -67,5 +103,5 @@ export interface RootState {
     api: ApiState;
     admin: AdminState;
     user: UserState;
-    serverVersion: import("../reducers/serverVersion").ServerVersionState;
+    serverVersion: import("../reducers/serverVersion.js").ServerVersionState;
 }

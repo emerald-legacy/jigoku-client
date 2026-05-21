@@ -1,20 +1,23 @@
 
 import CardPile from "./CardPile";
+import type { Card, AdditionalPile } from "../types/game";
+
+export type { AdditionalPile };
 
 interface AdditionalCardPileProps {
     className?: string;
     isMe?: boolean;
-    onMouseOut?: (card: any) => void;
-    onMouseOver?: (card: any) => void;
-    pile: any;
+    onMouseOut?: (card: Card) => void;
+    onMouseOver?: (card: Card) => void;
+    pile: AdditionalPile;
     spectating?: boolean;
 }
 
 function AdditionalCardPile({ className, isMe, onMouseOut, onMouseOver, pile, spectating }: AdditionalCardPileProps) {
-    let topCard = pile.cards[pile.cards.length - 1];
+    let topCard: Card = pile.cards[pile.cards.length - 1];
     if(pile.isPrivate) {
-        topCard = { facedown: true, bowed: true };
-    } else if(topCard.facedown) {
+        topCard = { facedown: true, bowed: true } as Card;
+    } else if(topCard?.facedown) {
         topCard.bowed = true;
     }
 

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { shallowEqual } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
-import GameModes from "./GameModes";
+import GameModes from "../shared/GameModes";
 
 import * as actions from "./actions";
 import { useAppSelector, useAppDispatch } from "./hooks";

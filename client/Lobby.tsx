@@ -11,13 +11,15 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { loadServerVersion } from "./ReduxActions/serverVersion";
+import type { OnlineUser } from "./types/game";
+import type { NewsItem } from "./types/redux";
 
 interface InnerLobbyProps {
     bannerNotice?: string;
-    loadNews?: (...args: any[]) => any;
+    loadNews?: (opts: { limit?: number; forceLoad?: boolean }) => void;
     loading?: boolean;
-    news?: any[];
-    users?: any[];
+    news?: NewsItem[];
+    users?: OnlineUser[];
 }
 
 export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: InnerLobbyProps) {
@@ -26,7 +28,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: Inn
     const serverVersions = useAppSelector(state => state.serverVersion.nodes);
 
     useEffect(() => {
-        loadNews({ limit: 3 });
+        loadNews?.({ limit: 3 });
     }, [loadNews]);
 
     useEffect(() => {
@@ -41,7 +43,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: Inn
     if(!users) {
         userList = [];
     } else {
-        userList = users.map((user: any) => (
+        userList = users.map((user: OnlineUser) => (
             <div className="user-row" key={ user.name }>
                 <Avatar emailHash={ user.emailHash } forceDefault={ user.noAvatar } />
                 <span>{ user.name }</span>
@@ -91,7 +93,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: Inn
                 </div>
                 <div className="panel panel-darker">
                     { loading ? <div>News loading...</div> : null }
-                    <News news={ news } />
+                    <News news={ news?.map((item) => ({ datePublished: typeof item.datePublished === "string" ? item.datePublished : (item.datePublished?.toISOString() ?? ""), text: item.text })) } />
                 </div>
             </div>
 

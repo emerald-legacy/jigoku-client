@@ -1,35 +1,41 @@
+import React from "react";
 import { ArrowRight } from "lucide-react";
 import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl";
+import type { Card, Ring } from "../types/game";
+
+type TargetingItem = Card | Ring | { type?: string; name?: string; id?: string; element?: string; isDynasty?: boolean; isConflict?: boolean; packId?: string; facedown?: boolean };
 
 interface AbilityTargetingProps {
-    onMouseOut?: (card: any) => void;
-    onMouseOver?: (card: any) => void;
-    source: any;
-    targets?: any[];
+    onMouseOut?: (card: Card) => void;
+    onMouseOver?: (card: Card) => void;
+    source: TargetingItem;
+    targets?: TargetingItem[];
 }
 
 function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }: AbilityTargetingProps) {
-    const handleMouseOver = (event: React.MouseEvent, card: any) => {
-        if(card && !card.facedown && onMouseOver) {
-            onMouseOver(card);
+    const handleMouseOver = (_event: React.MouseEvent, card: TargetingItem) => {
+        if(card && !(card as Card).facedown && onMouseOver) {
+            onMouseOver(card as Card);
         }
     };
 
-    const handleMouseOut = (event: React.MouseEvent, card: any) => {
+    const handleMouseOut = (_event: React.MouseEvent, card: TargetingItem) => {
         if(card && onMouseOut) {
-            onMouseOut(card);
+            onMouseOut(card as Card);
         }
     };
 
-    const getCardImagePath = (card: any) => {
-        if(!card.id) {
-            const backFile = `${card.isDynasty ? "dynasty" : card.isConflict ? "conflict" : "province"}cardback.jpg`;
+    const getCardImagePath = (card: TargetingItem) => {
+        const c = card as { id?: string; packId?: string; isDynasty?: boolean; isConflict?: boolean };
+        if(!c.id) {
+            const backFile = `${c.isDynasty ? "dynasty" : c.isConflict ? "conflict" : "province"}cardback.jpg`;
             return getCardBackUrl(backFile);
         }
-        return getCardImageUrl(card.id, card.packId);
+        return getCardImageUrl(c.id, c.packId);
     };
 
-    const renderSimpleCard = (card: any) => {
+    const renderSimpleCard = (card: TargetingItem) => {
+        const c = card as { name?: string };
         return (
             <div
                 className="target-card vertical"
@@ -38,18 +44,19 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }: AbilityT
             >
                 <img
                     className="target-card-image vertical"
-                    alt={ card.name }
+                    alt={ c.name }
                     src={ getCardImagePath(card) }
                 />
             </div>
         );
     };
 
-    const renderSimpleRing = (ring: any) => {
+    const renderSimpleRing = (ring: TargetingItem) => {
+        const r = ring as { element?: string };
         return (
             <div className="ring-prompt">
                 <div className="ring no-highlight">
-                    <div className={ `ring icon-element-${ring.element} large` } />
+                    <div className={ `ring icon-element-${r.element} large` } />
                 </div>
             </div>
         );
@@ -64,19 +71,21 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }: AbilityT
     };
 
     const targetCards = targets?.map((target, index) => {
-        if(target.type === "select") {
-            return <span key={ index }>{ renderStringChoice(target.name) }</span>;
-        } else if(target.type === "ring") {
+        const t = target as { type?: string; name?: string };
+        if(t.type === "select") {
+            return <span key={ index }>{ renderStringChoice(t.name ?? "") }</span>;
+        } else if(t.type === "ring") {
             return <span key={ index }>{ renderSimpleRing(target) }</span>;
         }
         return <span key={ index }>{ renderSimpleCard(target) }</span>;
     });
 
     let sourceElement;
-    if(source.type) {
-        sourceElement = source.type === "ring" ? renderSimpleRing(source) : renderSimpleCard(source);
+    const s = source as { type?: string; name?: string };
+    if(s.type) {
+        sourceElement = s.type === "ring" ? renderSimpleRing(source) : renderSimpleCard(source);
     } else {
-        sourceElement = renderStringChoice(source.name);
+        sourceElement = renderStringChoice(s.name ?? "");
     }
 
     return (

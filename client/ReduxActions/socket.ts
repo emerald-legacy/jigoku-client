@@ -26,7 +26,7 @@ export {
     gameSocketReconnecting
 };
 
-export function sendSocketMessage(message: string, ...args: any[]) {
+export function sendSocketMessage(message: string, ...args: unknown[]) {
     return (dispatch: Dispatch) => {
         const socket = getLobbySocket();
         if(socket) {
@@ -36,7 +36,7 @@ export function sendSocketMessage(message: string, ...args: any[]) {
     };
 }
 
-export function sendGameMessage(message: string, ...args: any[]) {
+export function sendGameMessage(message: string, ...args: unknown[]) {
     return (dispatch: Dispatch) => {
         const socket = getGameSocket();
         if(socket) {

@@ -5,8 +5,8 @@ interface DeckRowProps {
     active?: boolean;
     deck: Deck;
     isSelected?: boolean;
-    onCheckboxChange?: (id: string | undefined) => any;
-    onClick?: () => any;
+    onCheckboxChange?: (id: string | undefined) => void;
+    onClick?: () => void;
     showCheckbox?: boolean;
 }
 

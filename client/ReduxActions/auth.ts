@@ -1,5 +1,6 @@
-import axios from "axios";
+import axios, { type AxiosError } from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import type { User } from "../types/user";
 import { register, login, logout } from "../reducers/auth";
 import { apiCall } from "./apiCall";
 import { getLobbySocket } from "../socket";
@@ -11,19 +12,27 @@ interface LoginArg {
     password: string;
 }
 
+interface LoginResponse {
+    success: boolean;
+    message?: string;
+    user: User & { admin?: boolean };
+    token: string;
+}
+
 export const loginUser = createAsyncThunk(
     "auth/login",
     async ({ username, password }: LoginArg, { dispatch, rejectWithValue }) => {
         try {
-            const response = await axios.post("/api/account/login", { username, password });
+            const response = await axios.post<LoginResponse>("/api/account/login", { username, password });
             if(!response.data.success) {
                 return rejectWithValue({ message: response.data.message, status: 200 });
             }
             dispatch(login({ user: response.data.user, token: response.data.token, isAdmin: !!response.data.user.admin }));
             getLobbySocket()?.emit("authenticate", response.data.token);
             return response.data;
-        } catch(error: any) {
-            const status = error?.response?.status;
+        } catch(error: unknown) {
+            const axiosError = error as AxiosError | undefined;
+            const status = axiosError?.response?.status;
             if(status === 401) {
                 return rejectWithValue({ message: "Invalid Username/password", status });
             }
@@ -37,7 +46,7 @@ export const loginUser = createAsyncThunk(
 
 export async function checkUsername(username: string): Promise<{ message?: string }> {
     try {
-        const response = await axios.post("/api/account/check-username", { username });
+        const response = await axios.post<{ message?: string }>("/api/account/check-username", { username });
         return response.data ?? {};
     } catch(_error) {
         return {};
@@ -50,11 +59,18 @@ interface RegisterArg {
     email: string;
 }
 
+interface RegisterResponse {
+    success: boolean;
+    message?: string;
+    user: User;
+    token: string;
+}
+
 export const registerUser = createAsyncThunk(
     "auth/register",
     async (arg: RegisterArg, { dispatch, rejectWithValue }) => {
         try {
-            const response = await axios.post("/api/account/register", arg);
+            const response = await axios.post<RegisterResponse>("/api/account/register", arg);
             const data = response.data;
             if(!data.success) {
                 return rejectWithValue({ message: data.message, status: 200 });

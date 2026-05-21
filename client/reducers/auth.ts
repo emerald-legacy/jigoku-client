@@ -1,22 +1,22 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { AuthState } from "../types/user";
+import type { AuthState, User } from "../types/user";
 import { refreshUser } from "./user";
 
 const authSlice = createSlice({
     name: "auth",
     initialState: {} as AuthState,
     reducers: {
-        register(state, action: PayloadAction<{ user: any; token: string }>) {
+        register(state, action: PayloadAction<{ user: User; token: string }>) {
             const { user, token } = action.payload;
             state.user = user;
             state.username = user.username;
             state.token = token;
             state.loggedIn = true;
-            if(!state.user.permissions) {
+            if(state.user && !state.user.permissions) {
                 state.user.permissions = {};
             }
         },
-        login(state, action: PayloadAction<{ user: any; token: string; isAdmin: boolean }>) {
+        login(state, action: PayloadAction<{ user: User; token: string; isAdmin: boolean }>) {
             const { user, token, isAdmin } = action.payload;
             state.user = user;
             state.username = user.username;

@@ -1,4 +1,4 @@
-import GameModes from "./GameModes.js";
+import GameModes from "../shared/GameModes";
 import type { Card } from "./types/game";
 
 type BannedListCards = {

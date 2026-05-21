@@ -11,19 +11,25 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
 import { useAppSelector, useAppDispatch } from "./hooks";
-import type { RootState } from "./types/redux";
-import type { GameState, MenuItem } from "./types/game";
+import type { RootState, PendingGameInfo } from "./types/redux";
+import type { GameState } from "./types/game";
+
+type LobbyGameView = PendingGameInfo;
+type GameListGame = React.ComponentProps<typeof GameList>["games"] extends (infer U)[] | undefined ? U : never;
+type GameStatsValue = React.ComponentProps<typeof GameStats>["stats"];
+
+type ContextMenuPayload = { x: number; y: number; menuId?: string } | undefined;
 
 interface InnerGameLobbyProps {
     bannerNotice?: string;
     currentGame?: GameState;
-    gameStats?: any;
-    games: any[];
+    gameStats?: GameStatsValue;
+    games: GameListGame[];
     newGame?: boolean;
-    passwordGame?: any;
-    loadGameStats: () => any;
-    setContextMenu: (menu: MenuItem[]) => any;
-    startNewGame: () => any;
+    passwordGame?: LobbyGameView;
+    loadGameStats: () => void;
+    setContextMenu: (menu: ContextMenuPayload) => void;
+    startNewGame: () => void;
     username?: string;
 }
 
@@ -32,7 +38,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
 
     useEffect(() => {
         if(!currentGame) {
-            setContextMenu([]);
+            setContextMenu(undefined);
         }
     }, [currentGame, setContextMenu]);
 
@@ -109,5 +115,8 @@ export default function GameLobby() {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerGameLobby { ...props } { ...boundActions } />;
+    return <InnerGameLobby { ...(props as Pick<InnerGameLobbyProps, "bannerNotice" | "currentGame" | "gameStats" | "games" | "newGame" | "passwordGame" | "username">) }
+        loadGameStats={ boundActions.loadGameStats }
+        setContextMenu={ boundActions.setContextMenu }
+        startNewGame={ boundActions.startNewGame } />;
 }

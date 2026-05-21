@@ -24,11 +24,11 @@ const permissionsList = [
 interface InnerUserAdminProps {
     apiError?: string;
     apiStatus?: number;
-    clearUserStatus: () => any;
+    clearUserStatus: () => void;
     currentUser?: User;
-    findUser: (username: string) => any;
+    findUser: (username: string) => void;
     loading?: boolean;
-    saveUser: (user: User) => any;
+    saveUser: (user: User) => void;
     userSaved?: boolean;
 }
 
@@ -155,5 +155,6 @@ export default function UserAdmin() {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerUserAdmin { ...props } { ...boundActions } />;
+    const merged = { ...props, ...boundActions } as InnerUserAdminProps;
+    return <InnerUserAdmin { ...merged } />;
 }

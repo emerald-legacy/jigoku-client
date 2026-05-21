@@ -1,8 +1,10 @@
 // Deck and card collection types
 
+import type { Card } from "./game.js";
+
 export interface DeckCard {
     count: number;
-    card: import("./game.js").Card;
+    card: Card;
     pack_id?: string;
 }
 
@@ -51,18 +53,18 @@ export interface Deck {
 }
 
 export interface CardsState {
-    cards?: Record<string, any>;
-    agendas?: Record<string, any>;
-    banners?: any[];
+    cards?: Record<string, Card>;
+    agendas?: Record<string, Card>;
+    banners?: Card[];
     packs?: Pack[];
     factions?: Record<string, Faction>;
     formats?: Record<string, Format>;
     decks?: Deck[];
     selectedDeck?: Deck;
-    deckStats?: Record<string, any>;
+    deckStats?: Record<string, DeckStatus>;
     deckSaved?: boolean;
     deckDeleted?: boolean;
-    zoomCard?: any;
+    zoomCard?: Card;
     singleDeck?: boolean;
     decksValidating?: boolean;
     loading?: boolean;

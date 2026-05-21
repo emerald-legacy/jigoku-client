@@ -1,13 +1,15 @@
 import { gzipSync, gunzipSync, strToU8, strFromU8 } from "fflate";
 import { getRecording, getHiddenInfo } from "../gameStateRecorder";
-import type { GameState } from "../types/game";
+import type { GameState, MessageFragment } from "../types/game";
 
 const iconsConflict = ["military", "political"];
 const iconsElement = ["air", "earth", "fire", "water", "void"];
 const iconsClan = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 const otherIcons = ["fate", "honor", "card", "cards"];
 
-function fragmentToText(fragment: any): string {
+type LogFragment = MessageFragment | MessageFragment[] | string | number | null | undefined;
+
+function fragmentToText(fragment: LogFragment): string {
     if(fragment === null || fragment === undefined) {
         return "";
     }
@@ -24,46 +26,48 @@ function fragmentToText(fragment: any): string {
     }
 
     if(Array.isArray(fragment)) {
-        return fragment.map(fragmentToText).join("");
+        return fragment.map((f) => fragmentToText(f as LogFragment)).join("");
     }
 
-    if(fragment.alert) {
-        const alertText = fragmentToText(fragment.alert.message);
-        if(fragment.alert.type === "endofround") {
+    const frag = fragment as MessageFragment & { alert?: { type: string; message: MessageFragment[] | string }; emailHash?: string; id?: string; type?: string; element?: string; facedown?: boolean; label?: string };
+
+    if(frag.alert) {
+        const alertText = fragmentToText(frag.alert.message as LogFragment);
+        if(frag.alert.type === "endofround") {
             return `--- ${alertText} ---`;
         }
-        return `[${fragment.alert.type.toUpperCase()}] ${alertText}`;
+        return `[${frag.alert.type.toUpperCase()}] ${alertText}`;
     }
 
-    if(fragment.message) {
-        return fragmentToText(fragment.message);
+    if(frag.message) {
+        return fragmentToText(frag.message as LogFragment);
     }
 
-    if(fragment.emailHash) {
-        return fragment.name;
+    if(frag.emailHash) {
+        return frag.name ?? "";
     }
 
-    if(fragment.id) {
-        if(fragment.type === "ring") {
-            return `the ${fragment.element} ring`;
+    if(frag.id) {
+        if(frag.type === "ring") {
+            return `the ${frag.element} ring`;
         }
-        if(fragment.type === "player") {
-            return fragment.name;
+        if(frag.type === "player") {
+            return frag.name ?? "";
         }
-        if(fragment.facedown) {
+        if(frag.facedown) {
             return "a facedown card";
         }
-        return fragment.name || fragment.label || "";
+        return frag.name || frag.label || "";
     }
 
-    if(fragment.name) {
-        return fragment.name;
+    if(frag.name) {
+        return frag.name;
     }
 
     return "";
 }
 
-function messageToText(message: any): string {
+function messageToText(message: LogFragment): string {
     if(!message) {
         return "";
     }
@@ -148,7 +152,7 @@ export function parseGameLog(arrayBuffer: ArrayBuffer) {
     }
 
     if(log.replayData && log.replayData.length > 0) {
-        let accumulated: any[] = [];
+        let accumulated: import("../types/game").GameMessage[] = [];
         for(let i = 0; i < log.replayData.length; i++) {
             const entry = log.replayData[i];
             const state = entry.state;
@@ -161,12 +165,10 @@ export function parseGameLog(arrayBuffer: ArrayBuffer) {
             delete state.messages;
             delete state.newMessages;
 
-            // Attach hidden info snapshot to each replay entry if available
             if(log.hiddenInfo && log.hiddenInfo[i]) {
                 entry.hiddenInfo = log.hiddenInfo[i];
             }
         }
-        // Remove top-level hiddenInfo after distributing to entries
         delete log.hiddenInfo;
     }
 

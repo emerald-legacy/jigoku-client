@@ -1,7 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { GamesState, AnimationEvent } from "../types/redux";
+import type { GameMessage, GameState, OnlineUser } from "../types/game";
+import type { AnimationEvent, GamesState, PendingGameInfo } from "../types/redux";
+import { isCardAnimation } from "../types/redux";
 import { loadGameStats } from "../ReduxActions/gamestats";
 import { gameSocketClosed } from "./socket";
+
+interface ReceiveGameStatePayload {
+    currentGame: GameState & { newMessages?: GameMessage[]; animations?: AnimationEvent[] };
+    username: string;
+}
 
 const gamesSlice = createSlice({
     name: "games",
@@ -13,20 +20,20 @@ const gamesSlice = createSlice({
         cancelNewGame(state) {
             state.newGame = false;
         },
-        receiveGames(state, action: PayloadAction<any[]>) {
+        receiveGames(state, action: PayloadAction<PendingGameInfo[]>) {
             state.games = action.payload;
             if(state.currentGame && !state.currentGame.started &&
-                !action.payload.find((g: any) => g.id === state.currentGame.id)) {
+                !action.payload.find((g: PendingGameInfo) => g.id === state.currentGame?.id)) {
                 state.currentGame = undefined;
                 state.newGame = false;
             }
         },
-        receiveNewGame(state, action: PayloadAction<any>) {
+        receiveNewGame(state, action: PayloadAction<GameState>) {
             state.currentGame = action.payload;
             state.newGame = false;
         },
         receiveGameState: {
-            reducer(state, action: PayloadAction<{ currentGame: any; username: string }>) {
+            reducer(state, action: PayloadAction<ReceiveGameStatePayload>) {
                 const { username } = action.payload;
                 const { newMessages, animations, ...gameData } = action.payload.currentGame;
 
@@ -45,7 +52,7 @@ const gamesSlice = createSlice({
                     return;
                 }
 
-                if(state.currentGame.spectators.some((s: any) => s.name === username)) {
+                if(state.currentGame.spectators.some((s) => s.name === username)) {
                     return;
                 }
 
@@ -58,28 +65,28 @@ const gamesSlice = createSlice({
                 state.passwordJoinType = undefined;
                 state.passwordError = undefined;
             },
-            prepare(currentGame: any, username: string) {
+            prepare(currentGame: GameState & { newMessages?: GameMessage[]; animations?: AnimationEvent[] }, username: string) {
                 return { payload: { currentGame, username } };
             }
         },
         clearAnimation(state, action: PayloadAction<string>) {
             const pending = state.pendingAnimations || [];
             state.pendingAnimations = pending.filter((a: AnimationEvent) => {
-                if("targetUuid" in a) {
+                if(isCardAnimation(a)) {
                     return a.targetUuid !== action.payload;
                 }
                 return a.playerName !== action.payload;
             });
         },
-        receiveUsers(state, action: PayloadAction<any[]>) {
+        receiveUsers(state, action: PayloadAction<OnlineUser[]>) {
             state.users = action.payload;
         },
         joinPasswordGame: {
-            reducer(state, action: PayloadAction<{ game: any; joinType: string }>) {
+            reducer(state, action: PayloadAction<{ game: PendingGameInfo; joinType: string }>) {
                 state.passwordGame = action.payload.game;
                 state.passwordJoinType = action.payload.joinType;
             },
-            prepare(game: any, joinType: string) {
+            prepare(game: PendingGameInfo, joinType: string) {
                 return { payload: { game, joinType } };
             }
         },
@@ -95,13 +102,13 @@ const gamesSlice = createSlice({
             state.currentGame = undefined;
             state.newGame = false;
         },
-        onGameHandoffReceived(state, action: PayloadAction<any>) {
+        onGameHandoffReceived(state, action: PayloadAction<{ gameId: string }>) {
             state.gameId = action.payload.gameId;
         }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(loadGameStats.fulfilled, (state: GamesState, action: PayloadAction<any>) => {
+            .addCase(loadGameStats.fulfilled, (state: GamesState, action: PayloadAction<{ stats: Record<string, unknown> }>) => {
                 state.gameStats = action.payload.stats;
             })
             .addCase(gameSocketClosed, (state: GamesState) => {

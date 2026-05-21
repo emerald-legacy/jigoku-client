@@ -1,19 +1,51 @@
+import type { Collection, Db } from "mongodb";
+
 import logger from "../log.js";
+import type { GameRecord, GamePlayerRecord } from "./GameService.js";
 
 const allClans = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 const statModes = ["all", "stronghold", "emerald", "sanctuary"];
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
 
-function normalizeClan(faction) {
+interface ClanCounts {
+    gamesPlayed: number;
+    wins: number;
+}
+
+interface MatchupCounts {
+    played: number;
+    wins: number;
+}
+
+interface StatsBucket {
+    totalGames: number;
+    clanData: Record<string, ClanCounts>;
+    matchupData: Record<string, Record<string, MatchupCounts>>;
+}
+
+interface ClanStatEntry {
+    clan: string;
+    gamesPlayed: number;
+    wins: number;
+    matchups: Record<string, { played: number; wins: number; winRate: number }>;
+}
+
+interface ComputedStats {
+    totalGames: number;
+    clanStats: ClanStatEntry[];
+    mostSuccessfulClans: { clan: string; winRate: number }[];
+}
+
+function normalizeClan(faction: string | undefined | null) {
     if(!faction) {
         return null;
     }
     return faction.toLowerCase().replace(/\s*clan\s*/i, "").trim();
 }
 
-function emptyBucket() {
-    const clanData = {};
-    const matchupData = {};
+function emptyBucket(): StatsBucket {
+    const clanData: Record<string, ClanCounts> = {};
+    const matchupData: Record<string, Record<string, MatchupCounts>> = {};
     for(const clan of allClans) {
         clanData[clan] = { gamesPlayed: 0, wins: 0 };
         matchupData[clan] = {};
@@ -26,9 +58,9 @@ function emptyBucket() {
     return { totalGames: 0, clanData, matchupData };
 }
 
-function computeStats(bucket) {
-    const clanStats = allClans.map(clan => {
-        const matchups = {};
+function computeStats(bucket: StatsBucket): ComputedStats {
+    const clanStats: ClanStatEntry[] = allClans.map(clan => {
+        const matchups: Record<string, { played: number; wins: number; winRate: number }> = {};
         for(const opp of allClans) {
             if(opp !== clan && bucket.matchupData[clan][opp].played > 0) {
                 const m = bucket.matchupData[clan][opp];
@@ -66,7 +98,7 @@ function computeStats(bucket) {
     return { totalGames: bucket.totalGames, clanStats, mostSuccessfulClans };
 }
 
-function recordGame(bucket, game, players) {
+function recordGame(bucket: StatsBucket, game: GameRecord, players: GamePlayerRecord[]) {
     const clan0 = normalizeClan(players[0].faction);
     const clan1 = normalizeClan(players[1].faction);
 
@@ -92,14 +124,16 @@ function recordGame(bucket, game, players) {
     }
 }
 
-class GameStatsService {
-    games: any;
-    cache: any;
-    cacheTime: any;
-    static getInstance: any;
+type StatsResult = Record<string, ComputedStats>;
 
-    constructor(db) {
-        this.games = db.collection("games");
+class GameStatsService {
+    games: Collection<GameRecord>;
+    cache: StatsResult | null;
+    cacheTime: number;
+    static getInstance: (db: Db) => GameStatsService;
+
+    constructor(db: Db) {
+        this.games = db.collection<GameRecord>("games");
         this.cache = null;
         this.cacheTime = 0;
         this.ensureIndexes();
@@ -137,13 +171,13 @@ class GameStatsService {
                 projection: { players: 1, winner: 1, gameMode: 1, startedAt: 1 }
             }).toArray();
 
-            const buckets: any = {};
+            const buckets: Record<string, StatsBucket> = {};
             for(const mode of statModes) {
                 buckets[mode] = emptyBucket();
             }
 
             for(const game of games) {
-                const players = Array.isArray(game.players)
+                const players: GamePlayerRecord[] = Array.isArray(game.players)
                     ? game.players
                     : Object.values(game.players || {});
 
@@ -162,7 +196,7 @@ class GameStatsService {
                 }
             }
 
-            const stats: any = {};
+            const stats: StatsResult = {};
             for(const mode of statModes) {
                 stats[mode] = computeStats(buckets[mode]);
             }
@@ -173,15 +207,15 @@ class GameStatsService {
             return stats;
         } catch(err) {
             logger.error(`Unable to get monthly game stats: ${err}`);
-            const empty = { totalGames: 0, clanStats: [], mostSuccessfulClans: [] };
+            const empty: ComputedStats = { totalGames: 0, clanStats: [], mostSuccessfulClans: [] };
             return { all: empty, stronghold: empty, emerald: empty, sanctuary: empty };
         }
     }
 }
 
-let instance = null;
+let instance: GameStatsService | null = null;
 
-GameStatsService.getInstance = function(db) {
+GameStatsService.getInstance = function(db: Db) {
     if(!instance) {
         instance = new GameStatsService(db);
     }

@@ -1,16 +1,17 @@
 import Avatar from "../Avatar";
 import Clock from "./Clock";
+import type { ClockState, Player } from "../types/game";
 
 interface PlayerStatsRowProps {
-    clockState?: any;
+    clockState?: ClockState | null;
     firstPlayer?: boolean;
     handSize?: number;
     otherPlayer?: boolean;
-    sendGameMessage: (message: string, ...args: any[]) => void;
+    sendGameMessage: (message: string, ...args: unknown[]) => void;
     showControls?: boolean;
     spectating?: boolean;
     stats?: Record<string, number>;
-    user?: any;
+    user?: Player["user"] | null;
 }
 
 export function PlayerStatsRow({

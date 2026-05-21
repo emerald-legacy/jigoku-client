@@ -1,18 +1,30 @@
 import { EventEmitter } from "node:events";
 import jwt from "jsonwebtoken";
+import type { Socket as IoSocket } from "socket.io";
 
 import logger from "./log.js";
 
-class Socket extends EventEmitter {
-    socket: any;
-    user: any;
-    config: any;
+type SocketConfig = { secret?: string };
 
-    constructor(socket, options: any = {}) {
+interface SocketOptions {
+    config: SocketConfig;
+}
+
+interface AuthUser {
+    username: string;
+    [key: string]: unknown;
+}
+
+class Socket extends EventEmitter {
+    socket: IoSocket;
+    user: AuthUser | undefined;
+    config: SocketConfig;
+
+    constructor(socket: IoSocket, options: SocketOptions) {
         super();
 
         this.socket = socket;
-        this.user = socket.request.user;
+        this.user = (socket.request as { user?: AuthUser }).user;
         this.config = options.config;
 
         socket.on("error", this.onError.bind(this));
@@ -25,19 +37,19 @@ class Socket extends EventEmitter {
     }
 
     // Commands
-    registerEvent(event, callback) {
+    registerEvent(event: string, callback: (socket: Socket, ...args: unknown[]) => void) {
         this.socket.on(event, this.onSocketEvent.bind(this, callback));
     }
 
-    joinChannel(channelName) {
+    joinChannel(channelName: string) {
         this.socket.join(channelName);
     }
 
-    leaveChannel(channelName) {
+    leaveChannel(channelName: string) {
         this.socket.leave(channelName);
     }
 
-    send(message, ...args) {
+    send(message: string, ...args: unknown[]) {
         this.socket.emit(message, ...args);
     }
 
@@ -46,7 +58,7 @@ class Socket extends EventEmitter {
     }
 
     // Events
-    onSocketEvent(callback, ...args) {
+    onSocketEvent(callback: (socket: Socket, ...args: unknown[]) => void, ...args: unknown[]) {
         if(!this.user) {
             return;
         }
@@ -58,10 +70,17 @@ class Socket extends EventEmitter {
         }
     }
 
-    onAuthenticate(token) {
-        jwt.verify(token, this.config.secret, { algorithms: ["HS256"] }, (err, user) => {
+    onAuthenticate(token: string) {
+        const cfg = this.config as { secret?: string; get?: (key: "secret") => string };
+        const secret = cfg.secret ?? (cfg.get ? cfg.get("secret") : "");
+        jwt.verify(token, secret, { algorithms: ["HS256"] }, (err: jwt.VerifyErrors | null, decoded: jwt.JwtPayload | string | undefined) => {
             if(err) {
                 logger.info(`JWT auth failed: ${err.message}`);
+                return;
+            }
+
+            const user = decoded as AuthUser | undefined;
+            if(!user || typeof user === "string") {
                 return;
             }
 
@@ -69,17 +88,17 @@ class Socket extends EventEmitter {
                 this.socket.disconnect();
                 return;
             }
-            this.socket.request.user = user;
+            (this.socket.request as { user?: AuthUser }).user = user;
             this.user = user;
             this.emit("authenticate", this, user);
         });
     }
 
-    onDisconnect(reason) {
+    onDisconnect(reason: string) {
         this.emit("disconnect", this, reason);
     }
 
-    onError(err) {
+    onError(err: Error) {
         logger.info(`Socket.IO error: ${err}. Socket ID ${this.socket.id}`);
     }
 }

@@ -5,13 +5,14 @@ import CardStats from "./CardStats";
 import CardCounters from "./CardCounters";
 import CardPile from "./CardPile";
 import AbilityUsedMarker from "./AbilityUsedMarker";
-import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl.js";
+import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl";
 import { buildCardCounters } from "./buildCardCounters";
 import { startCardDrag, useCardTouchDrag } from "./cardDrag";
 import CardAttachments from "./CardAttachments";
 import CardPopup from "./CardPopup";
 import type { Card as CardType, MenuItem, Player } from "../types/game";
-import type { AnimationEvent } from "../types/redux";
+import type { AnimationEvent, CardAnimationEvent } from "../types/redux";
+import { isCardAnimation } from "../types/redux";
 
 interface CardProps {
     card: CardType | { facedown: boolean; isDynasty?: boolean; isConflict?: boolean };
@@ -287,8 +288,8 @@ function Card(props: CardProps) {
             return <div />;
         }
 
-        const anim = pendingAnimations?.find((a: AnimationEvent) => "targetUuid" in a && a.targetUuid === card.uuid);
-        const animReadies = anim && "effect" in anim && anim.effect === "ready";
+        const anim = pendingAnimations?.find((a): a is CardAnimationEvent => isCardAnimation(a) && a.targetUuid === card.uuid);
+        const animReadies = anim?.effect === "ready";
         const displayBowed = !animReadies && (orientation === "bowed" || card.bowed);
 
         if(size !== "normal") {

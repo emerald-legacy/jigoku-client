@@ -1,24 +1,31 @@
-import type { AxiosResponse } from "axios";
+import type { AxiosError, AxiosResponse } from "axios";
 
 export interface ApiFailure {
     message: string;
     status?: number;
 }
 
-export async function apiCall<T = any>(
-    request: () => Promise<AxiosResponse<any>>,
-    rejectWithValue: (value: ApiFailure) => any
+interface ApiResponseEnvelope {
+    success?: boolean;
+    message?: string;
+}
+
+export async function apiCall<T = unknown>(
+    request: () => Promise<AxiosResponse<T & ApiResponseEnvelope>>,
+    rejectWithValue: (value: ApiFailure) => unknown
 ): Promise<T> {
     try {
         const response = await request();
-        if(response.data && response.data.success === false) {
-            return rejectWithValue({ message: response.data.message, status: 200 });
+        const data = response.data;
+        if(data && data.success === false) {
+            return rejectWithValue({ message: data.message ?? "", status: 200 }) as T;
         }
-        return response.data;
-    } catch(error: any) {
+        return data as T;
+    } catch(error: unknown) {
+        const axiosError = error as AxiosError | undefined;
         return rejectWithValue({
             message: "An error occured communicating with the server.  Please try again later.",
-            status: error?.response?.status
-        });
+            status: axiosError?.response?.status
+        }) as T;
     }
 }
