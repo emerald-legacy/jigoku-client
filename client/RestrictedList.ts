@@ -1,6 +1,22 @@
 import GameModes from "./GameModes.js";
+import type { Card } from "./types/game";
 
-const restrictedList = {
+type RestrictedListCards = {
+    stronghold: string[];
+    skirmish: string[];
+    emerald: string[];
+    sanctuary: string[];
+    obsidian: string[];
+};
+
+type RestrictedGameMode = keyof RestrictedListCards;
+
+interface RestrictedListData {
+    version: string;
+    cards: RestrictedListCards;
+}
+
+const restrictedList: RestrictedListData = {
     version: "14",
     cards: {
         "stronghold": [
@@ -64,16 +80,16 @@ const restrictedList = {
 };
 
 class RestrictedList {
-    validate(cards, gameMode) {
-        let cardsOnRestrictedList = cards.filter(card => restrictedList.cards[gameMode].includes(card.id));
+    validate(cards: Card[], gameMode: RestrictedGameMode) {
+        let cardsOnRestrictedList = cards.filter((card: Card) => restrictedList.cards[gameMode].includes(card.id));
 
-        let errors = [];
+        let errors: string[] = [];
 
         if(cardsOnRestrictedList.length > 1) {
             if(gameMode === GameModes.Emerald) {
-                errors.push(`Contains more than 1 card on the Emerald Legacy restricted list: ${cardsOnRestrictedList.map(card => card.name).join(", ")}`);
+                errors.push(`Contains more than 1 card on the Emerald Legacy restricted list: ${cardsOnRestrictedList.map((card: Card) => card.name).join(", ")}`);
             } else {
-                errors.push(`Contains more than 1 card on the FAQ v${restrictedList.version} restricted list: ${cardsOnRestrictedList.map(card => card.name).join(", ")}`);
+                errors.push(`Contains more than 1 card on the FAQ v${restrictedList.version} restricted list: ${cardsOnRestrictedList.map((card: Card) => card.name).join(", ")}`);
             }
         }
 

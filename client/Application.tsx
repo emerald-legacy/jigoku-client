@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import axios from "axios";
 import { bindActionCreators } from "@reduxjs/toolkit";
-import { connect } from "react-redux";
+import { shallowEqual, useSelector } from "react-redux";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
+import { setLobbySocket, setGameSocket, getGameSocket } from "./socket";
+import type { GameSocket } from "./socket";
+
+import type { RootState } from "./types/redux";
+import type { GameState } from "./types/game";
+import type { User } from "./types/user";
+import { backgroundClassByValue } from "./backgrounds";
 
 import Login from "./Login";
 import Logout from "./Logout";
@@ -36,68 +44,137 @@ import { toast } from "sonner";
 import version from "../version.js";
 
 import * as actions from "./actions";
+import { useAppDispatch, useAppSelector } from "./hooks";
 
-class App extends React.Component {
-    constructor(props) {
-        super(props);
-
-        let boundActionCreators = bindActionCreators(actions, this.props.dispatch);
-
-        this.paths = {
-            "/": () => <Lobby />,
-            "/login": () => <Login />,
-            "/register": () => <Register />,
-            "/decks": () => <Decks { ...boundActionCreators } />,
-            "/decks/add": () => <AddDeck />,
-            "/decks/edit": params => <EditDeck deckId={ params.deckId } />,
-            "/play": () => (this.props.currentGame && this.props.currentGame.started) ? <GameBoard /> : <GameLobby />,
-            "/how-to-play": () => <HowToPlay />,
-            "/about": () => <About />,
-            "/community": () => <Community />,
-            "/formats": () => <Formats />,
-            "/forgot": () => <ForgotPassword />,
-            "/reset-password": params => <ResetPassword id={ params.id } token={ params.token } />,
-            "/profile": () => <Profile />,
-            "/news": () => <NewsAdmin />
-        };
+function PlayRoute() {
+    const currentGame = useSelector((state: RootState) => state.games.currentGame);
+    if(currentGame && currentGame.started) {
+        return <GameBoard />;
     }
+    return <GameLobby />;
+}
 
-    componentDidMount() {
-        this.props.loadCards();
-        this.props.loadPacks();
-        this.props.loadFactions();
-        this.props.loadFormats();
+function NewsRoute({ canEdit }: { canEdit: boolean }) {
+    return canEdit ? <NewsAdmin /> : <Unauthorised />;
+}
 
-        // Set up axios interceptor for global error handling (replaces jQuery ajaxError)
-        this.axiosInterceptor = axios.interceptors.response.use(
+function UsersRoute({ canManage }: { canManage: boolean }) {
+    return canManage ? <UserAdmin /> : <Unauthorised />;
+}
+
+function AppRoutes({ permissions }: { permissions: Record<string, boolean> }) {
+    return (
+        <Routes>
+            <Route path="/" element={ <Lobby /> } />
+            <Route path="/login" element={ <Login /> } />
+            <Route path="/logout" element={ <Logout /> } />
+            <Route path="/register" element={ <Register /> } />
+            <Route path="/decks" element={ <Decks /> } />
+            <Route path="/decks/add" element={ <AddDeck /> } />
+            <Route path="/decks/edit" element={ <EditDeck /> } />
+            <Route path="/decks/edit/:deckId" element={ <EditDeck /> } />
+            <Route path="/play" element={ <PlayRoute /> } />
+            <Route path="/how-to-play" element={ <HowToPlay /> } />
+            <Route path="/about" element={ <About /> } />
+            <Route path="/community" element={ <Community /> } />
+            <Route path="/formats" element={ <Formats /> } />
+            <Route path="/forgot" element={ <ForgotPassword /> } />
+            <Route path="/reset-password" element={ <ResetPassword /> } />
+            <Route path="/profile" element={ <Profile /> } />
+            <Route path="/news" element={ <NewsRoute canEdit={ !!permissions.canEditNews } /> } />
+            <Route path="/unauth" element={ <Unauthorised /> } />
+            <Route path="/users" element={ <UsersRoute canManage={ !!permissions.canManageUsers } /> } />
+            <Route path="/blocklist" element={ <BlockList /> } />
+            <Route path="/replay" element={ <GameReplay /> } />
+            <Route path="*" element={ <NotFound /> } />
+        </Routes>
+    );
+}
+
+function mapStateToProps(state: RootState) {
+    return {
+        currentGame: state.games.currentGame,
+        currentGameId: state.games.gameId,
+        games: state.games.games,
+        loggedIn: state.auth.loggedIn,
+        token: state.auth.token,
+        user: state.auth.user,
+        username: state.auth.username
+    };
+}
+
+function computeBackgroundClass(gameBoardVisible: boolean, user?: User): string {
+    if(!gameBoardVisible || !user) {
+        return "bg";
+    }
+    const background = user.settings.background;
+    return (background && backgroundClassByValue[background]) || "bg-board-default";
+}
+
+type BoundActions = Record<string, (...args: any[]) => any>;
+
+interface SocketHandlerState {
+    username?: string;
+    currentGameId?: string;
+    token?: string;
+    boundActions: BoundActions;
+}
+
+export default function Application() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo<BoundActions>(
+        () => bindActionCreators(actions as unknown as Record<string, (...args: any[]) => any>, dispatch),
+        [dispatch]
+    );
+    const { currentGame, currentGameId, games, token, user, username } = useAppSelector(mapStateToProps, shallowEqual);
+
+    const stateRef = useRef<SocketHandlerState>({ username, currentGameId, token, boundActions });
+    useEffect(() => {
+        stateRef.current = { username, currentGameId, token, boundActions };
+    });
+
+    const navigateRef = useRef(navigate);
+    useEffect(() => {
+        navigateRef.current = navigate;
+    });
+
+    useEffect(() => {
+        const { boundActions: initialActions, token: initialToken } = stateRef.current;
+        initialActions.loadCards();
+        initialActions.loadPacks();
+        initialActions.loadFactions();
+        initialActions.loadFormats();
+
+        const axiosInterceptor = axios.interceptors.response.use(
             response => response,
             error => {
                 if(error.response) {
                     if(error.response.status === 401) {
-                        this.props.navigate("/login");
+                        navigateRef.current("/login");
                     } else if(error.response.status === 403) {
-                        this.props.navigate("/unauth");
+                        navigateRef.current("/unauth");
                     }
                 }
                 return Promise.reject(error);
             }
         );
 
-        let socket = io(window.location.origin, {
+        const socket = io(window.location.origin, {
             reconnection: true,
             reconnectionDelay: 1000,
             reconnectionDelayMax: 5000,
             reconnectionAttempts: Infinity,
             auth: {
-                token: this.props.token,
+                token: initialToken,
                 version: version
             }
         });
-
-        this.lobbySocket = socket;
+        setLobbySocket(socket);
 
         socket.on("connect", () => {
-            this.props.socketConnected(socket);
+            stateRef.current.boundActions.socketConnected();
         });
 
         socket.on("disconnect", () => {
@@ -106,35 +183,36 @@ class App extends React.Component {
 
         socket.on("reconnect", () => {
             toast.success("The reconnection to the lobby has been successful", { description: "Reconnected" });
-            this.props.socketConnected(socket);
+            stateRef.current.boundActions.socketConnected();
         });
 
         socket.on("games", games => {
-            this.props.receiveGames(games);
+            stateRef.current.boundActions.receiveGames(games);
         });
 
         socket.on("users", users => {
-            this.props.receiveUsers(users);
+            stateRef.current.boundActions.receiveUsers(users);
         });
 
         socket.on("newgame", game => {
-            this.props.receiveNewGame(game);
+            stateRef.current.boundActions.receiveNewGame(game);
         });
 
         socket.on("gamestate", game => {
-            if(game.started && game.players?.[this.props.username]) {
+            const { username: liveUsername, boundActions: liveActions } = stateRef.current;
+            if(game.started && game.players?.[liveUsername || ""]) {
                 recordState(game);
             }
-            this.props.receiveGameState(game, this.props.username);
+            liveActions.receiveGameState(game, liveUsername);
         });
 
         socket.on("cleargamestate", () => {
             clearRecording();
-            this.props.clearGameState();
+            stateRef.current.boundActions.clearGameState();
         });
 
         socket.on("passworderror", message => {
-            this.props.receivePasswordError(message);
+            stateRef.current.boundActions.receivePasswordError(message);
         });
 
         socket.on("handoff", server => {
@@ -144,26 +222,28 @@ class App extends React.Component {
                 url += `:${server.port}`;
             }
 
-            this.props.onGameHandoffReceived(server);
+            const { currentGameId: liveGameId, token: liveToken, boundActions: liveActions } = stateRef.current;
+            liveActions.onGameHandoffReceived(server);
 
-            if(this.props.gameSocket && this.props.currentGameId !== server.gameId) {
-                this.props.closeGameSocket();
+            if(getGameSocket() && liveGameId !== server.gameId) {
+                liveActions.closeGameSocket();
             }
 
-            this.props.gameSocketConnecting(`${url}/${server.name}`);
+            liveActions.gameSocketConnecting(`${url}/${server.name}`);
 
-            let gameSocket = io(url, {
+            const gameSocket: GameSocket = io(url, {
                 path: `/${server.name}/socket.io`,
                 reconnection: true,
                 reconnectionDelay: 2000,
                 reconnectionDelayMax: 10000,
                 reconnectionAttempts: 20,
                 auth: {
-                    token: this.props.token
+                    token: liveToken
                 }
             });
+            setGameSocket(gameSocket);
 
-            gameSocket.on("connect_error", (err) => {
+            gameSocket.on("connect_error", (err: Error & { description?: string }) => {
                 toast.error(`There was an error connecting to the game server: ${err.message}(${err.description})`, { description: "Connect Error" });
             });
 
@@ -171,39 +251,38 @@ class App extends React.Component {
                 if(!gameSocket.gameClosing) {
                     toast.error("You have been disconnected from the game server", { description: "Connection lost" });
                 }
-
-                this.props.gameSocketDisconnect();
+                stateRef.current.boundActions.gameSocketDisconnect();
             });
 
             gameSocket.io.on("reconnect_attempt", (attemptNumber) => {
                 toast.info(`Attempt number ${attemptNumber} to reconnect..`, { description: "Reconnecting" });
-
-                this.props.gameSocketReconnecting(attemptNumber);
+                stateRef.current.boundActions.gameSocketReconnecting(attemptNumber);
             });
 
             gameSocket.on("reconnect", () => {
                 toast.success("The reconnection has been successful", { description: "Reconnected" });
-                this.props.gameSocketConnected(gameSocket);
+                stateRef.current.boundActions.gameSocketConnected();
             });
 
             gameSocket.on("reconnect_failed", () => {
                 toast.error("Given up trying to connect to the server", { description: "Reconnect failed" });
-                this.props.sendGameSocketConnectFailed();
+                stateRef.current.boundActions.sendGameSocketConnectFailed();
             });
 
             gameSocket.on("connect", () => {
-                this.props.gameSocketConnected(gameSocket);
+                stateRef.current.boundActions.gameSocketConnected();
             });
 
             gameSocket.on("gamestate", game => {
-                const isPlayer = !!game.players?.[this.props.username];
+                const { username: liveUsername, boundActions: gameActions } = stateRef.current;
+                const isPlayer = !!game.players?.[liveUsername || ""];
                 if(isPlayer && game.started && !game.winner) {
                     startRecording();
                 }
                 if(isPlayer) {
                     recordState(game);
                 }
-                this.props.receiveGameState(game, this.props.username);
+                gameActions.receiveGameState(game, liveUsername);
             });
 
             gameSocket.on("hiddeninfo", data => {
@@ -212,324 +291,99 @@ class App extends React.Component {
 
             gameSocket.on("cleargamestate", () => {
                 clearRecording();
-                this.props.clearGameState();
+                stateRef.current.boundActions.clearGameState();
             });
         });
 
         socket.on("banner", notice => {
-            this.props.receiveBannerNotice(notice);
+            stateRef.current.boundActions.receiveBannerNotice(notice);
         });
-    }
 
-    componentDidUpdate(prevProps) {
-        if(prevProps.currentGame && !this.props.currentGame) {
-            this.props.setContextMenu([]);
+        return () => {
+            socket.removeAllListeners();
+            socket.disconnect();
+            setLobbySocket(null);
+            axios.interceptors.response.eject(axiosInterceptor);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only setup; stateRef + navigateRef carry the always-current values that handlers need
+    }, []);
+
+    const prevCurrentGameRef = useRef<GameState | undefined>(undefined);
+    useEffect(() => {
+        if(prevCurrentGameRef.current && !currentGame) {
+            boundActions.setContextMenu([]);
         }
-    }
+        prevCurrentGameRef.current = currentGame;
+    }, [currentGame, boundActions]);
 
-    componentWillUnmount() {
-        if(this.lobbySocket) {
-            this.lobbySocket.removeAllListeners();
-            this.lobbySocket.disconnect();
-        }
-        // Clean up axios interceptor
-        if(this.axiosInterceptor !== undefined) {
-            axios.interceptors.response.eject(this.axiosInterceptor);
-        }
-    }
-
-    getUrlParameter(name) {
-        name = name.replace(/[[]/, "\\[").replace(/[\]]/, "\\]");
-        let regex = new RegExp(`[\\?&]${name}=([^&#]*)`);
-        let results = regex.exec(location.search);
-
-        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-    }
-
-    isNumeric(n) {
-        return !isNaN(parseFloat(n)) && isFinite(n);
-    }
-
-    render() {
-        let rightMenu;
-
-        if(!this.props.user) {
-            rightMenu = [
-                { name: "Login", path: "/login" },
-                { name: "Register", path: "/register" }
-            ];
-        } else {
-            rightMenu = [
-                {
-                    name: this.props.user.username, childItems: [
-                        { name: "Profile", path: "/profile" },
-                        { name: "Block List", path: "/blocklist" },
-                        { name: "Logout", path: "/logout" }
-                    ], avatar: true, emailHash: this.props.user.emailHash, disableGravatar: this.props.user.settings.disableGravatar
-                }
-            ];
-        }
-
-        let leftMenu = [
-            { name: "Decks", path: "/decks" },
-            { name: "Play", path: "/play" },
-            { name: "Replay", path: "/replay" },
+    let rightMenu;
+    if(!user) {
+        rightMenu = [
+            { name: "Login", path: "/login" },
+            { name: "Register", path: "/register" }
+        ];
+    } else {
+        rightMenu = [
             {
-                name: "Help", childItems: [
-                    { name: "How To Play", path: "/how-to-play" },
-                    { name: "About", path: "/about" },
-                    { name: "Community", path: "/community" },
-                    { name: "Formats", path: "/formats" }
-                ]
+                name: user.username,
+                childItems: [
+                    { name: "Profile", path: "/profile" },
+                    { name: "Block List", path: "/blocklist" },
+                    { name: "Logout", path: "/logout" }
+                ],
+                avatar: true,
+                emailHash: user.emailHash,
+                disableGravatar: user.settings.disableGravatar
             }
         ];
+    }
 
-        let adminMenuItems = [];
-        let permissions = {};
+    const leftMenu = [
+        { name: "Decks", path: "/decks" },
+        { name: "Play", path: "/play" },
+        { name: "Replay", path: "/replay" },
+        {
+            name: "Help", childItems: [
+                { name: "How To Play", path: "/how-to-play" },
+                { name: "About", path: "/about" },
+                { name: "Community", path: "/community" },
+                { name: "Formats", path: "/formats" }
+            ]
+        }
+    ];
 
-        if(this.props.user && this.props.user.permissions) {
-            permissions = this.props.user.permissions;
+    const adminMenuItems: { name: string; path: string }[] = [];
+    let permissions: Record<string, boolean> = {};
 
-            if(permissions.canEditNews) {
-                adminMenuItems.push({ name: "News", path: "/news" });
-            }
+    if(user && user.permissions) {
+        permissions = user.permissions;
 
-            if(permissions.canManageUsers) {
-                adminMenuItems.push({ name: "Users", path: "/users" });
-            }
+        if(permissions.canEditNews) {
+            adminMenuItems.push({ name: "News", path: "/news" });
         }
 
-        if(adminMenuItems.length > 0) {
-            leftMenu.push({ name: "Admin", childItems: adminMenuItems });
+        if(permissions.canManageUsers) {
+            adminMenuItems.push({ name: "Users", path: "/users" });
         }
+    }
 
-        let component = {};
+    if(adminMenuItems.length > 0) {
+        leftMenu.push({ name: "Admin", childItems: adminMenuItems });
+    }
 
-        let path = this.props.path;
-        let argIndex = path.lastIndexOf("/");
-        let arg;
+    const gameBoardVisible = location.pathname === "/play" && !!currentGame && !!currentGame.started;
+    const backgroundClass = computeBackgroundClass(gameBoardVisible, user);
 
-        let page = this.paths[path];
-        if(!page) {
-            if(argIndex !== -1 && argIndex !== 0) {
-                arg = path.substring(argIndex + 1);
-                path = path.substring(0, argIndex);
-            }
-
-            let page = this.paths[path];
-            if(!page) {
-                page = this.paths[this.props.path];
-                arg = undefined;
-            }
-        }
-
-        let idArg;
-        let tokenArg;
-        let index;
-        let gameBoardVisible = false;
-
-        index = path.indexOf("/reset-password");
-        if(index !== -1) {
-            idArg = this.getUrlParameter("id");
-            tokenArg = this.getUrlParameter("token");
-        }
-
-        let boundActionCreators = bindActionCreators(actions, this.props.dispatch);
-
-        switch(path) {
-            case "/":
-                component = <Lobby />;
-                break;
-            case "/login":
-                component = <Login />;
-                break;
-            case "/logout":
-                component = <Logout />;
-                break;
-            case "/register":
-                component = <Register />;
-                break;
-            case "/decks":
-                component = <Decks { ...boundActionCreators } />;
-                break;
-            case "/decks/add":
-                component = <AddDeck />;
-                break;
-            case "/decks/edit":
-                component = <EditDeck deckId={ arg } />;
-                break;
-            case "/play":
-                if(this.props.currentGame && this.props.currentGame.started) {
-                    component = <GameBoard />;
-                    gameBoardVisible = true;
-                } else {
-                    component = <GameLobby />;
-                }
-
-                break;
-            case "/how-to-play":
-                component = <HowToPlay />;
-                break;
-            case "/about":
-                component = <About />;
-                break;
-            case "/community":
-                component = <Community />;
-                break;
-            case "/forgot":
-                component = <ForgotPassword />;
-                break;
-            case "/reset-password":
-                component = <ResetPassword id={ idArg } token={ tokenArg } />;
-                break;
-            case "/profile":
-                component = <Profile />;
-                break;
-            case "/news":
-                if(!permissions.canEditNews) {
-                    component = <Unauthorised />;
-                } else {
-                    component = <NewsAdmin />;
-                }
-
-                break;
-            case "/unauth":
-                component = <Unauthorised />;
-                break;
-            case "/users":
-                if(!permissions.canManageUsers) {
-                    component = <Unauthorised />;
-                } else {
-                    component = <UserAdmin />;
-                }
-
-                break;
-            case "/blocklist":
-                component = <BlockList />;
-                break;
-            case "/replay":
-                component = <GameReplay />;
-                break;
-            default:
-                component = <NotFound />;
-                break;
-        }
-
-        let backgroundClass = "bg";
-        if(gameBoardVisible && this.props.user) {
-            switch(this.props.user.settings.background) {
-                case "CRAB":
-                    backgroundClass = "bg-board-crab";
-                    break;
-                case "CRANE":
-                    backgroundClass = "bg-board-crane";
-                    break;
-                case "DRAGON":
-                    backgroundClass = "bg-board-dragon";
-                    break;
-                case "LION":
-                    backgroundClass = "bg-board-lion";
-                    break;
-                case "PHOENIX":
-                    backgroundClass = "bg-board-phoenix";
-                    break;
-                case "SCORPION":
-                    backgroundClass = "bg-board-scorpion";
-                    break;
-                case "UNICORN":
-                    backgroundClass = "bg-board-unicorn";
-                    break;
-                case "CRAB2":
-                    backgroundClass = "bg-board-crab2";
-                    break;
-                case "CRAB3":
-                    backgroundClass = "bg-board-crab3";
-                    break;
-                case "CRANE2":
-                    backgroundClass = "bg-board-crane2";
-                    break;
-                case "CRANE3":
-                    backgroundClass = "bg-board-crane3";
-                    break;
-                case "CRANE4":
-                    backgroundClass = "bg-board-crane4";
-                    break;
-                case "DRAGON2":
-                    backgroundClass = "bg-board-dragon2";
-                    break;
-                case "DRAGON3":
-                    backgroundClass = "bg-board-dragon3";
-                    break;
-                case "LION2":
-                    backgroundClass = "bg-board-lion2";
-                    break;
-                case "LION3":
-                    backgroundClass = "bg-board-lion3";
-                    break;
-                case "PHOENIX2":
-                    backgroundClass = "bg-board-phoenix2";
-                    break;
-                case "PHOENIX3":
-                    backgroundClass = "bg-board-phoenix3";
-                    break;
-                case "SCORPION2":
-                    backgroundClass = "bg-board-scorpion2";
-                    break;
-                case "SCORPION3":
-                    backgroundClass = "bg-board-scorpion3";
-                    break;
-                case "UNICORN2":
-                    backgroundClass = "bg-board-unicorn2";
-                    break;
-                case "UNICORN3":
-                    backgroundClass = "bg-board-unicorn3";
-                    break;
-                case "OTTER":
-                    backgroundClass = "bg-board-otter";
-                    break;
-                default:
-                    backgroundClass = "bg-board-default";
-                    break;
-            }
-        }
-
-        return (<div className={ backgroundClass }>
-            <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" currentPath={ this.props.path } numGames={ this.props.games.length } />
+    return (
+        <div className={ backgroundClass }>
+            <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" numGames={ games.length } />
             <div className="container">
-                <ErrorBoundary navigate={ this.props.navigate } errorPath={ this.props.path } message={ "We're sorry - something's gone wrong." }>
+                <ErrorBoundary navigate={ navigate } errorPath={ location.pathname } message={ "We're sorry - something's gone wrong." }>
                     <React.Suspense fallback={ null }>
-                        { component }
+                        <AppRoutes permissions={ permissions } />
                     </React.Suspense>
                 </ErrorBoundary>
             </div>
-        </div>);
-    }
+        </div>
+    );
 }
-
-App.displayName = "Application";
-
-function mapStateToProps(state) {
-    return {
-        currentGame: state.games.currentGame,
-        currentGameId: state.games.gameId,
-        disconnecting: state.socket.gameDisconnecting,
-        gameSocket: state.socket.gameSocket,
-        games: state.games.games,
-        path: state.navigation.path,
-        loggedIn: state.auth.loggedIn,
-        token: state.auth.token,
-        user: state.auth.user,
-        username: state.auth.username
-    };
-}
-
-function mapDispatchToProps(dispatch) {
-    let boundActions = bindActionCreators(actions, dispatch);
-    boundActions.dispatch = dispatch;
-
-    return boundActions;
-}
-
-const Application = connect(mapStateToProps, mapDispatchToProps)(App);
-
-export default Application;

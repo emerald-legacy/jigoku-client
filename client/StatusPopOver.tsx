@@ -1,12 +1,15 @@
 import { useState } from "react";
-import ReactDOMServer from "react-dom/server";
+import type { ReactNode } from "react";
 
-function StatusPopOver({ children, show, status }) {
+interface StatusPopOverProps {
+    children: ReactNode;
+    show?: boolean;
+    status?: string;
+}
+
+function StatusPopOver({ children, show, status }: StatusPopOverProps) {
     const [isHovered, setIsHovered] = useState(false);
 
-    const content = ReactDOMServer.renderToString(children);
-
-    // If show is false, just render the status text without popover
     if(!show) {
         return <span>{ status }</span>;
     }
@@ -34,8 +37,7 @@ function StatusPopOver({ children, show, status }) {
                     } }
                 >
                     <div className="arrow" style={ { left: "50%" } } />
-                    { /* eslint-disable-next-line react/no-danger */ }
-                    <div className="popover-content" dangerouslySetInnerHTML={ { __html: content } } />
+                    <div className="popover-content">{ children }</div>
                 </div>
             ) }
         </span>

@@ -1,12 +1,8 @@
 import axios from "axios";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { apiCall } from "./apiCall";
 
-export function loadDeckStats() {
-    return {
-        types: ["REQUEST_DECK_STATS", "RECEIVE_DECK_STATS"] as const,
-        shouldCallAPI: () => true,
-        callAPI: async () => {
-            const response = await axios.get("/api/deckstats");
-            return response.data;
-        }
-    };
-}
+export const loadDeckStats = createAsyncThunk(
+    "cards/loadDeckStats",
+    (_, { rejectWithValue }) => apiCall(() => axios.get("/api/deckstats"), rejectWithValue)
+);

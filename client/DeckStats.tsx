@@ -1,7 +1,7 @@
 
 const clanOrder = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
-const reasonLabels = {
+const reasonLabels: Record<string, string> = {
     conquest: "Conquest",
     dishonor: "Dishonor",
     honor: "Honor",
@@ -9,7 +9,24 @@ const reasonLabels = {
     other: "Other"
 };
 
-function DeckStats({ stats }) {
+interface ClanRecord {
+    wins: number;
+    losses: number;
+}
+
+interface DeckStatsData {
+    totalWins: number;
+    totalLosses: number;
+    byOpponentClan: Record<string, ClanRecord>;
+    byWinReason: Record<string, number>;
+    byLossReason: Record<string, number>;
+}
+
+interface DeckStatsProps {
+    stats?: DeckStatsData;
+}
+
+function DeckStats({ stats }: DeckStatsProps) {
     if(!stats) {
         return (
             <div className="deck-stats">

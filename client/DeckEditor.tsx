@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axios from "axios";
-import { connect } from "react-redux";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import Input from "./FormComponents/Input";
 import Select from "./FormComponents/Select";
@@ -9,8 +10,14 @@ import TextArea from "./FormComponents/TextArea";
 import { preferredPackId } from "./cardImageUrl.js";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
+import type { Deck, DeckCard, Faction, Format, Pack } from "./types/deck";
+import type { Card } from "./types/game";
+import type { RootState } from "./types/redux";
 
-function copyDeck(deck, clearStatus = false) {
+type EditableDeck = Deck & { [key: string]: any };
+
+function copyDeck(deck: Deck | undefined, clearStatus = false): EditableDeck {
     if(!deck) {
         return { name: "New Deck" };
     }
@@ -30,6 +37,18 @@ function copyDeck(deck, clearStatus = false) {
     };
 }
 
+interface InnerDeckEditorProps {
+    alliances?: Record<string, Faction>;
+    cards?: Record<string, Card>;
+    deck?: Deck;
+    factions?: Record<string, Faction>;
+    formats?: Record<string, Format>;
+    loading?: boolean;
+    onDeckSave?: (deck: Deck | undefined) => any;
+    packs?: Pack[];
+    updateDeck: (deck: Deck) => any;
+}
+
 export function InnerDeckEditor({
     alliances,
     cards,
@@ -40,17 +59,17 @@ export function InnerDeckEditor({
     onDeckSave,
     packs,
     updateDeck
-}) {
+}: InnerDeckEditorProps) {
     const [cardList, setCardList] = useState("");
     const [deck, setDeck] = useState(copyDeck(propDeck));
     const [numberToAdd, setNumberToAdd] = useState(1);
-    const [cardToAdd, setCardToAdd] = useState(null);
+    const [cardToAdd, setCardToAdd] = useState<Card | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [importUrl, setImportUrl] = useState("");
 
     // Handle Escape key to close modal
     useEffect(() => {
-        const handleEscape = (event) => {
+        const handleEscape = (event: KeyboardEvent) => {
             if(event.key === "Escape" && showModal) {
                 setShowModal(false);
             }
@@ -59,16 +78,16 @@ export function InnerDeckEditor({
         return () => document.removeEventListener("keydown", handleEscape);
     }, [showModal]);
 
-    const getCardListEntry = (count, card, packId) => {
+    const getCardListEntry = (count: number, card: any, packId?: string) => {
         if(!card) {
             return "";
         }
         let packName = "";
         if(card.versions && card.versions.length) {
             const packData = packId
-                ? card.versions.find(v => v.pack_id === packId) || card.versions[card.versions.length - 1]
+                ? card.versions.find((v: any) => v.pack_id === packId) || card.versions[card.versions.length - 1]
                 : card.versions[card.versions.length - 1];
-            const pack = packs?.find(p => p.id === packData.pack_id);
+            const pack = packs?.find((p: any) => p.id === packData.pack_id);
             if(pack && pack.name) {
                 packName = ` (${pack.name})`;
             }
@@ -79,12 +98,12 @@ export function InnerDeckEditor({
     useEffect(() => {
         let updatedDeck = copyDeck(deck);
         let updatedDefaultFields = false;
-        if(!propDeck.faction && factions) {
+        if(propDeck && !propDeck.faction && factions) {
             updatedDeck.faction = factions["crab"];
             updatedDeck.alliance = { name: "", value: "" };
             updatedDefaultFields = true;
         }
-        if(!propDeck.format && formats) {
+        if(propDeck && !propDeck.format && formats) {
             updatedDeck.format = formats["emerald"];
             updatedDefaultFields = true;
         }
@@ -96,34 +115,34 @@ export function InnerDeckEditor({
         let list = "";
         if(propDeck && (propDeck.stronghold || propDeck.role || propDeck.provinceCards ||
             propDeck.conflictCards || propDeck.dynastyCards)) {
-            propDeck.stronghold?.forEach(card => {
+            propDeck.stronghold?.forEach((card: DeckCard) => {
                 list += getCardListEntry(card.count, card.card, card.pack_id);
             });
-            propDeck.role?.forEach(card => {
+            propDeck.role?.forEach((card: DeckCard) => {
                 list += getCardListEntry(card.count, card.card, card.pack_id);
             });
-            propDeck.conflictCards?.forEach(card => {
+            propDeck.conflictCards?.forEach((card: DeckCard) => {
                 list += getCardListEntry(card.count, card.card, card.pack_id);
             });
-            propDeck.dynastyCards?.forEach(card => {
+            propDeck.dynastyCards?.forEach((card: DeckCard) => {
                 list += getCardListEntry(card.count, card.card, card.pack_id);
             });
-            propDeck.provinceCards?.forEach(card => {
+            propDeck.provinceCards?.forEach((card: DeckCard) => {
                 list += getCardListEntry(card.count, card.card, card.pack_id);
             });
             setCardList(list);
         }
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const addCard = (card, number, packId, currentDeck) => {
+    const addCard = (card: any, number: number, packId: string | undefined, currentDeck: Deck) => {
         const deckCopy = copyDeck(currentDeck);
-        const provinces = [...(deckCopy.provinceCards || [])];
-        const stronghold = [...(deckCopy.stronghold || [])];
-        const role = [...(deckCopy.role || [])];
-        const conflict = [...(deckCopy.conflictCards || [])];
-        const dynasty = [...(deckCopy.dynastyCards || [])];
+        const provinces: DeckCard[] = [...(deckCopy.provinceCards || [])];
+        const stronghold: DeckCard[] = [...(deckCopy.stronghold || [])];
+        const role: DeckCard[] = [...(deckCopy.role || [])];
+        const conflict: DeckCard[] = [...(deckCopy.conflictCards || [])];
+        const dynasty: DeckCard[] = [...(deckCopy.dynastyCards || [])];
 
-        let list;
+        let list: DeckCard[];
         if(card.type === "province") {
             list = provinces;
         } else if(card.side === "dynasty") {
@@ -136,7 +155,7 @@ export function InnerDeckEditor({
             list = role;
         }
 
-        const existingIdx = list.findIndex(entry => entry.card.id === card.id && entry.pack_id === packId);
+        const existingIdx = list.findIndex((entry: DeckCard) => entry.card.id === card.id && entry.pack_id === packId);
         if(existingIdx >= 0) {
             list[existingIdx] = { ...list[existingIdx], count: list[existingIdx].count + number };
         } else {
@@ -152,47 +171,47 @@ export function InnerDeckEditor({
         return deckCopy;
     };
 
-    const handleChange = (field, event) => {
+    const handleChange = (field: string, event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const newDeck = copyDeck(deck);
         newDeck[field] = event.target.value;
         setDeck(newDeck);
         updateDeck(newDeck);
     };
 
-    const handleNumberToAddChange = (event) => {
-        setNumberToAdd(event.target.value);
+    const handleNumberToAddChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNumberToAdd(Number(event.target.value));
     };
 
-    const handleFormatChange = (selectedFormat) => {
+    const handleFormatChange = (selectedFormat: { [key: string]: any } | undefined) => {
         const newDeck = copyDeck(deck, true);
-        newDeck.format = selectedFormat;
+        newDeck.format = selectedFormat as Format | undefined;
         setDeck(newDeck);
         updateDeck(newDeck);
     };
 
-    const handleFactionChange = (selectedFaction) => {
+    const handleFactionChange = (selectedFaction: { [key: string]: any } | undefined) => {
         const newDeck = copyDeck(deck, true);
-        newDeck.faction = selectedFaction;
+        newDeck.faction = selectedFaction as Faction | undefined;
         setDeck(newDeck);
         updateDeck(newDeck);
     };
 
-    const handleAllianceChange = (selectedAlliance) => {
+    const handleAllianceChange = (selectedAlliance: { [key: string]: any } | undefined) => {
         const newDeck = copyDeck(deck, true);
         if(!selectedAlliance) {
             newDeck.alliance = { name: "", value: "" };
         } else {
-            newDeck.alliance = selectedAlliance;
+            newDeck.alliance = selectedAlliance as Faction;
         }
         setDeck(newDeck);
         updateDeck(newDeck);
     };
 
-    const handleAddCardChange = (selectedCards) => {
+    const handleAddCardChange = (selectedCards: any[]) => {
         setCardToAdd(selectedCards[0]);
     };
 
-    const handleAddCard = (event) => {
+    const handleAddCard = (event: React.MouseEvent) => {
         event.preventDefault();
 
         if(!cardToAdd || !cardToAdd.name) {
@@ -205,7 +224,7 @@ export function InnerDeckEditor({
         let list = cardList;
         list += getCardListEntry(numberToAdd, cardToAdd, defaultPackId);
 
-        const updatedDeck = addCard(cardToAdd, parseInt(numberToAdd), defaultPackId, deck);
+        const updatedDeck = addCard(cardToAdd, Number(numberToAdd), defaultPackId, deck);
         const clearedDeck = copyDeck(updatedDeck, true);
 
         setCardList(list);
@@ -213,7 +232,7 @@ export function InnerDeckEditor({
         updateDeck(clearedDeck);
     };
 
-    const handleCardListChange = (event) => {
+    const handleCardListChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
         let currentDeck = copyDeck(deck);
         const split = event.target.value.split("\n");
 
@@ -223,7 +242,7 @@ export function InnerDeckEditor({
         currentDeck.conflictCards = [];
         currentDeck.dynastyCards = [];
 
-        split.forEach(line => {
+        split.forEach((line: string) => {
             line = line.trim();
             let index = 2;
 
@@ -240,15 +259,15 @@ export function InnerDeckEditor({
             const cardName = line.substr(index, packOffset === -1 ? line.length : packOffset - index - 1);
             const packName = packOffset > -1 ? line.substr(packOffset + 1, line.length - packOffset - 2) : "";
 
-            const pack = packs?.find(p =>
+            const pack = packs?.find((p: any) =>
                 p.id.toLowerCase() === packName.toLowerCase() || p.name.toLowerCase() === packName.toLowerCase()
             );
 
-            const cardsArray = cards ? Object.values(cards) : [];
-            const card = cardsArray.find(c => {
+            const cardsArray: any[] = cards ? Object.values(cards) : [];
+            const card = cardsArray.find((c: any) => {
                 if(pack && c.versions && c.versions.length) {
                     if(c.name.toLowerCase() === cardName.toLowerCase()) {
-                        return c.versions.find(packCard => packCard.pack_id === pack.id);
+                        return c.versions.find((packCard: any) => packCard.pack_id === pack.id);
                     }
                     return false;
                 }
@@ -267,7 +286,7 @@ export function InnerDeckEditor({
         updateDeck(currentDeck);
     };
 
-    const handleSaveClick = (event) => {
+    const handleSaveClick = (event: React.MouseEvent) => {
         event.preventDefault();
         if(onDeckSave) {
             onDeckSave(propDeck);
@@ -278,7 +297,7 @@ export function InnerDeckEditor({
         setShowModal(true);
     };
 
-    const handleModalClick = (event) => {
+    const handleModalClick = (event: React.MouseEvent) => {
         if(event.target === event.currentTarget) {
             setShowModal(false);
         }
@@ -298,8 +317,8 @@ export function InnerDeckEditor({
 
             let newDeck = copyDeck(deck);
             newDeck.name = deckResponse.name || "Imported Deck";
-            newDeck.faction = factions[deckResponse.primary_clan] || factions["crab"];
-            newDeck.alliance = deckResponse.secondary_clan
+            newDeck.faction = (factions && factions[deckResponse.primary_clan]) || (factions && factions["crab"]);
+            newDeck.alliance = deckResponse.secondary_clan && factions
                 ? factions[deckResponse.secondary_clan]
                 : { name: "", value: "" };
 
@@ -307,7 +326,7 @@ export function InnerDeckEditor({
             if(deckFormat === "standard") {
                 deckFormat = "stronghold";
             }
-            newDeck.format = formats[deckFormat] || formats["emerald"];
+            newDeck.format = (formats && formats[deckFormat]) || (formats && formats["emerald"]);
 
             newDeck.stronghold = [];
             newDeck.role = [];
@@ -316,15 +335,15 @@ export function InnerDeckEditor({
             newDeck.dynastyCards = [];
 
             const importFormatValue = newDeck.format?.value;
-            const cardPackIds = deckResponse.card_pack_ids || {};
+            const cardPackIds: Record<string, string> = deckResponse.card_pack_ids || {};
             let list = "";
-            Object.entries(deckResponse.cards || {}).forEach(([id, count]) => {
-                const card = cards[id];
+            Object.entries<number>(deckResponse.cards || {}).forEach(([id, count]) => {
+                const card: any = cards && cards[id];
                 if(card) {
                     const packId = cardPackIds[id] || preferredPackId(card, importFormatValue);
                     list += getCardListEntry(count, card, packId);
 
-                    let targetList;
+                    let targetList: DeckCard[] | undefined;
                     if(card.type === "province") {
                         targetList = newDeck.provinceCards;
                     } else if(card.side === "dynasty") {
@@ -336,7 +355,7 @@ export function InnerDeckEditor({
                     } else {
                         targetList = newDeck.role;
                     }
-                    targetList.push({ count: count, card: card, pack_id: packId });
+                    targetList?.push({ count: count, card: card, pack_id: packId });
                 }
             });
 
@@ -348,7 +367,7 @@ export function InnerDeckEditor({
         }
     };
 
-    const handleImportKeyPress = (event) => {
+    const handleImportKeyPress = (event: React.KeyboardEvent) => {
         if(event.key === "Enter") {
             event.preventDefault();
             handleImportDeck();
@@ -368,7 +387,7 @@ export function InnerDeckEditor({
         <div
             className={ `modal fade ${showModal ? "in" : ""}` }
             style={ { display: showModal ? "block" : "none" } }
-            tabIndex="-1"
+            tabIndex={ -1 }
             role="dialog"
             onClick={ handleModalClick }
         >
@@ -418,7 +437,7 @@ export function InnerDeckEditor({
                     onChange={ handleAllianceChange } value={ deck.alliance ? deck.alliance.value : undefined }
                     valueKey="value" nameKey="name" blankOption={ { name: "- Select -", value: "" } } />
 
-                <Typeahead label="Card" labelClass="col-sm-3" fieldClass="col-sm-4" labelKey="name" options={ cardsArray }
+                <Typeahead name="card" label="Card" labelClass="col-sm-3" fieldClass="col-sm-4" labelKey="name" options={ cardsArray }
                     onChange={ handleAddCardChange }>
                     <Input name="numcards" type="text" label="Num" labelClass="col-sm-1" fieldClass="col-sm-2"
                         value={ numberToAdd.toString() } onChange={ handleNumberToAddChange }>
@@ -427,7 +446,7 @@ export function InnerDeckEditor({
                         </div>
                     </Input>
                 </Typeahead>
-                <TextArea label="Cards" labelClass="col-sm-3" fieldClass="col-sm-9" rows="10" value={ cardList }
+                <TextArea name="cards" label="Cards" labelClass="col-sm-3" fieldClass="col-sm-9" rows={ 10 } value={ cardList }
                     onChange={ handleCardListChange } />
                 <div className="form-group">
                     <div className="col-sm-offset-3 col-sm-8">
@@ -441,7 +460,7 @@ export function InnerDeckEditor({
 
 InnerDeckEditor.displayName = "DeckEditor";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         apiError: state.api.message,
         alliances: state.cards.factions,
@@ -450,11 +469,18 @@ function mapStateToProps(state) {
         decks: state.cards.decks,
         factions: state.cards.factions,
         formats: state.cards.formats,
-        loading: state.api.loading,
+        loading: state.cards.loading,
         packs: state.cards.packs
     };
 }
 
-const DeckEditor = connect(mapStateToProps, actions)(InnerDeckEditor);
+interface DeckEditorOwnProps {
+    onDeckSave?: (deck: Deck | undefined) => any;
+}
 
-export default DeckEditor;
+export default function DeckEditor(ownProps: DeckEditorOwnProps) {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerDeckEditor { ...props } { ...boundActions } { ...ownProps } />;
+}

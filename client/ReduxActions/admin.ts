@@ -1,21 +1,17 @@
 import axios from "axios";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { apiCall } from "./apiCall";
 
 export { clearUserStatus } from "../reducers/admin";
 
-export function findUser(username: string) {
-    return {
-        types: ["REQUEST_FINDUSER", "RECEIVE_FINDUSER"] as const,
-        shouldCallAPI: () => true,
-        callAPI: () => axios.get(`/api/user/${username}`).then(response => response.data)
-    };
-}
+export const findUser = createAsyncThunk(
+    "admin/findUser",
+    (username: string, { rejectWithValue }) => apiCall(() => axios.get(`/api/user/${username}`), rejectWithValue)
+);
 
-export function saveUser(user: any) {
-    return {
-        types: ["SAVE_USER", "USER_SAVED"] as const,
-        shouldCallAPI: () => true,
-        callAPI: () => axios.put(`/api/user/${user.username}`, {
-            data: JSON.stringify(user)
-        }).then(response => response.data)
-    };
-}
+export const saveUser = createAsyncThunk(
+    "admin/saveUser",
+    (user: any, { rejectWithValue }) => apiCall(() => axios.put(`/api/user/${user.username}`, {
+        data: JSON.stringify(user)
+    }), rejectWithValue)
+);

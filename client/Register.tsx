@@ -1,19 +1,24 @@
-import { useState } from "react";
-import axios from "axios";
-import { connect } from "react-redux";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
-import * as actions from "./actions";
 
-export function InnerRegister({ navigate, register, socket }) {
+import { useAppDispatch } from "./hooks";
+import { registerUser, checkUsername } from "./ReduxActions/auth";
+
+type ValidationMap = Record<string, string>;
+
+export function Register() {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [password1, setPassword1] = useState("");
-    const [validation, setValidation] = useState({});
+    const [validation, setValidation] = useState<ValidationMap>({});
     const [error, setError] = useState("");
 
-    const verifyUsername = (isSubmitting, currentUsername = username) => {
+    const verifyUsername = (isSubmitting: boolean, currentUsername = username): ValidationMap => {
         const newValidation = { ...validation };
         delete newValidation["username"];
 
@@ -31,21 +36,17 @@ export function InnerRegister({ navigate, register, socket }) {
             return newValidation;
         }
 
-        axios
-            .post("/api/account/check-username", { username: currentUsername })
-            .then((response) => {
-                if(response.data.message) {
-                    newValidation["username"] = response.data.message;
-                }
-            })
-            .finally(() => {
-                setValidation({ ...newValidation });
-            });
+        checkUsername(currentUsername).then((data) => {
+            if(data.message) {
+                newValidation["username"] = data.message;
+            }
+            setValidation({ ...newValidation });
+        });
 
         return newValidation;
     };
 
-    const verifyEmail = (currentEmail = email) => {
+    const verifyEmail = (currentEmail = email): ValidationMap => {
         const newValidation = { ...validation };
         delete newValidation["email"];
 
@@ -56,7 +57,7 @@ export function InnerRegister({ navigate, register, socket }) {
         return newValidation;
     };
 
-    const verifyPassword = (isSubmitting, currentPassword = password, currentPassword1 = password1) => {
+    const verifyPassword = (isSubmitting: boolean, currentPassword = password, currentPassword1 = password1): ValidationMap => {
         const newValidation = { ...validation };
         delete newValidation["password"];
 
@@ -96,20 +97,17 @@ export function InnerRegister({ navigate, register, socket }) {
         setValidation(newValidation);
     };
 
-    const onRegister = (event) => {
+    const onRegister = async (event: React.MouseEvent) => {
         event.preventDefault();
 
         setError("");
 
-        // Validate all fields synchronously
-        let combinedValidation = {};
+        let combinedValidation: ValidationMap = {};
 
-        // Check email
         if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
             combinedValidation["email"] = "Please enter a valid email address";
         }
 
-        // Check password
         if(password.length < 6) {
             combinedValidation["password"] =
                 "The password you specify must be at least 6 characters long";
@@ -122,7 +120,6 @@ export function InnerRegister({ navigate, register, socket }) {
                 "The passwords you have specified do not match";
         }
 
-        // Check username
         if(username.length < 3 || username.length > 15) {
             combinedValidation["username"] =
                 "Username must be between 3 and 15 characters long";
@@ -134,7 +131,6 @@ export function InnerRegister({ navigate, register, socket }) {
 
         setValidation(combinedValidation);
 
-        // Check if any validation errors exist
         const hasErrors = Object.values(combinedValidation).some(
             (message) => message && message !== ""
         );
@@ -146,22 +142,12 @@ export function InnerRegister({ navigate, register, socket }) {
             return;
         }
 
-        axios
-            .post("/api/account/register", { username, password, email })
-            .then((response) => {
-                const data = response.data;
-                if(!data.success) {
-                    setError(data.message);
-                    return;
-                }
-
-                register({ user: data.user, token: data.token });
-                socket.emit("authenticate", data.token);
-                navigate("/");
-            })
-            .catch(() => {
-                setError("Could not communicate with the server.  Please try again later.");
-            });
+        try {
+            await dispatch(registerUser({ username, password, email })).unwrap();
+            navigate("/");
+        } catch(err: any) {
+            setError(err?.message || "Could not communicate with the server.  Please try again later.");
+        }
     };
 
     const fields = [
@@ -172,7 +158,7 @@ export function InnerRegister({ navigate, register, socket }) {
             inputType: "text",
             blurCallback: handleUsernameBlur,
             value: username,
-            onChange: (e) => setUsername(e.target.value)
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)
         },
         {
             name: "email",
@@ -181,7 +167,7 @@ export function InnerRegister({ navigate, register, socket }) {
             inputType: "email",
             blurCallback: handleEmailBlur,
             value: email,
-            onChange: (e) => setEmail(e.target.value)
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)
         },
         {
             name: "password",
@@ -190,7 +176,7 @@ export function InnerRegister({ navigate, register, socket }) {
             inputType: "password",
             blurCallback: handlePasswordBlur,
             value: password,
-            onChange: (e) => setPassword(e.target.value)
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)
         },
         {
             name: "password1",
@@ -199,7 +185,7 @@ export function InnerRegister({ navigate, register, socket }) {
             inputType: "password",
             blurCallback: handlePasswordBlur,
             value: password1,
-            onChange: (e) => setPassword1(e.target.value)
+            onChange: (e: React.ChangeEvent<HTMLInputElement>) => setPassword1(e.target.value)
         }
     ];
 
@@ -261,14 +247,6 @@ export function InnerRegister({ navigate, register, socket }) {
     );
 }
 
-InnerRegister.displayName = "Register";
-
-function mapStateToProps(state) {
-    return {
-        socket: state.socket.socket
-    };
-}
-
-const Register = connect(mapStateToProps, actions)(InnerRegister);
+Register.displayName = "Register";
 
 export default Register;

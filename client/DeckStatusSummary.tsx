@@ -1,7 +1,20 @@
 import { Check, X } from "lucide-react";
 import GameModes from "./GameModes";
 
-function DeckStatusSummary({ status }) {
+interface DeckStatusSummaryStatus {
+    basicRules?: boolean;
+    officialRole?: boolean;
+    noUnreleasedCards?: boolean;
+    faqVersion?: string;
+    faqRestrictedList?: boolean;
+    gameMode?: string;
+}
+
+interface DeckStatusSummaryProps {
+    status: DeckStatusSummaryStatus;
+}
+
+function DeckStatusSummary({ status }: DeckStatusSummaryProps) {
     const { basicRules, officialRole, noUnreleasedCards, faqVersion, faqRestrictedList, gameMode } = status;
     let items = [];
 

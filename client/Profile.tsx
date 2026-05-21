@@ -1,12 +1,22 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { connect } from "react-redux";
+import React, { useEffect, useReducer } from "react";
+import { shallowEqual } from "react-redux";
+import type { RootState } from "./types/redux";
+import type { User } from "./types/user";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import Input from "./FormComponents/Input";
 import Checkbox from "./FormComponents/Checkbox";
 
-import * as actions from "./actions";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import { saveProfile } from "./ReduxActions/user";
+import {
+    initProfileState,
+    profileReducer,
+    validateEmail,
+    validatePassword,
+    type ProfileUserLike
+} from "./Profile.reducer";
+import { backgrounds, type BackgroundOption } from "./backgrounds";
 
 const windows = [
     { name: "dynasty", label: "Dynasty phase", style: "col-sm-4" },
@@ -16,165 +26,85 @@ const windows = [
     { name: "fate", label: "Fate phase", style: "col-sm-4" }
 ];
 
-export function InnerProfile({ refreshUser, socket, user }) {
-    const [disableGravatar, setDisableGravatar] = useState(user?.settings?.disableGravatar || false);
-    const [email, setEmail] = useState(user?.email || "");
-    const [loading, setLoading] = useState(false);
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [newPasswordAgain, setNewPasswordAgain] = useState("");
-    const [promptedActionWindows, setPromptedActionWindows] = useState(user?.promptedActionWindows || {});
-    const [validation, setValidation] = useState({});
-    const [windowTimer, setWindowTimer] = useState(user?.settings?.windowTimer || 0);
-    const [optionSettings, setOptionSettings] = useState(user?.settings?.optionSettings || {});
-    const [timerSettings, setTimerSettings] = useState(user?.settings?.timerSettings || {});
-    const [selectedBackground, setSelectedBackground] = useState(user?.settings?.background || "none");
-    const [selectedCardSize, setSelectedCardSize] = useState(user?.settings?.cardSize || "normal");
-    const [errorMessage, setErrorMessage] = useState(undefined);
-    const [successMessage, setSuccessMessage] = useState(undefined);
+const backgroundRows: BackgroundOption[][] = [];
+for(let i = 0; i < backgrounds.length; i += 3) {
+    backgroundRows.push(backgrounds.slice(i, i + 3));
+}
+
+interface InnerProfileProps {
+    user?: User & { promptedActionWindows?: Record<string, boolean> };
+}
+
+export function InnerProfile({ user }: InnerProfileProps) {
+    const reduxDispatch = useAppDispatch();
+    const [state, dispatch] = useReducer(profileReducer, user as ProfileUserLike | undefined, initProfileState);
+    const { account, settings, validation, loading, errorMessage, successMessage } = state;
 
     useEffect(() => {
         if(user) {
-            setEmail(user.email);
-            setDisableGravatar(user.settings?.disableGravatar || false);
-            setPromptedActionWindows(user.promptedActionWindows || {});
+            dispatch({ type: "hydrate", user: user as ProfileUserLike });
         }
     }, [user]);
 
-    const handleChange = (field, event) => {
-        const value = event.target.value;
-        switch(field) {
-            case "email":
-                setEmail(value);
-                break;
-            case "currentPassword":
-                setCurrentPassword(value);
-                break;
-            case "newPassword":
-                setNewPassword(value);
-                break;
-            case "newPasswordAgain":
-                setNewPasswordAgain(value);
-                break;
-        }
+    const setAccount = (field: keyof typeof account) => (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch({ type: "account", field, value: event.target.value });
     };
 
-    const handleWindowToggle = (field, event) => {
-        setPromptedActionWindows(prev => ({
-            ...prev,
-            [field]: event.target.checked
-        }));
+    const handleEmailBlur = () => {
+        dispatch({ type: "validation", field: "email", error: validateEmail(account.email) });
     };
 
-    const handleTimerSettingToggle = (field, event) => {
-        setTimerSettings(prev => ({
-            ...prev,
-            [field]: event.target.checked
-        }));
+    const handlePasswordBlur = () => {
+        dispatch({ type: "validation", field: "password", error: validatePassword(account.newPassword, account.newPasswordAgain, false) });
     };
 
-    const handleOptionSettingToggle = (field, event) => {
-        setOptionSettings(prev => ({
-            ...prev,
-            [field]: event.target.checked
-        }));
-    };
-
-    const verifyPassword = (isSubmitting) => {
-        const newValidation = { ...validation };
-        delete newValidation.password;
-
-        if(!newPassword && !newPasswordAgain) {
-            setValidation(newValidation);
-            return;
-        }
-
-        if(newPassword.length < 6) {
-            newValidation.password = "The password you specify must be at least 6 characters long";
-        }
-
-        if(isSubmitting && !newPasswordAgain) {
-            newValidation.password = "Please enter your password again";
-        }
-
-        if(newPassword && newPasswordAgain && newPassword !== newPasswordAgain) {
-            newValidation.password = "The passwords you have specified do not match";
-        }
-
-        setValidation(newValidation);
-    };
-
-    const verifyEmail = () => {
-        const newValidation = { ...validation };
-        delete newValidation.email;
-
-        if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(email)) {
-            newValidation.email = "Please enter a valid email address";
-        }
-
-        setValidation(newValidation);
-    };
-
-    const handleSaveClick = async (event) => {
+    const handleSaveClick = async (event: React.MouseEvent) => {
         event.preventDefault();
 
-        setErrorMessage(undefined);
-        setSuccessMessage(undefined);
+        const emailError = validateEmail(account.email);
+        const passwordError = validatePassword(account.newPassword, account.newPasswordAgain, true);
+        dispatch({ type: "validation", field: "email", error: emailError });
+        dispatch({ type: "validation", field: "password", error: passwordError });
 
-        verifyEmail();
-        verifyPassword(true);
-
-        // Check if there are any validation errors
-        const hasValidationErrors = Object.values(validation).some(message => message && message !== "");
-        if(hasValidationErrors) {
-            setErrorMessage("There was an error in one or more fields, please see below, correct the error and try again");
+        if(emailError || passwordError) {
+            dispatch({ type: "submitError", message: "There was an error in one or more fields, please see below, correct the error and try again" });
             return;
         }
 
-        const emailChanged = email !== user.email;
-        const passwordChanged = newPassword.length > 0;
-        if((emailChanged || passwordChanged) && !currentPassword) {
-            setErrorMessage("Please enter your current password to change your email or password");
+        const emailChanged = !!user && account.email !== user.email;
+        const passwordChanged = account.newPassword.length > 0;
+        if((emailChanged || passwordChanged) && !account.currentPassword) {
+            dispatch({ type: "submitError", message: "Please enter your current password to change your email or password" });
             return;
         }
 
-        setLoading(true);
+        dispatch({ type: "submitStart" });
 
         try {
-            const response = await axios.put(`/api/account/${user.username}`, {
-                data: JSON.stringify({
-                    email: email,
-                    password: newPassword,
-                    currentPassword: currentPassword,
-                    promptedActionWindows: promptedActionWindows,
+            await reduxDispatch(saveProfile({
+                user,
+                payload: {
+                    email: account.email,
+                    password: account.newPassword,
+                    currentPassword: account.currentPassword,
+                    promptedActionWindows: settings.promptedActionWindows,
                     settings: {
-                        disableGravatar: disableGravatar,
-                        windowTimer: windowTimer,
-                        optionSettings: optionSettings,
-                        timerSettings: timerSettings,
-                        background: selectedBackground,
-                        cardSize: selectedCardSize
+                        disableGravatar: settings.disableGravatar,
+                        windowTimer: settings.windowTimer,
+                        optionSettings: settings.optionSettings,
+                        timerSettings: settings.timerSettings,
+                        background: settings.background,
+                        cardSize: settings.cardSize
                     }
-                })
-            });
-
-            const data = response.data;
-
-            if(data.success) {
-                setSuccessMessage("Profile saved successfully.  Please note settings changed here will only apply at the start of your next game");
-                socket.emit("authenticate", data.token);
-                refreshUser(data.user, data.token);
-            } else {
-                setErrorMessage(data.message);
-            }
-        } catch(error) {
-            setErrorMessage(error.response?.data?.message || "An error occurred while saving your profile");
-        } finally {
-            setLoading(false);
+                }
+            })).unwrap();
+            dispatch({ type: "submitSuccess", message: "Profile saved successfully.  Please note settings changed here will only apply at the start of your next game" });
+        } catch(err: any) {
+            dispatch({ type: "submitError", message: err?.message || "An error occurred while saving your profile" });
         }
     };
 
-    const handleSlideStop = (event) => {
+    const handleSlideStop = (event: React.ChangeEvent<HTMLInputElement>) => {
         let value = parseInt(event.target.value);
 
         if(Number.isNaN(value)) {
@@ -189,15 +119,7 @@ export function InnerProfile({ refreshUser, socket, user }) {
             value = 10;
         }
 
-        setWindowTimer(value);
-    };
-
-    const handleBackgroundClick = (background) => {
-        setSelectedBackground(background);
-    };
-
-    const handleCardClick = (size) => {
-        setSelectedCardSize(size);
+        dispatch({ type: "setting", field: "windowTimer", value });
     };
 
     const windowsElements = windows.map(window => (
@@ -207,9 +129,8 @@ export function InnerProfile({ refreshUser, socket, user }) {
             name={ `promptedActionWindows.${window.name}` }
             label={ window.label }
             fieldClass={ window.style }
-            type="checkbox"
-            onChange={ (e) => handleWindowToggle(window.name, e) }
-            checked={ promptedActionWindows[window.name] }
+            onChange={ (e) => dispatch({ type: "toggle", map: "promptedActionWindows", field: window.name, value: e.target.checked }) }
+            checked={ settings.promptedActionWindows[window.name] }
         />
     ));
 
@@ -228,18 +149,18 @@ export function InnerProfile({ refreshUser, socket, user }) {
                     </div>
                     <div className="panel">
                         <Input name="email" label="Email Address" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Enter email address"
-                            type="text" onChange={ (e) => handleChange("email", e) } value={ email }
-                            onBlur={ verifyEmail } validationMessage={ validation.email } />
+                            type="text" onChange={ setAccount("email") } value={ account.email }
+                            onBlur={ handleEmailBlur } validationMessage={ validation.email } />
                         <Input name="newPassword" label="New Password" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Enter new password"
-                            type="password" onChange={ (e) => handleChange("newPassword", e) } value={ newPassword }
-                            onBlur={ () => verifyPassword(false) } validationMessage={ validation.password } />
+                            type="password" onChange={ setAccount("newPassword") } value={ account.newPassword }
+                            onBlur={ handlePasswordBlur } validationMessage={ validation.password } />
                         <Input name="newPasswordAgain" label="New Password (again)" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Enter new password (again)"
-                            type="password" onChange={ (e) => handleChange("newPasswordAgain", e) } value={ newPasswordAgain }
-                            onBlur={ () => verifyPassword(false) } validationMessage={ validation.password1 } />
+                            type="password" onChange={ setAccount("newPasswordAgain") } value={ account.newPasswordAgain }
+                            onBlur={ handlePasswordBlur } validationMessage={ validation.password1 } />
                         <Input name="currentPassword" label="Current Password" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Required to change email or password"
-                            type="password" onChange={ (e) => handleChange("currentPassword", e) } value={ currentPassword } />
+                            type="password" onChange={ setAccount("currentPassword") } value={ account.currentPassword } />
                         <Checkbox name="disableGravatar" label="Disable Gravatar integration" fieldClass="col-sm-offset-4 col-sm-8"
-                            onChange={ (e) => setDisableGravatar(e.target.checked) } checked={ disableGravatar } />
+                            onChange={ (e) => dispatch({ type: "setting", field: "disableGravatar", value: e.target.checked }) } checked={ settings.disableGravatar } />
                     </div>
                     <div>
                         <div className="panel-title">
@@ -263,21 +184,21 @@ export function InnerProfile({ refreshUser, socket, user }) {
                                 <div className="col-sm-5">
                                     <input type="range"
                                         className="form-control"
-                                        value={ windowTimer }
+                                        value={ settings.windowTimer }
                                         onChange={ handleSlideStop }
                                         step={ 1 }
                                         max={ 10 }
                                         min={ 0 } />
                                 </div>
                                 <div className="col-sm-2">
-                                    <input className="form-control text-center" name="timer" value={ windowTimer } onChange={ handleSlideStop } />
+                                    <input className="form-control text-center" name="timer" value={ settings.windowTimer } onChange={ handleSlideStop } />
                                 </div>
                                 <label className="col-sm-1 control-label">seconds</label>
 
                                 <Checkbox name="timerSettings.events" noGroup label="Show timer for opponent's events" fieldClass="col-sm-6"
-                                    onChange={ (e) => handleTimerSettingToggle("events", e) } checked={ timerSettings.events } />
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "events", value: e.target.checked }) } checked={ settings.timerSettings.events } />
                                 <Checkbox name="timerSettings.abilities" noGroup label="Show timer for events in my deck" fieldClass="col-sm-6"
-                                    onChange={ (e) => handleTimerSettingToggle("eventsInDeck", e) } checked={ timerSettings.eventsInDeck } />
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "eventsInDeck", value: e.target.checked }) } checked={ settings.timerSettings.eventsInDeck } />
                             </div>
                         </div>
                         <div className="panel-title">
@@ -290,55 +211,55 @@ export function InnerProfile({ refreshUser, socket, user }) {
                                     noGroup
                                     label="Grey out cards with no relevant abilities during interrupt/reaction windows"
                                     fieldClass="col-sm-6"
-                                    onChange={ (e) => handleOptionSettingToggle("markCardsUnselectable", e) }
-                                    checked={ optionSettings.markCardsUnselectable }
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "markCardsUnselectable", value: e.target.checked }) }
+                                    checked={ settings.optionSettings.markCardsUnselectable }
                                 />
                                 <Checkbox
                                     name="optionSettings.cancelOwnAbilities"
                                     noGroup
                                     label="Prompt to cancel/react to initiation of my own abilities"
                                     fieldClass="col-sm-6"
-                                    onChange={ (e) => handleOptionSettingToggle("cancelOwnAbilities", e) }
-                                    checked={ optionSettings.cancelOwnAbilities } />
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "cancelOwnAbilities", value: e.target.checked }) }
+                                    checked={ settings.optionSettings.cancelOwnAbilities } />
                                 <Checkbox
                                     name="optionSettings.orderForcedAbilities"
                                     noGroup
                                     label="Prompt to order forced triggered/simultaneous abilities"
                                     fieldClass="col-sm-6"
-                                    onChange={ (e) => handleOptionSettingToggle("orderForcedAbilities", e) }
-                                    checked={ optionSettings.orderForcedAbilities }
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "orderForcedAbilities", value: e.target.checked }) }
+                                    checked={ settings.optionSettings.orderForcedAbilities }
                                 />
                                 <Checkbox
                                     name="optionSettings.confirmOneClick"
                                     noGroup
                                     label="Show a confirmation prompt when initating 1-click abilities"
                                     fieldClass="col-sm-6"
-                                    onChange={ (e) => handleOptionSettingToggle("confirmOneClick", e) }
-                                    checked={ optionSettings.confirmOneClick }
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "confirmOneClick", value: e.target.checked }) }
+                                    checked={ settings.optionSettings.confirmOneClick }
                                 />
                                 <Checkbox
                                     name="optionSettings.disableCardStats"
                                     noGroup
                                     label="Disable card hover statistics popup"
                                     fieldClass="col-sm-6"
-                                    onChange={ (e) => handleOptionSettingToggle("disableCardStats", e) }
-                                    checked={ optionSettings.disableCardStats }
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "disableCardStats", value: e.target.checked }) }
+                                    checked={ settings.optionSettings.disableCardStats }
                                 />
                                 <Checkbox
                                     name="optionSettings.sortHandByName"
                                     noGroup
                                     label="Sort Hand by Name"
                                     fieldClass="col-sm-6"
-                                    onChange={ (e) => handleOptionSettingToggle("sortHandByName", e) }
-                                    checked={ optionSettings.sortHandByName }
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "sortHandByName", value: e.target.checked }) }
+                                    checked={ settings.optionSettings.sortHandByName }
                                 />
                                 <Checkbox
                                     name="optionSettings.showRingEffects"
                                     noGroup
                                     label="Show ring effect descriptions on hover"
                                     fieldClass="col-sm-6"
-                                    onChange={ (e) => handleOptionSettingToggle("showRingEffects", e) }
-                                    checked={ optionSettings.showRingEffects }
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "showRingEffects", value: e.target.checked }) }
+                                    checked={ settings.optionSettings.showRingEffects }
                                 />
                             </div>
                         </div>
@@ -348,142 +269,16 @@ export function InnerProfile({ refreshUser, socket, user }) {
                             Game Board Background
                         </div>
                         <div className="panel">
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("none") }>
-                                    <img className={ `img-responsive${selectedBackground === "none" ? " selected" : ""}` }
-                                        src="img/blank.png" />
-                                    <span className="bg-label">None</span>
+                            { backgroundRows.map((row, rowIdx) => (
+                                <div className="row" key={ rowIdx }>
+                                    { row.map(bg => (
+                                        <div key={ bg.value } className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: bg.value }) }>
+                                            <img className={ `img-responsive${settings.background === bg.value ? " selected" : ""}` } src={ bg.thumbnail } />
+                                            <span className="bg-label">{ bg.label }</span>
+                                        </div>
+                                    )) }
                                 </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("CRAB") }>
-                                    <img className={ `img-responsive${selectedBackground === "CRAB" ? " selected" : ""}` }
-                                        src="/img/bgs/crab.jpg" />
-                                    <span className="bg-label">Crab</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("CRAB2") }>
-                                    <img className={ `img-responsive${selectedBackground === "CRAB2" ? " selected" : ""}` }
-                                        src="/img/bgs/crab2.jpg" />
-                                    <span className="bg-label">Crab 2</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("CRAB3") }>
-                                    <img className={ `img-responsive${selectedBackground === "CRAB3" ? " selected" : ""}` }
-                                        src="/img/bgs/crab3.jpg" />
-                                    <span className="bg-label">Crab 3</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("CRANE") }>
-                                    <img className={ `img-responsive${selectedBackground === "CRANE" ? " selected" : ""}` }
-                                        src="/img/bgs/crane.jpg" />
-                                    <span className="bg-label">Crane</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("CRANE2") }>
-                                    <img className={ `img-responsive${selectedBackground === "CRANE2" ? " selected" : ""}` }
-                                        src="/img/bgs/crane2.jpg" />
-                                    <span className="bg-label">Crane 2</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("CRANE3") }>
-                                    <img className={ `img-responsive${selectedBackground === "CRANE3" ? " selected" : ""}` }
-                                        src="/img/bgs/crane3.jpg" />
-                                    <span className="bg-label">Crane 3</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("CRANE4") }>
-                                    <img className={ `img-responsive${selectedBackground === "CRANE4" ? " selected" : ""}` }
-                                        src="/img/bgs/crane4.jpg" />
-                                    <span className="bg-label">Crane 4</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("DRAGON") }>
-                                    <img className={ `img-responsive${selectedBackground === "DRAGON" ? " selected" : ""}` }
-                                        src="/img/bgs/dragon.jpg" />
-                                    <span className="bg-label">Dragon</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("DRAGON2") }>
-                                    <img className={ `img-responsive${selectedBackground === "DRAGON2" ? " selected" : ""}` }
-                                        src="/img/bgs/dragon2.jpg" />
-                                    <span className="bg-label">Dragon 2</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("DRAGON3") }>
-                                    <img className={ `img-responsive${selectedBackground === "DRAGON3" ? " selected" : ""}` }
-                                        src="/img/bgs/dragon3.jpg" />
-                                    <span className="bg-label">Dragon 3</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("LION") }>
-                                    <img className={ `img-responsive${selectedBackground === "LION" ? " selected" : ""}` }
-                                        src="/img/bgs/lion.jpg" />
-                                    <span className="bg-label">Lion</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("LION2") }>
-                                    <img className={ `img-responsive${selectedBackground === "LION2" ? " selected" : ""}` }
-                                        src="/img/bgs/lion2.jpg" />
-                                    <span className="bg-label">Lion 2</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("LION3") }>
-                                    <img className={ `img-responsive${selectedBackground === "LION3" ? " selected" : ""}` }
-                                        src="/img/bgs/lion3.jpg" />
-                                    <span className="bg-label">Lion 3</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("OTTER") }>
-                                    <img className={ `img-responsive${selectedBackground === "OTTER" ? " selected" : ""}` }
-                                        src="/img/bgs/otter.jpg" />
-                                    <span className="bg-label">Otter</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("PHOENIX") }>
-                                    <img className={ `img-responsive${selectedBackground === "PHOENIX" ? " selected" : ""}` }
-                                        src="/img/bgs/phoenix.jpg" />
-                                    <span className="bg-label">Phoenix</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("PHOENIX2") }>
-                                    <img className={ `img-responsive${selectedBackground === "PHOENIX2" ? " selected" : ""}` }
-                                        src="/img/bgs/phoenix2.jpg" />
-                                    <span className="bg-label">Phoenix 2</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("PHOENIX3") }>
-                                    <img className={ `img-responsive${selectedBackground === "PHOENIX3" ? " selected" : ""}` }
-                                        src="/img/bgs/phoenix3.jpg" />
-                                    <span className="bg-label">Phoenix 3</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("SCORPION") }>
-                                    <img className={ `img-responsive${selectedBackground === "SCORPION" ? " selected" : ""}` }
-                                        src="/img/bgs/scorpion.jpg" />
-                                    <span className="bg-label">Scorpion</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("SCORPION2") }>
-                                    <img className={ `img-responsive${selectedBackground === "SCORPION2" ? " selected" : ""}` }
-                                        src="/img/bgs/scorpion2.jpg" />
-                                    <span className="bg-label">Scorpion 2</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("SCORPION3") }>
-                                    <img className={ `img-responsive${selectedBackground === "SCORPION3" ? " selected" : ""}` }
-                                        src="/img/bgs/scorpion3.jpg" />
-                                    <span className="bg-label">Scorpion 3</span>
-                                </div>
-                            </div>
-                            <div className="row">
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("UNICORN") }>
-                                    <img className={ `img-responsive${selectedBackground === "UNICORN" ? " selected" : ""}` }
-                                        src="/img/bgs/unicorn.jpg" />
-                                    <span className="bg-label">Unicorn</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("UNICORN2") }>
-                                    <img className={ `img-responsive${selectedBackground === "UNICORN2" ? " selected" : ""}` }
-                                        src="/img/bgs/unicorn2.jpg" />
-                                    <span className="bg-label">Unicorn 2</span>
-                                </div>
-                                <div className="col-sm-4" onClick={ () => handleBackgroundClick("UNICORN3") }>
-                                    <img className={ `img-responsive${selectedBackground === "UNICORN3" ? " selected" : ""}` }
-                                        src="/img/bgs/unicorn3.jpg" />
-                                    <span className="bg-label">Unicorn 3</span>
-                                </div>
-                            </div>
+                            )) }
                         </div>
                     </div>
                     <div>
@@ -493,36 +288,36 @@ export function InnerProfile({ refreshUser, socket, user }) {
                         <div className="panel">
                             <div className="row">
                                 <div className="col-xs-12">
-                                    <div className="card-settings" onClick={ () => handleCardClick("small") }>
-                                        <div className={ `card small vertical${selectedCardSize === "small" ? " selected" : ""}` }>
+                                    <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "small" }) }>
+                                        <div className={ `card small vertical${settings.cardSize === "small" ? " selected" : ""}` }>
                                             <img className="card small vertical"
                                                 src="img/cards/dynastycardback.png" />
                                         </div>
                                         <span className="bg-label">Small</span>
                                     </div>
-                                    <div className="card-settings" onClick={ () => handleCardClick("normal") }>
-                                        <div className={ `card vertical${selectedCardSize === "normal" ? " selected" : ""}` }>
+                                    <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "normal" }) }>
+                                        <div className={ `card vertical${settings.cardSize === "normal" ? " selected" : ""}` }>
                                             <img className="card vertical"
                                                 src="img/cards/dynastycardback.png" />
                                         </div>
                                         <span className="bg-label">Normal</span>
                                     </div>
-                                    <div className="card-settings" onClick={ () => handleCardClick("large") }>
-                                        <div className={ `card vertical large${selectedCardSize === "large" ? " selected" : ""}` }>
+                                    <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "large" }) }>
+                                        <div className={ `card vertical large${settings.cardSize === "large" ? " selected" : ""}` }>
                                             <img className="card-image large vertical"
                                                 src="/img/cards/dynastycardback.png" />
                                         </div>
                                         <span className="bg-label">Large</span>
                                     </div>
-                                    <div className="card-settings" onClick={ () => handleCardClick("x-large") }>
-                                        <div className={ `card vertical x-large${selectedCardSize === "x-large" ? " selected" : ""}` }>
+                                    <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "x-large" }) }>
+                                        <div className={ `card vertical x-large${settings.cardSize === "x-large" ? " selected" : ""}` }>
                                             <img className="card-image x-large vertical"
                                                 src="img/cards/dynastycardback.png" />
                                         </div>
                                         <span className="bg-label">Extra-Large</span>
                                     </div>
-                                    <div className="card-settings" onClick={ () => handleCardClick("xxl") }>
-                                        <div className={ `card vertical xxl${selectedCardSize === "xxl" ? " selected" : ""}` }>
+                                    <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "xxl" }) }>
+                                        <div className={ `card vertical xxl${settings.cardSize === "xxl" ? " selected" : ""}` }>
                                             <img className="card-image xxl vertical"
                                                 src="img/cards/dynastycardback.png" />
                                         </div>
@@ -543,13 +338,13 @@ export function InnerProfile({ refreshUser, socket, user }) {
 
 InnerProfile.displayName = "Profile";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
-        socket: state.socket.socket,
         user: state.auth.user
     };
 }
 
-const Profile = connect(mapStateToProps, actions)(InnerProfile);
-
-export default Profile;
+export default function Profile() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    return <InnerProfile { ...props } />;
+}

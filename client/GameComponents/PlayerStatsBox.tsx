@@ -6,10 +6,12 @@ interface PlayerStatsBoxProps {
     firstPlayer?: boolean;
     handSize?: number;
     otherPlayer?: boolean;
-    sendGameMessage: (message: string, ...args: any[]) => void;
+    sendGameMessage?: (message: string, ...args: any[]) => void;
     showControls?: boolean;
     size?: string;
+    spectating?: boolean;
     stats?: Record<string, number>;
+    user?: any;
 }
 
 export function PlayerStatsBox({
@@ -23,7 +25,7 @@ export function PlayerStatsBox({
     stats
 }: PlayerStatsBoxProps) {
     const sendUpdate = (type: string, direction: string) => {
-        sendGameMessage("changeStat", type, direction === "up" ? 1 : -1);
+        sendGameMessage?.("changeStat", type, direction === "up" ? 1 : -1);
     };
 
     const getStatValueOrDefault = (stat: string) => {

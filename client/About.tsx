@@ -1,4 +1,4 @@
-import Link from "./Link";
+import { Link } from "react-router-dom";
 
 function About() {
     return (
@@ -24,7 +24,7 @@ function About() {
 
                 <h3>That's pretty cool! But how does any of this work?</h3>
                 <p>
-                    Head on over to the <Link href="/how-to-play">How To Play guide</Link> for a
+                    Head on over to the <Link to="/how-to-play">How To Play guide</Link> for a
                     thorough explanation.
                 </p>
 
@@ -67,7 +67,7 @@ function About() {
                 </p>
                 <p>
                     Don't want to be distracted by beautiful art during your games? In-game
-                    backgrounds can be disabled from your <Link href="/profile">Profile</Link>.
+                    backgrounds can be disabled from your <Link to="/profile">Profile</Link>.
                 </p>
 
                 <h3>Can I help?</h3>
@@ -84,7 +84,7 @@ function About() {
                     . Check out the code and instructions on there on how to get started and hack
                     away! See the card implementation status list above to have a look at what
                     needs to be done. If you want to join the dev Discord, there's a link on the{ " " }
-                    <Link href="/community">Community</Link> page.
+                    <Link to="/community">Community</Link> page.
                 </p>
 
                 <h3>Support the Project</h3>

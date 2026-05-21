@@ -15,20 +15,12 @@ export default defineConfig({
         coverage: {
             provider: 'v8',
             reporter: ['text', 'html'],
-            include: ['client/**/*.{js,jsx,ts,tsx}'],
-            exclude: ['client/DevTools.jsx']
-        },
-        server: {
-            deps: {
-                inline: ['jquery-migrate', 'jquery-nearest']
-            }
+            include: ['client/**/*.{js,jsx,ts,tsx}']
         }
     },
     resolve: {
         alias: {
-            '@': path.resolve(__dirname, 'client'),
-            'jquery-migrate': path.resolve(__dirname, 'test/client/__mocks__/jquery-migrate.js'),
-            'jquery-nearest': path.resolve(__dirname, 'test/client/__mocks__/jquery-nearest.js')
+            '@': path.resolve(__dirname, 'client')
         }
     }
 });

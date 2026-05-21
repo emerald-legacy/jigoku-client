@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
-import { PlayerStatsBox } from "../../../client/GameComponents/PlayerStatsBox.jsx";
+import { PlayerStatsBox } from "../../../client/GameComponents/PlayerStatsBox.tsx";
 
 describe("the <PlayerStatsBox /> component", () => {
     let sendGameMessage;

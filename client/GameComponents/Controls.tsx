@@ -2,10 +2,10 @@ import { Menu, AlertCircle, Wrench, Settings, Download } from "lucide-react";
 
 interface ControlsProps {
     manualModeEnabled?: boolean;
-    onDownloadLogClick?: () => void;
-    onManualModeClick?: () => void;
-    onSettingsClick?: () => void;
-    onToggleChatClick?: () => void;
+    onDownloadLogClick?: (event?: any) => void;
+    onManualModeClick?: (event?: any) => void;
+    onSettingsClick?: (event?: any) => void;
+    onToggleChatClick?: (event?: any) => void;
     showChatAlert?: boolean;
     showDownloadLog?: boolean;
     showManualMode?: boolean;

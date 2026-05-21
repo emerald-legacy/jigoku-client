@@ -1,31 +1,34 @@
 import axios from "axios";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import type { RootState } from "../types/redux";
+import { apiCall } from "./apiCall";
 
 export { clearNewsStatus } from "../reducers/news";
 
-export function loadNews(options?: { forceLoad?: boolean; limit?: number }) {
-    return {
-        types: ["REQUEST_NEWS", "RECEIVE_NEWS"] as const,
-        shouldCallAPI: (state: any) => {
-            return !state.news.news || state.news.news.length === 0 || (options && !!options.forceLoad);
-        },
-        callAPI: () => {
-            const params: Record<string, any> = {};
+interface LoadNewsOptions {
+    forceLoad?: boolean;
+    limit?: number;
+}
 
-            if(options && options.limit) {
-                params.limit = options.limit;
-            }
-
-            return axios.get("/api/news/", { params }).then(response => response.data);
+export const loadNews = createAsyncThunk(
+    "news/load",
+    (options: LoadNewsOptions | undefined, { rejectWithValue }) => {
+        const params: Record<string, any> = {};
+        if(options && options.limit) {
+            params.limit = options.limit;
         }
-    };
-}
+        return apiCall(() => axios.get("/api/news/", { params }), rejectWithValue);
+    },
+    {
+        condition: (options, { getState }) => {
+            const state = getState() as RootState;
+            return !state.news.news || state.news.news.length === 0 || !!(options && options.forceLoad);
+        }
+    }
+);
 
-export function addNews(newsText: string) {
-    return {
-        types: ["ADD_NEWS", "NEWS_ADDED"] as const,
-        shouldCallAPI: (state: any) => {
-            return state.news.news;
-        },
-        callAPI: () => axios.put("/api/news", { text: newsText }).then(response => response.data)
-    };
-}
+export const addNews = createAsyncThunk(
+    "news/add",
+    (newsText: string, { rejectWithValue }) => apiCall(() => axios.put("/api/news", { text: newsText }), rejectWithValue),
+    { condition: (_, { getState }) => !!(getState() as RootState).news.news }
+);

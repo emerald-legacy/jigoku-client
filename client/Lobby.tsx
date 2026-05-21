@@ -1,37 +1,47 @@
-import { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
+import type { RootState } from "./types/redux";
 
 import { X, Menu } from "lucide-react";
 import * as actions from "./actions";
 import Avatar from "./Avatar";
 import News from "./SiteComponents/News";
 import AlertPanel from "./SiteComponents/AlertPanel";
-import Link from "./Link";
+import { Link } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "./hooks";
+import { loadServerVersion } from "./ReduxActions/serverVersion";
 
-export function InnerLobby({ bannerNotice, loadNews, loading, news, users }) {
+interface InnerLobbyProps {
+    bannerNotice?: string;
+    loadNews?: (...args: any[]) => any;
+    loading?: boolean;
+    news?: any[];
+    users?: any[];
+}
+
+export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: InnerLobbyProps) {
     const [showUsers, setShowUsers] = useState(false);
-    const [serverVersions, setServerVersions] = useState([]);
+    const dispatch = useAppDispatch();
+    const serverVersions = useAppSelector(state => state.serverVersion.nodes);
 
     useEffect(() => {
         loadNews({ limit: 3 });
     }, [loadNews]);
 
     useEffect(() => {
-        fetch("/api/server-version")
-            .then(res => res.json())
-            .then(data => setServerVersions(data.nodes || []))
-            .catch(() => setServerVersions([]));
-    }, []);
+        dispatch(loadServerVersion());
+    }, [dispatch]);
 
     const handleBurgerClick = () => {
         setShowUsers(prev => !prev);
     };
 
-    let userList;
+    let userList: React.ReactNode[];
     if(!users) {
         userList = [];
     } else {
-        userList = users.map(user => (
+        userList = users.map((user: any) => (
             <div className="user-row" key={ user.name }>
                 <Avatar emailHash={ user.emailHash } forceDefault={ user.noAvatar } />
                 <span>{ user.name }</span>
@@ -71,7 +81,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }) {
             <div className="col-sm-offset-1 col-sm-10">
                 <div className="panel-title text-center">Getting Started</div>
                 <div className="panel panel-darker">
-                    <p>This site allows you to play Emerald Legacy in your browser. If you're new, head on over to the <Link href="/how-to-play">How To Play guide</Link> for a thorough explanation on how to use the site!</p>
+                    <p>This site allows you to play Emerald Legacy in your browser. If you're new, head on over to the <Link to="/how-to-play">How To Play guide</Link> for a thorough explanation on how to use the site!</p>
                 </div>
             </div>
 
@@ -126,16 +136,18 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }) {
 
 InnerLobby.displayName = "Lobby";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         bannerNotice: state.chat.notice,
-        loading: state.api.loading,
+        loading: state.news.loading,
         news: state.news.news,
-        newsLoading: state.news.newsLoading,
         users: state.games.users
     };
 }
 
-const Lobby = connect(mapStateToProps, actions, null)(InnerLobby);
-
-export default Lobby;
+export default function Lobby() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerLobby { ...props } { ...boundActions } />;
+}

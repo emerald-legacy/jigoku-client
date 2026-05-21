@@ -1,9 +1,43 @@
-import { useState, useRef, memo } from "react";
+import React, { useState, useRef, memo } from "react";
 import Draggable from "react-draggable";
 import { X } from "lucide-react";
 
 import Card from "./Card";
 import { tryParseJSON } from "../util.js";
+import type { Card as CardType } from "../types/game";
+
+interface PopupMenuItem {
+    text: string;
+    handler: () => void;
+    showPopup?: boolean;
+}
+
+interface CardPileProps {
+    cardCount?: number;
+    cards?: CardType[];
+    className?: string;
+    closeOnClick?: boolean;
+    disableMenu?: boolean;
+    disableMouseOver?: boolean;
+    hiddenTopCard?: boolean;
+    isMe?: boolean;
+    menu?: PopupMenuItem[];
+    onCardClick?: (card: CardType) => void;
+    onCloseClick?: () => void;
+    onDragDrop?: (card: CardType, source: string, target: string) => void;
+    onMenuItemClick?: (card: CardType, menuItem: any) => void;
+    onMouseOut?: (card: CardType) => void;
+    onMouseOver?: (card: CardType) => void;
+    onTouchMove?: (event: React.TouchEvent) => void;
+    orientation?: string;
+    popupLocation?: string;
+    popupMenu?: PopupMenuItem[];
+    showPopup?: boolean;
+    size?: string;
+    source?: string;
+    title?: string;
+    topCard?: CardType;
+}
 
 function CardPile({
     cardCount,
@@ -29,12 +63,12 @@ function CardPile({
     source,
     title,
     topCard: propsTopCard
-}) {
+}: CardPileProps) {
     const [showPopup, setShowPopup] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
     const draggableRef = useRef(null);
 
-    const onCollectionClick = (event) => {
+    const onCollectionClick = (event: React.MouseEvent) => {
         event.preventDefault();
 
         if(disableMenu) {
@@ -49,7 +83,7 @@ function CardPile({
         setShowPopup(!showPopup);
     };
 
-    const handleMenuItemClick = (menuItem) => {
+    const handleMenuItemClick = (menuItem: PopupMenuItem) => {
         if(menuItem.showPopup) {
             setShowPopup(!showPopup);
         }
@@ -57,7 +91,7 @@ function CardPile({
         menuItem.handler();
     };
 
-    const handleCloseClick = (event) => {
+    const handleCloseClick = (event: React.MouseEvent) => {
         event.preventDefault();
         event.stopPropagation();
 
@@ -68,7 +102,7 @@ function CardPile({
         }
     };
 
-    const onPopupMenuItemClick = (menuItem) => {
+    const onPopupMenuItemClick = (menuItem: PopupMenuItem) => {
         menuItem.handler();
         setShowPopup(!showPopup);
     };
@@ -90,20 +124,20 @@ function CardPile({
         setShowPopup(!showPopup);
     };
 
-    const onDragOver = (event) => {
-        event.target.classList.add("highlight-panel");
+    const onDragOver = (event: React.DragEvent<HTMLElement>) => {
+        (event.target as HTMLElement).classList.add("highlight-panel");
         event.preventDefault();
     };
 
-    const onDragLeave = (event) => {
-        event.target.classList.remove("highlight-panel");
+    const onDragLeave = (event: React.DragEvent<HTMLElement>) => {
+        (event.target as HTMLElement).classList.remove("highlight-panel");
     };
 
-    const handleDragDrop = (event, target) => {
+    const handleDragDrop = (event: React.DragEvent<HTMLElement>, target: string) => {
         event.stopPropagation();
         event.preventDefault();
 
-        event.target.classList.remove("highlight-panel");
+        (event.target as HTMLElement).classList.remove("highlight-panel");
 
         const card = event.dataTransfer.getData("Text");
 
@@ -122,7 +156,7 @@ function CardPile({
         }
     };
 
-    const handleCardClick = (card) => {
+    const handleCardClick = (card: CardType) => {
         if(closeOnClick) {
             setShowPopup(false);
         }
@@ -135,7 +169,7 @@ function CardPile({
     const getPopup = () => {
         let cardIndex = 0;
 
-        const cardList = cards?.map((card) => {
+        const cardList = cards?.map((card: CardType) => {
             const cardKey = card.uuid || cardIndex++;
             return (
                 <Card
@@ -176,7 +210,7 @@ function CardPile({
 
         const popupMenuElement = popupMenu ? (
             <div>
-                { popupMenu.map((menuItem) => {
+                { popupMenu.map((menuItem: PopupMenuItem) => {
                     return (
                         <a
                             className="btn btn-default"
@@ -223,7 +257,7 @@ function CardPile({
     const getMenu = () => {
         let menuIndex = 0;
 
-        const menuElements = menu?.map((item) => {
+        const menuElements = menu?.map((item: PopupMenuItem) => {
             return (
                 <div key={ (menuIndex++).toString() } onClick={ () => handleMenuItemClick(item) }>
                     { item.text }

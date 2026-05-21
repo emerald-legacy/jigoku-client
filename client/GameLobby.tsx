@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import NewGame from "./NewGame";
 import GameList from "./GameList";
@@ -9,9 +10,25 @@ import PasswordGame from "./PasswordGame";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
+import type { RootState } from "./types/redux";
+import type { GameState, MenuItem } from "./types/game";
 
-export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, newGame, passwordGame, loadGameStats, setContextMenu, startNewGame, username }) {
-    const [errorMessage, setErrorMessage] = useState(undefined);
+interface InnerGameLobbyProps {
+    bannerNotice?: string;
+    currentGame?: GameState;
+    gameStats?: any;
+    games: any[];
+    newGame?: boolean;
+    passwordGame?: any;
+    loadGameStats: () => any;
+    setContextMenu: (menu: MenuItem[]) => any;
+    startNewGame: () => any;
+    username?: string;
+}
+
+export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, newGame, passwordGame, loadGameStats, setContextMenu, startNewGame, username }: InnerGameLobbyProps) {
+    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         if(!currentGame) {
@@ -29,7 +46,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
         loadGameStats();
     }, [loadGameStats]);
 
-    const onNewGameClick = (event) => {
+    const onNewGameClick = (event: React.MouseEvent) => {
         event.preventDefault();
 
         if(!username) {
@@ -75,7 +92,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
 
 InnerGameLobby.displayName = "GameLobby";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         bannerNotice: state.chat.notice,
         currentGame: state.games.currentGame,
@@ -84,11 +101,13 @@ function mapStateToProps(state) {
         games: state.games.games,
         newGame: state.games.newGame,
         passwordGame: state.games.passwordGame,
-        socket: state.socket.socket,
         username: state.auth.username
     };
 }
 
-const GameLobby = connect(mapStateToProps, actions)(InnerGameLobby);
-
-export default GameLobby;
+export default function GameLobby() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerGameLobby { ...props } { ...boundActions } />;
+}

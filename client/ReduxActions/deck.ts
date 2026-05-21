@@ -1,132 +1,122 @@
 import axios from "axios";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import type { RootState } from "../types/redux";
 import validateDeck from "../deck-validator";
+import { apiCall } from "./apiCall";
+import {
+    prepareDecksLoad,
+    receiveDecksUnvalidated,
+    updateDecksValidation,
+    decksValidationComplete
+} from "../reducers/cards";
 
-export function loadDecks(format: string | null = null) {
-    return {
-        types: ["REQUEST_DECKS", "RECEIVE_DECKS"] as const,
-        shouldCallAPI: (state: any) => {
-            // Always refetch if format is specified (for PendingGame filtering)
-            // or if we only have a single deck loaded, or if decks haven't been loaded yet
-            return format !== null || state.cards.singleDeck || !state.cards.decks;
-        },
-        callAPI: async () => {
-            const url = format ? `/api/decks?format=${format}` : "/api/decks";
-            const response = await axios.get(url);
+export const loadDecks = createAsyncThunk(
+    "cards/loadDecks",
+    async (format: string | null = null, { rejectWithValue }) => {
+        const url = format ? `/api/decks?format=${format}` : "/api/decks";
+        const data = await apiCall<any>(() => axios.get(url), rejectWithValue);
 
-            if(response.data.decks && response.data.decks.length > 0) {
-                const validationPromises = response.data.decks.map(async (deck: any) => {
-                    const gameMode = deck.format && deck.format.value ? deck.format.value : "stronghold";
-                    try {
-                        const status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
-                        deck.status = status;
-                        return deck;
-                    } catch(_error) {
-                        deck.status = {
-                            valid: undefined,
-                            extendedStatus: ["Error Validating"]
-                        };
-                        return deck;
-                    }
-                });
-
-                await Promise.all(validationPromises);
-            }
-
-            return response.data;
-        }
-    };
-}
-
-export function loadDeck(deckId: string) {
-    return {
-        types: ["REQUEST_DECK", "RECEIVE_DECK"] as const,
-        shouldCallAPI: (state: any) => {
-            return !state.cards.decks?.some((deck: any) => deck._id === deckId);
-        },
-        callAPI: async () => {
-            const response = await axios.get(`/api/decks/${deckId}`);
-
-            if(response.data.deck) {
-                const gameMode = response.data.deck.format && response.data.deck.format.value ? response.data.deck.format.value : "stronghold";
+        if(data && data.decks && data.decks.length > 0) {
+            const validationPromises = data.decks.map(async (deck: any) => {
+                const gameMode = deck.format && deck.format.value ? deck.format.value : "stronghold";
                 try {
-                    const status = await validateDeck(response.data.deck, { includeExtendedStatus: true, gameMode });
-                    response.data.deck.status = status;
+                    const status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
+                    deck.status = status;
+                    return deck;
                 } catch(_error) {
-                    response.data.deck.status = {
+                    deck.status = {
                         valid: undefined,
                         extendedStatus: ["Error Validating"]
                     };
+                    return deck;
                 }
-            }
-
-            return response.data;
+            });
+            await Promise.all(validationPromises);
         }
-    };
-}
+
+        return data;
+    },
+    {
+        condition: (format, { getState }) => {
+            const state = getState() as RootState;
+            return format !== null || !!state.cards.singleDeck || !state.cards.decks;
+        }
+    }
+);
+
+export const loadDeck = createAsyncThunk(
+    "cards/loadDeck",
+    async (deckId: string, { rejectWithValue }) => {
+        const data = await apiCall<any>(() => axios.get(`/api/decks/${deckId}`), rejectWithValue);
+
+        if(data && data.deck) {
+            const gameMode = data.deck.format && data.deck.format.value ? data.deck.format.value : "stronghold";
+            try {
+                const status = await validateDeck(data.deck, { includeExtendedStatus: true, gameMode });
+                data.deck.status = status;
+            } catch(_error) {
+                data.deck.status = {
+                    valid: undefined,
+                    extendedStatus: ["Error Validating"]
+                };
+            }
+        }
+
+        return data;
+    },
+    {
+        condition: (deckId, { getState }) => {
+            const state = getState() as RootState;
+            return !state.cards.decks?.some((deck: any) => deck._id === deckId);
+        }
+    }
+);
 
 export { selectDeck, addDeck, updateDeck, updateDeckStatus, clearDeckStatus } from "../reducers/cards";
 
-export function deleteDeck(deck: any) {
-    return {
-        types: ["DELETE_DECK", "DECK_DELETED"] as const,
-        shouldCallAPI: () => true,
-        callAPI: () => axios.delete(`/api/decks/${deck._id}`).then(r => r.data)
-    };
-}
+export const deleteDeck = createAsyncThunk(
+    "cards/deleteDeck",
+    (deck: any, { rejectWithValue }) => apiCall(() => axios.delete(`/api/decks/${deck._id}`), rejectWithValue)
+);
 
-export function deleteDecks(deckIds: string[]) {
-    return {
-        types: ["DELETE_DECKS", "DECKS_DELETED"] as const,
-        shouldCallAPI: () => true,
-        callAPI: () => axios.post("/api/decks/delete-batch", { deckIds }).then(r => r.data)
-    };
-}
+export const deleteDecks = createAsyncThunk(
+    "cards/deleteDecks",
+    (deckIds: string[], { rejectWithValue }) => apiCall(() => axios.post("/api/decks/delete-batch", { deckIds }), rejectWithValue)
+);
 
-export function saveDeck(deck: any) {
-    const str = JSON.stringify({
-        deckName: deck.name,
-        faction: { name: deck.faction.name, value: deck.faction.value },
-        alliance: { name: deck.alliance.name, value: deck.alliance.value },
-        format: { name: deck.format.name, value: deck.format.value },
-        stronghold: formatCards(deck.stronghold),
-        role: formatCards(deck.role),
-        provinceCards: formatCards(deck.provinceCards),
-        conflictCards: formatCards(deck.conflictCards),
-        dynastyCards: formatCards(deck.dynastyCards)
-    });
-
-    return {
-        types: ["SAVE_DECK", "DECK_SAVED"] as const,
-        shouldCallAPI: () => true,
-        callAPI: () => {
-            const url = `/api/decks/${deck._id || ""}`;
-            const method: "put" | "post" = deck._id ? "put" : "post";
-            return axios[method](url, { data: str }).then(r => r.data);
-        }
-    };
-}
+export const saveDeck = createAsyncThunk(
+    "cards/saveDeck",
+    (deck: any, { rejectWithValue }) => {
+        const str = JSON.stringify({
+            deckName: deck.name,
+            faction: { name: deck.faction.name, value: deck.faction.value },
+            alliance: { name: deck.alliance.name, value: deck.alliance.value },
+            format: { name: deck.format.name, value: deck.format.value },
+            stronghold: formatCards(deck.stronghold),
+            role: formatCards(deck.role),
+            provinceCards: formatCards(deck.provinceCards),
+            conflictCards: formatCards(deck.conflictCards),
+            dynastyCards: formatCards(deck.dynastyCards)
+        });
+        const url = `/api/decks/${deck._id || ""}`;
+        const method: "put" | "post" = deck._id ? "put" : "post";
+        return apiCall(() => axios[method](url, { data: str }), rejectWithValue);
+    }
+);
 
 export function loadDecksWithLazyValidation() {
     return async (dispatch: any) => {
-        dispatch({ type: "REQUEST_DECKS" });
+        dispatch(prepareDecksLoad());
 
         try {
             const response = await axios.get("/api/decks");
-
-            dispatch({
-                type: "RECEIVE_DECKS_UNVALIDATED",
-                decks: response.data.decks
-            });
+            dispatch(receiveDecksUnvalidated(response.data.decks));
 
             if(response.data.decks && response.data.decks.length > 0) {
                 validateDecksInBatches(response.data.decks, dispatch);
             }
-        } catch(error: any) {
-            dispatch({
-                type: "RECEIVE_DECKS",
-                success: false,
-                message: error.message || "Failed to load decks"
-            });
+        } catch(_error: any) {
+            // Lazy load fails silently; user can refresh.
         }
     };
 }
@@ -143,22 +133,18 @@ async function validateDecksInBatches(decks: any[], dispatch: any, batchSize = 1
             } catch(_error) {
                 return {
                     deckId: deck._id,
-                    status: { valid: undefined, extendedStatus: ["Error Validating"] }
+                    status: { valid: undefined as boolean | undefined, extendedStatus: ["Error Validating"] }
                 };
             }
         });
 
         const results = await Promise.all(validationPromises);
-
-        dispatch({
-            type: "UPDATE_DECKS_VALIDATION",
-            validations: results
-        });
+        dispatch(updateDecksValidation(results));
 
         await new Promise(resolve => setTimeout(resolve, 100));
     }
 
-    dispatch({ type: "DECKS_VALIDATION_COMPLETE" });
+    dispatch(decksValidationComplete());
 }
 
 function formatCards(cards: any[]) {

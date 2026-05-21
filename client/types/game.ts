@@ -43,6 +43,23 @@ export interface Card {
     controller?: string;
     popupCards?: Card[];
     group?: string;
+    showPopup?: boolean;
+    isProvince?: boolean;
+    isDynasty?: boolean;
+    isConflict?: boolean;
+    isStronghold?: boolean;
+    isBroken?: boolean;
+    inDanger?: boolean;
+    saved?: boolean;
+    unselectable?: boolean;
+    abilityLimits?: any;
+    strengthSummary?: any;
+    militarySkillSummary?: any;
+    politicalSkillSummary?: any;
+    glorySummary?: any;
+    childCards?: Card[];
+    order?: number;
+    code?: string;
 }
 
 export interface Ring {
@@ -54,6 +71,10 @@ export interface Ring {
     menu?: MenuItem[];
     conflictType?: string;
     tokens?: CardToken;
+    removedFromGame?: boolean;
+    selected?: boolean;
+    unselectable?: boolean;
+    type?: string;
 }
 
 export interface PlayerCardPiles {
@@ -75,6 +96,7 @@ export interface Player {
     user?: {
         emailHash?: string;
         name?: string;
+        username?: string;
         noAvatar?: boolean;
         settings?: UserSettings;
     };
@@ -111,6 +133,10 @@ export interface Player {
     phase?: string;
     controls?: Control[];
     additionalPiles?: Record<string, { cards: Card[]; title?: string }>;
+    disconnected?: boolean;
+    deck?: { selected?: boolean; status?: any; name?: string };
+    id?: string;
+    cardsPlayedThisConflict?: number;
 }
 
 export interface Button {
@@ -121,12 +147,17 @@ export interface Button {
     disabled?: boolean;
     method?: string;
     timer?: number;
+    uuid?: string;
+    timerCancel?: boolean;
 }
 
 export interface Control {
     type: string;
     source: string;
     targets: string[];
+    command?: string;
+    uuid?: string;
+    method?: string;
 }
 
 export interface ClockState {
@@ -175,6 +206,7 @@ export interface GameState {
     finishedAt?: string;
     rings?: Record<string, Ring>;
     conflictDeclared?: boolean;
+    conflict?: any;
     phase?: string;
     manualMode?: boolean;
     skirmishMode?: boolean;
@@ -183,9 +215,11 @@ export interface GameState {
 export interface UserSettings {
     cardSize?: string;
     background?: string;
+    disableGravatar?: boolean;
     optionSettings?: Record<string, any>;
     promptedActionWindows?: Record<string, boolean>;
     timerSettings?: Record<string, any>;
+    windowTimer?: number;
 }
 
 export interface OnlineUser {

@@ -1,55 +1,66 @@
-import { useState } from "react";
-import { connect } from "react-redux";
+import React, { useState, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 import GameModes from "./GameModes";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
+import type { RootState } from "./types/redux";
+import { getLobbySocket } from "./socket";
 
-const defaultTime = {
+const defaultTime: Record<string, string> = {
     timer: "60",
     chess: "40",
     hourglass: "15",
     byoyomi: "0"
 };
 
-export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket }) {
+interface InnerNewGameProps {
+    cancelNewGame: () => void;
+    connected?: boolean;
+    defaultGameName?: string;
+    loadDecks: (gameMode: string) => void;
+}
+
+export function InnerNewGame({ cancelNewGame, connected, defaultGameName, loadDecks }: InnerNewGameProps) {
     const [spectators, setSpectators] = useState(true);
     const [spectatorSquelch, setSpectatorSquelch] = useState(false);
-    const [selectedGameMode, setSelectedGameMode] = useState(GameModes.Emerald);
+    const [selectedGameMode, setSelectedGameMode] = useState<string>(GameModes.Emerald);
     const [clocks, setClocks] = useState(false);
     const [selectedClockType, setSelectedClockType] = useState("timer");
-    const [clockTimer, setClockTimer] = useState(60);
-    const [byoyomiPeriods, setByoyomiPeriods] = useState(5);
-    const [byoyomiTimePeriod, setByoyomiTimePeriod] = useState(30);
+    const [clockTimer, setClockTimer] = useState<number | string>(60);
+    const [byoyomiPeriods, setByoyomiPeriods] = useState<number | string>(5);
+    const [byoyomiTimePeriod, setByoyomiTimePeriod] = useState<number | string>(30);
     const [selectedGameType, setSelectedGameType] = useState("casual");
     const [password, setPassword] = useState("");
     const [gameName, setGameName] = useState(defaultGameName || "");
 
-    const handleCancelClick = (event) => {
+    const handleCancelClick = (event: React.MouseEvent) => {
         event.preventDefault();
         cancelNewGame();
     };
 
-    const handleNameChange = (event) => {
+    const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setGameName(event.target.value.substr(0, 140));
     };
 
-    const handlePasswordChange = (event) => {
+    const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value);
     };
 
-    const handleSpectatorsClick = (event) => {
+    const handleSpectatorsClick = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSpectators(event.target.checked);
     };
 
-    const handleSpectatorSquelchClick = (event) => {
+    const handleSpectatorSquelchClick = (event: React.ChangeEvent<HTMLInputElement>) => {
         setSpectatorSquelch(event.target.checked);
     };
 
-    const handleClockClick = (event) => {
+    const handleClockClick = (event: React.ChangeEvent<HTMLInputElement>) => {
         setClocks(event.target.checked);
     };
 
-    const handleSubmitClick = (event) => {
+    const handleSubmitClick = (event: React.MouseEvent) => {
         event.preventDefault();
 
         const clockConfig = {
@@ -59,7 +70,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
             timePeriod: clocks ? byoyomiTimePeriod : 0
         };
 
-        socket.emit("newgame", {
+        getLobbySocket()?.emit("newgame", {
             name: gameName,
             spectators: spectators,
             spectatorSquelch: spectatorSquelch,
@@ -73,28 +84,28 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
         loadDecks(selectedGameMode);
     };
 
-    const handleRadioChange = (gameType) => {
+    const handleRadioChange = (gameType: string) => {
         setSelectedGameType(gameType);
     };
 
-    const handleRulesRadioChange = (gameMode) => {
+    const handleRulesRadioChange = (gameMode: string) => {
         setSelectedGameMode(gameMode);
     };
 
-    const handleClockRadioChange = (clockType) => {
+    const handleClockRadioChange = (clockType: string) => {
         setSelectedClockType(clockType);
         setClockTimer(defaultTime[clockType]);
     };
 
-    const isGameTypeSelected = (gameType) => {
+    const isGameTypeSelected = (gameType: string) => {
         return selectedGameType === gameType;
     };
 
-    const isGameModeSelected = (gameMode) => {
+    const isGameModeSelected = (gameMode: string) => {
         return selectedGameMode === gameMode;
     };
 
-    const isClockTypeSelected = (clockType) => {
+    const isClockTypeSelected = (clockType: string) => {
         return selectedClockType === clockType;
     };
 
@@ -146,7 +157,7 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
 
     const charsLeft = 140 - gameName.length;
 
-    if(!socket) {
+    if(!connected) {
         return (
             <div>
                 Connecting to the server, please wait...
@@ -253,13 +264,20 @@ export function InnerNewGame({ cancelNewGame, defaultGameName, loadDecks, socket
 
 InnerNewGame.displayName = "NewGame";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         allowMelee: state.auth.user ? state.auth.user.permissions.allowMelee : false,
-        socket: state.socket.socket
+        connected: state.socket.connected
     };
 }
 
-const NewGame = connect(mapStateToProps, actions)(InnerNewGame);
+interface NewGameOwnProps {
+    defaultGameName?: string;
+}
 
-export default NewGame;
+export default function NewGame(ownProps: NewGameOwnProps) {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerNewGame { ...props } { ...boundActions } { ...ownProps } />;
+}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 import Checkbox from "../FormComponents/Checkbox";
 
@@ -10,18 +10,27 @@ const windows = [
     { name: "fate", label: "Fate phase", style: "col-sm-4" }
 ];
 
-function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettingToggle, onToggle, optionSettings, timerSettings }) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [windowTimer, setWindowTimer] = useState(timerSettings.windowTimer);
+interface GameConfigurationProps {
+    actionWindows: Record<string, boolean>;
+    onOptionSettingToggle?: (option: string, value: boolean) => void;
+    onTimerSettingToggle?: (option: string, value: boolean) => void;
+    onToggle?: (option: string, value: boolean) => void;
+    optionSettings: Record<string, boolean>;
+    timerSettings: Record<string, any>;
+}
 
-    const handleToggle = (option, value) => {
+function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettingToggle, onToggle, optionSettings, timerSettings }: GameConfigurationProps) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [windowTimer, setWindowTimer] = useState<number>(timerSettings.windowTimer);
+
+    const handleToggle = (option: string, value: boolean) => {
         if(onToggle) {
             onToggle(option, !value);
         }
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleSlideStop = (event) => {
+    const handleSlideStop = (event: React.ChangeEvent<HTMLInputElement>) => {
         let value = parseInt(event.target.value);
 
         if(Number.isNaN(value)) {
@@ -39,13 +48,13 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
         setWindowTimer(value);
     };
 
-    const handleTimerSettingToggle = (option, event) => {
+    const handleTimerSettingToggle = (option: string, event: React.ChangeEvent<HTMLInputElement>) => {
         if(onTimerSettingToggle) {
             onTimerSettingToggle(option, event.target.checked);
         }
     };
 
-    const handleOptionSettingToggle = (option, event) => {
+    const handleOptionSettingToggle = (option: string, event: React.ChangeEvent<HTMLInputElement>) => {
         if(onOptionSettingToggle) {
             onOptionSettingToggle(option, event.target.checked);
         }
@@ -58,7 +67,6 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
             name={ `promptedActionWindows.${window.name}` }
             label={ window.label }
             fieldClass={ window.style }
-            type="checkbox"
             onChange={ () => handleToggle(window.name, actionWindows[window.name]) }
             checked={ actionWindows[window.name] }
         />

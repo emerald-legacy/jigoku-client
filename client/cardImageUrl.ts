@@ -1,7 +1,7 @@
-declare const cardImageVersion: string | undefined;
+import bootstrap from "./bootstrap";
 
-const versionSuffix = typeof cardImageVersion !== "undefined" && cardImageVersion
-    ? `?v=${cardImageVersion}`
+const versionSuffix = bootstrap.cardImageVersion
+    ? `?v=${bootstrap.cardImageVersion}`
     : "";
 
 export function getCardImageUrl(cardId: string, packId?: string): string {

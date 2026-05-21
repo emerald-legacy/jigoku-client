@@ -1,18 +1,25 @@
-import { useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 
-import { connect } from "react-redux";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
-import * as actions from "./actions";
+import { useAppDispatch } from "./hooks";
+import { finishPasswordReset } from "./ReduxActions/auth";
 
-export function InnerResetPassword({ id, token, navigate }) {
+type ValidationMap = Record<string, string>;
+
+export function ResetPassword() {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const [searchParams] = useSearchParams();
+    const id = searchParams.get("id") ?? undefined;
+    const token = searchParams.get("token") ?? undefined;
     const [password, setPassword] = useState("");
     const [password1, setPassword1] = useState("");
-    const [validation, setValidation] = useState({});
+    const [validation, setValidation] = useState<ValidationMap>({});
     const [error, setError] = useState("");
 
-    const verifyPassword = (isSubmitting, currentPassword, currentPassword1) => {
+    const verifyPassword = (isSubmitting: boolean, currentPassword: string, currentPassword1: string): ValidationMap => {
         const newValidation = { ...validation };
         delete newValidation["password"];
 
@@ -32,13 +39,12 @@ export function InnerResetPassword({ id, token, navigate }) {
         return newValidation;
     };
 
-    const onSubmit = async (event) => {
+    const onSubmit = async (event: React.MouseEvent) => {
         event.preventDefault();
 
         setError("");
 
-        // Do synchronous validation
-        const newValidation = {};
+        const newValidation: ValidationMap = {};
         if(password.length < 6) {
             newValidation["password"] = "The password you specify must be at least 6 characters long";
         }
@@ -56,20 +62,10 @@ export function InnerResetPassword({ id, token, navigate }) {
         }
 
         try {
-            const response = await axios.post("/api/account/password-reset-finish", {
-                id: id,
-                token: token,
-                newPassword: password
-            });
-
-            if(!response.data.success) {
-                setError(response.data.message);
-                return;
-            }
-
+            await dispatch(finishPasswordReset({ id: id!, token: token!, newPassword: password })).unwrap();
             navigate("/login");
-        } catch{
-            setError("Could not communicate with the server.  Please try again later.");
+        } catch(err: any) {
+            setError(err?.message || "Could not communicate with the server.  Please try again later.");
         }
     };
 
@@ -117,7 +113,7 @@ export function InnerResetPassword({ id, token, navigate }) {
                         id={ field.name }
                         placeholder={ field.placeholder }
                         value={ field.value }
-                        onChange={ (e) => field.onChange(e.target.value) }
+                        onChange={ (e: React.ChangeEvent<HTMLInputElement>) => field.onChange(e.target.value) }
                         onBlur={ field.blurCallback }
                     />
                     { validationMessage }
@@ -142,12 +138,6 @@ export function InnerResetPassword({ id, token, navigate }) {
         </div>
     );
 }
-InnerResetPassword.displayName = "ResetPassword";
-
-function mapStateToProps() {
-    return {};
-}
-
-const ResetPassword = connect(mapStateToProps, actions)(InnerResetPassword);
+ResetPassword.displayName = "ResetPassword";
 
 export default ResetPassword;

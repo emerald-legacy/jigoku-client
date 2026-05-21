@@ -2,6 +2,23 @@
 import Province from "./Province";
 import Placeholder from "./Placeholder";
 import CardPile from "./CardPile";
+import type { Player } from "../types/game";
+
+interface StrongholdRowProps {
+    cardSize?: any;
+    isMe?: any;
+    isSkirmish?: any;
+    onCardClick?: any;
+    onDragDrop?: any;
+    onMenuItemClick?: any;
+    onMouseOut?: any;
+    onMouseOver?: any;
+    otherPlayer?: any;
+    role?: any;
+    spectating?: any;
+    strongholdProvinceCards?: any;
+    thisPlayer?: any;
+}
 
 function StrongholdRow({
     cardSize,
@@ -16,8 +33,8 @@ function StrongholdRow({
     spectating,
     strongholdProvinceCards,
     thisPlayer
-}) {
-    const getFavor = (player) => {
+}: StrongholdRowProps) {
+    const getFavor = (player: Player | undefined) => {
         return (
             <div
                 className={ `card-wrapper imperial-favor vertical ${cardSize} ${
@@ -40,7 +57,7 @@ function StrongholdRow({
         );
     };
 
-    const getFaction = (player) => {
+    const getFaction = (player: Player) => {
         if(player.faction) {
             const faction = player.faction.name.toLowerCase();
             const tokens = faction.split(" ");
@@ -49,7 +66,7 @@ function StrongholdRow({
         return "crab";
     };
 
-    const getStronghold = (player, isSkirmishGame) => {
+    const getStronghold = (player: Player | undefined, isSkirmishGame: boolean) => {
         if(!isSkirmishGame) {
             if(isMe) {
                 return (

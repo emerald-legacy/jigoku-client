@@ -9,9 +9,10 @@ import news from "./news";
 import api from "./api";
 import admin from "./admin";
 import user from "./user";
+import serverVersion from "./serverVersion";
 
 const rootReducer = combineReducers({
-    navigation, auth, cards, games, socket, chat, news, api, admin, user
+    navigation, auth, cards, games, socket, chat, news, api, admin, user, serverVersion
 });
 
 export default rootReducer;

@@ -1,16 +1,19 @@
-import { useState } from "react";
-import axios from "axios";
-import { connect } from "react-redux";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import Link from "./Link";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
-import * as actions from "./actions";
+import { useAppDispatch } from "./hooks";
+import { loginUser } from "./ReduxActions/auth";
 
-export function InnerLogin({ login, navigate, socket }) {
+type ValidationMap = Record<string, string>;
+
+export function Login() {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [validation, setValidation] = useState({});
+    const [validation, setValidation] = useState<ValidationMap>({});
     const [error, setError] = useState("");
 
     const verifyUsername = () => {
@@ -37,13 +40,12 @@ export function InnerLogin({ login, navigate, socket }) {
         return newValidation;
     };
 
-    const onLogin = async (event) => {
+    const onLogin = async (event: React.MouseEvent) => {
         event.preventDefault();
 
         setError("");
 
-        // Do synchronous validation to avoid stale state issues
-        const newValidation = {};
+        const newValidation: ValidationMap = {};
         if(!username || username === "") {
             newValidation["username"] = "Please enter your username";
         }
@@ -58,28 +60,10 @@ export function InnerLogin({ login, navigate, socket }) {
         }
 
         try {
-            const response = await axios.post("/api/account/login", {
-                username: username,
-                password: password
-            });
-
-            if(!response.data.success) {
-                setError(response.data.message);
-                return;
-            }
-
-            login({ user: response.data.user, token: response.data.token });
-            if(socket) {
-                socket.emit("authenticate", response.data.token);
-            }
-
+            await dispatch(loginUser({ username, password })).unwrap();
             navigate("/");
-        } catch(err) {
-            if(err.response && err.response.status === 401) {
-                setError("Invalid Username/password");
-            } else {
-                setError("Could not communicate with the server.  Please try again later.");
-            }
+        } catch(err: any) {
+            setError(err?.message || "Could not communicate with the server.  Please try again later.");
         }
     };
 
@@ -145,7 +129,7 @@ export function InnerLogin({ login, navigate, socket }) {
                     { fieldsToRender }
                     <div className="form-group">
                         <div className="col-sm-offset-2 col-sm-10">
-                            <Link href="/forgot">Forgot your password?</Link>
+                            <Link to="/forgot">Forgot your password?</Link>
                         </div>
                     </div>
                     <div className="form-group">
@@ -159,14 +143,6 @@ export function InnerLogin({ login, navigate, socket }) {
     );
 }
 
-InnerLogin.displayName = "Login";
-
-function mapStateToProps(state) {
-    return {
-        socket: state.socket.socket
-    };
-}
-
-const Login = connect(mapStateToProps, actions)(InnerLogin);
+Login.displayName = "Login";
 
 export default Login;

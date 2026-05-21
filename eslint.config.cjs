@@ -49,7 +49,7 @@ module.exports = [
             "react/jsx-sort-props": "off",
             "react/jsx-uses-react": "off",
             "react/jsx-uses-vars": "warn",
-            "react/no-danger": "warn",
+            "react/no-danger": "error",
             "react/no-did-mount-set-state": "warn",
             "react/no-did-update-set-state": "warn",
             "react/no-multi-comp": "warn",
@@ -147,7 +147,7 @@ module.exports = [
             "react/jsx-sort-props": "off",
             "react/jsx-uses-react": "off",
             "react/jsx-uses-vars": "warn",
-            "react/no-danger": "warn",
+            "react/no-danger": "error",
             "react/no-did-mount-set-state": "warn",
             "react/no-did-update-set-state": "warn",
             "react/no-multi-comp": "warn",
@@ -203,7 +203,15 @@ module.exports = [
                 }
             }],
             "no-trailing-spaces": "error",
-            "jsx-quotes": ["warn", "prefer-double"]
+            "jsx-quotes": ["warn", "prefer-double"],
+
+            "no-restricted-imports": ["error", {
+                paths: [{
+                    name: "react-redux",
+                    importNames: ["connect"],
+                    message: "Use useAppSelector / useAppDispatch from ./hooks instead of the legacy connect() HOC."
+                }]
+            }]
         }
     },
     {

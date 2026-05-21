@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Draggable from "react-draggable";
 
 import AbilityTargeting from "./AbilityTargeting";
 import CardNameLookup from "./CardNameLookup";
+import type { Button, Card, Control, UserSettings } from "../types/game";
 
-// Deep equality check for objects
-function isEqual(a, b) {
+function isEqual(a: unknown, b: unknown): boolean {
     if(a === b) {
         return true;
     }
@@ -16,15 +16,18 @@ function isEqual(a, b) {
         return a === b;
     }
 
-    const keysA = Object.keys(a);
-    const keysB = Object.keys(b);
+    const keysA = Object.keys(a as object);
+    const keysB = Object.keys(b as object);
 
     if(keysA.length !== keysB.length) {
         return false;
     }
 
+    const objA = a as Record<string, unknown>;
+    const objB = b as Record<string, unknown>;
+
     for(const key of keysA) {
-        if(!keysB.includes(key) || !isEqual(a[key], b[key])) {
+        if(!keysB.includes(key) || !isEqual(objA[key], objB[key])) {
             return false;
         }
     }
@@ -32,7 +35,7 @@ function isEqual(a, b) {
     return true;
 }
 
-function buttonsAreEqual(oldButtons, newButtons) {
+function buttonsAreEqual(oldButtons: Button[] | undefined, newButtons: Button[] | undefined): boolean {
     if(!oldButtons || !newButtons || oldButtons.length !== newButtons.length) {
         return false;
     }
@@ -44,6 +47,26 @@ function buttonsAreEqual(oldButtons, newButtons) {
     }
 
     return true;
+}
+
+interface PromptUser {
+    settings?: UserSettings;
+    [key: string]: any;
+}
+
+interface ActivePlayerPromptProps {
+    buttons?: Button[];
+    cards?: Record<string, Card>;
+    controls?: Control[];
+    onButtonClick?: (command: string | undefined, arg: string | undefined, uuid: string | undefined, method: string | undefined) => void;
+    onMouseOut?: (card: Card) => void;
+    onMouseOver?: (card: Card) => void;
+    onTimerExpired?: () => void;
+    onTitleClick?: () => void;
+    phase?: string;
+    promptTitle?: string;
+    title?: string;
+    user?: PromptUser;
 }
 
 function ActivePlayerPrompt({
@@ -59,17 +82,17 @@ function ActivePlayerPrompt({
     promptTitle,
     title,
     user
-}) {
+}: ActivePlayerPromptProps) {
     const [showTimer, setShowTimer] = useState(false);
     const [timeLeft, setTimeLeft] = useState(0);
     const [timerClass, setTimerClass] = useState("100%");
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [timerCancelled, setTimerCancelled] = useState(false);
 
-    const timerRef = useRef({ started: null, timerTime: 0 });
-    const timerHandleRef = useRef(null);
+    const timerRef = useRef<{ started: Date | null; timerTime: number }>({ started: null, timerTime: 0 });
+    const timerHandleRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const prevButtonsRef = useRef(buttons);
-    const draggableRef = useRef(null);
+    const draggableRef = useRef<HTMLDivElement | null>(null);
 
     // Effect to handle timer when buttons change
     useEffect(() => {
@@ -86,7 +109,7 @@ function ActivePlayerPrompt({
             return;
         }
 
-        const hasTimerButton = buttons?.some(button => button.timer);
+        const hasTimerButton = buttons?.some((button: Button) => button.timer);
         if(hasTimerButton) {
             if(timerHandleRef.current) {
                 return;
@@ -97,10 +120,13 @@ function ActivePlayerPrompt({
 
             const handle = setInterval(() => {
                 const now = new Date();
-                const difference = (now - timerRef.current.started) / 1000;
+                const startedAt = timerRef.current.started ? timerRef.current.started.getTime() : now.getTime();
+                const difference = (now.getTime() - startedAt) / 1000;
 
                 if(difference >= timerRef.current.timerTime) {
-                    clearInterval(timerHandleRef.current);
+                    if(timerHandleRef.current) {
+                        clearInterval(timerHandleRef.current);
+                    }
                     timerHandleRef.current = null;
                     setShowTimer(false);
 
@@ -112,7 +138,7 @@ function ActivePlayerPrompt({
 
                 const newTimerClass = `${(((timerRef.current.timerTime - difference) / timerRef.current.timerTime) * 100).toFixed()}%`;
                 setTimerClass(newTimerClass);
-                setTimeLeft((timerRef.current.timerTime - difference).toFixed());
+                setTimeLeft(Number((timerRef.current.timerTime - difference).toFixed()));
             }, 100);
 
             timerHandleRef.current = handle;
@@ -128,7 +154,7 @@ function ActivePlayerPrompt({
         };
     }, [buttons, user, onTimerExpired]);
 
-    const handleButtonClick = (event, command, arg, uuid, method) => {
+    const handleButtonClick = (event: React.MouseEvent, command: string | undefined, arg: string | undefined, uuid: string | undefined, method: string | undefined) => {
         event.preventDefault();
 
         if(timerHandleRef.current) {
@@ -144,7 +170,7 @@ function ActivePlayerPrompt({
         }
     };
 
-    const handleCancelTimerClick = (event, button) => {
+    const handleCancelTimerClick = (event: React.MouseEvent, button: Button) => {
         event.preventDefault();
 
         if(timerHandleRef.current) {
@@ -155,24 +181,24 @@ function ActivePlayerPrompt({
         setShowTimer(false);
         setTimerCancelled(true);
 
-        if(button.method) {
+        if(button.method && onButtonClick) {
             onButtonClick(button.command, button.arg, button.uuid, button.method);
         }
     };
 
-    const handleMouseOver = (event, card) => {
+    const handleMouseOver = (_event: React.MouseEvent, card: Card | undefined) => {
         if(card && onMouseOver) {
             onMouseOver(card);
         }
     };
 
-    const handleMouseOut = (event, card) => {
+    const handleMouseOut = (_event: React.MouseEvent, card: Card | undefined) => {
         if(card && onMouseOut) {
             onMouseOut(card);
         }
     };
 
-    const handleCardNameSelected = (command, uuid, method, cardName) => {
+    const handleCardNameSelected = (command: string | undefined, uuid: string | undefined, method: string | undefined, cardName: string) => {
         if(onButtonClick) {
             onButtonClick(command, cardName, uuid, method);
         }
@@ -184,7 +210,7 @@ function ActivePlayerPrompt({
         }
 
         let buttonIndex = 0;
-        const result = [];
+        const result: React.ReactNode[] = [];
 
         for(const button of buttons) {
             if(button.timer) {
@@ -192,16 +218,16 @@ function ActivePlayerPrompt({
             }
 
             const clickCallback = button.timerCancel
-                ? (event) => handleCancelTimerClick(event, button)
-                : (event) => handleButtonClick(event, button.command, button.arg, button.uuid, button.method);
+                ? (event: React.MouseEvent) => handleCancelTimerClick(event, button)
+                : (event: React.MouseEvent) => handleButtonClick(event, button.command, button.arg, button.uuid, button.method);
 
             const option = (
                 <button
-                    key={ button.command + buttonIndex.toString() }
+                    key={ (button.command ?? "") + buttonIndex.toString() }
                     className="btn btn-default"
                     onClick={ clickCallback }
-                    onMouseOver={ (event) => handleMouseOver(event, button.card) }
-                    onMouseOut={ (event) => handleMouseOut(event, button.card) }
+                    onMouseOver={ (event: React.MouseEvent) => handleMouseOver(event, button.card) }
+                    onMouseOut={ (event: React.MouseEvent) => handleMouseOut(event, button.card) }
                     disabled={ button.disabled }
                 >
                     { button.text }
@@ -220,7 +246,7 @@ function ActivePlayerPrompt({
             return [];
         }
 
-        return controls.map((control, index) => {
+        return controls.map((control: Control, index: number) => {
             switch(control.type) {
                 case "targeting":
                     return (
@@ -237,7 +263,7 @@ function ActivePlayerPrompt({
                         <CardNameLookup
                             key={ index }
                             cards={ cards }
-                            onCardSelected={ (cardName) => handleCardNameSelected(control.command, control.uuid, control.method, cardName) }
+                            onCardSelected={ (cardName: string) => handleCardNameSelected(control.command, control.uuid, control.method, cardName) }
                         />
                     );
                 default:

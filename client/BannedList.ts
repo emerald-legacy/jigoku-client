@@ -1,6 +1,22 @@
 import GameModes from "./GameModes.js";
+import type { Card } from "./types/game";
 
-const bannedList = {
+type BannedListCards = {
+    stronghold: string[];
+    skirmish: string[];
+    emerald: string[];
+    sanctuary: string[];
+    obsidian: string[];
+};
+
+type BannedGameMode = keyof BannedListCards;
+
+interface BannedListData {
+    version: string;
+    cards: BannedListCards;
+}
+
+const bannedList: BannedListData = {
     version: "15",
     cards: {
         "stronghold": [
@@ -101,18 +117,18 @@ const bannedList = {
 };
 
 class BannedList {
-    validate(cards, gameMode) {
-        let cardsOnBannedList = cards.filter(card => bannedList.cards[gameMode].includes(card.id));
+    validate(cards: Card[], gameMode: BannedGameMode) {
+        let cardsOnBannedList = cards.filter((card: Card) => bannedList.cards[gameMode].includes(card.id));
 
-        let errors = [];
+        let errors: string[] = [];
 
         if(cardsOnBannedList.length > 0) {
             if(gameMode === GameModes.Emerald) {
-                errors.push(`Contains a card on the Emerald Legacy banned list: ${cardsOnBannedList.map(card => card.name).join(", ")}`);
+                errors.push(`Contains a card on the Emerald Legacy banned list: ${cardsOnBannedList.map((card: Card) => card.name).join(", ")}`);
             } else if(gameMode === GameModes.Obsidian) {
-                errors.push(`Contains cards on the Obsidian Heresy banned list: ${cardsOnBannedList.map(card => card.name).join(", ")}`);
+                errors.push(`Contains cards on the Obsidian Heresy banned list: ${cardsOnBannedList.map((card: Card) => card.name).join(", ")}`);
             } else {
-                errors.push(`Contains a card on the FAQ v${bannedList.version} banned list: ${cardsOnBannedList.map(card => card.name).join(", ")}`);
+                errors.push(`Contains a card on the FAQ v${bannedList.version} banned list: ${cardsOnBannedList.map((card: Card) => card.name).join(", ")}`);
             }
         }
 

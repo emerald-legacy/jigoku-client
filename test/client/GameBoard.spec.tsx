@@ -2,93 +2,73 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 
-// Mock jQuery and its plugins
-vi.mock("jquery", () => {
-    const mockJQuery = vi.fn((selector) => ({
-        addClass: vi.fn(),
-        removeClass: vi.fn(),
-        modal: vi.fn(),
-        offset: vi.fn(() => ({ left: 0, top: 0 })),
-        scrollTop: vi.fn()
-    }));
-    mockJQuery.fn = { jquery: "3.6.0" };
-    return { default: mockJQuery };
-});
-
-// Mock react-redux-toastr
-vi.mock("react-redux-toastr", () => ({
-    toastr: {
-        confirm: vi.fn()
-    }
-}));
-
 // Mock react-draggable
 vi.mock("react-draggable", () => ({
     default: ({ children }) => <div data-testid="draggable">{ children }</div>
 }));
 
 // Mock all the child components
-vi.mock("../../client/GameComponents/PlayerStatsBox.jsx", () => ({
+vi.mock("../../client/GameComponents/PlayerStatsBox.tsx", () => ({
     default: () => <div data-testid="player-stats-box">PlayerStatsBox</div>
 }));
 
-vi.mock("../../client/GameComponents/PlayerStatsRow.jsx", () => ({
+vi.mock("../../client/GameComponents/PlayerStatsRow.tsx", () => ({
     default: () => <div data-testid="player-stats-row">PlayerStatsRow</div>
 }));
 
-vi.mock("../../client/GameComponents/PlayerHand.jsx", () => ({
+vi.mock("../../client/GameComponents/PlayerHand.tsx", () => ({
     default: ({ cards }) => <div data-testid="player-hand">{ cards?.length || 0 } cards in hand</div>
 }));
 
-vi.mock("../../client/GameComponents/DynastyRow.jsx", () => ({
+vi.mock("../../client/GameComponents/DynastyRow.tsx", () => ({
     default: () => <div data-testid="dynasty-row">DynastyRow</div>
 }));
 
-vi.mock("../../client/GameComponents/StrongholdRow.jsx", () => ({
+vi.mock("../../client/GameComponents/StrongholdRow.tsx", () => ({
     default: () => <div data-testid="stronghold-row">StrongholdRow</div>
 }));
 
-vi.mock("../../client/GameComponents/Ring.jsx", () => ({
+vi.mock("../../client/GameComponents/Ring.tsx", () => ({
     default: ({ ring }) => <div data-testid={ `ring-${ring.element}` }>{ ring.element }</div>
 }));
 
-vi.mock("../../client/GameComponents/HonorFan.jsx", () => ({
+vi.mock("../../client/GameComponents/HonorFan.tsx", () => ({
     default: ({ value }) => <div data-testid="honor-fan">{ value }</div>
 }));
 
-vi.mock("../../client/GameComponents/ActivePlayerPrompt.jsx", () => ({
+vi.mock("../../client/GameComponents/ActivePlayerPrompt.tsx", () => ({
     default: ({ title }) => <div data-testid="active-player-prompt">{ title }</div>
 }));
 
-vi.mock("../../client/Avatar.jsx", () => ({
+vi.mock("../../client/Avatar.tsx", () => ({
     default: () => <div data-testid="avatar">Avatar</div>
 }));
 
-vi.mock("../../client/GameComponents/CardZoom.jsx", () => ({
+vi.mock("../../client/GameComponents/CardZoom.tsx", () => ({
     default: () => <div data-testid="card-zoom">CardZoom</div>
 }));
 
-vi.mock("../../client/GameComponents/Card.jsx", () => ({
+vi.mock("../../client/GameComponents/Card.tsx", () => ({
     default: ({ card }) => <div data-testid="card">{ card?.name || "Card" }</div>
 }));
 
-vi.mock("../../client/GameComponents/Chat.jsx", () => ({
+vi.mock("../../client/GameComponents/Chat.tsx", () => ({
     default: () => <div data-testid="chat">Chat</div>
 }));
 
-vi.mock("../../client/GameComponents/Controls.jsx", () => ({
+vi.mock("../../client/GameComponents/Controls.tsx", () => ({
     default: () => <div data-testid="controls">Controls</div>
 }));
 
-vi.mock("../../client/GameComponents/CardPile.jsx", () => ({
+vi.mock("../../client/GameComponents/CardPile.tsx", () => ({
     default: () => <div data-testid="card-pile">CardPile</div>
 }));
 
-vi.mock("../../client/GameComponents/GameConfiguration.jsx", () => ({
+vi.mock("../../client/GameComponents/GameConfiguration.tsx", () => ({
     default: () => <div data-testid="game-configuration">GameConfiguration</div>
 }));
 
-import { InnerGameBoard } from "../../client/GameBoard.jsx";
+import { InnerGameBoard } from "../../client/GameBoard.tsx";
 
 describe("the <GameBoard /> component", () => {
     let defaultProps;

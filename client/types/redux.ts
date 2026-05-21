@@ -10,8 +10,6 @@ export type AnimationEvent =
     | { type: "honor"; playerName: string; amount: number };
 
 export interface NavigationState {
-    path?: string;
-    search?: string;
     context?: any;
 }
 
@@ -29,8 +27,8 @@ export interface GamesState {
 }
 
 export interface SocketState {
-    socket?: any;
-    gameSocket?: any;
+    connected?: boolean;
+    gameConnected?: boolean;
     gameConnecting?: boolean;
     gameHost?: string;
 }
@@ -42,6 +40,7 @@ export interface ChatState {
 export interface NewsState {
     news?: any[];
     newsSaved?: boolean;
+    loading?: boolean;
 }
 
 export interface ApiState {
@@ -53,6 +52,8 @@ export interface ApiState {
 
 export interface AdminState {
     currentUser?: any;
+    userSaved?: boolean;
+    loading?: boolean;
 }
 
 export interface RootState {
@@ -66,4 +67,5 @@ export interface RootState {
     api: ApiState;
     admin: AdminState;
     user: UserState;
+    serverVersion: import("../reducers/serverVersion").ServerVersionState;
 }

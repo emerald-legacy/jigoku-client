@@ -1,13 +1,29 @@
-import { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
+import { useNavigate } from "react-router-dom";
 
 import DeckSummary from "./DeckSummary";
 import DeckEditor from "./DeckEditor";
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
+import type { RootState } from "./types/redux";
+import type { Deck } from "./types/deck";
 
-export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loading, navigate, saveDeck }) {
+interface InnerAddDeckProps {
+    addDeck: () => any;
+    apiError?: string;
+    cards?: Record<string, any>;
+    deck?: Deck;
+    deckSaved?: boolean;
+    loading?: boolean;
+    saveDeck: (deck: any) => any;
+}
+
+export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loading, saveDeck }: InnerAddDeckProps) {
+    const navigate = useNavigate();
     const [ready, setReady] = useState(false);
 
     useEffect(() => {
@@ -21,7 +37,7 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
         }
     }, [deckSaved, navigate]);
 
-    const handleAddDeck = (deckData) => {
+    const handleAddDeck = (deckData: any) => {
         saveDeck(deckData);
     };
 
@@ -39,7 +55,7 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
                         Deck Editor
                     </div>
                     <div className="panel">
-                        <DeckEditor mode="Add" onDeckSave={ handleAddDeck } />
+                        <DeckEditor onDeckSave={ handleAddDeck } />
                     </div>
                 </div>
                 <div className="col-sm-6">
@@ -59,20 +75,22 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
 
 InnerAddDeck.displayName = "InnerAddDeck";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
-        agendas: state.cards.factions,
+        agendas: state.cards.agendas,
         apiError: state.api.message,
         cards: state.cards.cards,
         deck: state.cards.selectedDeck,
         deckSaved: state.cards.deckSaved,
         factions: state.cards.factions,
         formats: state.cards.formats,
-        loading: state.api.loading,
-        socket: state.socket.socket
+        loading: state.cards.loading
     };
 }
 
-const AddDeck = connect(mapStateToProps, actions)(InnerAddDeck);
-
-export default AddDeck;
+export default function AddDeck() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerAddDeck { ...props } { ...boundActions } />;
+}

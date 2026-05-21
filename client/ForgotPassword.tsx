@@ -1,14 +1,16 @@
-import { useState } from "react";
-import axios from "axios";
-import { connect } from "react-redux";
+import React, { useState } from "react";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 
-import * as actions from "./actions";
+import { useAppDispatch } from "./hooks";
+import { requestPasswordReset } from "./ReduxActions/auth";
 
-export function InnerForgotPassword() {
+type ValidationMap = Record<string, string>;
+
+export function ForgotPassword() {
+    const dispatch = useAppDispatch();
     const [username, setUsername] = useState("");
-    const [validation, setValidation] = useState({});
+    const [validation, setValidation] = useState<ValidationMap>({});
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -25,14 +27,13 @@ export function InnerForgotPassword() {
         return newValidation;
     };
 
-    const onSubmit = (event) => {
+    const onSubmit = (event: React.MouseEvent) => {
         event.preventDefault();
         grecaptcha.ready(() => {
-            grecaptcha.execute("6LdO-NMsAAAAAOetW0LZ70BAf12jY5Om101J9As2", { action: "submit" }).then(async (token) => {
+            grecaptcha.execute("6LdO-NMsAAAAAOetW0LZ70BAf12jY5Om101J9As2", { action: "submit" }).then(async (token: string) => {
                 setError("");
 
-                // Do synchronous validation to avoid stale state
-                const newValidation = {};
+                const newValidation: ValidationMap = {};
                 if(!username || username === "") {
                     newValidation["username"] = "Please enter your username";
                 }
@@ -46,22 +47,12 @@ export function InnerForgotPassword() {
                 setSubmitting(true);
 
                 try {
-                    const response = await axios.post("/api/account/password-reset", {
-                        username: username,
-                        captcha: token
-                    });
-
+                    await dispatch(requestPasswordReset({ username, captcha: token })).unwrap();
                     setSubmitting(false);
-
-                    if(!response.data.success) {
-                        setError(response.data.message);
-                        return;
-                    }
-
                     setSuccess("Your request was submitted, if you have an account, an email will have been sent to the address you used to register with more instructions. This request could end up in your Spam folder, so make sure to check there if you do not see it.");
-                } catch{
+                } catch(err: any) {
                     setSubmitting(false);
-                    setError("Could not communicate with the server.  Please try again later.");
+                    setError(err?.message || "Could not communicate with the server.  Please try again later.");
                 }
             });
         });
@@ -139,14 +130,6 @@ export function InnerForgotPassword() {
     );
 }
 
-InnerForgotPassword.displayName = "ForgotPassword";
-
-function mapStateToProps(state) {
-    return {
-        socket: state.socket.socket
-    };
-}
-
-const ForgotPassword = connect(mapStateToProps, actions)(InnerForgotPassword);
+ForgotPassword.displayName = "ForgotPassword";
 
 export default ForgotPassword;

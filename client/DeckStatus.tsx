@@ -1,11 +1,13 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import StatusPopOver from "./StatusPopOver";
 import validateDeck from "./deck-validator.js";
 import * as actions from "./actions";
+import { useAppDispatch } from "./hooks";
+import type { Deck } from "./types/deck";
 
-function getDeckHash(deckToHash) {
+function getDeckHash(deckToHash: Deck | null | undefined) {
     if(!deckToHash) {
         return "";
     }
@@ -32,17 +34,23 @@ function getDeckHash(deckToHash) {
     return parts.sort().join("|");
 }
 
-function hasDeckContentChanged(oldDeck, newDeck) {
+function hasDeckContentChanged(oldDeck: Deck, newDeck: Deck) {
     if(oldDeck.format !== newDeck.format) {
         return true;
     }
     return getDeckHash(oldDeck) !== getDeckHash(newDeck);
 }
 
-export function InnerDeckStatus({ className: propsClassName, deck, updateDeckStatus }) {
-    const [deckStatus, setDeckStatus] = useState({});
-    const validationTimeoutRef = useRef(null);
-    const prevDeckRef = useRef(null);
+interface InnerDeckStatusProps {
+    className?: string;
+    deck?: any;
+    updateDeckStatus?: (...args: any[]) => any;
+}
+
+export function InnerDeckStatus({ className: propsClassName, deck, updateDeckStatus }: InnerDeckStatusProps) {
+    const [deckStatus, setDeckStatus] = useState<{ valid?: boolean; extendedStatus?: string[] }>({});
+    const validationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const prevDeckRef = useRef<Deck | null>(null);
 
     const clearValidationTimeout = useCallback(() => {
         if(validationTimeoutRef.current) {
@@ -51,7 +59,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         }
     }, []);
 
-    const getDeckStatusAsync = useCallback(async (deckToValidate, forceValidate = false) => {
+    const getDeckStatusAsync = useCallback(async (deckToValidate: Deck | null, forceValidate = false) => {
         const targetDeck = deckToValidate || deck;
         if(targetDeck.status && !forceValidate) {
             setDeckStatus(targetDeck.status);
@@ -76,7 +84,7 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
         }
     }, [deck, updateDeckStatus]);
 
-    const scheduleValidation = useCallback((deckToSchedule) => {
+    const scheduleValidation = useCallback((deckToSchedule: Deck) => {
         clearValidationTimeout();
         validationTimeoutRef.current = setTimeout(() => {
             getDeckStatusAsync(deckToSchedule, true);
@@ -150,10 +158,13 @@ export function InnerDeckStatus({ className: propsClassName, deck, updateDeckSta
 
 InnerDeckStatus.displayName = "DeckStatus";
 
-function mapStateToProps() {
-    return {};
+interface DeckStatusOwnProps {
+    className?: string;
+    deck?: any;
 }
 
-const DeckStatus = connect(mapStateToProps, actions)(InnerDeckStatus);
-
-export default DeckStatus;
+export default function DeckStatus(ownProps: DeckStatusOwnProps) {
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerDeckStatus { ...boundActions } { ...ownProps } />;
+}

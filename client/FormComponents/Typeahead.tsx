@@ -18,7 +18,6 @@ interface TypeaheadInputProps {
     onKeyDown?: (e: KeyboardEvent) => void;
     options: any[];
     placeholder?: string;
-    submitFormOnEnter?: boolean;
     validationMessage?: string;
 }
 
@@ -43,7 +42,6 @@ const TypeaheadInput = forwardRef<TypeaheadInputHandle, TypeaheadInputProps>(fun
         onKeyDown,
         options,
         placeholder,
-        submitFormOnEnter,
         validationMessage
     },
     ref
@@ -79,7 +77,6 @@ const TypeaheadInput = forwardRef<TypeaheadInputHandle, TypeaheadInputProps>(fun
                     dropup={ dropup }
                     minLength={ minLength }
                     onInputChange={ onInputChange }
-                    submitFormOnEnter={ submitFormOnEnter }
                     onKeyDown={ onKeyDown }
                 />
                 { validationMessage ? (

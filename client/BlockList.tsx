@@ -1,11 +1,28 @@
-import { useState, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import { X } from "lucide-react";
 import AlertPanel from "./SiteComponents/AlertPanel";
 import Input from "./FormComponents/Input";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
+import type { RootState } from "./types/redux";
+import type { User } from "./types/user";
+
+interface InnerBlockListProps {
+    addBlockListEntry: (arg: { user: User | undefined; username: string }) => any;
+    apiError?: string;
+    blockList?: string[];
+    blockListAdded?: boolean;
+    blockListDeleted?: boolean;
+    clearBlockListStatus: () => any;
+    loadBlockList: (user: User | undefined) => any;
+    loading?: boolean;
+    removeBlockListEntry: (arg: { user: User | undefined; username: string }) => any;
+    user?: User;
+}
 
 export function InnerBlockList({
     addBlockListEntry,
@@ -18,7 +35,7 @@ export function InnerBlockList({
     loading,
     removeBlockListEntry,
     user
-}) {
+}: InnerBlockListProps) {
     const [username, setUsername] = useState("");
 
     useEffect(() => {
@@ -34,18 +51,18 @@ export function InnerBlockList({
         }
     }, [blockListAdded, blockListDeleted, clearBlockListStatus]);
 
-    const onUsernameChange = (event) => {
+    const onUsernameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setUsername(event.target.value);
     };
 
-    const onAddClick = (event) => {
+    const onAddClick = (event: React.MouseEvent) => {
         event.preventDefault();
-        addBlockListEntry(user, username);
+        addBlockListEntry({ user, username });
     };
 
-    const onRemoveClick = (usernameToRemove, event) => {
+    const onRemoveClick = (usernameToRemove: string, event: React.MouseEvent) => {
         event.preventDefault();
-        removeBlockListEntry(user, usernameToRemove);
+        removeBlockListEntry({ user, username: usernameToRemove });
     };
 
     let successPanel;
@@ -69,7 +86,7 @@ export function InnerBlockList({
     } else if(apiError) {
         content = <AlertPanel type="error" message={ apiError } />;
     } else {
-        const blockListRows = blockList && blockList.map((blockedUser) => (
+        const blockListRows = blockList && blockList.map((blockedUser: string) => (
             <tr key={ blockedUser }>
                 <td>{ blockedUser }</td>
                 <td>
@@ -141,17 +158,20 @@ export function InnerBlockList({
 
 InnerBlockList.displayName = "BlockList";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         apiError: state.api.message,
         blockList: state.user.blockList,
         blockListAdded: state.user.blockListAdded,
         blockListDeleted: state.user.blockListDeleted,
-        loading: state.api.loading,
+        loading: state.user.loading,
         user: state.auth.user
     };
 }
 
-const BlockList = connect(mapStateToProps, actions)(InnerBlockList);
-
-export default BlockList;
+export default function BlockList() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerBlockList { ...props } { ...boundActions } />;
+}

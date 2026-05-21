@@ -1,4 +1,4 @@
-import Link from "./Link";
+import { Link } from "react-router-dom";
 
 function HowToPlay() {
     return (
@@ -67,7 +67,7 @@ function HowToPlay() {
                 <p>
                     Start by making sure you have created an account and are logged in. You must
                     be logged in to add decks and spectate or play games. Jigoku Online has a
-                    functional <Link href="/decks">Deckbuilder</Link>, although most people use
+                    functional <Link to="/decks">Deckbuilder</Link>, although most people use
                     the more fully featured{ " " }
                     <a target="_blank" rel="noopener noreferrer" href="https://www.emeralddb.org/">
                         Emerald DB
@@ -75,13 +75,13 @@ function HowToPlay() {
                     deckbuilder to build their decks. After building your deck on FiveRingsDB,
                     copy the Permalink URL, paste it into popup window in the deckbuilder that is
                     brought up when you click 'Import Deck'. You are now ready to start playing.
-                    Head over to the <Link href="/play">Play</Link> section to create, join or
+                    Head over to the <Link to="/play">Play</Link> section to create, join or
                     watch games.
                 </p>
 
                 <h3 id="profile">Profile Options</h3>
                 <p>
-                    Clicking your <Link href="/profile">Profile</Link> at the top right of the
+                    Clicking your <Link to="/profile">Profile</Link> at the top right of the
                     page allows you to tailor certain aspects of gameplay to your wishes.
                 </p>
 

@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
-import { connect } from "react-redux";
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import { shallowEqual } from "react-redux";
+import { bindActionCreators } from "@reduxjs/toolkit";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 import DeckRow from "./DeckRow";
@@ -8,6 +9,30 @@ import Avatar from "./Avatar";
 import DeckStatus from "./DeckStatus";
 
 import * as actions from "./actions";
+import { useAppSelector, useAppDispatch } from "./hooks";
+import type { RootState } from "./types/redux";
+import type { Spectator, UserSettings, MessageFragment } from "./types/game";
+
+interface PendingGamePlayer {
+    name: string;
+    emailHash?: string;
+    settings?: UserSettings;
+    deck?: { selected?: boolean; name?: string; status?: any };
+}
+
+interface InnerPendingGameProps {
+    apiError?: string;
+    connecting?: boolean;
+    currentGame?: any;
+    decks?: any[];
+    gameSocketClose?: (...args: any[]) => any;
+    host?: string;
+    loadDecks?: (...args: any[]) => any;
+    loading?: boolean;
+    sendSocketMessage?: (...args: any[]) => any;
+    username?: string;
+    zoomCard?: (...args: any[]) => any;
+}
 
 export function InnerPendingGame({
     apiError,
@@ -19,10 +44,9 @@ export function InnerPendingGame({
     loadDecks,
     loading,
     sendSocketMessage,
-    socket,
     username,
     zoomCard
-}) {
+}: InnerPendingGameProps) {
     const notificationRef = useRef(null);
     const messagePanelRef = useRef(null);
     const prevPlayersRef = useRef(null);
@@ -40,7 +64,7 @@ export function InnerPendingGame({
 
     // Handle Escape key to close modal
     useEffect(() => {
-        const handleEscape = (event) => {
+        const handleEscape = (event: KeyboardEvent) => {
             if(event.key === "Escape" && showModal) {
                 setShowModal(false);
             }
@@ -87,7 +111,7 @@ export function InnerPendingGame({
             return false;
         }
 
-        const allPlayersHaveDecks = Object.values(currentGame.players).every(player => !!player.deck?.selected);
+        const allPlayersHaveDecks = Object.values<any>(currentGame.players).every(player => !!player.deck?.selected);
         if(!allPlayersHaveDecks) {
             return false;
         }
@@ -100,12 +124,12 @@ export function InnerPendingGame({
         setShowModal(true);
     };
 
-    const selectDeck = (index) => {
+    const selectDeck = (index: number) => {
         setShowModal(false);
-        socket.emit("selectdeck", currentGame.id, filteredDecks[index]);
+        sendSocketMessage("selectdeck", currentGame.id, filteredDecks[index]);
     };
 
-    const getPlayerStatus = (player) => {
+    const getPlayerStatus = (player: PendingGamePlayer) => {
         const playerIsMe = player && player.name === username;
 
         let deck = null;
@@ -149,7 +173,7 @@ export function InnerPendingGame({
             return "Waiting for players...";
         }
 
-        const allPlayersHaveDecks = Object.values(currentGame.players).every(player => !!player.deck?.selected);
+        const allPlayersHaveDecks = Object.values<any>(currentGame.players).every(player => !!player.deck?.selected);
         if(!allPlayersHaveDecks) {
             return "Waiting for players to select decks";
         }
@@ -157,16 +181,16 @@ export function InnerPendingGame({
         return "Ready to begin, click start to begin the game";
     };
 
-    const handleLeaveClick = (event) => {
+    const handleLeaveClick = (event: React.MouseEvent) => {
         event.preventDefault();
-        socket.emit("leavegame", currentGame.id);
+        sendSocketMessage("leavegame", currentGame.id);
         gameSocketClose();
     };
 
-    const handleStartClick = (event) => {
+    const handleStartClick = (event: React.MouseEvent) => {
         event.preventDefault();
         setWaiting(true);
-        socket.emit("startgame", currentGame.id);
+        sendSocketMessage("startgame", currentGame.id);
     };
 
     const sendMessage = () => {
@@ -178,7 +202,7 @@ export function InnerPendingGame({
         setMessage("");
     };
 
-    const handleKeyPress = (event) => {
+    const handleKeyPress = (event: React.KeyboardEvent) => {
         if(event.key === "Enter") {
             sendMessage();
             event.preventDefault();
@@ -186,16 +210,16 @@ export function InnerPendingGame({
     };
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleSendClick = (event) => {
+    const handleSendClick = (event: React.MouseEvent) => {
         event.preventDefault();
         sendMessage();
     };
 
-    const handleChange = (event) => {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setMessage(event.target.value);
     };
 
-    const handleMouseOver = (card) => {
+    const handleMouseOver = (card: MessageFragment) => {
         zoomCard(card);
     };
 
@@ -223,7 +247,7 @@ export function InnerPendingGame({
         renderedDecks = <div>You have no decks for this format, please add one</div>;
     }
 
-    const handleModalClick = (event) => {
+    const handleModalClick = (event: React.MouseEvent) => {
         // Close modal when clicking the overlay (outside the modal-dialog)
         if(event.target === event.currentTarget) {
             setShowModal(false);
@@ -240,7 +264,7 @@ export function InnerPendingGame({
         <div
             className={ `modal fade ${showModal ? "in" : ""}` }
             style={ { display: showModal ? "block" : "none" } }
-            tabIndex="-1"
+            tabIndex={ -1 }
             role="dialog"
             onClick={ handleModalClick }
         >
@@ -297,13 +321,13 @@ export function InnerPendingGame({
                 Players
             </div>
             <div className="players panel">
-                { currentGame.players && Object.values(currentGame.players).map(player => getPlayerStatus(player)) }
+                { currentGame.players && Object.values<PendingGamePlayer>(currentGame.players).map((player: PendingGamePlayer) => getPlayerStatus(player)) }
             </div>
             <div className="panel-title text-center">
                 Spectators ({ currentGame.spectators.length })
             </div>
             <div className="spectators panel">
-                { currentGame.spectators.map(spectator => (
+                { currentGame.spectators.map((spectator: Spectator) => (
                     <div key={ spectator.name }>{ spectator.name }</div>
                 )) }
             </div>
@@ -328,7 +352,7 @@ export function InnerPendingGame({
 
 InnerPendingGame.displayName = "PendingGame";
 
-function mapStateToProps(state) {
+function mapStateToProps(state: RootState) {
     return {
         apiError: state.api.message,
         connecting: state.socket.gameConnecting,
@@ -336,12 +360,14 @@ function mapStateToProps(state) {
         decks: state.cards.decks,
 
         host: state.socket.gameHost,
-        loading: state.api.loading,
-        socket: state.socket.socket,
+        loading: state.cards.loading,
         username: state.auth.username
     };
 }
 
-const PendingGame = connect(mapStateToProps, actions)(InnerPendingGame);
-
-export default PendingGame;
+export default function PendingGame() {
+    const props = useAppSelector(mapStateToProps, shallowEqual);
+    const dispatch = useAppDispatch();
+    const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
+    return <InnerPendingGame { ...props } { ...boundActions } />;
+}
