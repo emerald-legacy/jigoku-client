@@ -182,7 +182,7 @@ export function InnerDecks({
                 <div className="row h-full">
                     <div className="col-sm-5 full-height relative">
                         <div className="panel-title text-center">
-                        Your decks ({ deckCount } / 50)
+                        My Decks ({ deckCount } / 50)
                         </div>
                         <div className="panel deck-list-container">
                             <div className="btn-group">
