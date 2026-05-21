@@ -86,7 +86,7 @@ function Formats() {
                     </h3>
                     <p>
                         The main competitive format of the game under FFG, Stronghold is also known as Imperial format,
-                        taking its name from The Imperial Law &mdash; the{ " " }
+                        taking its name from <em>The Imperial Law</em> &mdash; the{ " " }
                         <a href="https://www.emeralddb.org/rules/organized-play/standard" target="_blank" rel="noopener noreferrer">FFG Restricted and Banned Card List</a>.
                         New cards are no longer released for this format, and the Imperial Law will no longer be updated.
                     </p>
