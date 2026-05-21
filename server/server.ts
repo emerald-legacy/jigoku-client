@@ -165,7 +165,15 @@ class Server {
 
         api.init(app);
 
-        app.use(express.static(path.join(projectRoot, "public")));
+        app.use(express.static(path.join(projectRoot, "public"), {
+            setHeaders: (res, filePath) => {
+                if(filePath.endsWith(".woff2")) {
+                    res.setHeader("Content-Type", "font/woff2");
+                } else if(filePath.endsWith(".woff")) {
+                    res.setHeader("Content-Type", "font/woff");
+                }
+            }
+        }));
         app.set("view engine", "pug");
         app.set("views", path.join(projectRoot, "views"));
 
