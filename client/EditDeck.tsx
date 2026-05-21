@@ -11,15 +11,16 @@ import * as actions from "./actions";
 import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
 import type { Deck } from "./types/deck";
+import type { Card } from "./types/game";
 
 interface InnerEditDeckProps {
     apiError?: string;
-    cards?: Record<string, any>;
+    cards?: Record<string, Card>;
     deck?: Deck;
     deckSaved?: boolean;
-    loadDeck: (id?: string) => any;
+    loadDeck: (id?: string) => void;
     loading?: boolean;
-    saveDeck: (deck: any) => any;
+    saveDeck: (deck: Deck | undefined) => void;
 }
 
 export function InnerEditDeck({ apiError, cards, deck, deckSaved, loadDeck, loading, saveDeck }: InnerEditDeckProps) {
@@ -41,7 +42,7 @@ export function InnerEditDeck({ apiError, cards, deck, deckSaved, loadDeck, load
         }
     }, [deckSaved, navigate]);
 
-    const handleEditDeck = (deckData: any) => {
+    const handleEditDeck = (deckData: Deck | undefined) => {
         saveDeck(deckData);
     };
 
@@ -99,5 +100,6 @@ export default function EditDeck() {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerEditDeck { ...props } { ...boundActions } />;
+    const merged = { ...props, ...boundActions } as InnerEditDeckProps;
+    return <InnerEditDeck { ...merged } />;
 }

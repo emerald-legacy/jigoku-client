@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import Messages from "./Messages";
+import type { GameMessage, MessageFragment } from "../types/game";
 
 interface ChatProps {
-    messages: any[];
-    onMouseOut?: (card: any) => void;
-    onMouseOver?: (card: any) => void;
+    messages: GameMessage[];
+    onMouseOut?: (fragment: MessageFragment) => void;
+    onMouseOver?: (fragment: MessageFragment) => void;
     sendMessage: (message: string) => void;
     visible?: boolean;
 }
@@ -55,8 +56,8 @@ function Chat({ messages, onMouseOut, onMouseOver, sendMessage, visible }: ChatP
             <div className="messages panel" ref={ messagePanelRef } onScroll={ handleScroll }>
                 <Messages
                     messages={ messages }
-                    onCardMouseOver={ onMouseOver }
-                    onCardMouseOut={ onMouseOut }
+                    onCardMouseOver={ onMouseOver ? (f: MessageFragment) => onMouseOver(f) : undefined }
+                    onCardMouseOut={ onMouseOut ? (f: MessageFragment) => onMouseOut(f) : undefined }
                 />
             </div>
             <form>

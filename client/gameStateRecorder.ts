@@ -1,12 +1,20 @@
-import type { GameState } from "./types/game";
+import type { Card, GameState } from "./types/game";
+
+export interface PlayerHiddenInfo {
+    hand?: Card[];
+    provinces?: Record<string, Card[]>;
+    strongholdChildren?: Card[];
+}
+
+export type HiddenInfo = Record<string, PlayerHiddenInfo>;
 
 interface RecordedState {
-    state: any;
+    state: GameState;
     timestamp: number;
 }
 
 let recording: RecordedState[] = [];
-let hiddenInfo: any[] = [];
+let hiddenInfo: HiddenInfo[] = [];
 let isRecording = false;
 
 export function startRecording(): void {
@@ -24,12 +32,12 @@ export function recordState(gameState: GameState): void {
     }
 
     recording.push({
-        state: JSON.parse(JSON.stringify(gameState)),
+        state: structuredClone(gameState),
         timestamp: Date.now()
     });
 }
 
-export function setHiddenInfo(data: any[]): void {
+export function setHiddenInfo(data: HiddenInfo[]): void {
     if(!isRecording) {
         return;
     }
@@ -40,7 +48,7 @@ export function getRecording(): RecordedState[] {
     return recording;
 }
 
-export function getHiddenInfo(): any[] {
+export function getHiddenInfo(): HiddenInfo[] {
     return hiddenInfo;
 }
 

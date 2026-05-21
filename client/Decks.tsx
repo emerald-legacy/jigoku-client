@@ -9,7 +9,7 @@ import DeckRow from "./DeckRow";
 
 import * as actions from "./actions";
 import { useAppSelector, useAppDispatch } from "./hooks";
-import type { Deck } from "./types/deck";
+import type { Deck, DeckStatus as DeckStatusType } from "./types/deck";
 import type { Card } from "./types/game";
 import type { RootState } from "./types/redux";
 
@@ -17,16 +17,16 @@ interface InnerDecksProps {
     apiError?: string;
     cards?: Record<string, Card>;
     deckDeleted?: boolean;
-    deckStats?: Record<string, any>;
+    deckStats?: Record<string, DeckStatusType>;
     decks?: Deck[];
     loading?: boolean;
     selectedDeck?: Deck;
-    clearDeckStatus: (payload?: any) => any;
-    deleteDeck: (payload: any) => any;
-    deleteDecks: (payload: any) => any;
-    loadDeckStats: () => any;
-    loadDecksWithLazyValidation: () => any;
-    selectDeck: (deck: Deck) => any;
+    clearDeckStatus: (payload?: void) => void;
+    deleteDeck: (deck: Deck | undefined) => void;
+    deleteDecks: (deckIds: string[]) => void;
+    loadDeckStats: () => void;
+    loadDecksWithLazyValidation: () => void;
+    selectDeck: (deck: Deck) => void;
 }
 
 export function InnerDecks({
@@ -169,7 +169,7 @@ export function InnerDecks({
                                 <button className="btn btn-danger" onClick={ handleConfirmDeleteClick }>Delete</button>
                             ) }
                         </div>
-                        <DeckSummary deck={ selectedDeck } cards={ cards } stats={ deckStats && selectedDeck && selectedDeck._id ? deckStats[selectedDeck._id] : undefined } />
+                        <DeckSummary deck={ selectedDeck } cards={ cards } stats={ deckStats && selectedDeck && selectedDeck._id ? (deckStats[selectedDeck._id] as React.ComponentProps<typeof DeckSummary>["stats"]) : undefined } />
                     </div>
                 </div>
             );
@@ -246,5 +246,6 @@ export default function Decks() {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerDecks { ...props } { ...boundActions } />;
+    const merged = { ...props, ...boundActions } as InnerDecksProps;
+    return <InnerDecks { ...merged } />;
 }

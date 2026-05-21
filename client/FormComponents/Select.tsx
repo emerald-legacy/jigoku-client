@@ -1,7 +1,8 @@
 import type { FocusEvent } from "react";
 
-interface SelectOption {
-    [key: string]: any;
+export interface SelectOption {
+    name?: string;
+    value?: string;
 }
 
 interface SelectButton {
@@ -42,7 +43,7 @@ function Select({
 }: SelectProps) {
     const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const selectedValue = options?.find(
-            (option) => option[valueKey] === event.target.value
+            (option) => (option as Record<string, string | undefined>)[valueKey] === event.target.value
         );
         onChange(selectedValue);
     };
@@ -50,8 +51,8 @@ function Select({
     const optionElements: React.ReactNode[] = [];
 
     if(blankOption) {
-        const blankValue = blankOption[valueKey];
-        const blankName = blankOption[nameKey];
+        const blankValue = (blankOption as Record<string, string | undefined>)[valueKey];
+        const blankName = (blankOption as Record<string, string | undefined>)[nameKey];
         optionElements.push(
             <option key="default" value={ blankValue }>
                 { blankName }
@@ -61,8 +62,8 @@ function Select({
 
     if(options) {
         options.forEach((option) => {
-            const optionValue = option[valueKey];
-            const optionName = option[nameKey];
+            const optionValue = (option as Record<string, string | undefined>)[valueKey];
+            const optionName = (option as Record<string, string | undefined>)[nameKey];
             optionElements.push(
                 <option key={ optionValue } value={ optionValue }>
                     { optionName }

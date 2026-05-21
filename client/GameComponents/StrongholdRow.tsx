@@ -2,22 +2,22 @@
 import Province from "./Province";
 import Placeholder from "./Placeholder";
 import CardPile from "./CardPile";
-import type { Player } from "../types/game";
+import type { Card, MenuItem, Player } from "../types/game";
 
 interface StrongholdRowProps {
-    cardSize?: any;
-    isMe?: any;
-    isSkirmish?: any;
-    onCardClick?: any;
-    onDragDrop?: any;
-    onMenuItemClick?: any;
-    onMouseOut?: any;
-    onMouseOver?: any;
-    otherPlayer?: any;
-    role?: any;
-    spectating?: any;
-    strongholdProvinceCards?: any;
-    thisPlayer?: any;
+    cardSize?: string;
+    isMe?: boolean;
+    isSkirmish?: boolean;
+    onCardClick?: (card: Card) => void;
+    onDragDrop?: (card: Card, source: string, target: string) => void;
+    onMenuItemClick?: (card: Card, menuItem: MenuItem) => void;
+    onMouseOut?: (card: Card) => void;
+    onMouseOver?: (card: Card) => void;
+    otherPlayer?: Player;
+    role?: Card | null;
+    spectating?: boolean;
+    strongholdProvinceCards?: Card[];
+    thisPlayer?: Player;
 }
 
 function StrongholdRow({

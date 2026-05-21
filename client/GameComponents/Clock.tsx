@@ -10,7 +10,7 @@ interface ClockProps {
     mode: string;
     periods?: number;
     secondsLeft: number;
-    stateId?: any;
+    stateId?: string | number;
     timePeriod?: number;
 }
 
@@ -34,7 +34,7 @@ function Clock({
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [manuallyPaused, setManuallyPaused] = useState(false);
 
-    const prevStateIdRef = useRef<any>(null);
+    const prevStateIdRef = useRef<string | number | null>(null);
     const timerHandleRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     useEffect(() => {

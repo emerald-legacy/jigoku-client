@@ -11,27 +11,41 @@ import DeckStatus from "./DeckStatus";
 import * as actions from "./actions";
 import { useAppSelector, useAppDispatch } from "./hooks";
 import type { RootState } from "./types/redux";
-import type { Spectator, UserSettings, MessageFragment } from "./types/game";
+import type { Spectator, UserSettings, MessageFragment, Card, GameState } from "./types/game";
+import type { Deck, DeckStatus as DeckStatusResult } from "./types/deck";
 
 interface PendingGamePlayer {
     name: string;
     emailHash?: string;
     settings?: UserSettings;
-    deck?: { selected?: boolean; name?: string; status?: any };
+    deck?: { selected?: boolean; name?: string; status?: DeckStatusResult };
 }
+
+type PendingGameView = Omit<GameState, "players"> & {
+    owner?: string;
+    allowSpectators?: boolean;
+    spectatorSquelch?: boolean;
+    clocks?: {
+        type: string;
+        time?: number;
+        periods?: number;
+        timePeriod?: number;
+    };
+    players: Record<string, PendingGamePlayer>;
+};
 
 interface InnerPendingGameProps {
     apiError?: string;
     connecting?: boolean;
-    currentGame?: any;
-    decks?: any[];
-    gameSocketClose?: (...args: any[]) => any;
+    currentGame?: PendingGameView;
+    decks?: Deck[];
+    gameSocketClose?: () => void;
     host?: string;
-    loadDecks?: (...args: any[]) => any;
+    loadDecks?: (format?: string) => void;
     loading?: boolean;
-    sendSocketMessage?: (...args: any[]) => any;
+    sendSocketMessage?: (command: string, ...args: (string | number | boolean | Deck | undefined)[]) => void;
     username?: string;
-    zoomCard?: (...args: any[]) => any;
+    zoomCard?: (card: Card | MessageFragment) => void;
 }
 
 export function InnerPendingGame({
@@ -111,7 +125,7 @@ export function InnerPendingGame({
             return false;
         }
 
-        const allPlayersHaveDecks = Object.values<any>(currentGame.players).every(player => !!player.deck?.selected);
+        const allPlayersHaveDecks = Object.values(currentGame.players).every(player => !!player.deck?.selected);
         if(!allPlayersHaveDecks) {
             return false;
         }
@@ -143,7 +157,7 @@ export function InnerPendingGame({
                 deck = <span className="deck-selection">Deck Selected</span>;
             }
 
-            status = <DeckStatus deck={ player.deck } />;
+            status = <DeckStatus deck={ player.deck as Deck } />;
         } else if(player && playerIsMe) {
             selectLink = <span className="card-link" onClick={ handleSelectDeckClick }>Select deck...</span>;
         }
@@ -173,7 +187,7 @@ export function InnerPendingGame({
             return "Waiting for players...";
         }
 
-        const allPlayersHaveDecks = Object.values<any>(currentGame.players).every(player => !!player.deck?.selected);
+        const allPlayersHaveDecks = Object.values(currentGame.players).every(player => !!player.deck?.selected);
         if(!allPlayersHaveDecks) {
             return "Waiting for players to select decks";
         }
@@ -356,7 +370,7 @@ function mapStateToProps(state: RootState) {
     return {
         apiError: state.api.message,
         connecting: state.socket.gameConnecting,
-        currentGame: state.games.currentGame,
+        currentGame: state.games.currentGame as PendingGameView | undefined,
         decks: state.cards.decks,
 
         host: state.socket.gameHost,
@@ -369,5 +383,6 @@ export default function PendingGame() {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerPendingGame { ...props } { ...boundActions } />;
+    const merged = { ...props, ...boundActions } as InnerPendingGameProps;
+    return <InnerPendingGame { ...merged } />;
 }

@@ -64,8 +64,11 @@ export function ResetPassword() {
         try {
             await dispatch(finishPasswordReset({ id: id!, token: token!, newPassword: password })).unwrap();
             navigate("/login");
-        } catch(err: any) {
-            setError(err?.message || "Could not communicate with the server.  Please try again later.");
+        } catch(err) {
+            const message = err instanceof Error
+                ? err.message
+                : typeof err === "string" ? err : undefined;
+            setError(message || "Could not communicate with the server.  Please try again later.");
         }
     };
 

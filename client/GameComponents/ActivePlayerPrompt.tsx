@@ -3,56 +3,8 @@ import Draggable from "react-draggable";
 
 import AbilityTargeting from "./AbilityTargeting";
 import CardNameLookup from "./CardNameLookup";
-import type { Button, Card, Control, UserSettings } from "../types/game";
-
-function isEqual(a: unknown, b: unknown): boolean {
-    if(a === b) {
-        return true;
-    }
-    if(a === null || a === undefined || b === null || b === undefined) {
-        return false;
-    }
-    if(typeof a !== "object" || typeof b !== "object") {
-        return a === b;
-    }
-
-    const keysA = Object.keys(a as object);
-    const keysB = Object.keys(b as object);
-
-    if(keysA.length !== keysB.length) {
-        return false;
-    }
-
-    const objA = a as Record<string, unknown>;
-    const objB = b as Record<string, unknown>;
-
-    for(const key of keysA) {
-        if(!keysB.includes(key) || !isEqual(objA[key], objB[key])) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-function buttonsAreEqual(oldButtons: Button[] | undefined, newButtons: Button[] | undefined): boolean {
-    if(!oldButtons || !newButtons || oldButtons.length !== newButtons.length) {
-        return false;
-    }
-
-    for(let i = 0; i < oldButtons.length; ++i) {
-        if(!isEqual(oldButtons[i], newButtons[i])) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-interface PromptUser {
-    settings?: UserSettings;
-    [key: string]: any;
-}
+import type { Button, Card, Control } from "../types/game";
+import type { User } from "../types/user";
 
 interface ActivePlayerPromptProps {
     buttons?: Button[];
@@ -66,7 +18,7 @@ interface ActivePlayerPromptProps {
     phase?: string;
     promptTitle?: string;
     title?: string;
-    user?: PromptUser;
+    user?: User;
 }
 
 function ActivePlayerPrompt({
@@ -91,60 +43,48 @@ function ActivePlayerPrompt({
 
     const timerRef = useRef<{ started: Date | null; timerTime: number }>({ started: null, timerTime: 0 });
     const timerHandleRef = useRef<ReturnType<typeof setInterval> | null>(null);
-    const prevButtonsRef = useRef(buttons);
     const draggableRef = useRef<HTMLDivElement | null>(null);
 
-    // Effect to handle timer when buttons change
+    const hasTimerButton = buttons?.some((button: Button) => button.timer) ?? false;
+    const windowTimer = user?.settings?.windowTimer;
+
     useEffect(() => {
-        const prevButtons = prevButtonsRef.current;
-        prevButtonsRef.current = buttons;
-
-        // Check if buttons actually changed
-        const buttonsChanged = !buttonsAreEqual(prevButtons, buttons);
-        if(!buttonsChanged) {
+        if(!hasTimerButton || !windowTimer) {
+            return;
+        }
+        if(timerHandleRef.current) {
             return;
         }
 
-        if(!user?.settings?.windowTimer) {
-            return;
-        }
+        timerRef.current.started = new Date();
+        timerRef.current.timerTime = windowTimer;
 
-        const hasTimerButton = buttons?.some((button: Button) => button.timer);
-        if(hasTimerButton) {
-            if(timerHandleRef.current) {
+        const handle = setInterval(() => {
+            const now = new Date();
+            const startedAt = timerRef.current.started ? timerRef.current.started.getTime() : now.getTime();
+            const difference = (now.getTime() - startedAt) / 1000;
+
+            if(difference >= timerRef.current.timerTime) {
+                if(timerHandleRef.current) {
+                    clearInterval(timerHandleRef.current);
+                }
+                timerHandleRef.current = null;
+                setShowTimer(false);
+
+                if(onTimerExpired) {
+                    onTimerExpired();
+                }
                 return;
             }
 
-            timerRef.current.started = new Date();
-            timerRef.current.timerTime = user.settings.windowTimer;
+            const newTimerClass = `${(((timerRef.current.timerTime - difference) / timerRef.current.timerTime) * 100).toFixed()}%`;
+            setTimerClass(newTimerClass);
+            setTimeLeft(Number((timerRef.current.timerTime - difference).toFixed()));
+        }, 100);
 
-            const handle = setInterval(() => {
-                const now = new Date();
-                const startedAt = timerRef.current.started ? timerRef.current.started.getTime() : now.getTime();
-                const difference = (now.getTime() - startedAt) / 1000;
-
-                if(difference >= timerRef.current.timerTime) {
-                    if(timerHandleRef.current) {
-                        clearInterval(timerHandleRef.current);
-                    }
-                    timerHandleRef.current = null;
-                    setShowTimer(false);
-
-                    if(onTimerExpired) {
-                        onTimerExpired();
-                    }
-                    return;
-                }
-
-                const newTimerClass = `${(((timerRef.current.timerTime - difference) / timerRef.current.timerTime) * 100).toFixed()}%`;
-                setTimerClass(newTimerClass);
-                setTimeLeft(Number((timerRef.current.timerTime - difference).toFixed()));
-            }, 100);
-
-            timerHandleRef.current = handle;
-            setShowTimer(true);
-            setTimerClass("100%");
-        }
+        timerHandleRef.current = handle;
+        setShowTimer(true);
+        setTimerClass("100%");
 
         return () => {
             if(timerHandleRef.current) {
@@ -152,7 +92,7 @@ function ActivePlayerPrompt({
                 timerHandleRef.current = null;
             }
         };
-    }, [buttons, user, onTimerExpired]);
+    }, [hasTimerButton, windowTimer, onTimerExpired]);
 
     const handleButtonClick = (event: React.MouseEvent, command: string | undefined, arg: string | undefined, uuid: string | undefined, method: string | undefined) => {
         event.preventDefault();
@@ -248,22 +188,24 @@ function ActivePlayerPrompt({
 
         return controls.map((control: Control, index: number) => {
             switch(control.type) {
-                case "targeting":
+                case "targeting": {
+                    const targetingControl = control as unknown as Control & { source: { type?: string; name?: string }; targets: Array<{ type?: string; name?: string }> };
                     return (
                         <AbilityTargeting
                             key={ index }
                             onMouseOut={ onMouseOut }
                             onMouseOver={ onMouseOver }
-                            source={ control.source }
-                            targets={ control.targets }
+                            source={ targetingControl.source }
+                            targets={ targetingControl.targets }
                         />
                     );
+                }
                 case "card-name":
                     return (
                         <CardNameLookup
                             key={ index }
-                            cards={ cards }
-                            onCardSelected={ (cardName: string) => handleCardNameSelected(control.command, control.uuid, control.method, cardName) }
+                            cards={ cards ?? {} }
+                            onCardSelected={ (cardName: string | null) => handleCardNameSelected(control.command, control.uuid, control.method, cardName ?? "") }
                         />
                     );
                 default:

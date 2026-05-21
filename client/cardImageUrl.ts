@@ -1,4 +1,13 @@
 import bootstrap from "./bootstrap";
+import type { Card } from "./types/game";
+
+export interface CardVersion {
+    pack_id?: string;
+    image_url?: string;
+    name?: string;
+}
+
+export type CardWithVersions = Card & { versions?: CardVersion[] };
 
 const versionSuffix = bootstrap.cardImageVersion
     ? `?v=${bootstrap.cardImageVersion}`
@@ -25,7 +34,7 @@ const communityFormats = new Set(["emerald", "sanctuary", "obsidian"]);
  * Community formats (emerald, sanctuary, obsidian) prefer the last version (EL printing).
  * Imperial formats (stronghold, skirmish) prefer the first version (FFG printing).
  */
-export function preferredPackId(card: any, formatValue: string): string | undefined {
+export function preferredPackId(card: CardWithVersions | undefined, formatValue: string): string | undefined {
     const versions = card?.versions;
     if(!versions || versions.length === 0) {
         return undefined;

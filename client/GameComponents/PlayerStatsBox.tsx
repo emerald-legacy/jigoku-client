@@ -1,17 +1,18 @@
 import Clock from "./Clock";
 import ClockPopup from "./ClockPopup";
+import type { ClockState, Player } from "../types/game";
 
 interface PlayerStatsBoxProps {
-    clockState?: any;
+    clockState?: ClockState | null;
     firstPlayer?: boolean;
     handSize?: number;
     otherPlayer?: boolean;
-    sendGameMessage?: (message: string, ...args: any[]) => void;
+    sendGameMessage?: (message: string, ...args: unknown[]) => void;
     showControls?: boolean;
     size?: string;
     spectating?: boolean;
-    stats?: Record<string, number>;
-    user?: any;
+    stats?: Record<string, number> | null;
+    user?: Player["user"] | null;
 }
 
 export function PlayerStatsBox({

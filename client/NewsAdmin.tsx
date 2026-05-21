@@ -8,20 +8,13 @@ import TextArea from "./FormComponents/TextArea";
 
 import * as actions from "./actions";
 import { useAppSelector, useAppDispatch } from "./hooks";
-import type { RootState } from "./types/redux";
-
-interface NewsItem {
-    datePublished: string;
-    poster: string;
-    text: string;
-    _id?: string;
-}
+import type { RootState, NewsItem } from "./types/redux";
 
 interface InnerNewsAdminProps {
-    addNews: (text: string) => any;
+    addNews: (text: string) => void;
     apiError?: string;
-    clearNewsStatus: () => any;
-    loadNews: (opts: { forceLoad: boolean }) => any;
+    clearNewsStatus: () => void;
+    loadNews: (opts: { forceLoad: boolean }) => void;
     loading?: boolean;
     news?: NewsItem[];
     newsSaved?: boolean;
@@ -58,7 +51,7 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
 
     const renderedNews = news?.map((newsItem: NewsItem, index: number) => (
         <tr key={ index }>
-            <td>{ format(new Date(newsItem.datePublished), "yyyy-MM-dd") }</td>
+            <td>{ newsItem.datePublished ? format(new Date(newsItem.datePublished), "yyyy-MM-dd") : "" }</td>
             <td>{ newsItem.poster }</td>
             <td>{ newsItem.text }</td>
         </tr>
@@ -120,5 +113,6 @@ export default function NewsAdmin() {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerNewsAdmin { ...props } { ...boundActions } />;
+    const merged = { ...props, ...boundActions } as InnerNewsAdminProps;
+    return <InnerNewsAdmin { ...merged } />;
 }

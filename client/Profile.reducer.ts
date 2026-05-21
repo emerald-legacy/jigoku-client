@@ -1,4 +1,5 @@
 import type { User } from "./types/user";
+import type { PlayerOptionSettings } from "./types/game";
 
 export interface ProfileAccount {
     email: string;
@@ -13,8 +14,8 @@ export interface ProfileSettings {
     background: string;
     cardSize: string;
     promptedActionWindows: Record<string, boolean>;
-    optionSettings: Record<string, any>;
-    timerSettings: Record<string, any>;
+    optionSettings: PlayerOptionSettings;
+    timerSettings: Record<string, unknown>;
 }
 
 export interface ProfileState {

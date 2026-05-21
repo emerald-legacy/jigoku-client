@@ -99,8 +99,11 @@ export function InnerProfile({ user }: InnerProfileProps) {
                 }
             })).unwrap();
             dispatch({ type: "submitSuccess", message: "Profile saved successfully.  Please note settings changed here will only apply at the start of your next game" });
-        } catch(err: any) {
-            dispatch({ type: "submitError", message: err?.message || "An error occurred while saving your profile" });
+        } catch(err) {
+            const message = err instanceof Error
+                ? err.message
+                : typeof err === "string" ? err : undefined;
+            dispatch({ type: "submitError", message: message || "An error occurred while saving your profile" });
         }
     };
 
@@ -196,9 +199,9 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                 <label className="col-sm-1 control-label">seconds</label>
 
                                 <Checkbox name="timerSettings.events" noGroup label="Show timer for opponent's events" fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "events", value: e.target.checked }) } checked={ settings.timerSettings.events } />
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "events", value: e.target.checked }) } checked={ !!settings.timerSettings.events } />
                                 <Checkbox name="timerSettings.abilities" noGroup label="Show timer for events in my deck" fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "eventsInDeck", value: e.target.checked }) } checked={ settings.timerSettings.eventsInDeck } />
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "eventsInDeck", value: e.target.checked }) } checked={ !!settings.timerSettings.eventsInDeck } />
                             </div>
                         </div>
                         <div className="panel-title">
@@ -212,7 +215,7 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     label="Grey out cards with no relevant abilities during interrupt/reaction windows"
                                     fieldClass="col-sm-6"
                                     onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "markCardsUnselectable", value: e.target.checked }) }
-                                    checked={ settings.optionSettings.markCardsUnselectable }
+                                    checked={ !!settings.optionSettings.markCardsUnselectable }
                                 />
                                 <Checkbox
                                     name="optionSettings.cancelOwnAbilities"
@@ -220,14 +223,14 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     label="Prompt to cancel/react to initiation of my own abilities"
                                     fieldClass="col-sm-6"
                                     onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "cancelOwnAbilities", value: e.target.checked }) }
-                                    checked={ settings.optionSettings.cancelOwnAbilities } />
+                                    checked={ !!settings.optionSettings.cancelOwnAbilities } />
                                 <Checkbox
                                     name="optionSettings.orderForcedAbilities"
                                     noGroup
                                     label="Prompt to order forced triggered/simultaneous abilities"
                                     fieldClass="col-sm-6"
                                     onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "orderForcedAbilities", value: e.target.checked }) }
-                                    checked={ settings.optionSettings.orderForcedAbilities }
+                                    checked={ !!settings.optionSettings.orderForcedAbilities }
                                 />
                                 <Checkbox
                                     name="optionSettings.confirmOneClick"
@@ -235,7 +238,7 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     label="Show a confirmation prompt when initating 1-click abilities"
                                     fieldClass="col-sm-6"
                                     onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "confirmOneClick", value: e.target.checked }) }
-                                    checked={ settings.optionSettings.confirmOneClick }
+                                    checked={ !!settings.optionSettings.confirmOneClick }
                                 />
                                 <Checkbox
                                     name="optionSettings.disableCardStats"
@@ -243,7 +246,7 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     label="Disable card hover statistics popup"
                                     fieldClass="col-sm-6"
                                     onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "disableCardStats", value: e.target.checked }) }
-                                    checked={ settings.optionSettings.disableCardStats }
+                                    checked={ !!settings.optionSettings.disableCardStats }
                                 />
                                 <Checkbox
                                     name="optionSettings.sortHandByName"
@@ -251,7 +254,7 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     label="Sort Hand by Name"
                                     fieldClass="col-sm-6"
                                     onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "sortHandByName", value: e.target.checked }) }
-                                    checked={ settings.optionSettings.sortHandByName }
+                                    checked={ !!settings.optionSettings.sortHandByName }
                                 />
                                 <Checkbox
                                     name="optionSettings.showRingEffects"
@@ -259,7 +262,7 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     label="Show ring effect descriptions on hover"
                                     fieldClass="col-sm-6"
                                     onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "showRingEffects", value: e.target.checked }) }
-                                    checked={ settings.optionSettings.showRingEffects }
+                                    checked={ !!settings.optionSettings.showRingEffects }
                                 />
                             </div>
                         </div>

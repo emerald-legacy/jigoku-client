@@ -176,5 +176,6 @@ export default function NavBar(ownProps: NavBarOwnProps) {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerNavBar { ...props } { ...boundActions } { ...ownProps } />;
+    const merged = { ...props, ...boundActions, ...ownProps } as unknown as InnerNavBarProps;
+    return <InnerNavBar { ...merged } />;
 }

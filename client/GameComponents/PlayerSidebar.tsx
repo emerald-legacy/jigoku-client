@@ -14,7 +14,7 @@ interface PlayerSidebarProps {
     rings: GameState["rings"];
     spectating: boolean;
     manualMode: boolean;
-    boundActions: Record<string, (...args: any[]) => any>;
+    boundActions: Record<string, (...args: unknown[]) => unknown>;
     onRingClick: (ring: string) => void;
     onRingMenuItemClick: (ring: RingType, menuItem: MenuItem) => void;
 }

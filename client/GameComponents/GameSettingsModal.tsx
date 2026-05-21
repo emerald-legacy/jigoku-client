@@ -8,7 +8,7 @@ interface GameSettingsModalProps {
     onClose: () => void;
     onPromptedActionWindowToggle: (option: string, value: boolean) => void;
     onTimerSettingToggle: (option: string, value: boolean) => void;
-    onOptionSettingToggle: (option: string, value: any) => void;
+    onOptionSettingToggle: (option: string, value: boolean) => void;
 }
 
 export default function GameSettingsModal(props: GameSettingsModalProps) {
@@ -34,9 +34,9 @@ export default function GameSettingsModal(props: GameSettingsModalProps) {
                         </div>
                         <div className="modal-body col-xs-12">
                             <GameConfiguration
-                                actionWindows={ thisPlayer.promptedActionWindows }
-                                timerSettings={ thisPlayer.timerSettings }
-                                optionSettings={ thisPlayer.optionSettings }
+                                actionWindows={ thisPlayer.promptedActionWindows ?? {} }
+                                timerSettings={ thisPlayer.timerSettings ?? {} }
+                                optionSettings={ (thisPlayer.optionSettings ?? {}) as Record<string, boolean> }
                                 onOptionSettingToggle={ props.onOptionSettingToggle }
                                 onToggle={ props.onPromptedActionWindowToggle }
                                 onTimerSettingToggle={ props.onTimerSettingToggle }

@@ -2,19 +2,21 @@ import React from "react";
 import { CSSTransition, TransitionGroup } from "react-transition-group";
 import Card from "./Card";
 import { tryParseJSON } from "../util";
+import type { AnimationEvent } from "../types/redux";
+import type { Card as CardType } from "../types/game";
 
 const EMPTY_STYLE = {};
 
 interface PlayerHandProps {
     cardSize?: string;
-    cards: any[];
+    cards: CardType[];
     isMe?: boolean;
     onAnimationEnd?: (id: string) => void;
-    onCardClick?: (card: any) => void;
-    onDragDrop?: (card: any, source: string, target: string) => void;
-    onMouseOut?: (card: any) => void;
-    onMouseOver?: (card: any) => void;
-    pendingAnimations?: any[];
+    onCardClick?: (card: CardType) => void;
+    onDragDrop?: (card: CardType, source: string, target: string) => void;
+    onMouseOut?: (card: CardType) => void;
+    onMouseOver?: (card: CardType) => void;
+    pendingAnimations?: AnimationEvent[];
     playerName?: string;
 }
 

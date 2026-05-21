@@ -145,8 +145,11 @@ export function Register() {
         try {
             await dispatch(registerUser({ username, password, email })).unwrap();
             navigate("/");
-        } catch(err: any) {
-            setError(err?.message || "Could not communicate with the server.  Please try again later.");
+        } catch(err) {
+            const message = err instanceof Error
+                ? err.message
+                : typeof err === "string" ? err : undefined;
+            setError(message || "Could not communicate with the server.  Please try again later.");
         }
     };
 
