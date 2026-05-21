@@ -216,11 +216,11 @@
     padding-left: 15px;
     padding-right: 15px;
     padding-top: 16px;
-    padding-bottom: 20px;
+    padding-bottom: 32px;
 }
 
 .full-height {
-    height: calc(100vh - 56px);
+    height: calc(100vh - 88px);
 }
 
 .bg {
@@ -239,6 +239,7 @@
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    background-attachment: fixed;
 }
 
 .bg-board-default { background-image: url("/img/bgs/main.jpg"); }

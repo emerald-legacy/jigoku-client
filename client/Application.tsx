@@ -19,7 +19,7 @@ interface HandoffServer {
     name: string;
     gameId?: string;
 }
-import { backgroundClassByValue } from "./backgrounds";
+import { backgroundClassByValue, backgroundImageByClass } from "./backgrounds";
 
 import ErrorBoundary from "./SiteComponents/ErrorBoundary";
 import NavBar from "./NavBar";
@@ -336,6 +336,27 @@ export default function Application() {
 
     const gameBoardVisible = location.pathname === "/play" && !!currentGame && !!currentGame.started;
     const backgroundClass = computeBackgroundClass(gameBoardVisible, user);
+
+    useEffect(() => {
+        const url = backgroundImageByClass(backgroundClass);
+        const prevImage = document.body.style.backgroundImage;
+        const prevSize = document.body.style.backgroundSize;
+        const prevPos = document.body.style.backgroundPosition;
+        const prevAttach = document.body.style.backgroundAttachment;
+        const prevRepeat = document.body.style.backgroundRepeat;
+        document.body.style.backgroundImage = `url("${url}")`;
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundPosition = "center";
+        document.body.style.backgroundAttachment = "fixed";
+        document.body.style.backgroundRepeat = "no-repeat";
+        return () => {
+            document.body.style.backgroundImage = prevImage;
+            document.body.style.backgroundSize = prevSize;
+            document.body.style.backgroundPosition = prevPos;
+            document.body.style.backgroundAttachment = prevAttach;
+            document.body.style.backgroundRepeat = prevRepeat;
+        };
+    }, [backgroundClass]);
 
     return (
         <div className={ backgroundClass }>

@@ -35,3 +35,16 @@ export const backgrounds: BackgroundOption[] = [
 export const backgroundClassByValue: Record<string, string> = Object.fromEntries(
     backgrounds.filter(bg => bg.cssClass).map(bg => [bg.value, bg.cssClass as string])
 );
+
+const imageByClass: Record<string, string> = {
+    "bg": "/img/bgs/main.jpg",
+    ...Object.fromEntries(
+        backgrounds
+            .filter(bg => bg.cssClass && bg.thumbnail && !bg.thumbnail.includes("blank"))
+            .map(bg => [bg.cssClass as string, bg.thumbnail])
+    )
+};
+
+export function backgroundImageByClass(cssClass: string): string {
+    return imageByClass[cssClass] || "/img/bgs/main.jpg";
+}
