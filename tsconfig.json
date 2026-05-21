@@ -18,7 +18,6 @@
   "include": [
     "server/**/*",
     "index.ts",
-    "version.ts",
     "client/GameModes.ts",
     "client/deck-validator.ts"
   ],
