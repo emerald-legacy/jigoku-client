@@ -1,24 +1,26 @@
-import axios from "axios";
+import axios, { type AxiosError } from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import type { User } from "../types/user";
 import { apiCall } from "./apiCall";
 import { refreshUser } from "../reducers/user";
 import { getLobbySocket } from "../socket";
 
-export { refreshUser, clearBlockListStatus } from "../reducers/user";
-
 export const loadBlockList = createAsyncThunk(
     "user/loadBlockList",
-    (user: any, { rejectWithValue }) => apiCall(() => axios.get(`/api/account/${user.username}/blocklist`), rejectWithValue)
+    (user: User, { rejectWithValue }) => apiCall<{ blockList: string[] }>(
+        () => axios.get(`/api/account/${user.username}/blocklist`),
+        rejectWithValue
+    )
 );
 
 interface BlockListEntryArg {
-    user: any;
+    user: User;
     username: string;
 }
 
 export const addBlockListEntry = createAsyncThunk(
     "user/addBlockListEntry",
-    ({ user, username }: BlockListEntryArg, { rejectWithValue }) => apiCall(
+    ({ user, username }: BlockListEntryArg, { rejectWithValue }) => apiCall<{ username: string }>(
         () => axios.post(`/api/account/${user.username}/blocklist`, { username }),
         rejectWithValue
     )
@@ -26,22 +28,29 @@ export const addBlockListEntry = createAsyncThunk(
 
 export const removeBlockListEntry = createAsyncThunk(
     "user/removeBlockListEntry",
-    ({ user, username }: BlockListEntryArg, { rejectWithValue }) => apiCall(
+    ({ user, username }: BlockListEntryArg, { rejectWithValue }) => apiCall<{ username: string }>(
         () => axios.delete(`/api/account/${user.username}/blocklist/${username}`),
         rejectWithValue
     )
 );
 
 interface SaveProfileArg {
-    user: any;
-    payload: any;
+    user: User;
+    payload: Record<string, unknown>;
+}
+
+interface SaveProfileResponse {
+    success: boolean;
+    message?: string;
+    user: User;
+    token: string;
 }
 
 export const saveProfile = createAsyncThunk(
     "user/saveProfile",
     async ({ user, payload }: SaveProfileArg, { dispatch, rejectWithValue }) => {
         try {
-            const response = await axios.put(`/api/account/${user.username}`, {
+            const response = await axios.put<SaveProfileResponse>(`/api/account/${user.username}`, {
                 data: JSON.stringify(payload)
             });
             if(!response.data.success) {
@@ -50,10 +59,11 @@ export const saveProfile = createAsyncThunk(
             getLobbySocket()?.emit("authenticate", response.data.token);
             dispatch(refreshUser(response.data.user, response.data.token));
             return response.data;
-        } catch(error: any) {
+        } catch(error: unknown) {
+            const axiosError = error as AxiosError<{ message?: string }> | undefined;
             return rejectWithValue({
-                message: error?.response?.data?.message || "An error occurred while saving your profile",
-                status: error?.response?.status
+                message: axiosError?.response?.data?.message || "An error occurred while saving your profile",
+                status: axiosError?.response?.status
             });
         }
     }

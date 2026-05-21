@@ -1,6 +1,6 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { apiCall } from "./apiCall";
+import { apiCall } from "./apiCall.js";
 
 export interface ServerVersionNode {
     name: string;

@@ -1,7 +1,9 @@
 import axios from "axios";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import type { Deck, DeckCard, DeckStatus } from "../types/deck";
 import type { RootState } from "../types/redux";
 import validateDeck from "../deck-validator";
+import type { AppDispatch } from "../hooks";
 import { apiCall } from "./apiCall";
 import {
     prepareDecksLoad,
@@ -14,10 +16,10 @@ export const loadDecks = createAsyncThunk(
     "cards/loadDecks",
     async (format: string | null = null, { rejectWithValue }) => {
         const url = format ? `/api/decks?format=${format}` : "/api/decks";
-        const data = await apiCall<any>(() => axios.get(url), rejectWithValue);
+        const data = await apiCall<{ decks?: Deck[] }>(() => axios.get(url), rejectWithValue);
 
         if(data && data.decks && data.decks.length > 0) {
-            const validationPromises = data.decks.map(async (deck: any) => {
+            const validationPromises = data.decks.map(async (deck: Deck) => {
                 const gameMode = deck.format && deck.format.value ? deck.format.value : "stronghold";
                 try {
                     const status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
@@ -47,7 +49,7 @@ export const loadDecks = createAsyncThunk(
 export const loadDeck = createAsyncThunk(
     "cards/loadDeck",
     async (deckId: string, { rejectWithValue }) => {
-        const data = await apiCall<any>(() => axios.get(`/api/decks/${deckId}`), rejectWithValue);
+        const data = await apiCall<{ deck: Deck }>(() => axios.get(`/api/decks/${deckId}`), rejectWithValue);
 
         if(data && data.deck) {
             const gameMode = data.deck.format && data.deck.format.value ? data.deck.format.value : "stronghold";
@@ -67,31 +69,29 @@ export const loadDeck = createAsyncThunk(
     {
         condition: (deckId, { getState }) => {
             const state = getState() as RootState;
-            return !state.cards.decks?.some((deck: any) => deck._id === deckId);
+            return !state.cards.decks?.some((deck: Deck) => deck._id === deckId);
         }
     }
 );
 
-export { selectDeck, addDeck, updateDeck, updateDeckStatus, clearDeckStatus } from "../reducers/cards";
-
 export const deleteDeck = createAsyncThunk(
     "cards/deleteDeck",
-    (deck: any, { rejectWithValue }) => apiCall(() => axios.delete(`/api/decks/${deck._id}`), rejectWithValue)
+    (deck: Deck, { rejectWithValue }) => apiCall<{ deckId: string }>(() => axios.delete(`/api/decks/${deck._id}`), rejectWithValue)
 );
 
 export const deleteDecks = createAsyncThunk(
     "cards/deleteDecks",
-    (deckIds: string[], { rejectWithValue }) => apiCall(() => axios.post("/api/decks/delete-batch", { deckIds }), rejectWithValue)
+    (deckIds: string[], { rejectWithValue }) => apiCall<{ deckIds: string[] }>(() => axios.post("/api/decks/delete-batch", { deckIds }), rejectWithValue)
 );
 
 export const saveDeck = createAsyncThunk(
     "cards/saveDeck",
-    (deck: any, { rejectWithValue }) => {
+    (deck: Deck, { rejectWithValue }) => {
         const str = JSON.stringify({
             deckName: deck.name,
-            faction: { name: deck.faction.name, value: deck.faction.value },
-            alliance: { name: deck.alliance.name, value: deck.alliance.value },
-            format: { name: deck.format.name, value: deck.format.value },
+            faction: deck.faction ? { name: deck.faction.name, value: deck.faction.value } : undefined,
+            alliance: deck.alliance ? { name: deck.alliance.name, value: deck.alliance.value } : undefined,
+            format: deck.format ? { name: deck.format.name, value: deck.format.value } : undefined,
             stronghold: formatCards(deck.stronghold),
             role: formatCards(deck.role),
             provinceCards: formatCards(deck.provinceCards),
@@ -105,35 +105,35 @@ export const saveDeck = createAsyncThunk(
 );
 
 export function loadDecksWithLazyValidation() {
-    return async (dispatch: any) => {
+    return async (dispatch: AppDispatch) => {
         dispatch(prepareDecksLoad());
 
         try {
-            const response = await axios.get("/api/decks");
+            const response = await axios.get<{ decks: Deck[] }>("/api/decks");
             dispatch(receiveDecksUnvalidated(response.data.decks));
 
             if(response.data.decks && response.data.decks.length > 0) {
                 validateDecksInBatches(response.data.decks, dispatch);
             }
-        } catch(_error: any) {
+        } catch(_error: unknown) {
             // Lazy load fails silently; user can refresh.
         }
     };
 }
 
-async function validateDecksInBatches(decks: any[], dispatch: any, batchSize = 10) {
+async function validateDecksInBatches(decks: Deck[], dispatch: AppDispatch, batchSize = 10) {
     for(let i = 0; i < decks.length; i += batchSize) {
         const batch = decks.slice(i, i + batchSize);
 
-        const validationPromises = batch.map(async (deck: any) => {
+        const validationPromises = batch.map(async (deck: Deck) => {
             const gameMode = deck.format && deck.format.value ? deck.format.value : "stronghold";
             try {
                 const status = await validateDeck(deck, { includeExtendedStatus: true, gameMode });
-                return { deckId: deck._id, status };
+                return { deckId: deck._id ?? "", status };
             } catch(_error) {
                 return {
-                    deckId: deck._id,
-                    status: { valid: undefined as boolean | undefined, extendedStatus: ["Error Validating"] }
+                    deckId: deck._id ?? "",
+                    status: { valid: undefined as boolean | undefined, extendedStatus: ["Error Validating"] } as DeckStatus
                 };
             }
         });
@@ -147,8 +147,11 @@ async function validateDecksInBatches(decks: any[], dispatch: any, batchSize = 1
     dispatch(decksValidationComplete());
 }
 
-function formatCards(cards: any[]) {
-    return cards.map(card => ({
+function formatCards(cards: DeckCard[] | undefined) {
+    if(!cards) {
+        return [];
+    }
+    return cards.map((card: DeckCard) => ({
         card: { id: card.card.id },
         count: card.count,
         pack_id: card.pack_id

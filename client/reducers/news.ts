@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { NewsState } from "../types/redux";
+import type { NewsItem, NewsState } from "../types/redux";
 import { loadNews, addNews } from "../ReduxActions/news";
 import { addLoadingMatchers } from "./loadingMatchers";
 
@@ -16,7 +16,7 @@ const newsSlice = createSlice({
             .addCase(loadNews.pending, (state: NewsState) => {
                 state.newsSaved = false;
             })
-            .addCase(loadNews.fulfilled, (state: NewsState, action: PayloadAction<any>) => {
+            .addCase(loadNews.fulfilled, (state: NewsState, action: PayloadAction<{ success: boolean; news: NewsItem[] }>) => {
                 state.newsSaved = false;
                 state.news = action.payload.news;
             })

@@ -5,6 +5,6 @@ import { apiCall } from "./apiCall";
 
 export const loadGameStats = createAsyncThunk(
     "games/loadGameStats",
-    (_, { rejectWithValue }) => apiCall(() => axios.get("/api/gamestats"), rejectWithValue),
+    (_, { rejectWithValue }) => apiCall<{ stats: Record<string, unknown> }>(() => axios.get("/api/gamestats"), rejectWithValue),
     { condition: (_, { getState }) => !(getState() as RootState).games.gameStats }
 );

@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { loadServerVersion, type ServerVersionNode, type ServerVersionResponse } from "../ReduxActions/serverVersion";
+import { loadServerVersion, type ServerVersionNode, type ServerVersionResponse } from "../ReduxActions/serverVersion.js";
 
 export interface ServerVersionState {
     nodes: ServerVersionNode[];

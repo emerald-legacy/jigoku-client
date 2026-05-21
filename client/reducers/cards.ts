@@ -1,11 +1,31 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { CardsState } from "../types/deck";
+import type { Card } from "../types/game";
+import type { CardsState, Deck, DeckCard, DeckStatus, Faction, Format, Pack } from "../types/deck";
 import { loadCards, loadPacks, loadFactions, loadFormats } from "../ReduxActions/cards";
 import { loadDeck, loadDecks, deleteDeck, deleteDecks, saveDeck } from "../ReduxActions/deck";
 import { loadDeckStats } from "../ReduxActions/deckstats";
 import { addLoadingMatchers } from "./loadingMatchers";
 
-function applySelectDeck(state: CardsState, deck: any): void {
+interface DeckValidationUpdate {
+    deckId: string;
+    status: DeckStatus;
+}
+
+interface RawDeckCard {
+    count: number;
+    card: { id: string } | Card;
+    pack_id?: string;
+}
+
+type RawDeck = Omit<Deck, "stronghold" | "role" | "provinceCards" | "conflictCards" | "dynastyCards"> & {
+    stronghold?: RawDeckCard[] | DeckCard[];
+    role?: RawDeckCard[] | DeckCard[];
+    provinceCards?: RawDeckCard[] | DeckCard[];
+    conflictCards?: RawDeckCard[] | DeckCard[];
+    dynastyCards?: RawDeckCard[] | DeckCard[];
+};
+
+function applySelectDeck(state: CardsState, deck: Deck | undefined): void {
     if(state.decks && state.decks.length !== 0) {
         state.selectedDeck = deck;
     } else {
@@ -15,34 +35,40 @@ function applySelectDeck(state: CardsState, deck: any): void {
 
 const DECK_LIST_KEYS = ["stronghold", "role", "provinceCards", "conflictCards", "dynastyCards"] as const;
 
-function processDeck(rawDeck: any, state: CardsState): any {
+function processDeck(rawDeck: RawDeck, state: CardsState): Deck {
     if(!state.cards || !rawDeck.faction) {
-        return rawDeck;
+        return rawDeck as Deck;
     }
-    const deck: any = { ...rawDeck };
-    deck.faction = state.factions[rawDeck.faction.value];
+    const deck: Deck = { ...(rawDeck as Deck) };
+    const factions = state.factions ?? {};
+    if(rawDeck.faction) {
+        deck.faction = factions[rawDeck.faction.value];
+    }
     if(deck.alliance) {
         if(deck.alliance.value === "") {
             deck.alliance = { name: "", value: "" };
         } else {
-            deck.alliance = state.factions[deck.alliance.value];
+            deck.alliance = factions[deck.alliance.value];
         }
     }
+    const cards = state.cards;
     for(const key of DECK_LIST_KEYS) {
-        if(deck[key]) {
-            deck[key] = deck[key]
-                .filter((card: any) => !!card.card)
-                .map((card: any) => ({
+        const list = (rawDeck as unknown as Record<string, RawDeckCard[] | undefined>)[key];
+        if(list) {
+            const mapped: DeckCard[] = list
+                .filter((card) => !!card.card)
+                .map((card) => ({
                     count: card.count,
-                    card: state.cards[card.card.id],
+                    card: cards[card.card.id],
                     pack_id: card.pack_id
                 }));
+            (deck as unknown as Record<string, DeckCard[]>)[key] = mapped;
         }
     }
     return deck;
 }
 
-function processDecks(decks: any[], state: CardsState): any[] {
+function processDecks(decks: RawDeck[], state: CardsState): Deck[] {
     return decks.map(deck => processDeck(deck, state));
 }
 
@@ -50,13 +76,13 @@ const cardsSlice = createSlice({
     name: "cards",
     initialState: {} as CardsState,
     reducers: {
-        zoomCard(state, action: PayloadAction<any>) {
+        zoomCard(state, action: PayloadAction<Card | undefined>) {
             state.zoomCard = action.payload;
         },
         clearZoom(state) {
             state.zoomCard = undefined;
         },
-        selectDeck(state, action: PayloadAction<any>) {
+        selectDeck(state, action: PayloadAction<Deck | undefined>) {
             state.deckSaved = false;
             state.selectedDeck = action.payload ? processDeck(action.payload, state) : action.payload;
         },
@@ -64,15 +90,15 @@ const cardsSlice = createSlice({
             state.deckSaved = false;
             state.selectedDeck = processDeck({ name: "New Deck" }, state);
         },
-        updateDeck(state, action: PayloadAction<any>) {
+        updateDeck(state, action: PayloadAction<Deck | undefined>) {
             state.deckSaved = false;
             state.selectedDeck = action.payload ? processDeck(action.payload, state) : action.payload;
         },
         updateDeckStatus: {
-            reducer(state, action: PayloadAction<{ deckId: string; status: any }>) {
+            reducer(state, action: PayloadAction<{ deckId: string; status: DeckStatus }>) {
                 const { deckId, status } = action.payload;
                 if(state.decks) {
-                    state.decks = state.decks.map((deck: any) =>
+                    state.decks = state.decks.map((deck: Deck) =>
                         deck._id === deckId ? { ...deck, status } : deck
                     );
                 }
@@ -80,7 +106,7 @@ const cardsSlice = createSlice({
                     state.selectedDeck = { ...state.selectedDeck, status };
                 }
             },
-            prepare(deckId: string, status: any) {
+            prepare(deckId: string, status: DeckStatus) {
                 return { payload: { deckId, status } };
             }
         },
@@ -88,21 +114,22 @@ const cardsSlice = createSlice({
             state.deckDeleted = false;
             state.deckSaved = false;
         },
-        receiveDecksUnvalidated(state, action: PayloadAction<any[]>) {
+        receiveDecksUnvalidated(state, action: PayloadAction<RawDeck[]>) {
             state.singleDeck = false;
             state.decks = processDecks(action.payload, state);
             state.decksValidating = true;
             applySelectDeck(state, state.decks[0]);
         },
-        updateDecksValidation(state, action: PayloadAction<any[]>) {
+        updateDecksValidation(state, action: PayloadAction<DeckValidationUpdate[]>) {
             if(state.decks) {
-                state.decks = state.decks.map((deck: any) => {
-                    const validation = action.payload.find((v: any) => v.deckId === deck._id);
+                state.decks = state.decks.map((deck: Deck) => {
+                    const validation = action.payload.find((v) => v.deckId === deck._id);
                     return validation ? { ...deck, status: validation.status } : deck;
                 });
             }
             if(state.selectedDeck) {
-                const validation = action.payload.find((v: any) => v.deckId === state.selectedDeck._id);
+                const selectedId = state.selectedDeck._id;
+                const validation = action.payload.find((v) => v.deckId === selectedId);
                 if(validation) {
                     state.selectedDeck = { ...state.selectedDeck, status: validation.status };
                 }
@@ -123,32 +150,32 @@ const cardsSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(loadCards.fulfilled, (state: CardsState, action: PayloadAction<any>) => {
-                const agendas: Record<string, any> = {};
-                Object.values(action.payload.cards).forEach((card: any) => {
+            .addCase(loadCards.fulfilled, (state: CardsState, action: PayloadAction<{ cards: Record<string, Card> }>) => {
+                const agendas: Record<string, Card> = {};
+                Object.values(action.payload.cards).forEach((card: Card & { pack_code?: string }) => {
                     if(card.type === "agenda" && card.pack_code !== "VDS") {
                         agendas[card.id] = card;
                     }
                 });
                 state.cards = action.payload.cards;
                 state.agendas = agendas;
-                state.banners = Object.values(agendas).filter((card: any) =>
-                    card.label.startsWith("Banner of the")
+                state.banners = Object.values(agendas).filter((card: Card) =>
+                    !!card.label && card.label.startsWith("Banner of the")
                 );
             })
-            .addCase(loadPacks.fulfilled, (state: CardsState, action: PayloadAction<any>) => {
+            .addCase(loadPacks.fulfilled, (state: CardsState, action: PayloadAction<{ packs: Pack[] }>) => {
                 state.packs = action.payload.packs;
             })
-            .addCase(loadFactions.fulfilled, (state: CardsState, action: PayloadAction<any>) => {
-                const factions: Record<string, any> = {};
-                action.payload.factions.forEach((faction: any) => {
+            .addCase(loadFactions.fulfilled, (state: CardsState, action: PayloadAction<{ factions: Faction[] }>) => {
+                const factions: Record<string, Faction> = {};
+                action.payload.factions.forEach((faction: Faction) => {
                     factions[faction.value] = faction;
                 });
                 state.factions = factions;
             })
-            .addCase(loadFormats.fulfilled, (state: CardsState, action: PayloadAction<any>) => {
-                const formats: Record<string, any> = {};
-                action.payload.formats.forEach((format: any) => {
+            .addCase(loadFormats.fulfilled, (state: CardsState, action: PayloadAction<{ formats: Format[] }>) => {
+                const formats: Record<string, Format> = {};
+                action.payload.formats.forEach((format: Format) => {
                     formats[format.value] = format;
                 });
                 state.formats = formats;
@@ -166,7 +193,7 @@ const cardsSlice = createSlice({
                     }
                 }
             })
-            .addCase(loadDecks.fulfilled, (state: CardsState, action: PayloadAction<any>) => {
+            .addCase(loadDecks.fulfilled, (state: CardsState, action: PayloadAction<{ decks?: Deck[] } | undefined>) => {
                 if(!action.payload || !action.payload.decks) {
                     return;
                 }
@@ -174,14 +201,17 @@ const cardsSlice = createSlice({
                 state.decks = processDecks(action.payload.decks, state);
                 applySelectDeck(state, state.decks[0]);
             })
-            .addCase(loadDeck.fulfilled, (state: CardsState, action: PayloadAction<any>) => {
+            .addCase(loadDeck.fulfilled, (state: CardsState, action: PayloadAction<{ deck: Deck }>) => {
                 state.singleDeck = true;
                 state.deckSaved = false;
                 const processed = processDeck(action.payload.deck, state);
-                if(!state.decks.some((deck: any) => deck._id === processed._id)) {
+                if(!state.decks) {
+                    state.decks = [];
+                }
+                if(!state.decks.some((deck: Deck) => deck._id === processed._id)) {
                     state.decks.push(processed);
                 }
-                const selected = state.decks.find((deck: any) => deck._id === processed._id);
+                const selected = state.decks.find((deck: Deck) => deck._id === processed._id);
                 applySelectDeck(state, selected);
             })
             .addCase(saveDeck.pending, (state: CardsState) => {
@@ -192,25 +222,29 @@ const cardsSlice = createSlice({
                 state.decks = undefined;
                 state.deckStats = undefined;
             })
-            .addCase(deleteDeck.fulfilled, (state: CardsState, action: PayloadAction<any>) => {
+            .addCase(deleteDeck.fulfilled, (state: CardsState, action: PayloadAction<{ deckId: string }>) => {
                 state.deckDeleted = true;
-                state.decks = state.decks.filter((deck: any) => deck._id !== action.payload.deckId);
+                if(state.decks) {
+                    state.decks = state.decks.filter((deck: Deck) => deck._id !== action.payload.deckId);
+                }
                 if(state.deckStats) {
                     delete state.deckStats[action.payload.deckId];
                 }
-                state.selectedDeck = state.decks[0];
+                state.selectedDeck = state.decks ? state.decks[0] : undefined;
             })
-            .addCase(deleteDecks.fulfilled, (state: CardsState, action: PayloadAction<any>) => {
+            .addCase(deleteDecks.fulfilled, (state: CardsState, action: PayloadAction<{ deckIds: string[] }>) => {
                 state.deckDeleted = true;
-                state.decks = state.decks.filter((deck: any) => !action.payload.deckIds.includes(deck._id));
+                if(state.decks) {
+                    state.decks = state.decks.filter((deck: Deck) => !!deck._id && !action.payload.deckIds.includes(deck._id));
+                }
                 if(state.deckStats) {
                     for(const id of action.payload.deckIds) {
                         delete state.deckStats[id];
                     }
                 }
-                state.selectedDeck = state.decks[0];
+                state.selectedDeck = state.decks ? state.decks[0] : undefined;
             })
-            .addCase(loadDeckStats.fulfilled, (state: CardsState, action: PayloadAction<any>) => {
+            .addCase(loadDeckStats.fulfilled, (state: CardsState, action: PayloadAction<{ stats?: Record<string, DeckStatus> } | undefined>) => {
                 if(!action.payload || !action.payload.stats) {
                     return;
                 }
