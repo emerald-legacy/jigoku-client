@@ -49,9 +49,9 @@ export function init(server) {
             return res.status(401).send({ message: "Unauthorized" });
         }
 
-        const options: any = {};
+        const options: { format?: string } = {};
         if(req.query.format) {
-            options.format = req.query.format;
+            options.format = String(req.query.format);
         }
 
         const decks = await deckService.findByUserName(req.user.username, options);

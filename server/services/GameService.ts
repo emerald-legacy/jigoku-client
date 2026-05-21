@@ -1,13 +1,36 @@
+import type { Collection, Db } from "mongodb";
+
 import logger from "../log.js";
 
-class GameService {
-    games: any;
+export interface GamePlayerRecord {
+    name: string;
+    faction?: string;
+    agenda?: string;
+    alliance?: string;
+    deckId?: string;
+}
 
-    constructor(db) {
-        this.games = db.collection("games");
+export interface GameRecord {
+    gameId: string;
+    gameType?: string;
+    gameMode?: string;
+    startedAt?: Date | string;
+    finishedAt?: Date | string;
+    players: GamePlayerRecord[] | Record<string, GamePlayerRecord>;
+    winner?: string;
+    winReason?: string;
+    roundNumber?: number;
+    initialFirstPlayer?: string;
+}
+
+class GameService {
+    games: Collection<GameRecord>;
+
+    constructor(db: Db) {
+        this.games = db.collection<GameRecord>("games");
     }
 
-    async create(game) {
+    async create(game: GameRecord) {
         try {
             const result = await this.games.insertOne(game);
             return { ...game, _id: result.insertedId };
@@ -17,7 +40,7 @@ class GameService {
         }
     }
 
-    async update(game) {
+    async update(game: GameRecord) {
         const properties = {
             startedAt: game.startedAt,
             players: game.players,
@@ -37,7 +60,7 @@ class GameService {
         }
     }
 
-    async getAllGames(from, to) {
+    async getAllGames(from: string | Date, to: string | Date) {
         try {
             const games = await this.games.find({
                 startedAt: { $gte: from, $lt: to }

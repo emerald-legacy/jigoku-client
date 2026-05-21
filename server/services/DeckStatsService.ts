@@ -1,10 +1,40 @@
+import type { Collection, Db, Document } from "mongodb";
+
 import logger from "../log.js";
 import { toObjectId } from "../db.js";
 
 const allClans = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
-function emptyStats() {
-    const byOpponentClan = {};
+interface ReasonCounts {
+    conquest: number;
+    dishonor: number;
+    honor: number;
+    concede: number;
+    other: number;
+}
+
+interface ClanWinLoss {
+    wins: number;
+    losses: number;
+}
+
+export interface DeckStats {
+    totalWins: number;
+    totalLosses: number;
+    byOpponentClan: Record<string, ClanWinLoss>;
+    byWinReason: ReasonCounts;
+    byLossReason: ReasonCounts;
+}
+
+export interface DeckStatsDocument extends Document {
+    deckId: unknown;
+    username: string;
+    contentHash: string;
+    stats: DeckStats;
+}
+
+function emptyStats(): DeckStats {
+    const byOpponentClan: Record<string, ClanWinLoss> = {};
     for(const clan of allClans) {
         byOpponentClan[clan] = { wins: 0, losses: 0 };
     }
@@ -19,10 +49,10 @@ function emptyStats() {
 }
 
 class DeckStatsService {
-    collection: any;
+    collection: Collection<DeckStatsDocument>;
 
-    constructor(db) {
-        this.collection = db.collection("deckstats");
+    constructor(db: Db) {
+        this.collection = db.collection<DeckStatsDocument>("deckstats");
         this.ensureIndexes();
     }
 
@@ -35,7 +65,7 @@ class DeckStatsService {
         }
     }
 
-    async getByDeckId(deckId) {
+    async getByDeckId(deckId: string) {
         try {
             return await this.collection.findOne({ deckId: toObjectId(deckId) });
         } catch(err) {
@@ -44,7 +74,7 @@ class DeckStatsService {
         }
     }
 
-    async getByUsername(username) {
+    async getByUsername(username: string) {
         try {
             return await this.collection.find({ username }).toArray();
         } catch(err) {
@@ -53,7 +83,7 @@ class DeckStatsService {
         }
     }
 
-    async upsertForDeck(deckId, username, contentHash) {
+    async upsertForDeck(deckId: string, username: string, contentHash: string) {
         try {
             const objectId = toObjectId(deckId);
             const existing = await this.collection.findOne({ deckId: objectId });
@@ -82,10 +112,10 @@ class DeckStatsService {
         }
     }
 
-    async recordGameResult(deckId, { won, opponentClan, winReason, username }) {
+    async recordGameResult(deckId: string, { won, opponentClan, winReason, username }: { won: boolean; opponentClan: string | null; winReason: string; username: string }) {
         try {
             const objectId = toObjectId(deckId);
-            const inc = {};
+            const inc: Record<string, number> = {};
 
             if(won) {
                 inc["stats.totalWins"] = 1;
@@ -106,7 +136,7 @@ class DeckStatsService {
             // Build $setOnInsert with full stats structure for new docs.
             // Fields in $inc are excluded from $setOnInsert to avoid conflicts.
             const baseStats = emptyStats();
-            const setOnInsert = {
+            const setOnInsert: Record<string, unknown> = {
                 deckId: objectId,
                 username: username || "unknown",
                 contentHash: ""
@@ -114,17 +144,17 @@ class DeckStatsService {
 
             // Flatten emptyStats into dot-notation and exclude keys that $inc will set
             const incKeys = new Set(Object.keys(inc));
-            const flattenStats = (obj, prefix) => {
+            const flattenStats = (obj: Record<string, unknown>, prefix: string) => {
                 for(const [key, val] of Object.entries(obj)) {
                     const path = prefix ? `${prefix}.${key}` : key;
                     if(typeof val === "object" && val !== null && !Array.isArray(val)) {
-                        flattenStats(val, path);
+                        flattenStats(val as Record<string, unknown>, path);
                     } else if(!incKeys.has(path)) {
                         setOnInsert[path] = val;
                     }
                 }
             };
-            flattenStats(baseStats, "stats");
+            flattenStats(baseStats as unknown as Record<string, unknown>, "stats");
 
             await this.collection.updateOne(
                 { deckId: objectId },
@@ -139,7 +169,7 @@ class DeckStatsService {
         }
     }
 
-    async deleteByDeckId(deckId) {
+    async deleteByDeckId(deckId: string) {
         try {
             await this.collection.deleteOne({ deckId: toObjectId(deckId) });
         } catch(err) {
@@ -147,7 +177,7 @@ class DeckStatsService {
         }
     }
 
-    async deleteByDeckIds(deckIds) {
+    async deleteByDeckIds(deckIds: string[]) {
         try {
             const objectIds = deckIds.map(id => toObjectId(id));
             await this.collection.deleteMany({ deckId: { $in: objectIds } });

@@ -1,3 +1,5 @@
+import type express from "express";
+
 import logger from "../log.js";
 import bcrypt from "bcrypt";
 import passport from "passport";
@@ -12,7 +14,7 @@ import * as Settings from "../settings.js";
 import { wrapAsync } from "../util.js";
 import axios from "axios";
 
-function hashPassword(password, rounds) {
+function hashPassword(password: string, rounds: number): Promise<string> {
     return new Promise((resolve, reject) => {
         bcrypt.hash(password, rounds, function (err, hash) {
             if(err) {
@@ -24,7 +26,7 @@ function hashPassword(password, rounds) {
     });
 }
 
-function loginUser(request, user) {
+function loginUser(request: express.Request, user: object) {
     return new Promise<void>((resolve, reject) => {
         request.login(user, function (err) {
             if(err) {
@@ -147,9 +149,10 @@ export function init(server) {
 
             const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeNewUser } = newUser;
             res.send({ success: true, user: Settings.getUserWithDefaultsSet(safeNewUser), token: jwt.sign(safeNewUser, config.get("secret"), { expiresIn: "7d" }) });
-        } catch(err: any) {
-            if(err.code === 11000) {
-                const field = err.keyPattern?.email ? "email" : "username";
+        } catch(err) {
+            const mongoErr = err as { code?: number; keyPattern?: { email?: unknown } };
+            if(mongoErr.code === 11000) {
+                const field = mongoErr.keyPattern?.email ? "email" : "username";
                 return res.send({ success: false, message: `An account with that ${field} already exists` });
             }
             logger.error(`Registration error: ${err}`);
@@ -181,8 +184,9 @@ export function init(server) {
         });
     });
 
-    server.post("/api/account/login", passport.authenticate("local"), function (req, res) {
-        const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeUser } = (req.user as any) || {};
+    server.post("/api/account/login", passport.authenticate("local"), function (req: express.Request, res: express.Response) {
+        const user = (req.user || {}) as Record<string, unknown>;
+        const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeUser } = user;
         res.send({ success: true, user: safeUser, token: jwt.sign(safeUser, config.get("secret"), { expiresIn: "7d" }) });
     });
 
