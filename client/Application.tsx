@@ -1,95 +1,36 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import axios from "axios";
-import { bindActionCreators } from "@reduxjs/toolkit";
-import { shallowEqual, useSelector } from "react-redux";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { bindActionCreators, type ActionCreatorsMapObject } from "@reduxjs/toolkit";
+import { shallowEqual } from "react-redux";
+import { useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { setLobbySocket, setGameSocket, getGameSocket } from "./socket";
 import type { GameSocket } from "./socket";
 
-import type { RootState } from "./types/redux";
-import type { GameState } from "./types/game";
+import type { RootState, PendingGameInfo } from "./types/redux";
+import type { GameState, OnlineUser } from "./types/game";
 import type { User } from "./types/user";
+import type { HiddenInfo } from "./gameStateRecorder";
+
+interface HandoffServer {
+    protocol?: string;
+    address: string;
+    port?: number;
+    name: string;
+    gameId?: string;
+}
 import { backgroundClassByValue } from "./backgrounds";
 
-import Login from "./Login";
-import Logout from "./Logout";
-import Register from "./Register";
-import Lobby from "./Lobby";
-import NotFound from "./NotFound";
 import ErrorBoundary from "./SiteComponents/ErrorBoundary";
 import NavBar from "./NavBar";
-import GameLobby from "./GameLobby";
-import GameBoard from "./GameBoard";
-
-const Decks = React.lazy(() => import("./Decks"));
-const AddDeck = React.lazy(() => import("./AddDeck"));
-const EditDeck = React.lazy(() => import("./EditDeck"));
-const HowToPlay = React.lazy(() => import("./HowToPlay"));
-const About = React.lazy(() => import("./About"));
-const Community = React.lazy(() => import("./Community"));
-const Formats = React.lazy(() => import("./Formats"));
-const ForgotPassword = React.lazy(() => import("./ForgotPassword"));
-const ResetPassword = React.lazy(() => import("./ResetPassword"));
-const Profile = React.lazy(() => import("./Profile"));
-const NewsAdmin = React.lazy(() => import("./NewsAdmin"));
-const Unauthorised = React.lazy(() => import("./Unauthorised"));
-const UserAdmin = React.lazy(() => import("./UserAdmin"));
-const BlockList = React.lazy(() => import("./BlockList"));
-const GameReplay = React.lazy(() => import("./GameReplay"));
-import { startRecording, recordState, setHiddenInfo, clearRecording } from "./gameStateRecorder.js";
+import AppRoutes from "./AppRoutes";
+import { startRecording, recordState, setHiddenInfo, clearRecording } from "./gameStateRecorder";
 
 import { toast } from "sonner";
 
-import version from "../version.js";
 
 import * as actions from "./actions";
 import { useAppDispatch, useAppSelector } from "./hooks";
-
-function PlayRoute() {
-    const currentGame = useSelector((state: RootState) => state.games.currentGame);
-    if(currentGame && currentGame.started) {
-        return <GameBoard />;
-    }
-    return <GameLobby />;
-}
-
-function NewsRoute({ canEdit }: { canEdit: boolean }) {
-    return canEdit ? <NewsAdmin /> : <Unauthorised />;
-}
-
-function UsersRoute({ canManage }: { canManage: boolean }) {
-    return canManage ? <UserAdmin /> : <Unauthorised />;
-}
-
-function AppRoutes({ permissions }: { permissions: Record<string, boolean> }) {
-    return (
-        <Routes>
-            <Route path="/" element={ <Lobby /> } />
-            <Route path="/login" element={ <Login /> } />
-            <Route path="/logout" element={ <Logout /> } />
-            <Route path="/register" element={ <Register /> } />
-            <Route path="/decks" element={ <Decks /> } />
-            <Route path="/decks/add" element={ <AddDeck /> } />
-            <Route path="/decks/edit" element={ <EditDeck /> } />
-            <Route path="/decks/edit/:deckId" element={ <EditDeck /> } />
-            <Route path="/play" element={ <PlayRoute /> } />
-            <Route path="/how-to-play" element={ <HowToPlay /> } />
-            <Route path="/about" element={ <About /> } />
-            <Route path="/community" element={ <Community /> } />
-            <Route path="/formats" element={ <Formats /> } />
-            <Route path="/forgot" element={ <ForgotPassword /> } />
-            <Route path="/reset-password" element={ <ResetPassword /> } />
-            <Route path="/profile" element={ <Profile /> } />
-            <Route path="/news" element={ <NewsRoute canEdit={ !!permissions.canEditNews } /> } />
-            <Route path="/unauth" element={ <Unauthorised /> } />
-            <Route path="/users" element={ <UsersRoute canManage={ !!permissions.canManageUsers } /> } />
-            <Route path="/blocklist" element={ <BlockList /> } />
-            <Route path="/replay" element={ <GameReplay /> } />
-            <Route path="*" element={ <NotFound /> } />
-        </Routes>
-    );
-}
 
 function mapStateToProps(state: RootState) {
     return {
@@ -111,7 +52,28 @@ function computeBackgroundClass(gameBoardVisible: boolean, user?: User): string 
     return (background && backgroundClassByValue[background]) || "bg-board-default";
 }
 
-type BoundActions = Record<string, (...args: any[]) => any>;
+interface BoundActions {
+    loadCards: () => void;
+    loadPacks: () => void;
+    loadFactions: () => void;
+    loadFormats: () => void;
+    socketConnected: () => void;
+    receiveGames: (games: PendingGameInfo[]) => void;
+    receiveUsers: (users: OnlineUser[]) => void;
+    receiveNewGame: (game: GameState) => void;
+    receiveGameState: (game: GameState, username: string | undefined) => void;
+    clearGameState: () => void;
+    receivePasswordError: (message: string) => void;
+    onGameHandoffReceived: (server: HandoffServer) => void;
+    closeGameSocket: () => void;
+    gameSocketConnecting: (url: string) => void;
+    gameSocketDisconnect: () => void;
+    gameSocketReconnecting: (attemptNumber: number) => void;
+    gameSocketConnected: () => void;
+    sendGameSocketConnectFailed: () => void;
+    receiveBannerNotice: (notice: string) => void;
+    setContextMenu: (menu: { x: number; y: number; menuId?: string } | undefined) => void;
+}
 
 interface SocketHandlerState {
     username?: string;
@@ -124,10 +86,12 @@ export default function Application() {
     const location = useLocation();
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const boundActions = useMemo<BoundActions>(
-        () => bindActionCreators(actions as unknown as Record<string, (...args: any[]) => any>, dispatch),
-        [dispatch]
-    );
+    const boundActions = useMemo<BoundActions>(() => {
+        // bindActionCreators returns specifically-typed dispatchers; we narrow to BoundActions
+        // since each handler in BoundActions is compatible with its corresponding dispatcher
+        // at runtime even though TS cannot verify this statically.
+        return bindActionCreators(actions as ActionCreatorsMapObject, dispatch) as unknown as BoundActions;
+    }, [dispatch]);
     const { currentGame, currentGameId, games, token, user, username } = useAppSelector(mapStateToProps, shallowEqual);
 
     const stateRef = useRef<SocketHandlerState>({ username, currentGameId, token, boundActions });
@@ -168,7 +132,7 @@ export default function Application() {
             reconnectionAttempts: Infinity,
             auth: {
                 token: initialToken,
-                version: version
+                version: __BUILD_VERSION__
             }
         });
         setLobbySocket(socket);
@@ -186,19 +150,19 @@ export default function Application() {
             stateRef.current.boundActions.socketConnected();
         });
 
-        socket.on("games", games => {
+        socket.on("games", (games: PendingGameInfo[]) => {
             stateRef.current.boundActions.receiveGames(games);
         });
 
-        socket.on("users", users => {
+        socket.on("users", (users: OnlineUser[]) => {
             stateRef.current.boundActions.receiveUsers(users);
         });
 
-        socket.on("newgame", game => {
+        socket.on("newgame", (game: GameState) => {
             stateRef.current.boundActions.receiveNewGame(game);
         });
 
-        socket.on("gamestate", game => {
+        socket.on("gamestate", (game: GameState) => {
             const { username: liveUsername, boundActions: liveActions } = stateRef.current;
             if(game.started && game.players?.[liveUsername || ""]) {
                 recordState(game);
@@ -211,11 +175,11 @@ export default function Application() {
             stateRef.current.boundActions.clearGameState();
         });
 
-        socket.on("passworderror", message => {
+        socket.on("passworderror", (message: string) => {
             stateRef.current.boundActions.receivePasswordError(message);
         });
 
-        socket.on("handoff", server => {
+        socket.on("handoff", (server: HandoffServer) => {
             clearRecording();
             let url = `${server.protocol || "https"}://${server.address}`;
             if(server.port && server.port !== 80 && server.port !== 443) {
@@ -254,7 +218,7 @@ export default function Application() {
                 stateRef.current.boundActions.gameSocketDisconnect();
             });
 
-            gameSocket.io.on("reconnect_attempt", (attemptNumber) => {
+            gameSocket.io.on("reconnect_attempt", (attemptNumber: number) => {
                 toast.info(`Attempt number ${attemptNumber} to reconnect..`, { description: "Reconnecting" });
                 stateRef.current.boundActions.gameSocketReconnecting(attemptNumber);
             });
@@ -273,7 +237,7 @@ export default function Application() {
                 stateRef.current.boundActions.gameSocketConnected();
             });
 
-            gameSocket.on("gamestate", game => {
+            gameSocket.on("gamestate", (game: GameState) => {
                 const { username: liveUsername, boundActions: gameActions } = stateRef.current;
                 const isPlayer = !!game.players?.[liveUsername || ""];
                 if(isPlayer && game.started && !game.winner) {
@@ -285,7 +249,7 @@ export default function Application() {
                 gameActions.receiveGameState(game, liveUsername);
             });
 
-            gameSocket.on("hiddeninfo", data => {
+            gameSocket.on("hiddeninfo", (data: HiddenInfo[]) => {
                 setHiddenInfo(data);
             });
 
@@ -295,7 +259,7 @@ export default function Application() {
             });
         });
 
-        socket.on("banner", notice => {
+        socket.on("banner", (notice: string) => {
             stateRef.current.boundActions.receiveBannerNotice(notice);
         });
 
@@ -305,13 +269,13 @@ export default function Application() {
             setLobbySocket(null);
             axios.interceptors.response.eject(axiosInterceptor);
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only setup; stateRef + navigateRef carry the always-current values that handlers need
+
     }, []);
 
     const prevCurrentGameRef = useRef<GameState | undefined>(undefined);
     useEffect(() => {
         if(prevCurrentGameRef.current && !currentGame) {
-            boundActions.setContextMenu([]);
+            boundActions.setContextMenu(undefined);
         }
         prevCurrentGameRef.current = currentGame;
     }, [currentGame, boundActions]);
