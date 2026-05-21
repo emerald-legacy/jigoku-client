@@ -3,7 +3,7 @@ import { shallowEqual } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
 import type { RootState } from "./types/redux";
 
-import { X, Menu } from "lucide-react";
+import { X, Menu, MessageCircle, CalendarDays, Globe, BookOpen, ArrowUpRight, ScrollText, Compass, Castle } from "lucide-react";
 import * as actions from "./actions";
 import Avatar from "./Avatar";
 import News from "./SiteComponents/News";
@@ -22,13 +22,52 @@ interface InnerLobbyProps {
     users?: OnlineUser[];
 }
 
+interface CommunityLink {
+    href: string;
+    title: string;
+    blurb: string;
+    icon: React.ComponentType<{ size?: number; className?: string }>;
+    glyph: string;
+}
+
+const COMMUNITY_LINKS: CommunityLink[] = [
+    {
+        href: "https://discord.gg/zPvBePb",
+        title: "L5R Community Discord",
+        blurb: "Players, rules questions, finding a game.",
+        icon: MessageCircle,
+        glyph: "話"
+    },
+    {
+        href: "https://discord.gg/mfpZTqxxah",
+        title: "L5R Event Discord",
+        blurb: "Sanctioned events, monthly league, beginners.",
+        icon: CalendarDays,
+        glyph: "戦"
+    },
+    {
+        href: "https://emeraldlegacy.org/",
+        title: "Emerald Legacy",
+        blurb: "The volunteer collective continuing the LCG.",
+        icon: Globe,
+        glyph: "翠"
+    },
+    {
+        href: "https://www.emeralddb.org/",
+        title: "EmeraldDB",
+        blurb: "Card database, rules, deckbuilder.",
+        icon: BookOpen,
+        glyph: "書"
+    }
+];
+
 export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: InnerLobbyProps) {
     const [showUsers, setShowUsers] = useState(false);
     const dispatch = useAppDispatch();
     const serverVersions = useAppSelector(state => state.serverVersion.nodes);
 
     useEffect(() => {
-        loadNews?.({ limit: 3 });
+        loadNews?.({ limit: 10 });
     }, [loadNews]);
 
     useEffect(() => {
@@ -39,17 +78,17 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: Inn
         setShowUsers(prev => !prev);
     };
 
-    let userList: React.ReactNode[];
-    if(!users) {
-        userList = [];
-    } else {
-        userList = users.map((user: OnlineUser) => (
-            <div className="user-row" key={ user.name }>
-                <Avatar emailHash={ user.emailHash } forceDefault={ user.noAvatar } />
-                <span>{ user.name }</span>
-            </div>
-        ));
-    }
+    const userList = (users ?? []).map((user: OnlineUser) => (
+        <div className="user-row" key={ user.name }>
+            <Avatar emailHash={ user.emailHash } forceDefault={ user.noAvatar } />
+            <span>{ user.name }</span>
+        </div>
+    ));
+
+    const newsForList = news?.map((item) => ({
+        datePublished: typeof item.datePublished === "string" ? item.datePublished : (item.datePublished?.toISOString() ?? ""),
+        text: item.text
+    }));
 
     return (
         <div className="flex-container">
@@ -71,64 +110,92 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: Inn
                     </div>
                 ) }
             </div>
-            <div className="col-sm-offset-1 col-sm-10">
-                <div className="main-header">
-                    <span className="text-center">
-                        <h1>Emerald Legacy</h1>
-                        <span className="lobby-version">Client: { __BUILD_VERSION__ }{ serverVersions.map(node => ` | ${node.name}: ${node.version}`).join("") }</span>
-                    </span>
-                </div>
-            </div>
-            { bannerNotice ? <AlertPanel message={ bannerNotice } type="error" /> : null }
-            <div className="col-sm-offset-1 col-sm-10">
-                <div className="panel-title text-center">Getting Started</div>
-                <div className="panel panel-darker">
-                    <p>This site allows you to play Emerald Legacy in your browser. If you're new, head on over to the <Link to="/how-to-play">How To Play guide</Link> for a thorough explanation on how to use the site!</p>
-                </div>
-            </div>
 
-            <div className="col-sm-offset-1 col-sm-10">
-                <div className="panel-title text-center">
-                    Latest site news
-                </div>
-                <div className="panel panel-darker">
-                    { loading ? <div>News loading...</div> : null }
-                    <News news={ news?.map((item) => ({ datePublished: typeof item.datePublished === "string" ? item.datePublished : (item.datePublished?.toISOString() ?? ""), text: item.text })) } />
-                </div>
-            </div>
+            <div className="lobby-page">
+                <header className="lobby-hero">
+                    <div className="lobby-hero-rings" aria-hidden="true">
+                        <span className="ring ring-earth" />
+                        <span className="ring ring-water" />
+                        <span className="ring ring-fire" />
+                        <span className="ring ring-air" />
+                        <span className="ring ring-void" />
+                    </div>
+                    <img src="/img/emerald-legacy-logo.png" alt="Emerald Legacy" className="lobby-hero-logo" />
+                    <p className="lobby-hero-tagline">
+                        Play the Legend of the Five Rings LCG and Emerald Legacy in your browser.
+                    </p>
+                    <p className="lobby-hero-meta">
+                        Client { __BUILD_VERSION__ }
+                        { serverVersions.map(node => (
+                            <span key={ node.name }> &nbsp;&middot;&nbsp; { node.name } { node.version }</span>
+                        )) }
+                    </p>
+                    <span className="lobby-hero-seal" aria-hidden="true">獺</span>
+                </header>
 
-            <div className="col-sm-offset-1 col-sm-10 chat-container">
-                <div className="panel-title text-center">Community Information</div>
-                <div className="panel panel-darker">
-                    <div className="discord-grid">
-                        <div className="discord-grid-cell">
-                            <div className="discord-label">
-                                <img src="/img/community_discord_icon.gif" className="discord-server-icon" />
-                                <h3>L5R Community Discord Server</h3>
+                { bannerNotice ? <AlertPanel message={ bannerNotice } type="error" /> : null }
+
+                <div className="row lobby-grid">
+                    <div className="col-sm-8 lobby-col-news">
+                        <section className="lobby-section">
+                            <div className="panel-title">
+                                <ScrollText size={ 16 } className="panel-title-icon" />
+                                <span>Dispatches</span>
+                                <span className="panel-title-meta">Latest site news</span>
                             </div>
-                            <p><a href="https://discord.gg/zPvBePb" target="_blank" rel="noreferrer">Invite Link</a></p>
-                            <p>Are you interested in the L5R LCG?  Come and chat on our Discord server!</p>
-                            <p>The server was created by members of the L5R community, and is maintained by the community, so come and talk any thing L5R related.</p>
-                        </div>
-                        <div className="discord-grid-cell">
-                            <div className="discord-label">
-                                <img src="/img/event_discord_icon.webp" className="discord-server-icon" />
-                                <h3>L5R Event Discord Server</h3>
+                            <div className="panel panel-darker lobby-panel-news">
+                                { loading ? (
+                                    <div className="lobby-news-loading">Unfurling the scroll&hellip;</div>
+                                ) : (
+                                    <div className="lobby-news-scroll">
+                                        <News news={ newsForList } />
+                                    </div>
+                                ) }
                             </div>
-                            <p><a href="https://discord.gg/mfpZTqxxah" target="_blank" rel="noreferrer">Invite Link</a></p>
-                            <p>This Discord server is used by the community to coordinate community run events.</p>
-                            <p>Whether you want to play in a sanctioned Emerald Legacy tournament, join the monthly Discord League, or find fellow beginners in the Beginner's League, this server has something for everyone, not just competitive players.</p>
-                        </div>
+                        </section>
                     </div>
 
-                    <div className="emerald-legacy-panel">
-                        <img className="emerald-legacy-logo" src="/img/emerald-legacy-logo.png" />
-                        <h3><a href="https://emeraldlegacy.org/" target="_blank" rel="noreferrer">Emerald Legacy</a></h3>
-                        <p>The Emerald Legacy project is a fan-run nonprofit volunteer collective. Its mission is to provide a living and thriving continuation of the LCG after the end of official support for the game.
-                        Emerald Legacy is responsible for creating and releasing new cards, organizing tournaments, and maintaining the rules and balance of the game.</p>
-                        <br />
-                        <p>Emerald Legacy provides the <a href="https://www.emeralddb.org/" target="_blank" rel="noreferrer">EmeraldDB</a> service, which is an online collection of all cards and rules for the LCG.
-                        EmeraldDB includes a deck builder for the LCG, as well as lists that have been made public by other players.  Deck lists that you create are able to be directly imported into the Deckbuilder here!</p>
+                    <div className="col-sm-4 lobby-col-side">
+                        <section className="lobby-section">
+                            <div className="panel-title">
+                                <Compass size={ 16 } className="panel-title-icon" />
+                                <span>First Steps</span>
+                            </div>
+                            <div className="panel panel-darker">
+                                <p className="lobby-start-body">
+                                    New to the table? The <Link to="/how-to-play" className="lobby-inline-link">How to Play</Link> guide walks you through every move &mdash; from building a deck to closing your first conflict.
+                                </p>
+                            </div>
+                        </section>
+
+                        <section className="lobby-section">
+                            <div className="panel-title">
+                                <Castle size={ 16 } className="panel-title-icon" />
+                                <span>The Gates</span>
+                            </div>
+                            <div className="panel panel-darker lobby-panel-gates">
+                                <ul className="lobby-link-list">
+                                    { COMMUNITY_LINKS.map(link => {
+                                        const Icon = link.icon;
+                                        return (
+                                            <li key={ link.href }>
+                                                <a href={ link.href } target="_blank" rel="noreferrer" className="lobby-link-row">
+                                                    <span className="lobby-link-mon" aria-hidden="true">{ link.glyph }</span>
+                                                    <span className="lobby-link-text">
+                                                        <span className="lobby-link-title">
+                                                            <Icon size={ 13 } className="lobby-link-icon" />
+                                                            { link.title }
+                                                        </span>
+                                                        <span className="lobby-link-blurb">{ link.blurb }</span>
+                                                    </span>
+                                                    <ArrowUpRight size={ 14 } className="lobby-link-chevron" />
+                                                </a>
+                                            </li>
+                                        );
+                                    }) }
+                                </ul>
+                            </div>
+                        </section>
                     </div>
                 </div>
             </div>
