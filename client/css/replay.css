@@ -54,23 +54,31 @@
         display: none;
     }
 
-    & .right-side .chat form {
+    /* Hide the chat input row in replay mode */
+    & .right-side .chat-card .chat-input-row {
         display: none;
     }
 
-    & .right-side .controls > .btn {
+    /* Hide the in-game chat control buttons; replay controls take over */
+    & .right-side .chat-card .chat-control-btn {
         display: none;
     }
 
-    & .right-side .controls {
-        justify-content: flex-start;
+    /* Let .chat-controls grow + wrap to fit the replay control bar */
+    & .right-side .chat-card .chat-controls {
+        height: auto;
+        min-height: 40px;
         flex-wrap: wrap;
-        width: var(--chat-width);
-        right: 4px;
+        justify-content: flex-start;
+        gap: 2px;
+        padding: 6px 8px;
     }
 
-    & .right-side .chat .messages {
-        bottom: 5px;
+    /* Allow the chat-card itself to grow to accommodate the wider control bar */
+    & .right-side .chat-card {
+        height: auto;
+        min-height: 200px;
+        max-height: calc(100% - 20px);
     }
 }
 

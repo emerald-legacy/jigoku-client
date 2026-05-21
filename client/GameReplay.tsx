@@ -175,7 +175,8 @@ function GameReplay() {
 
     useEffect(() => {
         if(logData) {
-            const el = document.querySelector(".replay-mode .right-side .controls");
+            const el = document.querySelector(".replay-mode .right-side .chat-controls")
+                ?? document.querySelector(".replay-mode .right-side .controls");
             if(el) {
                 setPortalTarget(el);
             }
