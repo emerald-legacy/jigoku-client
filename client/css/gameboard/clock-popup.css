@@ -2,12 +2,14 @@
     opacity: 0;
     pointer-events: none;
     min-width: 300px;
-    background-color: rgba(0, 0, 0, 0.85);
+    background: linear-gradient(180deg, rgba(20, 22, 18, 0.92), rgba(12, 14, 10, 0.92));
     padding: 10px;
     position: relative;
     margin-right: -300px;
     cursor: pointer;
-    border: 1px solid rgba(71, 58, 56, 0.65);
+    border: 1px solid rgba(120, 180, 80, 0.20);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     z-index: 120;
 }
 

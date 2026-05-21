@@ -1,8 +1,12 @@
+/* Self-hosted webfonts (SIL OFL 1.1, see public/fonts/LICENSES/) */
+@import "./css/fonts.css";
+
 /* Converted from LESS — order matches original site.less import chain */
 @import "./css/icons.css";
 @import "./css/application.css";
 @import "./css/common.css";
 @import "./css/chat.css";
+@import "./css/lobby.css";
 @import "./css/deckbuilder.css";
 @import "./css/gamelist.css";
 /* gameboard */
@@ -40,20 +44,24 @@
 @source "../client/**/*.{jsx,js}";
 
 @theme {
-    --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-sans: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+    --font-serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+    --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
+    --font-fallback-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
     --color-primary: #336600;
     --color-primary-dark: #2b5500;
     --color-secondary: #1a3300;
     --color-tertiary: #4d9900;
     --color-background: #0E0B10;
-    --color-foreground: #C1C2C3;
+    --color-foreground: rgb(232, 234, 220);
     --color-info: #5bc0de;
     --color-success: #5cb85c;
     --color-warning: #f0ad4e;
     --color-danger: #d9534f;
     --color-navbar-bg: rgba(34, 34, 34, 0.75);
     --color-header-bg: rgba(77, 153, 0, 0.9);
-    --color-header-border: rgba(71, 58, 56, 0.95);
+    --color-header-border: rgba(120, 180, 80, 0.35);
     --color-military-icon: #ca9c81;
     --color-military-text: #743e3e;
     --color-military-ring: #BB3e3e;
@@ -114,9 +122,27 @@
 
 @layer components {
     /* Buttons */
-    .btn { @apply px-3 py-1.5 rounded text-sm cursor-pointer inline-block text-center disabled:opacity-50 disabled:cursor-not-allowed; }
-    .btn-primary { @apply bg-primary text-white border border-primary-dark hover:bg-primary/80; }
-    .btn-default { @apply bg-primary text-white border border-primary-dark hover:bg-primary/80; }
+    .btn {
+        @apply px-3 py-1.5 rounded cursor-pointer inline-block text-center disabled:opacity-50 disabled:cursor-not-allowed;
+        font-family: "Cormorant Garamond", Georgia, serif;
+        font-weight: 600;
+        font-size: 15px;
+        letter-spacing: 0.02em;
+        font-variant-numeric: tabular-nums lining-nums;
+        transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
+    }
+    .btn-primary,
+    .btn-default {
+        background: linear-gradient(180deg, rgba(34, 50, 20, 0.9), rgba(20, 30, 12, 0.85));
+        color: rgba(232, 234, 220, 0.96);
+        border: 1px solid rgba(120, 180, 80, 0.35);
+    }
+    .btn-primary:not(:disabled):hover,
+    .btn-default:not(:disabled):hover {
+        background: linear-gradient(180deg, rgba(54, 80, 30, 1), rgba(34, 50, 20, 0.95));
+        border-color: rgba(150, 220, 90, 0.55);
+        color: rgba(255, 255, 245, 1);
+    }
     .btn-danger { @apply bg-danger text-white border border-danger hover:bg-danger/80; }
     .btn-success { @apply bg-success text-white border border-success hover:bg-success/80; }
     .btn-lg { @apply px-4 py-2 text-base; }

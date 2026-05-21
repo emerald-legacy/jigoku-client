@@ -4,6 +4,149 @@
     display: block;
 }
 
+/* === News admin === */
+.news-admin {
+    width: 100%;
+    padding: 0.25rem 0 2rem;
+}
+
+.news-admin-compose {
+    padding: 14px;
+}
+
+.news-admin-textarea {
+    width: 100%;
+    min-height: 140px;
+    resize: vertical;
+    padding: 10px 12px;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 15px;
+    line-height: 1.55;
+    color: rgba(232, 234, 220, 0.96);
+    background: rgba(20, 22, 18, 0.6);
+    border: 1px solid rgba(120, 180, 80, 0.20);
+    border-radius: 4px;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2);
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.news-admin-textarea:focus {
+    border-color: rgba(150, 220, 90, 0.55);
+    outline: none;
+    background: rgba(20, 22, 18, 0.85);
+}
+
+.news-admin-textarea::placeholder {
+    color: rgba(180, 200, 150, 0.45);
+    font-style: italic;
+}
+
+.news-admin-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.news-admin-hint {
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: rgba(160, 180, 140, 0.55);
+}
+
+.news-admin-list-panel {
+    padding: 0;
+}
+
+.news-admin-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 60vh;
+    overflow-y: auto;
+    scrollbar-color: rgba(120, 180, 80, 0.35) rgba(0, 0, 0, 0.3);
+    scrollbar-width: thin;
+}
+.news-admin-list::-webkit-scrollbar { width: 8px; }
+.news-admin-list::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.3); }
+.news-admin-list::-webkit-scrollbar-thumb {
+    background: rgba(120, 180, 80, 0.3);
+    border-radius: 4px;
+}
+.news-admin-list::-webkit-scrollbar-thumb:hover { background: rgba(120, 180, 80, 0.5); }
+
+.news-admin-list-item {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(120, 180, 80, 0.08);
+}
+
+.news-admin-list-item:last-child {
+    border-bottom: none;
+}
+
+.news-admin-item-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 6px 4px 7px;
+    border: 1px solid rgba(120, 180, 80, 0.28);
+    border-radius: 3px;
+    background: linear-gradient(180deg, rgba(34, 50, 20, 0.45), rgba(20, 30, 12, 0.25));
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+
+.news-admin-item-day {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1;
+    color: rgba(230, 235, 210, 0.95);
+}
+
+.news-admin-item-monthyear {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.3rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.14em;
+    color: rgba(180, 200, 150, 0.78);
+}
+
+.news-admin-item-body {
+    min-width: 0;
+}
+
+.news-admin-item-text {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 14px;
+    line-height: 1.55;
+    color: rgba(232, 234, 220, 0.96);
+    white-space: pre-line;
+    word-break: break-word;
+}
+
+.news-admin-item-poster {
+    margin-top: 4px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(160, 180, 140, 0.55);
+}
+
+.news-admin-empty {
+    padding: 1.5rem;
+    text-align: center;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-style: italic;
+    color: rgba(160, 180, 140, 0.6);
+}
+
 .body, .container, #component {
     height: 100%;
 }
@@ -94,7 +237,17 @@
 }
 
 .btn-transparent {
-    background-color: transparent;
+    background: transparent;
+    border: none;
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 500;
+    font-size: 13px;
+    color: rgba(200, 210, 180, 0.78);
+}
+.btn-transparent:hover {
+    color: rgba(150, 220, 90, 1);
+    background: transparent;
 }
 
 .discord-grid {
