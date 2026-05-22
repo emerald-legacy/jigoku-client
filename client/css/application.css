@@ -130,46 +130,6 @@
     overflow-y: auto;
 }
 
-.sidebar {
-    position: absolute;
-    left: 0;
-    top: 40px;
-    bottom: 0;
-    background-color: rgba(34, 34, 34, 0.8);
-    z-index: 999;
-    overflow-y: auto;
-
-    & a {
-        color: var(--color-primary);
-
-        &:active {
-            color: var(--color-primary);
-        }
-    }
-
-    &.expanded {
-        width: 200px;
-    }
-}
-
-.userlist {
-    text-align: center;
-    padding-top: 5px;
-    padding-bottom: 20px;
-    font-weight: bold;
-}
-
-.user-row {
-    text-align: left;
-    font-weight: normal;
-    padding-top: 5px;
-    padding-left: 10px;
-
-    &:hover {
-        background-color: rgba(91, 192, 222, 0.2);
-    }
-}
-
 .selected {
     box-shadow: 0 0 1px 4px var(--color-secondary);
 }

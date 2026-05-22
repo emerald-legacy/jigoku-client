@@ -24,9 +24,10 @@ import { InnerLobby } from "../../client/Lobby";
 
 const baseProps = {
     loadNews: vi.fn(),
-    news: [],
-    users: []
+    news: []
 };
+
+const defaultStoreState = { serverVersion: { nodes: [] }, games: { users: [] } };
 
 describe("<InnerLobby />", () => {
     beforeEach(() => {
@@ -34,7 +35,7 @@ describe("<InnerLobby />", () => {
         loadServerVersionSpy.mockReset();
         loadServerVersionSpy.mockReturnValue({ __thunk: "loadServerVersion" });
         useSelectorMock.mockReset();
-        useSelectorMock.mockImplementation((selector: any) => selector({ serverVersion: { nodes: [] } }));
+        useSelectorMock.mockImplementation((selector: any) => selector(defaultStoreState));
         (baseProps.loadNews as any).mockReset();
     });
 
@@ -51,7 +52,8 @@ describe("<InnerLobby />", () => {
 
     it("renders server-version node entries returned from the store selector", () => {
         useSelectorMock.mockImplementation((selector: any) => selector({
-            serverVersion: { nodes: [{ name: "lobby", version: "1.2.3" }, { name: "node-1", version: "4.5.6" }] }
+            serverVersion: { nodes: [{ name: "lobby", version: "1.2.3" }, { name: "node-1", version: "4.5.6" }] },
+            games: { users: [] }
         }));
         const { container } = renderWithRouter(<InnerLobby { ...baseProps } />);
         const meta = container.querySelector(".lobby-hero-meta")?.textContent ?? "";

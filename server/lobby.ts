@@ -30,6 +30,8 @@ interface LobbyUser {
     [key: string]: unknown;
 }
 
+type UserStatus = "lobby" | "playing" | "spectating";
+
 interface LobbyOptions {
     config: LobbyConfig;
     db?: Db;
@@ -55,6 +57,7 @@ class Lobby {
     titleCardData: unknown;
     io: Server;
     lastUserBroadcast: Date;
+    pendingUserBroadcast: ReturnType<typeof setTimeout> | null;
     shortCardData: Record<string, CardRecord> | undefined;
 
     constructor(server: HttpServer, options: LobbyOptions) {
@@ -85,7 +88,8 @@ class Lobby {
         this.io.use(this.handshake.bind(this));
         this.io.on("connection", this.onConnection.bind(this));
 
-        this.lastUserBroadcast = new Date();
+        this.lastUserBroadcast = new Date(0);
+        this.pendingUserBroadcast = null;
 
         this.loadCardData();
 
@@ -167,12 +171,26 @@ class Lobby {
         });
     }
 
+    getUserStatus(username: string): UserStatus {
+        for(let game of Object.values(this.games)) {
+            let player = game.players[username];
+            if(player && !player.left) {
+                return "playing";
+            }
+            if(game.spectators[username]) {
+                return "spectating";
+            }
+        }
+        return "lobby";
+    }
+
     getUserList() {
-        let userList = Object.values(this.users).map(function(user) {
+        let userList = Object.values(this.users).map(user => {
             return {
                 name: user.username,
                 emailHash: user.emailHash,
-                noAvatar: user.settings?.disableGravatar
+                noAvatar: user.settings?.disableGravatar,
+                status: this.getUserStatus(user.username)
             };
         });
 
@@ -224,7 +242,7 @@ class Lobby {
             .sort((a, b) => (a.started === b.started) ? 0 : a.started ? 1 : -1);
     }
 
-    sendUserListFilteredWithBlockList(socket: Socket, userList: { name: string; emailHash?: string; noAvatar?: boolean }[]) {
+    sendUserListFilteredWithBlockList(socket: Socket, userList: { name: string; emailHash?: string; noAvatar?: boolean; status: UserStatus }[]) {
         let filteredUsers = userList;
 
         if(socket.user && socket.user.blockList) {
@@ -247,15 +265,28 @@ class Lobby {
     }
 
     broadcastUserList() {
-        var now = new Date();
+        const MIN_INTERVAL_SECONDS = 5;
+        const now = new Date();
+        const elapsed = differenceInSeconds(now, this.lastUserBroadcast);
 
-        if(differenceInSeconds(now, this.lastUserBroadcast) < 60) {
+        if(elapsed < MIN_INTERVAL_SECONDS) {
+            if(this.pendingUserBroadcast) {
+                return;
+            }
+            const delayMs = (MIN_INTERVAL_SECONDS - elapsed) * 1000;
+            this.pendingUserBroadcast = setTimeout(() => {
+                this.pendingUserBroadcast = null;
+                this.sendUserListToAll();
+            }, delayMs);
             return;
         }
 
-        this.lastUserBroadcast = new Date();
+        this.sendUserListToAll();
+    }
 
-        let users = this.getUserList();
+    sendUserListToAll() {
+        this.lastUserBroadcast = new Date();
+        const users = this.getUserList();
 
         Object.values(this.sockets).forEach(socket => {
             if(socket) {
@@ -420,6 +451,7 @@ class Lobby {
         }
 
         this.broadcastGameList();
+        this.broadcastUserList();
     }
 
     onNewGame(socket: Socket, gameDetails: import("./pendinggame.js").PendingGameDetails & { password?: string }) {
@@ -444,6 +476,7 @@ class Lobby {
 
             this.games[game.id] = game;
             this.broadcastGameList();
+            this.broadcastUserList();
         });
     }
 
@@ -473,6 +506,7 @@ class Lobby {
             this.sendGameState(game);
 
             this.broadcastGameList();
+            this.broadcastUserList();
         });
     }
 
@@ -538,6 +572,8 @@ class Lobby {
             } else {
                 this.sendGameState(game);
             }
+
+            this.broadcastUserList();
         });
     }
 
@@ -561,6 +597,7 @@ class Lobby {
         }
 
         this.broadcastGameList();
+        this.broadcastUserList();
     }
 
     onPendingGameChat(socket: Socket, message: string) {
@@ -677,6 +714,7 @@ class Lobby {
         if(!game.started) {
             delete this.games[game.id];
             this.broadcastGameList();
+            this.broadcastUserList();
         } else {
             this.router.closeGame(game);
         }
@@ -693,6 +731,7 @@ class Lobby {
         delete this.games[gameId];
 
         this.broadcastGameList();
+        this.broadcastUserList();
     }
 
     onPlayerLeft(gameId: string, player: string) {
@@ -709,6 +748,7 @@ class Lobby {
         }
 
         this.broadcastGameList();
+        this.broadcastUserList();
     }
 
     onWorkerTimedOut(nodeName: string) {
