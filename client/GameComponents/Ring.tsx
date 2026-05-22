@@ -26,7 +26,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
     useEffect(() => {
         if(!wasClaimedHereRef.current && isClaimedHere) {
             setClaimFlash(true);
-            const t = setTimeout(() => setClaimFlash(false), 1100);
+            const t = setTimeout(() => setClaimFlash(false), 2500);
             wasClaimedHereRef.current = isClaimedHere;
             return () => clearTimeout(t);
         }
