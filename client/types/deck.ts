@@ -49,7 +49,6 @@ export interface Deck {
     dynastyCards?: DeckCard[];
     format?: Format;
     status?: DeckStatus;
-    lastUpdated?: string;
 }
 
 export interface CardsState {

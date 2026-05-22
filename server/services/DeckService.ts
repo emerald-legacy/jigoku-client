@@ -8,6 +8,7 @@ export interface DeckRecord extends Deck {
     username?: string;
     deckName?: string;
     id?: string;
+    lastUpdated?: Date;
 }
 
 class DeckService {
@@ -52,7 +53,7 @@ class DeckService {
             faction: deck.faction,
             alliance: deck.alliance,
             format: deck.format,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date()
         };
 
         const result = await this.decks.insertOne(properties as DeckRecord);
@@ -70,7 +71,7 @@ class DeckService {
             faction: deck.faction,
             alliance: deck.alliance,
             format: deck.format,
-            lastUpdated: new Date().toISOString()
+            lastUpdated: new Date()
         };
 
         return this.decks.updateOne({ _id: toObjectId(deck.id) }, { $set: properties });
