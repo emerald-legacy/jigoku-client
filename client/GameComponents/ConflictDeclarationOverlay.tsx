@@ -31,14 +31,13 @@ const ConflictDeclarationOverlay: React.FC<ConflictDeclarationOverlayProps> = ({
             onAnimationEnd={ () => setDisplayed(null) }
         >
             <div className={ `conflict-declaration-card ${displayed.type}` }>
-                <div className="conflict-declaration-label">{ displayed.type } Conflict</div>
-                { displayed.elements.length > 0 ? (
-                    <div className="conflict-declaration-elements">
-                        { displayed.elements.map(el => (
-                            <span key={ el } className={ `icon-element-${el}` }>&nbsp;</span>
-                        )) }
-                    </div>
-                ) : null }
+                <div className="conflict-declaration-row">
+                    <span className={ `conflict-declaration-icon icon-${displayed.type}` }>&nbsp;</span>
+                    { displayed.elements.map(el => (
+                        <span key={ el } className={ `conflict-declaration-icon icon-element-${el}` }>&nbsp;</span>
+                    )) }
+                    <span className="conflict-declaration-word">Conflict</span>
+                </div>
             </div>
         </div>
     );
