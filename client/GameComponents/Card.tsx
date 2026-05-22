@@ -1,4 +1,4 @@
-import React, { useState, useRef, memo } from "react";
+import React, { useState, useRef, useEffect, memo } from "react";
 
 import CardMenu from "./CardMenu";
 import CardStats from "./CardStats";
@@ -73,7 +73,20 @@ function Card(props: CardProps) {
 
     const [showPopup, setShowPopup] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
+    const [justBroken, setJustBroken] = useState(false);
+    const prevBrokenRef = useRef<boolean>(!!card?.isBroken);
     const cardRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const isBroken = !!card?.isBroken;
+        if(!prevBrokenRef.current && isBroken) {
+            setJustBroken(true);
+            const t = setTimeout(() => setJustBroken(false), 2000);
+            prevBrokenRef.current = isBroken;
+            return () => clearTimeout(t);
+        }
+        prevBrokenRef.current = isBroken;
+    }, [card?.isBroken]);
 
     const { onTouchStart, onTouchMove, onTouchEnd } = useCardTouchDrag(card, source, onDragDrop);
 
@@ -305,6 +318,9 @@ function Card(props: CardProps) {
         } else if(card.isBroken) {
             cardClass += " vertical";
             imageClass += " vertical broken";
+            if(justBroken) {
+                cardClass += " province-just-broken";
+            }
         } else {
             cardClass += " vertical";
             imageClass += " vertical";

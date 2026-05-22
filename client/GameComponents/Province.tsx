@@ -1,4 +1,4 @@
-import React, { memo } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 
 import Card from "./Card";
 import { tryParseJSON } from "../util";
@@ -115,12 +115,28 @@ function Province({
         return wrapperStyle;
     };
 
-    let className = `panel province ${size}`;
+    const resolvedProvinceCard =
+        propsProvinceCard || cards?.find((card: CardType) => card.isProvince);
+    const provinceIsBroken = !!resolvedProvinceCard?.isBroken;
+
+    const [justBroken, setJustBroken] = useState(false);
+    const prevBrokenRef = useRef<boolean>(provinceIsBroken);
+
+    useEffect(() => {
+        if(!prevBrokenRef.current && provinceIsBroken) {
+            setJustBroken(true);
+            const t = setTimeout(() => setJustBroken(false), 2000);
+            prevBrokenRef.current = provinceIsBroken;
+            return () => clearTimeout(t);
+        }
+        prevBrokenRef.current = provinceIsBroken;
+    }, [provinceIsBroken]);
+
+    let className = `panel province ${size}${justBroken ? " province-just-broken" : ""}`;
     const displayCardCount = cardCount || (cards ? cards.length : "0");
     const headerText = title ? `${title} (${displayCardCount})` : "";
 
-    let provinceCard =
-        propsProvinceCard || cards?.find((card: CardType) => card.isProvince);
+    let provinceCard = resolvedProvinceCard;
     let dynastyCards =
         dynastyCard || cards?.filter((card: CardType) => card.isDynasty) || [];
     const strongholdCard =
