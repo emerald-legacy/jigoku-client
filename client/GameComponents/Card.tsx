@@ -81,7 +81,7 @@ function Card(props: CardProps) {
         const isBroken = !!card?.isBroken;
         if(!prevBrokenRef.current && isBroken) {
             setJustBroken(true);
-            const t = setTimeout(() => setJustBroken(false), 2000);
+            const t = setTimeout(() => setJustBroken(false), 700);
             prevBrokenRef.current = isBroken;
             return () => clearTimeout(t);
         }
