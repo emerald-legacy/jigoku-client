@@ -149,8 +149,20 @@
     animation: attachment-land 0.5s cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
 
+@keyframes card-enter-play {
+    0%   { transform: translateY(-20px) scale(1.10); opacity: 0; filter: brightness(1.28); }
+    60%  { transform: translateY(4px) scale(0.98);   opacity: 1; filter: brightness(1.12); }
+    82%  { transform: translateY(-1px) scale(1.005); opacity: 1; filter: brightness(1.04); }
+    100% { transform: translateY(0) scale(1);        opacity: 1; filter: brightness(1); }
+}
+
+.card-row > .card-wrapper > .card-frame > .card {
+    animation: card-enter-play 0.45s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .card.attachment { animation: none; }
+    .card.attachment,
+    .card-row > .card-wrapper > .card-frame > .card { animation: none; }
 }
 
 .card {
