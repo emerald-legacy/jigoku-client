@@ -4,6 +4,7 @@ import HonorFan from "./HonorFan";
 import PlayerStatsBox from "./PlayerStatsBox";
 import { RingRow } from "./CenterBar";
 import type { Player, Ring as RingType, MenuItem, GameState } from "../types/game";
+import type { AnimationEvent } from "../types/redux";
 
 interface PlayerSidebarProps {
     thisPlayer: Player;
@@ -17,10 +18,12 @@ interface PlayerSidebarProps {
     boundActions: Record<string, (...args: unknown[]) => unknown>;
     onRingClick: (ring: string) => void;
     onRingMenuItemClick: (ring: RingType, menuItem: MenuItem) => void;
+    pendingAnimations?: AnimationEvent[];
+    onAnimationEnd?: (playerName: string) => void;
 }
 
 export default function PlayerSidebar(props: PlayerSidebarProps) {
-    const { thisPlayer, otherPlayer, cardSize, showRingEffects, gameMode, rings, spectating, manualMode, boundActions } = props;
+    const { thisPlayer, otherPlayer, cardSize, showRingEffects, gameMode, rings, spectating, manualMode, boundActions, pendingAnimations, onAnimationEnd } = props;
     return (
         <div className={ `province-pane ${cardSize}` }>
             <div className="player-nameplate">
@@ -51,6 +54,9 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                         handSize={ otherPlayer && otherPlayer.cardPiles.hand ? otherPlayer.cardPiles.hand.length : 0 }
                         otherPlayer
                         size={ cardSize }
+                        pendingAnimations={ pendingAnimations }
+                        playerName={ otherPlayer?.name }
+                        onAnimationEnd={ onAnimationEnd }
                     />
                 </div>
             </div>
@@ -66,6 +72,9 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                     spectating={ spectating }
                     size={ cardSize }
                     handSize={ thisPlayer.cardPiles.hand ? thisPlayer.cardPiles.hand.length : 0 }
+                    pendingAnimations={ pendingAnimations }
+                    playerName={ thisPlayer.name }
+                    onAnimationEnd={ onAnimationEnd }
                 />
                 <RingRow
                     rings={ rings }
