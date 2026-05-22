@@ -21,7 +21,7 @@ import { getCardImageUrl } from "./cardImageUrl";
 
 import { clearAnimation } from "./ReduxActions/game";
 import { makeCardsInPlayGrouper } from "./selectors/cardsInPlay";
-import HonorChangeOverlay from "./GameComponents/HonorChangeOverlay";
+import StatChangeOverlay from "./GameComponents/StatChangeOverlay";
 import CenterBar from "./GameComponents/CenterBar";
 import PlayerSidebar from "./GameComponents/PlayerSidebar";
 import type { AppDispatch } from "./hooks";
@@ -421,11 +421,15 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
                 onTimerSettingToggle={ onTimerSettingToggle }
                 onOptionSettingToggle={ onOptionSettingToggle }
             />
-            <HonorChangeOverlay
+            <StatChangeOverlay
+                key={ (pendingAnimations || [])
+                    .filter(a => a.type === "honor" || a.type === "fate")
+                    .map(a => `${a.type}:${a.playerName}:${a.amount}`)
+                    .join(",") }
                 animations={ pendingAnimations || [] }
                 onDismiss={ () => {
                     for(const a of pendingAnimations || []) {
-                        if(a.type === "honor") {
+                        if(a.type === "honor" || a.type === "fate") {
                             dispatch(clearAnimation(a.playerName));
                         }
                     }
@@ -461,6 +465,8 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
                     boundActions={ boundActions }
                     onRingClick={ onRingClick }
                     onRingMenuItemClick={ onRingMenuItemClick }
+                    pendingAnimations={ pendingAnimations }
+                    onAnimationEnd={ (name: string) => dispatch(clearAnimation(name)) }
                 />
                 <div className={ `play-area${user.settings.cardSize ? ` ${user.settings.cardSize}` : ""}` }>
                     <OpponentBoardArea

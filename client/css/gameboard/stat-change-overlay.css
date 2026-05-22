@@ -1,11 +1,11 @@
-@keyframes honor-overlay-anim {
+@keyframes stat-overlay-anim {
     0%   { opacity: 0; transform: translate(-50%, -55%) scale(0.85); }
     10%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     75%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     100% { opacity: 0; transform: translate(-50%, -47%); }
 }
 
-.honor-change-overlay {
+.stat-change-overlay {
     position: fixed;
     top: 50%;
     left: 50%;
@@ -14,10 +14,10 @@
     flex-direction: column;
     gap: 8px;
     pointer-events: none;
-    animation: honor-overlay-anim 2.5s ease-out forwards;
+    animation: stat-overlay-anim 2.5s ease-out forwards;
 }
 
-.honor-change-card {
+.stat-change-card {
     background: rgba(15, 15, 25, 0.93);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px;
@@ -27,7 +27,7 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
-.honor-change-name {
+.stat-change-name {
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.6);
     margin-bottom: 4px;
@@ -35,7 +35,7 @@
     letter-spacing: 0.05em;
 }
 
-.honor-change-amount {
+.stat-change-amount {
     font-size: 1.6rem;
     font-weight: bold;
     display: flex;
@@ -44,16 +44,16 @@
     gap: 8px;
 }
 
-.honor-change-amount.gain { color: #22c55e; }
-.honor-change-amount.lose { color: #ef4444; }
+.stat-change-amount.gain { color: #22c55e; }
+.stat-change-amount.lose { color: #ef4444; }
 
-.honor-change-icon {
+.stat-change-icon {
     width: 20px;
     height: 20px;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .honor-change-overlay {
+    .stat-change-overlay {
         animation: none;
     }
 }
