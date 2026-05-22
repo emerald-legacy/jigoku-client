@@ -5,8 +5,8 @@
     --lobby-font-body: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
     --lobby-font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
     --lobby-font-glyph: "Shippori Mincho B1", "Noto Serif JP", "Hiragino Mincho Pro", "MS Mincho", serif;
-    --lobby-jade: #6abf3a;
-    --lobby-jade-bright: #96dc5a;
+    --lobby-jade: #5ea026;
+    --lobby-jade-bright: #7dc242;
     --lobby-bone: rgba(232, 234, 220, 0.96);
     --lobby-bone-soft: rgba(200, 210, 180, 0.78);
     --lobby-rule: rgba(120, 180, 80, 0.20);
@@ -236,12 +236,12 @@
 .news-link {
     color: var(--lobby-jade);
     text-decoration: none;
-    border-bottom: 1px dotted rgba(106, 191, 58, 0.55);
+    border-bottom: 1px dotted rgba(94, 160, 38, 0.55);
     transition: color 0.15s, border-color 0.15s;
 }
 .news-link:hover {
     color: var(--lobby-jade-bright);
-    border-bottom-color: rgba(150, 220, 90, 0.9);
+    border-bottom-color: rgba(125, 194, 66, 0.9);
 }
 
 .news-empty {
@@ -294,7 +294,7 @@
     transition: background 0.15s;
 }
 .lobby-link-list li:first-child .lobby-link-row { border-top: none; }
-.lobby-link-row:hover { background: rgba(106, 191, 58, 0.06); }
+.lobby-link-row:hover { background: rgba(94, 160, 38, 0.06); }
 
 .lobby-link-mon {
     width: 32px;
@@ -307,11 +307,11 @@
     background: radial-gradient(circle, rgba(34, 50, 20, 0.6), rgba(12, 14, 10, 0.6));
     font-family: var(--lobby-font-glyph);
     font-size: 1rem;
-    color: rgba(150, 220, 90, 0.85);
+    color: rgba(125, 194, 66, 0.85);
     transition: border-color 0.15s, color 0.15s, transform 0.15s;
 }
 .lobby-link-row:hover .lobby-link-mon {
-    border-color: rgba(150, 220, 90, 0.75);
+    border-color: rgba(125, 194, 66, 0.75);
     color: rgba(180, 240, 110, 1);
     transform: rotate(-3deg);
 }
@@ -348,7 +348,7 @@
     transition: transform 0.15s, color 0.15s;
 }
 .lobby-link-row:hover .lobby-link-chevron {
-    color: rgba(150, 220, 90, 0.9);
+    color: rgba(125, 194, 66, 0.9);
     transform: translate(2px, -2px);
 }
 

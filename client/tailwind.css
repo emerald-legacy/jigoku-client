@@ -55,6 +55,7 @@
     --color-primary-dark: #2b5500;
     --color-secondary: #1a3300;
     --color-tertiary: #4d9900;
+    --color-link: #5ea026;
     --color-background: #0E0B10;
     --color-foreground: rgb(232, 234, 220);
     --color-info: #5bc0de;
@@ -357,7 +358,7 @@ h4 {
 }
 
 a {
-    color: var(--color-primary);
+    color: var(--color-link);
     text-decoration: none;
 
     &:hover {
