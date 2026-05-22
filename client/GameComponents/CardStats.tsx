@@ -9,14 +9,19 @@ interface SkillSummary {
     modifiers: Modifier[];
 }
 
+interface PendingEffectEntry {
+    source: string;
+}
+
 interface CardStatsProps {
     glorySummary?: SkillSummary;
     militarySkillSummary?: SkillSummary;
     politicalSkillSummary?: SkillSummary;
     strengthSummary?: SkillSummary;
+    pendingEffects?: PendingEffectEntry[];
 }
 
-function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, strengthSummary }: CardStatsProps) {
+function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, strengthSummary, pendingEffects }: CardStatsProps) {
     const renderGroupedModifier = (groupedModifier: Modifier[]) => {
         const amount = groupedModifier.reduce((total, modifier) => total + modifier.amount, 0);
         let sign = "";
@@ -90,6 +95,20 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
                     </div>
                     <div className="stat-specifics">
                         { renderModifiers(strengthSummary.modifiers) }
+                    </div>
+                </div>
+            ) }
+            { pendingEffects && pendingEffects.length > 0 && (
+                <div className="stat-container pending-effects">
+                    <div className="stat-total">
+                        <span className="stat--type-label">!</span>
+                    </div>
+                    <div className="stat-specifics">
+                        { pendingEffects.map((e, i) => (
+                            <div className="stat-line" key={ `${e.source}-${i}` }>
+                                <div className="stat-name">{ e.source }</div>
+                            </div>
+                        )) }
                     </div>
                 </div>
             ) }

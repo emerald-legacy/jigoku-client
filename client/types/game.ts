@@ -76,6 +76,11 @@ export interface Card {
     childCards?: Card[];
     order?: number;
     code?: string;
+    pendingEffects?: PendingEffect[];
+}
+
+export interface PendingEffect {
+    source: string;
 }
 
 export interface Ring {

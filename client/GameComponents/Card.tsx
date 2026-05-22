@@ -405,16 +405,23 @@ function Card(props: CardProps) {
                     <div className={ imageClass }>
                         <img className="card-image-src" src={ !isFacedown() ? getCardImagePath() : getCardBackUrl(cardBack) } />
                         { card.abilityLimits && <AbilityUsedMarker abilityLimits={ card.abilityLimits } isAttachment={ card.type === "attachment" } /> }
+                        { card.pendingEffects && card.pendingEffects.length > 0 ? (
+                            <div
+                                className="pending-effect-marker"
+                                title={ `Pending: ${card.pendingEffects.map(e => e.source).join(", ")}` }
+                            >!</div>
+                        ) : null }
                     </div>
                     <CardCounters counters={ buildCardCounters(card) } />
                 </div>
                 { shouldShowMenu() ? <CardMenu menu={ card.menu } onMenuItemClick={ handleMenuItemClick } /> : null }
-                { !shouldShowMenu() && source !== "province deck" && (showStats || card.strengthSummary?.stat) ?
+                { !shouldShowMenu() && source !== "province deck" && (showStats || card.strengthSummary?.stat || (card.pendingEffects && card.pendingEffects.length > 0)) ?
                     <CardStats
                         militarySkillSummary={ card.militarySkillSummary }
                         politicalSkillSummary={ card.politicalSkillSummary }
                         glorySummary={ card.glorySummary }
                         strengthSummary={ card.strengthSummary }
+                        pendingEffects={ card.pendingEffects }
                     /> : null
                 }
                 { card.showPopup && showPopup && (
