@@ -150,14 +150,14 @@
 }
 
 @keyframes card-enter-play {
-    0%   { transform: translateY(-20px) scale(1.10); opacity: 0; filter: brightness(1.28); }
-    60%  { transform: translateY(4px) scale(0.98);   opacity: 1; filter: brightness(1.12); }
-    82%  { transform: translateY(-1px) scale(1.005); opacity: 1; filter: brightness(1.04); }
+    0%   { transform: translateY(-44px) scale(1.18); opacity: 0; filter: brightness(1.35); }
+    55%  { transform: translateY(6px) scale(0.96);   opacity: 1; filter: brightness(1.15); }
+    78%  { transform: translateY(-2px) scale(1.01);  opacity: 1; filter: brightness(1.06); }
     100% { transform: translateY(0) scale(1);        opacity: 1; filter: brightness(1); }
 }
 
 .card-row > .card-wrapper > .card-frame > .card {
-    animation: card-enter-play 0.45s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+    animation: card-enter-play 0.65s cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
