@@ -305,8 +305,11 @@ export interface UserSettings {
     windowTimer?: number;
 }
 
+export type OnlineUserStatus = "lobby" | "playing" | "spectating";
+
 export interface OnlineUser {
     name: string;
     emailHash?: string;
     noAvatar?: boolean;
+    status: OnlineUserStatus;
 }
