@@ -374,7 +374,13 @@ function Card(props: CardProps) {
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
                     onClick={ (ev: React.MouseEvent) => handleClick(ev, card) }
                     onDragStart={ (ev: React.DragEvent<HTMLElement>) => startCardDrag(ev, card, source) }
-                    onAnimationEnd={ anim && onAnimationEnd ? () => onAnimationEnd(card.uuid) : undefined }
+                    onAnimationEnd={ anim && onAnimationEnd
+                        ? (ev: React.AnimationEvent<HTMLDivElement>) => {
+                            if(ev.animationName.startsWith("ring-")) {
+                                onAnimationEnd(card.uuid);
+                            }
+                        }
+                        : undefined }
                     draggable
                 >
                     <div>
