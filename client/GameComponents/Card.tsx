@@ -387,7 +387,7 @@ function Card(props: CardProps) {
                     <CardCounters counters={ buildCardCounters(card) } />
                 </div>
                 { shouldShowMenu() ? <CardMenu menu={ card.menu } onMenuItemClick={ handleMenuItemClick } /> : null }
-                { !shouldShowMenu() && (showStats || card.strengthSummary?.stat) ?
+                { !shouldShowMenu() && source !== "province deck" && (showStats || card.strengthSummary?.stat) ?
                     <CardStats
                         militarySkillSummary={ card.militarySkillSummary }
                         politicalSkillSummary={ card.politicalSkillSummary }

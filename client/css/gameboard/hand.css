@@ -111,6 +111,11 @@
             border-radius: 4px;
         }
 
+        &:hover {
+            overflow: visible;
+            z-index: 100;
+        }
+
         & .card-frame {
             border-radius: 4px;
 
