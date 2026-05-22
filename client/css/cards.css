@@ -278,6 +278,7 @@
     top: 0;
     border-radius: 6px;
     overflow: hidden;
+    container-type: inline-size;
     box-shadow:
         0 6px 14px -4px rgba(0, 0, 0, 0.65),
         0 2px 4px rgba(0, 0, 0, 0.45),
@@ -797,8 +798,8 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 16px;
-    height: 16px;
+    width: 24cqi;
+    height: 24cqi;
     background: rgba(55, 55, 55, 0.9);
     clip-path: polygon(0 0, 0 100%, 100% 100%);
     pointer-events: none;
