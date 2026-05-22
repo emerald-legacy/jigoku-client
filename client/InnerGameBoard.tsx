@@ -22,6 +22,7 @@ import { getCardImageUrl } from "./cardImageUrl";
 import { clearAnimation } from "./ReduxActions/game";
 import { makeCardsInPlayGrouper } from "./selectors/cardsInPlay";
 import StatChangeOverlay from "./GameComponents/StatChangeOverlay";
+import PhaseChangeOverlay from "./GameComponents/PhaseChangeOverlay";
 import CenterBar from "./GameComponents/CenterBar";
 import PlayerSidebar from "./GameComponents/PlayerSidebar";
 import type { AppDispatch } from "./hooks";
@@ -435,6 +436,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
                     }
                 } }
             />
+            <PhaseChangeOverlay phase={ thisPlayer.phase } />
             <div className="inset-pane">
                 <ActivePlayerPrompt
                     title={ thisPlayer.menuTitle }

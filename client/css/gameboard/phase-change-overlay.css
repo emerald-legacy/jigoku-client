@@ -1,0 +1,56 @@
+@keyframes phase-overlay-anim {
+    0%   { opacity: 0; transform: translate(calc(-50% - 60vw), 0); letter-spacing: 0.40em; }
+    12%  { opacity: 1; transform: translate(-50%, 0); letter-spacing: 0.22em; }
+    78%  { opacity: 1; transform: translate(-50%, 0); letter-spacing: 0.22em; }
+    100% { opacity: 0; transform: translate(calc(-50% + 60vw), 0); letter-spacing: 0.22em; }
+}
+
+.phase-change-overlay {
+    position: fixed;
+    top: 14%;
+    left: 50%;
+    z-index: var(--layer-popups);
+    pointer-events: none;
+    animation: phase-overlay-anim 2.7s ease-out forwards;
+}
+
+.phase-change-card {
+    background: linear-gradient(180deg, rgba(34, 50, 20, 0.88), rgba(12, 18, 8, 0.88));
+    border: 1px solid rgba(120, 180, 80, 0.28);
+    border-radius: 4px;
+    padding: 14px 38px;
+    text-align: center;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(180, 220, 140, 0.10);
+    position: relative;
+}
+
+.phase-change-card::before,
+.phase-change-card::after {
+    content: "";
+    position: absolute;
+    left: 12%;
+    right: 12%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(150, 200, 110, 0.55), transparent);
+    pointer-events: none;
+}
+
+.phase-change-card::before { top: 0; }
+.phase-change-card::after  { bottom: 0; }
+
+.phase-change-label {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.9rem;
+    color: rgba(230, 235, 210, 0.96);
+    text-transform: uppercase;
+    line-height: 1.1;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .phase-change-overlay {
+        animation: none;
+        opacity: 1;
+    }
+}
