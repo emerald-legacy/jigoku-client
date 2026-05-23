@@ -1,4 +1,4 @@
-import React, { useState, memo } from "react";
+import React, { useState, useEffect, useRef, memo } from "react";
 
 import CardCounters from "./CardCounters";
 import CardMenu from "./CardMenu";
@@ -18,6 +18,20 @@ interface RingProps {
 function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode }: RingProps) {
     const [showMenu, setShowMenu] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const [claimFlash, setClaimFlash] = useState(false);
+    const wasClaimedHereRef = useRef(false);
+
+    const isClaimedHere = !!owner && !!ring.claimed && owner === ring.claimedBy;
+
+    useEffect(() => {
+        if(!wasClaimedHereRef.current && isClaimedHere) {
+            setClaimFlash(true);
+            const t = setTimeout(() => setClaimFlash(false), 2500);
+            wasClaimedHereRef.current = isClaimedHere;
+            return () => clearTimeout(t);
+        }
+        wasClaimedHereRef.current = isClaimedHere;
+    }, [isClaimedHere]);
 
     const handleClick = (event: React.MouseEvent, ringElement: string) => {
         event.preventDefault();
@@ -129,7 +143,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
 
     return (
         <div
-            className={ `ring no-highlight${ring.unselectable ? " unselectable" : ""}` }
+            className={ `ring no-highlight ring-element-${ring.element}${ring.unselectable ? " unselectable" : ""}${claimFlash ? " ring-claim-flash" : ""}` }
             onClick={ (event) => handleClick(event, ring.element) }
             onMouseEnter={ () => setIsHovered(true) }
             onMouseLeave={ () => setIsHovered(false) }

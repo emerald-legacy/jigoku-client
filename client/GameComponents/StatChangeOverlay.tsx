@@ -1,7 +1,7 @@
 import React from "react";
 import type { AnimationEvent } from "../types/redux";
 
-interface HonorChangeOverlayProps {
+interface StatChangeOverlayProps {
     animations: AnimationEvent[];
     onDismiss: () => void;
 }
@@ -13,7 +13,7 @@ type StatChange = {
     icon: string;
 };
 
-const HonorChangeOverlay: React.FC<HonorChangeOverlayProps> = ({ animations, onDismiss }) => {
+const StatChangeOverlay: React.FC<StatChangeOverlayProps> = ({ animations, onDismiss }) => {
     const changes: StatChange[] = animations
         .filter((a): a is (Extract<AnimationEvent, { type: "honor" }> | Extract<AnimationEvent, { type: "fate" }>) =>
             a.type === "honor" || a.type === "fate"
@@ -30,13 +30,13 @@ const HonorChangeOverlay: React.FC<HonorChangeOverlayProps> = ({ animations, onD
     }
 
     return (
-        <div className="honor-change-overlay" onAnimationEnd={ onDismiss }>
+        <div className="stat-change-overlay" onAnimationEnd={ onDismiss }>
             { changes.map((change, i) => (
-                <div key={ i } className="honor-change-card">
-                    <div className="honor-change-name">{ change.playerName }</div>
-                    <div className={ `honor-change-amount ${ change.amount > 0 ? "gain" : "lose" }` }>
+                <div key={ i } className="stat-change-card">
+                    <div className="stat-change-name">{ change.playerName }</div>
+                    <div className={ `stat-change-amount ${ change.amount > 0 ? "gain" : "lose" }` }>
                         { change.amount > 0 ? `+${change.amount}` : `${change.amount}` }
-                        <img src={ change.icon } className="honor-change-icon" alt={ change.kind } />
+                        <img src={ change.icon } className="stat-change-icon" alt={ change.kind } />
                     </div>
                 </div>
             )) }
@@ -44,6 +44,6 @@ const HonorChangeOverlay: React.FC<HonorChangeOverlayProps> = ({ animations, onD
     );
 };
 
-HonorChangeOverlay.displayName = "HonorChangeOverlay";
+StatChangeOverlay.displayName = "StatChangeOverlay";
 
-export default HonorChangeOverlay;
+export default StatChangeOverlay;

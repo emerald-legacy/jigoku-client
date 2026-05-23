@@ -1,4 +1,4 @@
-import React, { useState, useRef, memo } from "react";
+import React, { useState, useRef, useEffect, memo } from "react";
 
 import CardMenu from "./CardMenu";
 import CardStats from "./CardStats";
@@ -13,6 +13,8 @@ import CardPopup from "./CardPopup";
 import type { Card as CardType, MenuItem, Player } from "../types/game";
 import type { AnimationEvent, CardAnimationEvent } from "../types/redux";
 import { isCardAnimation } from "../types/redux";
+
+const seenEnterPlayAnimations = new Set<string>();
 
 interface CardProps {
     card: CardType | { facedown: boolean; isDynasty?: boolean; isConflict?: boolean };
@@ -35,6 +37,7 @@ interface CardProps {
     player?: Player;
     popupLocation?: string;
     showStats?: boolean;
+    hideEffectMarkers?: boolean;
     size?: string;
     source?: string;
     style?: React.CSSProperties;
@@ -62,6 +65,7 @@ function Card(props: CardProps) {
         player,
         popupLocation,
         showStats,
+        hideEffectMarkers,
         size,
         source,
         style,
@@ -73,7 +77,20 @@ function Card(props: CardProps) {
 
     const [showPopup, setShowPopup] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
+    const [justBroken, setJustBroken] = useState(false);
+    const prevBrokenRef = useRef<boolean>(!!card?.isBroken);
     const cardRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+        const isBroken = !!card?.isBroken;
+        if(!prevBrokenRef.current && isBroken) {
+            setJustBroken(true);
+            const t = setTimeout(() => setJustBroken(false), 700);
+            prevBrokenRef.current = isBroken;
+            return () => clearTimeout(t);
+        }
+        prevBrokenRef.current = isBroken;
+    }, [card?.isBroken]);
 
     const { onTouchStart, onTouchMove, onTouchEnd } = useCardTouchDrag(card, source, onDragDrop);
 
@@ -305,6 +322,9 @@ function Card(props: CardProps) {
         } else if(card.isBroken) {
             cardClass += " vertical";
             imageClass += " vertical broken";
+            if(justBroken) {
+                cardClass += " province-just-broken";
+            }
         } else {
             cardClass += " vertical";
             imageClass += " vertical";
@@ -328,7 +348,7 @@ function Card(props: CardProps) {
             cardClass += " covert";
         } else if(card.controlled) {
             cardClass += " controlled";
-        } else if(card.new) {
+        } else if(card.new && card.uuid && !seenEnterPlayAnimations.has(card.uuid)) {
             cardClass += " new";
         }
 
@@ -374,7 +394,14 @@ function Card(props: CardProps) {
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
                     onClick={ (ev: React.MouseEvent) => handleClick(ev, card) }
                     onDragStart={ (ev: React.DragEvent<HTMLElement>) => startCardDrag(ev, card, source) }
-                    onAnimationEnd={ anim && onAnimationEnd ? () => onAnimationEnd(card.uuid) : undefined }
+                    onAnimationEnd={ (ev: React.AnimationEvent<HTMLDivElement>) => {
+                        if(ev.animationName === "card-enter-play" && card.uuid) {
+                            seenEnterPlayAnimations.add(card.uuid);
+                        }
+                        if(anim && onAnimationEnd && ev.animationName.startsWith("ring-")) {
+                            onAnimationEnd(card.uuid);
+                        }
+                    } }
                     draggable
                 >
                     <div>
@@ -383,16 +410,23 @@ function Card(props: CardProps) {
                     <div className={ imageClass }>
                         <img className="card-image-src" src={ !isFacedown() ? getCardImagePath() : getCardBackUrl(cardBack) } />
                         { card.abilityLimits && <AbilityUsedMarker abilityLimits={ card.abilityLimits } isAttachment={ card.type === "attachment" } /> }
+                        { !hideEffectMarkers && card.effectMarkers && card.effectMarkers.length > 0 && (
+                            <div
+                                className="card-effect-corner"
+                                title={ card.effectMarkers.map(e => `${e.kind === "delayed" ? "Pending" : "Active"}: ${e.source}`).join("\n") }
+                            />
+                        ) }
                     </div>
                     <CardCounters counters={ buildCardCounters(card) } />
                 </div>
                 { shouldShowMenu() ? <CardMenu menu={ card.menu } onMenuItemClick={ handleMenuItemClick } /> : null }
-                { !shouldShowMenu() && (showStats || card.strengthSummary?.stat) ?
+                { !shouldShowMenu() && source !== "province deck" && (showStats || card.strengthSummary?.stat || (card.effectMarkers && card.effectMarkers.length > 0)) ?
                     <CardStats
                         militarySkillSummary={ card.militarySkillSummary }
                         politicalSkillSummary={ card.politicalSkillSummary }
                         glorySummary={ card.glorySummary }
                         strengthSummary={ card.strengthSummary }
+                        effectMarkers={ card.effectMarkers }
                     /> : null
                 }
                 { card.showPopup && showPopup && (

@@ -76,6 +76,12 @@ export interface Card {
     childCards?: Card[];
     order?: number;
     code?: string;
+    effectMarkers?: EffectMarker[];
+}
+
+export interface EffectMarker {
+    source: string;
+    kind: "delayed" | "modifier";
 }
 
 export interface Ring {
@@ -113,6 +119,7 @@ export interface PlayerOptionSettings {
     disableCardStats?: boolean;
     sortHandByName?: boolean;
     showRingEffects?: boolean;
+    hideEffectMarkers?: boolean;
 }
 
 export interface AdditionalPile {
@@ -300,8 +307,11 @@ export interface UserSettings {
     windowTimer?: number;
 }
 
+export type OnlineUserStatus = "lobby" | "playing" | "spectating";
+
 export interface OnlineUser {
     name: string;
     emailHash?: string;
     noAvatar?: boolean;
+    status: OnlineUserStatus;
 }

@@ -1,7 +1,7 @@
 .card-link {
     cursor: pointer;
     cursor: hand;
-    color: var(--color-primary);
+    color: var(--color-link);
 }
 
 .card-link:hover {

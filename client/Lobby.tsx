@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { shallowEqual } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
 import type { RootState } from "./types/redux";
 
-import { X, Menu, MessageCircle, CalendarDays, Globe, BookOpen, ArrowUpRight, ScrollText, Compass, Castle } from "lucide-react";
+import { MessageCircle, CalendarDays, Globe, BookOpen, ArrowUpRight, ScrollText, Compass, Castle } from "lucide-react";
 import * as actions from "./actions";
-import Avatar from "./Avatar";
 import News from "./SiteComponents/News";
 import AlertPanel from "./SiteComponents/AlertPanel";
+import SamuraiSidebar from "./components/SamuraiSidebar/SamuraiSidebar";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { loadServerVersion } from "./ReduxActions/serverVersion";
-import type { OnlineUser } from "./types/game";
 import type { NewsItem } from "./types/redux";
 
 interface InnerLobbyProps {
@@ -19,7 +18,6 @@ interface InnerLobbyProps {
     loadNews?: (opts: { limit?: number; forceLoad?: boolean }) => void;
     loading?: boolean;
     news?: NewsItem[];
-    users?: OnlineUser[];
 }
 
 interface CommunityLink {
@@ -61,8 +59,7 @@ const COMMUNITY_LINKS: CommunityLink[] = [
     }
 ];
 
-export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: InnerLobbyProps) {
-    const [showUsers, setShowUsers] = useState(false);
+export function InnerLobby({ bannerNotice, loadNews, loading, news }: InnerLobbyProps) {
     const dispatch = useAppDispatch();
     const serverVersions = useAppSelector(state => state.serverVersion.nodes);
 
@@ -74,17 +71,6 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: Inn
         dispatch(loadServerVersion());
     }, [dispatch]);
 
-    const handleBurgerClick = () => {
-        setShowUsers(prev => !prev);
-    };
-
-    const userList = (users ?? []).map((user: OnlineUser) => (
-        <div className="user-row" key={ user.name }>
-            <Avatar emailHash={ user.emailHash } forceDefault={ user.noAvatar } />
-            <span>{ user.name }</span>
-        </div>
-    ));
-
     const newsForList = news?.map((item) => ({
         datePublished: typeof item.datePublished === "string" ? item.datePublished : (item.datePublished?.toISOString() ?? ""),
         text: item.text
@@ -92,24 +78,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news, users }: Inn
 
     return (
         <div className="flex-container">
-            <div className={ `sidebar${showUsers ? " expanded" : ""}` }>
-                { showUsers ? (
-                    <div>
-                        <a href="#" className="btn pull-right" onClick={ handleBurgerClick }>
-                            <X size={ 16 } />
-                        </a>
-                        <div className="userlist">Online Users
-                            { userList }
-                        </div>
-                    </div>
-                ) : (
-                    <div>
-                        <a href="#" className="btn" onClick={ handleBurgerClick }>
-                            <Menu size={ 16 } />
-                        </a>
-                    </div>
-                ) }
-            </div>
+            <SamuraiSidebar />
 
             <div className="lobby-page">
                 <header className="lobby-hero">
@@ -209,8 +178,7 @@ function mapStateToProps(state: RootState) {
     return {
         bannerNotice: state.chat.notice,
         loading: state.news.loading,
-        news: state.news.news,
-        users: state.games.users
+        news: state.news.news
     };
 }
 

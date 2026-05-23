@@ -1,6 +1,7 @@
 import Clock from "./Clock";
 import ClockPopup from "./ClockPopup";
 import type { ClockState, Player } from "../types/game";
+import type { AnimationEvent } from "../types/redux";
 
 interface PlayerStatsBoxProps {
     clockState?: ClockState | null;
@@ -13,6 +14,9 @@ interface PlayerStatsBoxProps {
     spectating?: boolean;
     stats?: Record<string, number> | null;
     user?: Player["user"] | null;
+    pendingAnimations?: AnimationEvent[];
+    playerName?: string;
+    onAnimationEnd?: (playerName: string) => void;
 }
 
 export function PlayerStatsBox({
@@ -23,8 +27,12 @@ export function PlayerStatsBox({
     sendGameMessage,
     showControls,
     size,
-    stats
+    stats,
+    pendingAnimations,
+    playerName,
+    onAnimationEnd
 }: PlayerStatsBoxProps) {
+    const airAnim = pendingAnimations?.find(a => a.type === "air" && a.playerName === playerName);
     const sendUpdate = (type: string, direction: string) => {
         sendGameMessage?.("changeStat", type, direction === "up" ? 1 : -1);
     };
@@ -89,7 +97,10 @@ export function PlayerStatsBox({
         );
 
     return (
-        <div className={ `player-stats${otherPlayer ? "" : " our-side"}` }>
+        <div
+            className={ `player-stats${otherPlayer ? "" : " our-side"}${airAnim ? " ring-effect-air" : ""}` }
+            onAnimationEnd={ airAnim && onAnimationEnd && playerName ? () => onAnimationEnd(playerName) : undefined }
+        >
             <div className="stats-row">
                 <div className="state first-player-state">
                     <img

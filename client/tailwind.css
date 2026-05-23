@@ -7,6 +7,7 @@
 @import "./css/common.css";
 @import "./css/chat.css";
 @import "./css/lobby.css";
+@import "./css/samurai.css";
 @import "./css/deckbuilder.css";
 @import "./css/gamelist.css";
 /* gameboard */
@@ -31,7 +32,7 @@
 @import "./css/gameboard/conflict.css";
 @import "./css/gameboard/clock-popup.css";
 @import "./css/gameboard/ring-effects.css";
-@import "./css/gameboard/honor-change-overlay.css";
+@import "./css/gameboard/stat-change-overlay.css";
 /* end gameboard */
 @import "./css/cards.css";
 @import "./css/cardStats.css";
@@ -53,6 +54,7 @@
     --color-primary-dark: #2b5500;
     --color-secondary: #1a3300;
     --color-tertiary: #4d9900;
+    --color-link: #5ea026;
     --color-background: #0E0B10;
     --color-foreground: rgb(232, 234, 220);
     --color-info: #5bc0de;
@@ -355,7 +357,7 @@ h4 {
 }
 
 a {
-    color: var(--color-primary);
+    color: var(--color-link);
     text-decoration: none;
 
     &:hover {

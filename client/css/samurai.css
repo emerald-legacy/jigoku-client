@@ -1,0 +1,213 @@
+.samurai {
+    position: fixed;
+    top: 40px;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    color: var(--lobby-bone);
+    font-family: var(--lobby-font-body);
+    background: rgba(20, 26, 14, 0.85);
+    border-right: 1px solid var(--lobby-rule);
+    transition: width 200ms ease;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.samurai-collapsed {
+    width: 64px;
+}
+
+.samurai-expanded {
+    width: 200px;
+}
+
+@media (max-width: 1279px) {
+    .samurai-collapsed {
+        width: 44px;
+    }
+
+    .samurai-expanded {
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+    }
+
+    .samurai-desktop-only {
+        display: none;
+    }
+}
+
+@media (min-width: 1280px) {
+    .samurai-mobile-only {
+        display: none;
+    }
+}
+
+.samurai-burger {
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: var(--lobby-bone);
+    padding: 12px;
+    cursor: pointer;
+}
+
+.samurai-burger:hover {
+    color: var(--lobby-jade-bright);
+}
+
+.samurai-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 12px 0;
+}
+
+.samurai-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0 14px 10px;
+    border-bottom: 1px solid var(--lobby-rule);
+}
+
+.samurai-title {
+    font-family: var(--lobby-font-display);
+    font-size: 1.15rem;
+    color: var(--lobby-jade);
+    letter-spacing: 0.04em;
+}
+
+.samurai-total {
+    font-family: var(--lobby-font-mono);
+    font-size: 0.85rem;
+    color: var(--lobby-bone-soft);
+    margin-left: auto;
+    margin-right: 4px;
+}
+
+.samurai-close {
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: var(--lobby-bone-soft);
+    cursor: pointer;
+    padding: 2px;
+    display: inline-flex;
+    align-items: center;
+}
+
+.samurai-close:hover {
+    color: var(--lobby-jade-bright);
+}
+
+.samurai-groups {
+    overflow-y: auto;
+    padding: 4px 0;
+    flex: 1;
+}
+
+.samurai-group + .samurai-group {
+    border-top: 1px solid var(--lobby-rule-soft);
+    margin-top: 6px;
+    padding-top: 6px;
+}
+
+.samurai-group-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    padding: 4px 14px;
+}
+
+.samurai-group-label {
+    font-family: var(--lobby-font-display);
+    font-size: 0.92rem;
+    color: var(--lobby-jade);
+    letter-spacing: 0.03em;
+}
+
+.samurai-group-count {
+    font-family: var(--lobby-font-mono);
+    font-size: 0.75rem;
+    color: var(--lobby-bone-soft);
+}
+
+.samurai-group-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.samurai-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 3px 14px;
+    transition: background-color 120ms ease;
+}
+
+.samurai-row:hover {
+    background-color: var(--lobby-rule-soft);
+}
+
+.samurai-glyph {
+    color: var(--lobby-jade);
+    font-family: var(--lobby-font-glyph);
+    font-size: 0.85rem;
+    width: 1em;
+    display: inline-block;
+    text-align: center;
+}
+
+.samurai-name {
+    color: var(--lobby-bone);
+    font-size: 0.9rem;
+}
+
+.samurai-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    gap: 10px;
+}
+
+.samurai-rail-toggle {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--lobby-rule);
+    color: var(--lobby-bone-soft);
+    border-radius: 999px;
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 120ms ease, border-color 120ms ease;
+}
+
+.samurai-rail-toggle:hover {
+    color: var(--lobby-jade-bright);
+    border-color: var(--lobby-jade);
+}
+
+.samurai-rail-counts {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    align-items: center;
+}
+
+.samurai-rail-count {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    font-family: var(--lobby-font-mono);
+    font-size: 0.7rem;
+    color: var(--lobby-bone-soft);
+}
