@@ -289,6 +289,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         const conflict: ConflictInfo = currentGame.conflict ?? {};
         const cardSize = user.settings.cardSize;
         const disableCardStats = user.settings.optionSettings?.disableCardStats;
+        const hideEffectMarkers = !!(thisPlayer?.optionSettings?.hideEffectMarkers ?? user.settings.optionSettings?.hideEffectMarkers);
         const grouper = isMe ? groupCardsInPlayForMe : groupCardsInPlayForOther;
         const cardsByType = grouper(player.cardPiles.cardsInPlay, isMe);
         const playerIsDefending = !!(player && conflict.defendingPlayerId && player.id && player.id.includes(conflict.defendingPlayerId));
@@ -306,6 +307,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
                 onMouseOver={ onMouseOver }
                 onMouseOut={ onMouseOut }
                 showStats={ !disableCardStats }
+                hideEffectMarkers={ hideEffectMarkers }
                 player={ player }
                 onClick={ onCardClick }
                 onDragDrop={ onDragDrop }

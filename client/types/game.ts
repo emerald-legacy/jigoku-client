@@ -76,11 +76,12 @@ export interface Card {
     childCards?: Card[];
     order?: number;
     code?: string;
-    pendingEffects?: PendingEffect[];
+    effectMarkers?: EffectMarker[];
 }
 
-export interface PendingEffect {
+export interface EffectMarker {
     source: string;
+    kind: "delayed" | "modifier";
 }
 
 export interface Ring {
@@ -118,6 +119,7 @@ export interface PlayerOptionSettings {
     disableCardStats?: boolean;
     sortHandByName?: boolean;
     showRingEffects?: boolean;
+    hideEffectMarkers?: boolean;
 }
 
 export interface AdditionalPile {

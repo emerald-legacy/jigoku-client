@@ -14,6 +14,8 @@ import type { Card as CardType, MenuItem, Player } from "../types/game";
 import type { AnimationEvent, CardAnimationEvent } from "../types/redux";
 import { isCardAnimation } from "../types/redux";
 
+const seenEnterPlayAnimations = new Set<string>();
+
 interface CardProps {
     card: CardType | { facedown: boolean; isDynasty?: boolean; isConflict?: boolean };
     className?: string;
@@ -35,6 +37,7 @@ interface CardProps {
     player?: Player;
     popupLocation?: string;
     showStats?: boolean;
+    hideEffectMarkers?: boolean;
     size?: string;
     source?: string;
     style?: React.CSSProperties;
@@ -62,6 +65,7 @@ function Card(props: CardProps) {
         player,
         popupLocation,
         showStats,
+        hideEffectMarkers,
         size,
         source,
         style,
@@ -87,6 +91,15 @@ function Card(props: CardProps) {
         }
         prevBrokenRef.current = isBroken;
     }, [card?.isBroken]);
+
+    const cardTyped = card as CardType;
+    const cardUuid = cardTyped?.uuid;
+    const cardIsNew = cardTyped?.new;
+    useEffect(() => {
+        if(cardUuid && cardIsNew) {
+            seenEnterPlayAnimations.add(cardUuid);
+        }
+    }, [cardUuid, cardIsNew]);
 
     const { onTouchStart, onTouchMove, onTouchEnd } = useCardTouchDrag(card, source, onDragDrop);
 
@@ -344,7 +357,7 @@ function Card(props: CardProps) {
             cardClass += " covert";
         } else if(card.controlled) {
             cardClass += " controlled";
-        } else if(card.new) {
+        } else if(card.new && card.uuid && !seenEnterPlayAnimations.has(card.uuid)) {
             cardClass += " new";
         }
 
@@ -405,23 +418,23 @@ function Card(props: CardProps) {
                     <div className={ imageClass }>
                         <img className="card-image-src" src={ !isFacedown() ? getCardImagePath() : getCardBackUrl(cardBack) } />
                         { card.abilityLimits && <AbilityUsedMarker abilityLimits={ card.abilityLimits } isAttachment={ card.type === "attachment" } /> }
-                        { card.pendingEffects && card.pendingEffects.length > 0 ? (
+                        { !hideEffectMarkers && card.effectMarkers && card.effectMarkers.length > 0 && (
                             <div
-                                className="pending-effect-marker"
-                                title={ `Pending: ${card.pendingEffects.map(e => e.source).join(", ")}` }
-                            >!</div>
-                        ) : null }
+                                className="card-effect-corner"
+                                title={ card.effectMarkers.map(e => `${e.kind === "delayed" ? "Pending" : "Active"}: ${e.source}`).join("\n") }
+                            />
+                        ) }
                     </div>
                     <CardCounters counters={ buildCardCounters(card) } />
                 </div>
                 { shouldShowMenu() ? <CardMenu menu={ card.menu } onMenuItemClick={ handleMenuItemClick } /> : null }
-                { !shouldShowMenu() && source !== "province deck" && (showStats || card.strengthSummary?.stat || (card.pendingEffects && card.pendingEffects.length > 0)) ?
+                { !shouldShowMenu() && source !== "province deck" && (showStats || card.strengthSummary?.stat || (card.effectMarkers && card.effectMarkers.length > 0)) ?
                     <CardStats
                         militarySkillSummary={ card.militarySkillSummary }
                         politicalSkillSummary={ card.politicalSkillSummary }
                         glorySummary={ card.glorySummary }
                         strengthSummary={ card.strengthSummary }
-                        pendingEffects={ card.pendingEffects }
+                        effectMarkers={ card.effectMarkers }
                     /> : null
                 }
                 { card.showPopup && showPopup && (

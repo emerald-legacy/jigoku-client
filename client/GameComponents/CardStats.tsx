@@ -9,8 +9,9 @@ interface SkillSummary {
     modifiers: Modifier[];
 }
 
-interface PendingEffectEntry {
+interface EffectMarkerEntry {
     source: string;
+    kind: "delayed" | "modifier";
 }
 
 interface CardStatsProps {
@@ -18,10 +19,10 @@ interface CardStatsProps {
     militarySkillSummary?: SkillSummary;
     politicalSkillSummary?: SkillSummary;
     strengthSummary?: SkillSummary;
-    pendingEffects?: PendingEffectEntry[];
+    effectMarkers?: EffectMarkerEntry[];
 }
 
-function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, strengthSummary, pendingEffects }: CardStatsProps) {
+function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, strengthSummary, effectMarkers }: CardStatsProps) {
     const renderGroupedModifier = (groupedModifier: Modifier[]) => {
         const amount = groupedModifier.reduce((total, modifier) => total + modifier.amount, 0);
         let sign = "";
@@ -98,13 +99,13 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
                     </div>
                 </div>
             ) }
-            { pendingEffects && pendingEffects.length > 0 && (
-                <div className="stat-container pending-effects">
+            { effectMarkers && effectMarkers.length > 0 && (
+                <div className="stat-container">
                     <div className="stat-total">
-                        <span className="stat--type-label">!</span>
+                        <span className="stat--type-label effect-markers-label">効</span>
                     </div>
                     <div className="stat-specifics">
-                        { pendingEffects.map((e, i) => (
+                        { effectMarkers.map((e, i) => (
                             <div className="stat-line" key={ `${e.source}-${i}` }>
                                 <div className="stat-name">{ e.source }</div>
                             </div>

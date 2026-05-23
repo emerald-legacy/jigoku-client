@@ -159,6 +159,14 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
                             checked={ optionSettings.disableCardStats }
                         />
                         <Checkbox
+                            name="optionSettings.hideEffectMarkers"
+                            noGroup
+                            label="Hide effect markers on cards (info still in hover popup)"
+                            fieldClass="col-sm-6"
+                            onChange={ (e) => handleOptionSettingToggle("hideEffectMarkers", e) }
+                            checked={ optionSettings.hideEffectMarkers }
+                        />
+                        <Checkbox
                             name="optionSettings.sortHandByName"
                             noGroup
                             label="Sort Hand by Name"

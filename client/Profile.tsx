@@ -249,6 +249,14 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     checked={ !!settings.optionSettings.disableCardStats }
                                 />
                                 <Checkbox
+                                    name="optionSettings.hideEffectMarkers"
+                                    noGroup
+                                    label="Hide effect markers on cards (info still in hover popup)"
+                                    fieldClass="col-sm-6"
+                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "hideEffectMarkers", value: e.target.checked }) }
+                                    checked={ !!settings.optionSettings.hideEffectMarkers }
+                                />
+                                <Checkbox
                                     name="optionSettings.sortHandByName"
                                     noGroup
                                     label="Sort Hand by Name"

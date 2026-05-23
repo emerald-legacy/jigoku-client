@@ -82,3 +82,11 @@
 .stat-specifics .stat-name {
     margin-left: 5px;
 }
+
+.stat--type-label.effect-markers-label {
+    font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
+    font-size: 1.5em;
+    line-height: 1;
+    margin-bottom: 0;
+    color: rgba(255, 255, 255, 0.95);
+}

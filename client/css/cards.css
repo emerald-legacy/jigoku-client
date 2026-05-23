@@ -150,19 +150,19 @@
 }
 
 @keyframes card-enter-play {
-    0%   { transform: translateY(-44px) scale(1.18); opacity: 0; filter: brightness(1.35); }
-    55%  { transform: translateY(6px) scale(0.96);   opacity: 1; filter: brightness(1.15); }
-    78%  { transform: translateY(-2px) scale(1.01);  opacity: 1; filter: brightness(1.06); }
+    0%   { transform: translateY(-26px) scale(1.10); opacity: 0; filter: brightness(1.18); }
+    60%  { transform: translateY(3px) scale(0.98);   opacity: 1; filter: brightness(1.08); }
+    82%  { transform: translateY(-1px) scale(1.005); opacity: 1; filter: brightness(1.03); }
     100% { transform: translateY(0) scale(1);        opacity: 1; filter: brightness(1); }
 }
 
-.card-row > .card-wrapper > .card-frame > .card {
-    animation: card-enter-play 0.65s cubic-bezier(0.3, 0.7, 0.4, 1) both;
+.card-row > .card-wrapper > .card-frame > .card.new {
+    animation: card-enter-play 0.55s cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
     .card.attachment,
-    .card-row > .card-wrapper > .card-frame > .card { animation: none; }
+    .card-row > .card-wrapper > .card-frame > .card.new { animation: none; }
 }
 
 .card {
@@ -752,46 +752,38 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 16px;
-    height: 16px;
+    width: 24cqi;
+    height: 24cqi;
     background: rgba(55, 55, 55, 0.9);
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     pointer-events: none;
     z-index: calc(var(--layer-cards) + 2);
 }
 
-.pending-effect-marker {
+.card-effect-corner {
     position: absolute;
-    bottom: 3px;
-    right: 3px;
-    width: 10px;
-    height: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(20, 12, 4, 0.9);
-    border: 1px solid rgba(220, 180, 60, 0.7);
-    border-radius: 50%;
-    font-family: "Cormorant Garamond", Georgia, serif;
-    font-weight: 700;
-    font-size: 9px;
-    line-height: 1;
-    color: rgba(255, 220, 130, 0.95);
-    text-shadow: 0 0 3px rgba(220, 180, 60, 0.7);
-    box-shadow: 0 0 4px rgba(220, 180, 60, 0.5), 0 1px 2px rgba(0, 0, 0, 0.6);
-    z-index: calc(var(--layer-cards) + 3);
+    bottom: 0;
+    right: 0;
+    width: 26cqi;
+    height: 26cqi;
+    background: rgba(20, 75, 55, 0.95);
+    clip-path: polygon(100% 0, 100% 100%, 0 100%);
     pointer-events: auto;
-    cursor: help;
-    animation: pending-effect-pulse 2.4s ease-in-out infinite;
+    z-index: calc(var(--layer-cards) + 2);
+    filter: drop-shadow(0 0.5cqi 1cqi rgba(0, 0, 0, 0.5));
 }
 
-@keyframes pending-effect-pulse {
-    0%, 100% { box-shadow: 0 0 4px rgba(220, 180, 60, 0.5), 0 1px 2px rgba(0, 0, 0, 0.6); }
-    50%      { box-shadow: 0 0 8px rgba(240, 200, 80, 0.85), 0 1px 2px rgba(0, 0, 0, 0.6); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .pending-effect-marker { animation: none; }
+.card-effect-corner::after {
+    content: "効";
+    position: absolute;
+    bottom: 6%;
+    right: 6%;
+    font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
+    font-size: 12cqi;
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0.3cqi 0.5cqi rgba(0, 0, 0, 0.7);
+    pointer-events: none;
 }
 
 .ability-used-corner-bottom-left {
