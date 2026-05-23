@@ -92,15 +92,6 @@ function Card(props: CardProps) {
         prevBrokenRef.current = isBroken;
     }, [card?.isBroken]);
 
-    const cardTyped = card as CardType;
-    const cardUuid = cardTyped?.uuid;
-    const cardIsNew = cardTyped?.new;
-    useEffect(() => {
-        if(cardUuid && cardIsNew) {
-            seenEnterPlayAnimations.add(cardUuid);
-        }
-    }, [cardUuid, cardIsNew]);
-
     const { onTouchStart, onTouchMove, onTouchEnd } = useCardTouchDrag(card, source, onDragDrop);
 
     const handleMouseOver = (cardData: CardType) => {
@@ -403,13 +394,14 @@ function Card(props: CardProps) {
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
                     onClick={ (ev: React.MouseEvent) => handleClick(ev, card) }
                     onDragStart={ (ev: React.DragEvent<HTMLElement>) => startCardDrag(ev, card, source) }
-                    onAnimationEnd={ anim && onAnimationEnd
-                        ? (ev: React.AnimationEvent<HTMLDivElement>) => {
-                            if(ev.animationName.startsWith("ring-")) {
-                                onAnimationEnd(card.uuid);
-                            }
+                    onAnimationEnd={ (ev: React.AnimationEvent<HTMLDivElement>) => {
+                        if(ev.animationName === "card-enter-play" && card.uuid) {
+                            seenEnterPlayAnimations.add(card.uuid);
                         }
-                        : undefined }
+                        if(anim && onAnimationEnd && ev.animationName.startsWith("ring-")) {
+                            onAnimationEnd(card.uuid);
+                        }
+                    } }
                     draggable
                 >
                     <div>
