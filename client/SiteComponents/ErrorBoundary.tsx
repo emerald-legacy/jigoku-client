@@ -14,6 +14,16 @@ interface ErrorBoundaryState {
     errorPath?: string;
 }
 
+function isStaleChunkError(error: Error): boolean {
+    const msg = (error?.message || "").toLowerCase();
+    return (
+        error?.name === "ChunkLoadError" ||
+        msg.includes("failed to fetch dynamically imported module") ||
+        msg.includes("error loading dynamically imported module") ||
+        msg.includes("importing a module script failed")
+    );
+}
+
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
     static displayName = "ErrorBoundary";
 
@@ -26,6 +36,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
         };
 
         this.onReturnClick = this.onReturnClick.bind(this);
+        this.onReloadClick = this.onReloadClick.bind(this);
     }
 
     componentDidUpdate(prevProps: ErrorBoundaryProps) {
@@ -36,6 +47,11 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
     componentDidCatch(error: Error, info: ErrorInfo) {
         this.setState({ error });
+
+        if(isStaleChunkError(error)) {
+            return;
+        }
+
         console.error("React Error Boundary caught an error:", error, info);
 
         axios.post("/api/admin/game-errors/client", {
@@ -56,8 +72,25 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
         this.props.navigate?.("/");
     }
 
+    onReloadClick(event: React.MouseEvent) {
+        event.preventDefault();
+        event.stopPropagation();
+        window.location.reload();
+    }
+
     render() {
         if(this.state.error) {
+            if(isStaleChunkError(this.state.error)) {
+                return (
+                    <div className="alert alert-info">
+                        <p>A new version of Jigoku is available.</p>
+                        <p>
+                            <a href="#" onClick={ this.onReloadClick }>Click here to reload</a> and pick up the latest update.
+                        </p>
+                    </div>
+                );
+            }
+
             return (
                 <div className="alert alert-danger">
                     <p>{ this.props.message }</p>
