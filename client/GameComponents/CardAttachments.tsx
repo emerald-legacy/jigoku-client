@@ -1,6 +1,7 @@
 import React from "react";
 import Card from "./Card";
 import { startCardDrag } from "./cardDrag";
+import { useCardListWithExit } from "./useCardListWithExit";
 import type { Card as CardType, MenuItem } from "../types/game";
 
 const ATTACHABLE_SOURCES = new Set(["play area", "province 1", "province 2", "province 3", "province 4", "stronghold province"]);
@@ -43,11 +44,12 @@ interface CardAttachmentsProps {
 
 export default function CardAttachments(props: CardAttachmentsProps) {
     const { attachments, source, size, disableMouseOver, onMouseOver, onMouseOut, onClick, onMenuItemClick } = props;
+    const visibleAttachments = useCardListWithExit(attachments);
 
     if(!source || !ATTACHABLE_SOURCES.has(source)) {
         return null;
     }
-    if(!attachments || attachments.length === 0) {
+    if(visibleAttachments.length === 0) {
         return null;
     }
 
@@ -55,7 +57,7 @@ export default function CardAttachments(props: CardAttachmentsProps) {
 
     return (
         <>
-            { attachments.map((attachment: CardType, i: number) => {
+            { visibleAttachments.map((attachment: CardType, i: number) => {
                 const index = i + 1;
                 return (
                     <Card
