@@ -740,8 +740,8 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 24cqi;
-    height: 24cqi;
+    width: 18cqi;
+    height: 18cqi;
     background: rgba(55, 55, 55, 0.9);
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     pointer-events: none;
@@ -752,8 +752,8 @@
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 24cqi;
-    height: 24cqi;
+    width: 18cqi;
+    height: 18cqi;
     background: rgba(20, 75, 55, 0.95);
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
     pointer-events: auto;
@@ -767,7 +767,7 @@
     bottom: 6%;
     right: 6%;
     font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
-    font-size: 8cqi;
+    font-size: 6cqi;
     line-height: 1;
     color: rgba(255, 255, 255, 0.95);
     text-shadow: 0 0.3cqi 0.5cqi rgba(0, 0, 0, 0.7);
@@ -778,8 +778,8 @@
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 24cqi;
-    height: 24cqi;
+    width: 18cqi;
+    height: 18cqi;
     background: rgba(55, 55, 55, 0.9);
     clip-path: polygon(0 0, 0 100%, 100% 100%);
     pointer-events: none;
