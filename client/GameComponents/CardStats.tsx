@@ -57,7 +57,7 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
 
     return (
         <div className="panel menu card--stats ">
-            { militarySkillSummary && (
+            { militarySkillSummary?.modifiers && (
                 <div className="stat-container">
                     <div className="stat-total">
                         <span className="icon-military stat--type-icon" />
@@ -68,7 +68,7 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
                     </div>
                 </div>
             ) }
-            { politicalSkillSummary && (
+            { politicalSkillSummary?.modifiers && (
                 <div className="stat-container">
                     <div className="stat-total">
                         <span className="icon-political stat--type-icon" />
@@ -79,7 +79,7 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
                     </div>
                 </div>
             ) }
-            { glorySummary && (
+            { glorySummary?.modifiers && (
                 <div className="stat-container">
                     <div className="stat-total">
                         <img className="icon-glory stat--type-icon" src="/img/glory.png" />
@@ -88,7 +88,7 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
                     <div className="stat-specifics">{ renderModifiers(glorySummary.modifiers) }</div>
                 </div>
             ) }
-            { strengthSummary && (
+            { strengthSummary?.modifiers && (
                 <div className="stat-container">
                     <div className="stat-total">
                         <span className="stat--type-label">STR</span>
