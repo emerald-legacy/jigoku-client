@@ -38,7 +38,7 @@ const gamesSlice = createSlice({
                 const { newMessages, animations, ...gameData } = action.payload.currentGame;
 
                 if(newMessages && state.currentGame?.messages) {
-                    gameData.messages = [...state.currentGame.messages, ...gameData.messages];
+                    gameData.messages = [...state.currentGame.messages, ...(gameData.messages || [])];
                 }
 
                 state.pendingAnimations = animations !== undefined

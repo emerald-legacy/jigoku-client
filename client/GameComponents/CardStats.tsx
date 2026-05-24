@@ -42,8 +42,10 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
         );
     };
 
-    const renderModifiers = (modifiers: Modifier[]) => {
-        // Group modifiers by name
+    const renderModifiers = (modifiers?: Modifier[]) => {
+        if(!modifiers) {
+            return null;
+        }
         const grouped: Record<string, Modifier[]> = {};
         for(const modifier of modifiers) {
             if(!grouped[modifier.name]) {
