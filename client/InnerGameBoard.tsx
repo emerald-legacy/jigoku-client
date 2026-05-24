@@ -20,6 +20,7 @@ import { downloadGameLog } from "./GameComponents/gameLogSerializer";
 import { getCardImageUrl } from "./cardImageUrl";
 
 import { clearAnimation } from "./ReduxActions/game";
+import { useCardListWithExit } from "./GameComponents/useCardListWithExit";
 import { makeCardsInPlayGrouper } from "./selectors/cardsInPlay";
 import StatChangeOverlay from "./GameComponents/StatChangeOverlay";
 import CenterBar from "./GameComponents/CenterBar";
@@ -86,6 +87,12 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
 
     const groupCardsInPlayForMe = useMemo(() => makeCardsInPlayGrouper(), []);
     const groupCardsInPlayForOther = useMemo(() => makeCardsInPlayGrouper(), []);
+
+    const players = currentGame?.players;
+    const myPlayer = players ? (players[username] ?? Object.values(players).sort((a, b) => a.name.localeCompare(b.name))[0]) : undefined;
+    const opponent = players ? Object.values(players).find(p => p.name !== myPlayer?.name) : undefined;
+    const myInPlay = useCardListWithExit(myPlayer?.cardPiles.cardsInPlay);
+    const opponentInPlay = useCardListWithExit(opponent?.cardPiles.cardsInPlay);
 
     const isGameActive = () => {
         if(!currentGame || currentGame.winner) {
@@ -291,7 +298,8 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         const disableCardStats = user.settings.optionSettings?.disableCardStats;
         const hideEffectMarkers = !!(thisPlayer?.optionSettings?.hideEffectMarkers ?? user.settings.optionSettings?.hideEffectMarkers);
         const grouper = isMe ? groupCardsInPlayForMe : groupCardsInPlayForOther;
-        const cardsByType = grouper(player.cardPiles.cardsInPlay, isMe);
+        const sourceCards = isMe ? myInPlay : opponentInPlay;
+        const cardsByType = grouper(sourceCards, isMe);
         const playerIsDefending = !!(player && conflict.defendingPlayerId && player.id && player.id.includes(conflict.defendingPlayerId));
         const playerDeclaringParticipants = !!(conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen)));
         const onAnimationEnd = (uuid: string) => dispatch(clearAnimation(uuid));

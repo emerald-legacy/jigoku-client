@@ -145,12 +145,24 @@
     100% { transform: translateY(0) scale(1);        opacity: 1; filter: brightness(1); }
 }
 
+@keyframes card-leave-play {
+    0%   { transform: translateY(0) scale(1);        opacity: 1; filter: brightness(1); }
+    18%  { transform: translateY(-1px) scale(1.005); opacity: 1; filter: brightness(1.03); }
+    40%  { transform: translateY(3px) scale(0.98);   opacity: 1; filter: brightness(1.08); }
+    100% { transform: translateY(-26px) scale(1.10); opacity: 0; filter: brightness(1.18); }
+}
+
 .card.new {
     animation: card-enter-play 0.55s cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
 
+.card.leaving {
+    animation: card-leave-play 0.55s cubic-bezier(0.3, 0.7, 0.4, 1) forwards;
+    pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .card.new { animation: none; }
+    .card.new, .card.leaving { animation: none; }
 }
 
 .card {

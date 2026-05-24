@@ -354,6 +354,10 @@ function Card(props: CardProps) {
             cardClass += " new";
         }
 
+        if(card.leaving) {
+            cardClass += " leaving";
+        }
+
         if(anim) {
             cardClass += ` ring-effect-${anim.type}`;
         }

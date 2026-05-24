@@ -49,6 +49,7 @@ export interface Card {
     bowed?: boolean;
     covert?: boolean;
     new?: boolean;
+    leaving?: boolean;
     fate?: number;
     location?: string;
     controlled?: boolean;
