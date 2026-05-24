@@ -81,10 +81,10 @@ describe("the <Card /> component", () => {
             render(<Card card={ { ...card, selected: true, new: true } } source="hand" />);
         });
 
-        it("should flag as selected and not new (selected takes priority)", () => {
+        it("should flag as both selected and new so the entrance animation can finish", () => {
             const cardElement = document.querySelector(".card");
             expect(cardElement.className).toContain("selected");
-            expect(cardElement.className).not.toContain("new");
+            expect(cardElement.className).toContain("new");
         });
     });
 
