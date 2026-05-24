@@ -8,9 +8,50 @@
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.4);
     grid-column-start: 1;
     display: grid;
-    grid-template-rows: min-content 1fr 0px 1fr min-content;
+    grid-template-rows:
+        minmax(calc(2 * var(--card-height) + 2 * var(--attachment-offset)), max-content)
+        1fr
+        var(--center-bar-height)
+        1fr
+        minmax(calc(2 * var(--card-height) + 2 * var(--attachment-offset)), max-content);
     grid-template-columns: var(--sidebar-width);
     text-overflow: ellipsis;
+
+    &.small {
+        grid-template-rows:
+            minmax(calc(2 * var(--card-sm-height) + 2 * var(--attachment-offset-sm)), max-content)
+            1fr
+            var(--center-bar-height)
+            1fr
+            minmax(calc(2 * var(--card-sm-height) + 2 * var(--attachment-offset-sm)), max-content);
+    }
+
+    &.large {
+        grid-template-rows:
+            minmax(calc(2 * var(--card-lg-height) + 2 * var(--attachment-offset-lg)), max-content)
+            1fr
+            var(--center-bar-height)
+            1fr
+            minmax(calc(2 * var(--card-lg-height) + 2 * var(--attachment-offset-lg)), max-content);
+    }
+
+    &.x-large {
+        grid-template-rows:
+            minmax(calc(2 * var(--card-xl-height) + 2 * var(--attachment-offset-xl)), max-content)
+            1fr
+            var(--center-bar-height)
+            1fr
+            minmax(calc(2 * var(--card-xl-height) + 2 * var(--attachment-offset-xl)), max-content);
+    }
+
+    &.xxl {
+        grid-template-rows:
+            minmax(calc(2 * var(--card-xxl-height) + 2 * var(--attachment-offset-xxl)), max-content)
+            1fr
+            var(--center-bar-height)
+            1fr
+            minmax(calc(2 * var(--card-xxl-height) + 2 * var(--attachment-offset-xxl)), max-content);
+    }
 }
 
 .sidebar-pane {
@@ -22,10 +63,11 @@
     justify-content: flex-end;
     padding-top: 0.25em;
     padding-bottom: 0.25em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 
     &.our-side {
         justify-content: flex-start;
-        border-top: 1px solid rgba(255, 255, 255, 0.4);
+        border-bottom: none;
         grid-row-start: 4;
         grid-row-end: 5;
     }
