@@ -348,7 +348,9 @@ function Card(props: CardProps) {
             cardClass += " covert";
         } else if(card.controlled) {
             cardClass += " controlled";
-        } else if(card.new && card.uuid && !seenEnterPlayAnimations.has(card.uuid)) {
+        }
+
+        if(card.new && card.uuid && !seenEnterPlayAnimations.has(card.uuid)) {
             cardClass += " new";
         }
 
