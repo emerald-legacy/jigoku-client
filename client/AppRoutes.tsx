@@ -9,6 +9,7 @@ import NotFound from "./NotFound";
 import PlayRoute from "./PlayRoute";
 import NewsRoute from "./NewsRoute";
 import UsersRoute from "./UsersRoute";
+import GameErrorsRoute from "./GameErrorsRoute";
 
 const Decks = React.lazy(() => import("./Decks"));
 const AddDeck = React.lazy(() => import("./AddDeck"));
@@ -44,6 +45,7 @@ export default function AppRoutes({ permissions }: { permissions: Record<string,
             <Route path="/news" element={ <NewsRoute canEdit={ !!permissions.canEditNews } /> } />
             <Route path="/unauth" element={ <Unauthorised /> } />
             <Route path="/users" element={ <UsersRoute canManage={ !!permissions.canManageUsers } /> } />
+            <Route path="/admin/game-errors" element={ <GameErrorsRoute canView={ !!permissions.canViewGameErrors } /> } />
             <Route path="/blocklist" element={ <BlockList /> } />
             <Route path="/replay" element={ <GameReplay /> } />
             <Route path="*" element={ <NotFound /> } />

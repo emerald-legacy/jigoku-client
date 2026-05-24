@@ -13,12 +13,14 @@ import type { User } from "./types/user";
 
 const defaultPermissions: Record<string, boolean> = {
     canEditNews: false,
-    canManageUsers: false
+    canManageUsers: false,
+    canViewGameErrors: false
 };
 
 const permissionsList = [
     { name: "canEditNews", label: "News Editor" },
-    { name: "canManageUsers", label: "User Manager" }
+    { name: "canManageUsers", label: "User Manager" },
+    { name: "canViewGameErrors", label: "Game Errors Viewer" }
 ];
 
 interface InnerUserAdminProps {

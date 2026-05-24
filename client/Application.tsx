@@ -328,6 +328,10 @@ export default function Application() {
         if(permissions.canManageUsers) {
             adminMenuItems.push({ name: "Users", path: "/users" });
         }
+
+        if(permissions.canViewGameErrors) {
+            adminMenuItems.push({ name: "Game Errors", path: "/admin/game-errors" });
+        }
     }
 
     if(adminMenuItems.length > 0) {

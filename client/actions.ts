@@ -8,6 +8,7 @@ export * from "./ReduxActions/admin";
 export * from "./ReduxActions/user";
 export * from "./ReduxActions/deckstats";
 export * from "./ReduxActions/gamestats";
+export * from "./ReduxActions/gameErrors";
 
 export { selectDeck, addDeck, updateDeck, updateDeckStatus, clearDeckStatus, zoomCard, clearZoom } from "./reducers/cards";
 export { receiveUsers } from "./reducers/games";

@@ -9,6 +9,7 @@ import db from "./db.js";
 import GameService, { type GameRecord } from "./services/GameService.js";
 import GameStatsService from "./services/GameStatsService.js";
 import DeckStatsService from "./services/DeckStatsService.js";
+import GameErrorService from "./services/GameErrorService.js";
 
 const ONE_SECOND = 1000;
 const FIFTEEN_SECONDS = 15 * ONE_SECOND;
@@ -33,9 +34,19 @@ export interface RouterGame {
     getSaveState?: () => GameRecord;
 }
 
+interface GameErrorArg {
+    gameId: string;
+    gameName?: string;
+    players: string[];
+    errorMessage: string;
+    errorStack?: string;
+    timestamp: string;
+    debugData: unknown;
+}
+
 interface NodeMessage {
     command: string;
-    arg?: Record<string, unknown> & { game?: GameRecord & { winner?: string; winReason?: string; players?: GameRecord["players"]; gameId?: string }; gameId?: string; player?: string; spectator?: boolean; maxGames?: number; address?: string; port?: number; protocol?: string; version?: string; games?: Record<string, unknown> };
+    arg?: Record<string, unknown> & { game?: GameRecord & { winner?: string; winReason?: string; players?: GameRecord["players"]; gameId?: string }; gameId?: string; player?: string; spectator?: boolean; maxGames?: number; address?: string; port?: number; protocol?: string; version?: string; games?: Record<string, unknown> } & Partial<GameErrorArg>;
 }
 
 class GameRouter extends EventEmitter {
@@ -43,6 +54,7 @@ class GameRouter extends EventEmitter {
     gameService: GameService;
     gameStatsService: GameStatsService;
     deckStatsService: DeckStatsService;
+    gameErrorService: GameErrorService;
     connections: Map<string, WebSocket>;
     wss?: WebSocketServer;
 
@@ -53,6 +65,7 @@ class GameRouter extends EventEmitter {
         this.gameService = new GameService(db.getDb());
         this.gameStatsService = GameStatsService.getInstance(db.getDb());
         this.deckStatsService = new DeckStatsService(db.getDb());
+        this.gameErrorService = new GameErrorService(db.getDb());
         this.connections = new Map();
 
         this.init(config.get("lobbyWsUrl"));
@@ -288,6 +301,26 @@ class GameRouter extends EventEmitter {
                 this.emit("onPlayerLeft", message.arg?.gameId, message.arg?.player);
 
                 break;
+            case "GAMEERROR": {
+                logger.info(`received GAMEERROR from ${identityStr}`);
+                const arg = message.arg;
+                if(!arg || !arg.gameId || !arg.errorMessage || !arg.timestamp || !Array.isArray(arg.players)) {
+                    logger.error(`Invalid GAMEERROR payload from ${identityStr}`);
+                    break;
+                }
+                this.gameErrorService.addError({
+                    gameId: arg.gameId,
+                    gameName: arg.gameName,
+                    players: arg.players,
+                    errorMessage: arg.errorMessage,
+                    errorStack: arg.errorStack,
+                    timestamp: new Date(arg.timestamp),
+                    debugData: arg.debugData
+                }).catch((err: Error) => {
+                    logger.error(`Failed to persist game error: ${err}`);
+                });
+                break;
+            }
         }
 
         if(worker) {

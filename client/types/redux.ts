@@ -80,6 +80,26 @@ export interface NewsState {
     loading?: boolean;
 }
 
+export interface GameErrorSummary {
+    _id: string;
+    gameId: string;
+    gameName?: string;
+    players: string[];
+    errorMessage: string;
+    errorStack?: string;
+    timestamp: string;
+}
+
+export interface GameErrorRecord extends GameErrorSummary {
+    debugData: unknown;
+}
+
+export interface GameErrorsState {
+    errors?: GameErrorSummary[];
+    current?: GameErrorRecord;
+    loading?: boolean;
+}
+
 export interface ApiState {
     loading?: boolean;
     loadingCount?: number;
@@ -105,4 +125,5 @@ export interface RootState {
     admin: AdminState;
     user: UserState;
     serverVersion: import("../reducers/serverVersion.js").ServerVersionState;
+    gameErrors: GameErrorsState;
 }
