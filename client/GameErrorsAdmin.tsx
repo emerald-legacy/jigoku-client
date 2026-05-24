@@ -70,6 +70,7 @@ export function InnerGameErrorsAdmin({ apiError, current, errors, loadGameErrors
                     <thead>
                         <tr>
                             <th>Timestamp</th>
+                            <th>Kind</th>
                             <th>Players</th>
                             <th>Error</th>
                             <th />
@@ -80,10 +81,13 @@ export function InnerGameErrorsAdmin({ apiError, current, errors, loadGameErrors
                             const ts = item.timestamp ? new Date(item.timestamp) : null;
                             const isExpanded = expandedId === item._id;
                             const showCurrent = isExpanded && current && current._id === item._id;
+                            const kind = item.kind || "server";
+                            const count = item.count && item.count > 1 ? ` (×${item.count})` : "";
                             return (
                                 <React.Fragment key={ item._id }>
                                     <tr>
                                         <td>{ ts ? format(ts, "yyyy-MM-dd HH:mm:ss") : "" }</td>
+                                        <td><span className="label label-default">{ kind }</span>{ count }</td>
                                         <td>{ Array.isArray(item.players) ? item.players.join(" vs ") : "" }</td>
                                         <td className="game-errors-message" title={ item.errorMessage }>{ item.errorMessage }</td>
                                         <td>
@@ -100,7 +104,7 @@ export function InnerGameErrorsAdmin({ apiError, current, errors, loadGameErrors
                                     </tr>
                                     { isExpanded ? (
                                         <tr>
-                                            <td colSpan={ 4 }>
+                                            <td colSpan={ 5 }>
                                                 { showCurrent ? (
                                                     <pre className="game-errors-json">{ JSON.stringify(current!.debugData, null, 2) }</pre>
                                                 ) : (

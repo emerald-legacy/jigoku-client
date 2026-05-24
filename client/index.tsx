@@ -4,11 +4,42 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
+import axios from "axios";
 import configureStore from "./configureStore";
 import { login } from "./actions";
 import Application from "./Application";
 import ErrorBoundary from "./SiteComponents/ErrorBoundary";
 import bootstrap from "./bootstrap";
+
+function reportClientError(payload: {
+    errorMessage: string;
+    errorStack?: string;
+    kind: "window" | "unhandledRejection";
+}) {
+    axios.post("/api/admin/game-errors/client", {
+        ...payload,
+        url: window.location.href,
+        userAgent: navigator.userAgent
+    }).catch(() => {});
+}
+
+window.addEventListener("error", (event) => {
+    reportClientError({
+        errorMessage: event.message || "Unknown error",
+        errorStack: event.error?.stack,
+        kind: "window"
+    });
+});
+
+window.addEventListener("unhandledrejection", (event) => {
+    const reason = event.reason;
+    const message = reason?.message || (typeof reason === "string" ? reason : "Unhandled rejection");
+    reportClientError({
+        errorMessage: message,
+        errorStack: reason?.stack,
+        kind: "unhandledRejection"
+    });
+});
 
 const store = configureStore();
 

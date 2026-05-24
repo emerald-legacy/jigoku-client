@@ -1,5 +1,6 @@
 import React from "react";
 import type { ReactNode, ErrorInfo } from "react";
+import axios from "axios";
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -36,6 +37,15 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     componentDidCatch(error: Error, info: ErrorInfo) {
         this.setState({ error });
         console.error("React Error Boundary caught an error:", error, info);
+
+        axios.post("/api/admin/game-errors/client", {
+            errorMessage: error.message,
+            errorStack: error.stack,
+            componentStack: info.componentStack,
+            kind: "react",
+            url: window.location.href,
+            userAgent: navigator.userAgent
+        }).catch(() => {});
     }
 
     onReturnClick(event: React.MouseEvent) {

@@ -82,12 +82,14 @@ export interface NewsState {
 
 export interface GameErrorSummary {
     _id: string;
-    gameId: string;
+    gameId: string | null;
     gameName?: string;
     players: string[];
     errorMessage: string;
     errorStack?: string;
     timestamp: string;
+    count?: number;
+    kind?: string;
 }
 
 export interface GameErrorRecord extends GameErrorSummary {

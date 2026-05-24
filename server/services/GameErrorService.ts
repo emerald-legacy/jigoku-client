@@ -5,13 +5,15 @@ import logger from "../log.js";
 
 export interface GameErrorRecord {
     _id?: ObjectId;
-    gameId: string;
+    gameId: string | null;
     gameName?: string;
     players: string[];
     errorMessage: string;
     errorStack?: string;
     timestamp: Date;
     debugData: unknown;
+    count?: number;
+    kind?: string;
 }
 
 interface ListOptions {
@@ -30,6 +32,33 @@ class GameErrorService {
     async addError(record: GameErrorRecord) {
         const result = await this.errors.insertOne(record);
         return { ...record, _id: result.insertedId };
+    }
+
+    async addClientError(record: GameErrorRecord) {
+        const stackKey = (record.errorStack ?? "").slice(0, 200);
+        const sixtySecondsAgo = new Date(record.timestamp.getTime() - 60000);
+        const existing = await this.errors.findOneAndUpdate(
+            {
+                kind: record.kind,
+                "players.0": record.players[0],
+                errorMessage: record.errorMessage,
+                "debugData.stackKey": stackKey,
+                timestamp: { $gte: sixtySecondsAgo }
+            },
+            { $inc: { count: 1 }, $set: { timestamp: record.timestamp } },
+            { returnDocument: "after" }
+        );
+        if(existing) {
+            return existing;
+        }
+
+        const toInsert: GameErrorRecord = {
+            ...record,
+            count: 1,
+            debugData: { ...(record.debugData as Record<string, unknown>), stackKey }
+        };
+        const result = await this.errors.insertOne(toInsert);
+        return { ...toInsert, _id: result.insertedId };
     }
 
     async listErrors(options: ListOptions = {}) {
