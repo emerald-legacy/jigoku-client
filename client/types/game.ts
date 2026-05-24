@@ -293,6 +293,7 @@ export interface GameState {
     conflictDeclared?: boolean;
     conflict?: ConflictInfo;
     phase?: string;
+    roundNumber?: number;
     manualMode?: boolean;
     skirmishMode?: boolean;
 }

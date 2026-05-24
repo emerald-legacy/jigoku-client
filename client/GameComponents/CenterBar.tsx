@@ -45,6 +45,12 @@ export default function CenterBar(props: CenterBarProps) {
 
     return (
         <div className="center-bar">
+            { typeof currentGame.roundNumber === "number" && currentGame.roundNumber > 0 ? (
+                <div className="round-indicator" title={ `Round ${currentGame.roundNumber}` }>
+                    <span className="round-indicator-label">Round</span>
+                    <span className="round-indicator-number">{ currentGame.roundNumber }</span>
+                </div>
+            ) : null }
             <RingRow rings={ rings } owner={ null } cardSize={ cardSize } showRingEffects={ showRingEffects } gameMode={ gameMode } onClick={ props.onRingClick } onMenuItemClick={ props.onRingMenuItemClick } removed={ false } className="ring-panel" />
             { anyRemoved
                 ? <RingRow rings={ rings } owner={ null } cardSize={ cardSize } showRingEffects={ showRingEffects } gameMode={ gameMode } onClick={ props.onRingClick } onMenuItemClick={ props.onRingMenuItemClick } removed className="ring-panel removed-rings" />
