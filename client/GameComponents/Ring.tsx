@@ -19,9 +19,9 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
     const [showMenu, setShowMenu] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [claimFlash, setClaimFlash] = useState(false);
-    const wasClaimedHereRef = useRef(false);
 
     const isClaimedHere = !!owner && !!ring.claimed && owner === ring.claimedBy;
+    const wasClaimedHereRef = useRef(isClaimedHere);
 
     useEffect(() => {
         if(!wasClaimedHereRef.current && isClaimedHere) {
