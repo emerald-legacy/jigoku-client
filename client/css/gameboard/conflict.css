@@ -77,6 +77,15 @@
     margin-top: 0.1rem;
 }
 
+.round-indicator-setup-text {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(240, 240, 220, 0.98);
+}
+
 .skill-symbol {
     margin-left: 0.5em;
 }
