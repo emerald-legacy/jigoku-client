@@ -52,8 +52,8 @@ export default function CenterBar(props: CenterBarProps) {
                         <span className="round-indicator-number">{ currentGame.roundNumber }</span>
                     </div>
                 ) : (
-                    <div className="round-indicator round-indicator-setup" title="Setup">
-                        <span className="round-indicator-setup-text">Setup</span>
+                    <div className="round-indicator round-indicator--setup" title="Setup">
+                        <span className="round-indicator-label">Setup</span>
                     </div>
                 )
             ) : null }

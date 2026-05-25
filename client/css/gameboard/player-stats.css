@@ -26,7 +26,7 @@
     align-items: center;
     padding-left: 5px;
     padding-right: 5px;
-    margin-top: 5px;
+    margin-top: 7px;
 }
 
 .state {
@@ -113,7 +113,7 @@
 }
 
 .first-player-indicator {
-    margin: 10px;
+    margin: 8px;
     height: 50px;
     width: 40px;
     position: relative;
@@ -131,16 +131,16 @@
 
 @media (max-width: 1366px) {
     .first-player-indicator {
-        height: 25px;
-        width: 20px;
-        margin: 2px;
+        height: 44px;
+        width: 36px;
+        margin: 8px;
 
         &.hidden {
-            display: none;
+            visibility: hidden;
         }
 
         &.invisible {
-            display: none;
+            visibility: hidden;
         }
     }
 
@@ -160,6 +160,7 @@
     text-overflow: ellipsis;
     overflow: hidden;
     line-height: 27px;
+    flex-grow: 0;
 }
 
 .stat-image {
@@ -203,6 +204,6 @@
 }
 
 .player-stats__resources {
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 14px;
+    margin-bottom: 14px;
 }
