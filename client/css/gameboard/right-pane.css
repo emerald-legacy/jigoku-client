@@ -70,7 +70,7 @@
     min-height: 0;
     overflow-y: auto;
     padding: 8px 10px;
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
     font-size: 13px;
     line-height: 1.5;
     color: rgb(232, 234, 220);
@@ -97,7 +97,7 @@
     border: 1px solid rgba(120, 180, 80, 0.20);
     border-radius: 3px;
     padding: 4px 8px;
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
     font-size: 13px;
     box-shadow: none;
 }
