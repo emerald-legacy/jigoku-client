@@ -1,86 +1,60 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import type { Card } from "../types/game";
 
 const EXIT_DURATION_MS = 550;
 
 export function useCardListWithExit(cards: Card[] | undefined): Card[] {
-    const [leaving, setLeaving] = useState<Map<string, Card>>(() => new Map());
-    const prevOrder = useRef<Card[]>([]);
+    const current = cards ?? [];
+    const displayed = useRef<Card[]>(current);
     const timers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+    const [, tick] = useReducer((n: number) => n + 1, 0);
 
-    const current = cards || [];
+    const liveByUuid = new Map(current.map(c => [c.uuid, c]));
+    const next: Card[] = [];
+
+    for(const item of displayed.current) {
+        const live = liveByUuid.get(item.uuid);
+        if(live) {
+            next.push(live);
+            liveByUuid.delete(item.uuid);
+        } else if(item.leaving) {
+            next.push(item);
+        } else {
+            next.push({ ...item, leaving: true });
+        }
+    }
+    for(const arrival of liveByUuid.values()) {
+        next.push(arrival);
+    }
 
     useEffect(() => {
-        const currentUuids = new Set(current.map(c => c.uuid));
-        const next = new Map(leaving);
-        let dirty = false;
+        const prevLeaving = new Set(displayed.current.filter(c => c.leaving).map(c => c.uuid));
+        const nextLeaving = new Set(next.filter(c => c.leaving).map(c => c.uuid));
+        displayed.current = next;
 
-        for(const uuid of Array.from(next.keys())) {
-            if(currentUuids.has(uuid)) {
-                next.delete(uuid);
-                const t = timers.current.get(uuid);
-                if(t) {
-                    clearTimeout(t);
-                    timers.current.delete(uuid);
-                }
-                dirty = true;
+        for(const uuid of prevLeaving) {
+            if(!nextLeaving.has(uuid)) {
+                clearTimeout(timers.current.get(uuid));
+                timers.current.delete(uuid);
             }
         }
-
-        for(const prevCard of prevOrder.current) {
-            if(!currentUuids.has(prevCard.uuid) && !next.has(prevCard.uuid)) {
-                const uuid = prevCard.uuid;
-                next.set(uuid, { ...prevCard, leaving: true });
-                const handle = setTimeout(() => {
-                    setLeaving(prev => {
-                        if(!prev.has(uuid)) {
-                            return prev;
-                        }
-                        const m = new Map(prev);
-                        m.delete(uuid);
-                        return m;
-                    });
-                    timers.current.delete(uuid);
-                }, EXIT_DURATION_MS);
-                timers.current.set(uuid, handle);
-                dirty = true;
+        for(const uuid of nextLeaving) {
+            if(timers.current.has(uuid)) {
+                continue;
             }
+            timers.current.set(uuid, setTimeout(() => {
+                displayed.current = displayed.current.filter(c => c.uuid !== uuid);
+                timers.current.delete(uuid);
+                tick();
+            }, EXIT_DURATION_MS));
         }
-
-        if(dirty) {
-            setLeaving(next);
-        }
-
-        prevOrder.current = current;
-    }, [cards]); // eslint-disable-line react-hooks/exhaustive-deps
+    });
 
     useEffect(() => () => {
-        for(const handle of timers.current.values()) {
-            clearTimeout(handle);
+        for(const t of timers.current.values()) {
+            clearTimeout(t);
         }
-        timers.current.clear();
     }, []);
 
-    if(leaving.size === 0) {
-        return current;
-    }
-
-    const currentByUuid = new Map(current.map(c => [c.uuid, c]));
-    const result: Card[] = [];
-
-    for(const prevCard of prevOrder.current) {
-        const uuid = prevCard.uuid;
-        if(leaving.has(uuid)) {
-            result.push(leaving.get(uuid) as Card);
-        } else if(currentByUuid.has(uuid)) {
-            result.push(currentByUuid.get(uuid) as Card);
-            currentByUuid.delete(uuid);
-        }
-    }
-
-    for(const card of currentByUuid.values()) {
-        result.push(card);
-    }
-
-    return result;
+    return next;
 }
