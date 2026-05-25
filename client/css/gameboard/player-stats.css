@@ -24,37 +24,26 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding-left: 5px;
-    padding-right: 5px;
     margin-top: 7px;
+    padding: 0 5px;
 }
 
 .state {
-    height: 27px;
-    padding-left: 5px;
-    padding-right: 5px;
-    border-left: solid 2px;
     display: flex;
     flex-grow: 1;
     align-items: center;
     justify-content: center;
+    height: 27px;
+    padding: 0 5px;
+    border-left: solid 2px;
 
-    & span {
-        padding-right: 3px;
-        padding-left: 3px;
-    }
-
-    &:first-of-type {
-        border-left: none;
-    }
+    & span { padding: 0 3px; }
+    &:first-of-type { border-left: none; }
+    & .glyphicon { color: var(--color-primary); }
 
     &.first-player-state {
         flex-grow: 0;
         margin: 10px;
-    }
-
-    & .glyphicon {
-        color: var(--color-primary);
     }
 }
 
@@ -113,97 +102,62 @@
 }
 
 .first-player-indicator {
-    margin: 8px;
-    height: 50px;
     width: 40px;
-    position: relative;
-    justify-content: center;
-    align-items: center;
+    height: 50px;
+    margin: 8px;
 
-    &.hidden {
-        visibility: hidden;
-    }
-
-    &.invisible {
-        visibility: hidden;
-    }
+    &.hidden,
+    &.invisible { visibility: hidden; }
 }
 
 @media (max-width: 1366px) {
     .first-player-indicator {
-        height: 44px;
         width: 36px;
-        margin: 8px;
-
-        &.hidden {
-            visibility: hidden;
-        }
-
-        &.invisible {
-            visibility: hidden;
-        }
+        height: 44px;
     }
 
     .player-stats {
         font-size: 10pt;
 
-        &.panel {
-            padding: 2px 0 2px 5px;
-        }
+        &.panel { padding: 2px 0 2px 5px; }
     }
 }
 
 .player-avatar {
-    padding-right: 10px;
     display: block;
+    flex-grow: 0;
+    padding-right: 10px;
+    line-height: 27px;
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    line-height: 27px;
-    flex-grow: 0;
 }
 
 .stat-image {
-    margin-right: 5px;
-    width: 24px;
-    height: 24px;
-    background: center;
-    background-size: contain;
     display: flex;
     justify-content: center;
     align-items: center;
+    width: 24px;
+    height: 24px;
+    margin-right: 5px;
+    background: center;
+    background-size: contain;
     cursor: default;
 
-    &.small {
-        width: 16px;
-        height: 16px;
-    }
-
-    &.large {
-        width: 28px;
-        height: 28px;
-    }
-
-    &.x-large {
-        width: 28px;
-        height: 28px;
-    }
-
-    &.xxl {
-        width: 32px;
-        height: 32px;
-    }
+    &.small { width: 16px; height: 16px; }
+    &.large,
+    &.x-large { width: 28px; height: 28px; }
+    &.xxl { width: 32px; height: 32px; }
 }
 
 .stat-value {
-    margin-left: 5px;
     width: 18px;
     height: 18px;
+    margin-left: 5px;
     text-align: center;
     line-height: 18px;
 }
 
 .player-stats__resources {
-    margin-top: 14px;
-    margin-bottom: 14px;
+    margin: 14px 0;
 }

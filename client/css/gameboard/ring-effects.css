@@ -54,7 +54,7 @@
 @keyframes ring-claim-burst {
     0%   { transform: scale(0.25); opacity: 1; }
     25%  { transform: scale(1);    opacity: 1; }
-    100% { transform: scale(2.5);  opacity: 0; }
+    100% { transform: scale(1.6);  opacity: 0; }
 }
 
 .ring.ring-claim-flash {

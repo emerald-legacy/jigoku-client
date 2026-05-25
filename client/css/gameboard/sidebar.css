@@ -1,9 +1,10 @@
 .province-pane {
-    font-size: 14px;
+    --pane-buffer: calc(var(--attachment-offset) + 6px);
     position: absolute;
+    top: 0;
+    bottom: 0;
     min-height: max-content;
-    top: 0px;
-    bottom: 0px;
+    font-size: 14px;
     background-color: rgba(0, 0, 0, 0.4);
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.4);
     grid-column-start: 1;
@@ -11,23 +12,27 @@
     grid-template-rows: auto minmax(min-content, 1fr) 18px minmax(min-content, 1fr) auto;
     grid-template-columns: var(--sidebar-width);
     text-overflow: ellipsis;
+
+    &.small { --pane-buffer: calc(var(--attachment-offset-sm) + 6px); }
+    &.large { --pane-buffer: calc(var(--attachment-offset-lg) + 6px); }
+    &.x-large { --pane-buffer: calc(var(--attachment-offset-xl) + 6px); }
+    &.xxl { --pane-buffer: calc(var(--attachment-offset-xxl) + 6px); }
 }
 
 .sidebar-pane {
+    grid-column-start: 1;
+    grid-row: 2 / 3;
     display: flex;
     flex-direction: column;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    grid-column-start: 1;
     justify-content: flex-end;
-    padding-bottom: 12px;
+    padding-bottom: var(--pane-buffer);
+    overflow: hidden;
 
     &.our-side {
+        grid-row: 4 / 5;
         justify-content: flex-start;
-        grid-row-start: 4;
-        grid-row-end: 5;
         padding-bottom: 0;
-        padding-top: 12px;
+        padding-top: var(--pane-buffer);
     }
 }
 
@@ -35,40 +40,26 @@
     display: contents;
 }
 
-.sidebar-pane.their-side > .ring-row,
-.sidebar-pane.their-side > .claimed-pool {
-    margin-bottom: auto;
-}
-
-.sidebar-pane.our-side > .player-stats {
-    margin-bottom: auto;
-}
+.sidebar-pane.their-side > .claimed-pool { margin-bottom: auto; }
+.sidebar-pane.our-side > .player-stats { margin-bottom: auto; }
 
 .player-nameplate {
-    grid-row-start: 1;
-    grid-row-end: 2;
-    grid-column-start: 1;
-    grid-column-end: 2;
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
     display: flex;
     flex-direction: row;
-    flex-wrap: none;
+    flex-wrap: nowrap;
+    margin: 2px;
+    padding: 2px 0;
     font-weight: bold;
-    margin: 2px 2px 2px 2px;
-    padding-right: 0;
-    padding-left: 0;
-    padding-top: 2px;
-    padding-bottom: 2px;
     text-overflow: ellipsis;
     overflow: hidden;
 
-    &.our-side {
-        grid-row-start: 5;
-        grid-row-end: 6;
-    }
+    &.our-side { grid-row: 5 / 6; }
 }
 
 .player-nameplate > .player-name {
-    min-width: 0px;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
 }
