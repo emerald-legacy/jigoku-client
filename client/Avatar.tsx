@@ -15,6 +15,8 @@ function Avatar({ emailHash, float, forceDefault }: AvatarProps) {
     return (
         <img
             className={ className }
+            width={ 24 }
+            height={ 24 }
             src={ `https://www.gravatar.com/avatar/${emailHash}?d=identicon&s=24${forceDefault ? "&f=y" : ""}` }
         />
     );
