@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/jigoku/jigoku-client#readme",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=24.0.0"
   },
   "dependencies": {
     "axios": "1.16.1",
