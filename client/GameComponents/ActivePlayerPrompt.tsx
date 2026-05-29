@@ -43,16 +43,18 @@ function ActivePlayerPrompt({
 
     const timerRef = useRef<{ started: Date | null; timerTime: number }>({ started: null, timerTime: 0 });
     const timerHandleRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const onTimerExpiredRef = useRef(onTimerExpired);
     const draggableRef = useRef<HTMLDivElement | null>(null);
 
     const hasTimerButton = buttons?.some((button: Button) => button.timer) ?? false;
     const windowTimer = user?.settings?.windowTimer;
 
     useEffect(() => {
+        onTimerExpiredRef.current = onTimerExpired;
+    }, [onTimerExpired]);
+
+    useEffect(() => {
         if(!hasTimerButton || !windowTimer) {
-            return;
-        }
-        if(timerHandleRef.current) {
             return;
         }
 
@@ -71,8 +73,8 @@ function ActivePlayerPrompt({
                 timerHandleRef.current = null;
                 setShowTimer(false);
 
-                if(onTimerExpired) {
-                    onTimerExpired();
+                if(onTimerExpiredRef.current) {
+                    onTimerExpiredRef.current();
                 }
                 return;
             }
@@ -91,8 +93,9 @@ function ActivePlayerPrompt({
                 clearInterval(timerHandleRef.current);
                 timerHandleRef.current = null;
             }
+            setShowTimer(false);
         };
-    }, [hasTimerButton, windowTimer, onTimerExpired]);
+    }, [hasTimerButton, windowTimer]);
 
     const handleButtonClick = (event: React.MouseEvent, command: string | undefined, arg: string | undefined, uuid: string | undefined, method: string | undefined) => {
         event.preventDefault();
