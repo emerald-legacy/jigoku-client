@@ -63,8 +63,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
     const onSaveClick = (event: React.MouseEvent) => {
         event.preventDefault();
         if(currentUser) {
-            currentUser.permissions = permissions;
-            saveUser(currentUser);
+            saveUser({ ...currentUser, permissions });
         }
     };
 
