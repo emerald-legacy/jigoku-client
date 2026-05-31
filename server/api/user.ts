@@ -52,11 +52,14 @@ export function init(server) {
                 return res.status(404).send({ message: "Not found" });
             }
 
-            const allowedPermissions = ["canEditNews", "canManageUsers", "allowMelee"];
+            const allowedPermissions = ["canEditNews", "canManageUsers", "canViewGameErrors"];
             const incomingPerms = userToSet.permissions || {};
-            user.permissions = Object.fromEntries(
-                allowedPermissions.map(key => [key, !!incomingPerms[key]])
-            );
+            user.permissions = {
+                ...user.permissions,
+                ...Object.fromEntries(
+                    allowedPermissions.map(key => [key, !!incomingPerms[key]])
+                )
+            };
             await userService.update(user);
 
             res.send({ success: true });
