@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { Upload, SkipBack, ChevronLeft, Play, Pause, ChevronRight, SkipForward } from "lucide-react";
 import { InnerGameBoard } from "./GameBoard";
+import { useAppSelector } from "./hooks";
 import { parseGameLog } from "./GameComponents/gameLogSerializer";
 import type { Card, GameState } from "./types/game";
 import type { HiddenInfo, PlayerHiddenInfo } from "./gameStateRecorder";
@@ -168,6 +169,8 @@ function GameReplay() {
     const [dragOver, setDragOver] = useState(false);
     const [portalTarget, setPortalTarget] = useState(null);
 
+    const cardSize = useAppSelector(state => state.auth.user?.settings?.cardSize) ?? "normal";
+
     const fileInputRef = useRef(null);
     const intervalRef = useRef(null);
 
@@ -318,7 +321,7 @@ function GameReplay() {
     const replayUser = {
         username,
         settings: {
-            cardSize: "normal",
+            cardSize,
             optionSettings: {}
         }
     };
