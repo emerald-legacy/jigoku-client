@@ -1,0 +1,355 @@
+/* User administration — "imperial registry" dossier panel.
+   Matches the panel-title / panel-darker language used by the game-errors view. */
+
+.user-admin {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+/* ---- Search ---- */
+
+.user-admin-search {
+    display: flex;
+    gap: 0.6rem;
+    align-items: stretch;
+    margin-bottom: 0.25rem;
+}
+
+.user-admin-field {
+    position: relative;
+    flex: 1 1 auto;
+}
+
+.user-admin-field-icon {
+    position: absolute;
+    left: 0.7rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(160, 180, 140, 0.5);
+    pointer-events: none;
+}
+
+.user-admin-input {
+    width: 100%;
+    padding: 0.55rem 0.75rem 0.55rem 2.1rem;
+    background: rgba(8, 10, 6, 0.85);
+    border: 1px solid rgba(120, 180, 80, 0.22);
+    border-radius: 4px;
+    color: rgba(232, 234, 220, 0.96);
+    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+}
+
+.user-admin-input::placeholder {
+    color: rgba(160, 180, 140, 0.4);
+}
+
+.user-admin-input:focus {
+    outline: none;
+    background: rgba(10, 14, 8, 0.95);
+    border-color: rgba(120, 200, 100, 0.6);
+    box-shadow: 0 0 0 1px rgba(120, 200, 100, 0.35), 0 0 14px rgba(80, 160, 60, 0.18);
+}
+
+.user-admin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: 1px solid rgba(120, 180, 80, 0.4);
+    color: rgba(230, 235, 210, 0.95);
+    background: linear-gradient(180deg, rgba(51, 102, 0, 0.55), rgba(34, 60, 12, 0.55));
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s, transform 0.05s;
+    white-space: nowrap;
+}
+
+.user-admin-btn:hover {
+    border-color: rgba(150, 220, 90, 0.7);
+    background: linear-gradient(180deg, rgba(64, 122, 0, 0.7), rgba(40, 72, 14, 0.7));
+    box-shadow: 0 0 16px rgba(80, 160, 60, 0.2);
+}
+
+.user-admin-btn:active {
+    transform: translateY(1px);
+}
+
+/* ---- States ---- */
+
+.user-admin-loading,
+.user-admin-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2.5rem 1rem;
+    color: rgba(160, 180, 140, 0.5);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+    font-style: italic;
+}
+
+.user-admin-placeholder svg {
+    color: rgba(120, 180, 80, 0.3);
+}
+
+/* ---- Dossier (found user) ---- */
+
+.user-admin-dossier {
+    position: relative;
+    margin-top: 0.9rem;
+    padding: 1.1rem 1.1rem 1.1rem 1.4rem;
+    background: linear-gradient(180deg, rgba(20, 22, 18, 0.6), rgba(10, 12, 8, 0.6));
+    border: 1px solid rgba(120, 180, 80, 0.16);
+    border-radius: 6px;
+    animation: user-admin-rise 0.4s ease both;
+}
+
+/* jade rule down the left edge — the "official seam" */
+.user-admin-dossier::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, transparent, rgba(120, 200, 100, 0.7), transparent);
+}
+
+.user-admin-identity {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    padding-bottom: 0.85rem;
+    margin-bottom: 0.85rem;
+    border-bottom: 1px solid rgba(120, 180, 80, 0.12);
+}
+
+.user-admin-name {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.7rem;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    color: rgba(235, 238, 222, 0.98);
+}
+
+.user-admin-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 1.4rem;
+    margin-left: auto;
+}
+
+.user-admin-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.user-admin-meta-key {
+    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(160, 180, 140, 0.5);
+}
+
+.user-admin-meta-val {
+    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 0.78rem;
+    color: rgba(210, 216, 195, 0.9);
+}
+
+/* ---- Permissions ---- */
+
+.user-admin-perms-title {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(180, 200, 150, 0.85);
+    margin-bottom: 0.65rem;
+}
+
+.user-admin-perms-title svg {
+    color: var(--color-link, #5ea026);
+}
+
+.user-admin-perm {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0.7rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: background 0.18s, border-color 0.18s;
+}
+
+.user-admin-perm + .user-admin-perm {
+    margin-top: 0.25rem;
+}
+
+.user-admin-perm:hover {
+    background: rgba(51, 102, 0, 0.1);
+    border-color: rgba(120, 180, 80, 0.15);
+}
+
+.user-admin-perm-icon {
+    flex-shrink: 0;
+    color: rgba(160, 180, 140, 0.55);
+}
+
+.user-admin-perm.is-on .user-admin-perm-icon {
+    color: var(--color-tertiary, #4d9900);
+}
+
+.user-admin-perm-info {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.user-admin-perm-label {
+    font-size: 0.92rem;
+    color: rgba(228, 232, 216, 0.95);
+}
+
+.user-admin-perm-desc {
+    font-size: 0.72rem;
+    color: rgba(170, 185, 150, 0.55);
+    margin-top: 0.05rem;
+}
+
+/* ---- Toggle switch ---- */
+
+.user-admin-toggle {
+    position: relative;
+    flex-shrink: 0;
+    width: 42px;
+    height: 22px;
+    cursor: pointer;
+}
+
+.user-admin-toggle input {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: pointer;
+}
+
+.user-admin-toggle-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 999px;
+    background: rgba(8, 10, 6, 0.9);
+    border: 1px solid rgba(120, 180, 80, 0.25);
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.user-admin-toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(180, 195, 165, 0.7);
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s;
+}
+
+.user-admin-toggle input:checked ~ .user-admin-toggle-track {
+    background: linear-gradient(180deg, rgba(77, 153, 0, 0.9), rgba(43, 85, 0, 0.9));
+    border-color: rgba(150, 220, 90, 0.7);
+    box-shadow: 0 0 12px rgba(80, 170, 60, 0.4), inset 0 0 4px rgba(120, 200, 100, 0.3);
+}
+
+.user-admin-toggle input:checked ~ .user-admin-toggle-track .user-admin-toggle-knob {
+    transform: translateX(20px);
+    background: rgb(232, 234, 220);
+}
+
+.user-admin-toggle input:focus-visible ~ .user-admin-toggle-track {
+    box-shadow: 0 0 0 2px rgba(120, 200, 100, 0.5);
+}
+
+/* ---- Actions / seal ---- */
+
+.user-admin-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.9rem;
+    margin-top: 1.1rem;
+    padding-top: 0.9rem;
+    border-top: 1px solid rgba(120, 180, 80, 0.12);
+}
+
+.user-admin-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1.3rem;
+    border-radius: 4px;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: rgb(245, 238, 230);
+    border: 1px solid rgba(187, 62, 62, 0.55);
+    background: linear-gradient(180deg, rgba(150, 44, 44, 0.85), rgba(110, 30, 30, 0.9));
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    transition: border-color 0.18s, box-shadow 0.18s, background 0.18s, transform 0.05s;
+}
+
+.user-admin-save:hover {
+    border-color: rgba(210, 90, 90, 0.85);
+    background: linear-gradient(180deg, rgba(178, 54, 54, 0.95), rgba(132, 36, 36, 0.95));
+    box-shadow: 0 0 18px rgba(187, 62, 62, 0.35);
+}
+
+.user-admin-save:active {
+    transform: translateY(1px);
+}
+
+.user-admin-save svg {
+    color: rgba(255, 230, 220, 0.9);
+}
+
+@keyframes user-admin-rise {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .user-admin-dossier {
+        animation: none;
+    }
+    .user-admin-toggle-knob {
+        transition: none;
+    }
+}
