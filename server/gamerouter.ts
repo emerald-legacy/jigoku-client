@@ -10,6 +10,16 @@ import GameService, { type GameRecord } from "./services/GameService.js";
 import GameStatsService from "./services/GameStatsService.js";
 import DeckStatsService from "./services/DeckStatsService.js";
 import GameErrorService from "./services/GameErrorService.js";
+import type PendingGame from "./pendinggame.js";
+import {
+    parseInbound,
+    type InboundMessage,
+    type LobbyUser,
+    type OutboundCommand,
+    type OutboundMessage
+} from "./LobbyProtocol.js";
+
+type OutboundArg<C extends OutboundCommand> = Extract<OutboundMessage, { command: C }>["arg"];
 
 const ONE_SECOND = 1000;
 const FIFTEEN_SECONDS = 15 * ONE_SECOND;
@@ -34,20 +44,11 @@ export interface RouterGame {
     getSaveState?: () => GameRecord;
 }
 
-interface GameErrorArg {
-    gameId: string;
-    gameName?: string;
-    players: string[];
-    errorMessage: string;
-    errorStack?: string;
-    timestamp: string;
-    debugData: unknown;
-}
-
-interface NodeMessage {
-    command: string;
-    arg?: Record<string, unknown> & { game?: GameRecord & { winner?: string; winReason?: string; players?: GameRecord["players"]; gameId?: string }; gameId?: string; player?: string; spectator?: boolean; maxGames?: number; address?: string; port?: number; protocol?: string; version?: string; games?: Record<string, unknown> } & Partial<GameErrorArg>;
-}
+type GameWinGame = GameRecord & {
+    winner?: string;
+    winReason?: string;
+    gameId?: string;
+};
 
 class GameRouter extends EventEmitter {
     workers: Record<string, GameWorker>;
@@ -121,7 +122,7 @@ class GameRouter extends EventEmitter {
     }
 
     // External methods
-    startGame(game: RouterGame): GameWorker | undefined {
+    startGame(game: PendingGame): GameWorker | undefined {
         var node = this.getNextAvailableGameNode();
 
         if(!node) {
@@ -130,9 +131,7 @@ class GameRouter extends EventEmitter {
         }
         logger.info(`starting game on node ${node.identity}`);
 
-        if(game.getSaveState) {
-            this.gameService.create(game.getSaveState());
-        }
+        this.gameService.create(game.getSaveState() as GameRecord);
 
         node.numGames++;
 
@@ -140,7 +139,7 @@ class GameRouter extends EventEmitter {
         return node;
     }
 
-    addSpectator(game: RouterGame, user: { username: string }) {
+    addSpectator(game: PendingGame, user: LobbyUser) {
         if(!game.node) {
             return;
         }
@@ -219,16 +218,17 @@ class GameRouter extends EventEmitter {
 
         var worker = this.workers[identityStr];
 
-        var message: NodeMessage | undefined = undefined;
-
+        let parsed: unknown;
         try {
-            message = JSON.parse((data as { toString: () => string }).toString());
+            parsed = JSON.parse((data as { toString: () => string }).toString());
         } catch(err) {
             logger.error(`Failed to parse message from ${identityStr}: ${err}`);
             return;
         }
 
+        const message: InboundMessage | null = parseInbound(parsed);
         if(!message) {
+            logger.error(`Unrecognised message from ${identityStr}: ${JSON.stringify(parsed)}`);
             return;
         }
 
@@ -251,7 +251,7 @@ class GameRouter extends EventEmitter {
             case "HELLO": {
                 logger.info(`received HELLO from ${identityStr}`);
                 this.emit("onWorkerStarted", identityStr);
-                const arg = message.arg || {};
+                const arg = message.arg;
                 this.workers[identityStr] = {
                     identity: identityStr,
                     maxGames: arg.maxGames || 20,
@@ -265,13 +265,13 @@ class GameRouter extends EventEmitter {
 
                 this.emit("onNodeReconnected", identityStr, arg.games);
 
-                worker.numGames = Object.keys(arg.games || {}).length;
+                worker.numGames = (arg.games ?? []).length;
 
                 break;
             }
             case "GAMEWIN": {
                 logger.info(`received GAMEWIN from ${identityStr}`);
-                const game = message.arg?.game;
+                const game = message.arg?.game as GameWinGame | undefined;
                 if(!game || !game.gameId || !Array.isArray(game.players) || !game.players.some((p: { name: string }) => p.name === game.winner)) {
                     logger.error(`Invalid GAMEWIN payload from ${identityStr}: ${JSON.stringify(game)}`);
                     break;
@@ -294,11 +294,11 @@ class GameRouter extends EventEmitter {
                 break;
             case "PLAYERLEFT":
                 logger.info(`received PLAYERLEFT from ${identityStr}`);
-                if(!message.arg?.spectator && message.arg?.game) {
-                    this.gameService.update(message.arg.game);
+                if(!message.arg.spectator && message.arg.game) {
+                    this.gameService.update(message.arg.game as GameRecord);
                 }
 
-                this.emit("onPlayerLeft", message.arg?.gameId, message.arg?.player);
+                this.emit("onPlayerLeft", message.arg.gameId, message.arg.player);
 
                 break;
             case "GAMEERROR": {
@@ -364,7 +364,7 @@ class GameRouter extends EventEmitter {
     }
 
     // Internal methods
-    sendCommand(identity: string, command: string, arg?: unknown) {
+    sendCommand<C extends OutboundCommand>(identity: string, command: C, arg?: OutboundArg<C>) {
         const logLevel = (command === "PING") ? "debug" : "info";
         logger[logLevel](`sending ${command} to ${identity}`);
 
