@@ -7,6 +7,7 @@ import GameModes from "../shared/GameModes";
 import { X } from "lucide-react";
 import Avatar from "./Avatar";
 import * as actions from "./actions";
+import { usePatronStatus } from "./patronStatus";
 import { useAppSelector, useAppDispatch } from "./hooks";
 import type { GameState, UserSettings } from "./types/game";
 import type { RootState } from "./types/redux";
@@ -55,6 +56,11 @@ const gameModeModifiers: Record<string, string> = {
     [GameModes.Obsidian]: "obsidian",
     [GameModes.Sanctuary]: "sanctuary"
 };
+
+function GamePlayerName({ name }: { name: string }) {
+    const isPatron = usePatronStatus(name);
+    return <span className={ `player-name${isPatron ? " patron-name" : ""}` }>{ name }</span>;
+}
 
 export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, username }: InnerGameListProps) {
     const joinGame = (event: React.MouseEvent, game: LobbyGame) => {
@@ -118,7 +124,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, u
                             <span key={ player.name } className="game-row-player">
                                 { i > 0 && <span className="game-row-vs">vs</span> }
                                 <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } />
-                                <span className="player-name">{ player.name }</span>
+                                <GamePlayerName name={ player.name } />
                                 <span className={ `game-icon icon-clan-${player.faction}` } />
                             </span>
                         )) }

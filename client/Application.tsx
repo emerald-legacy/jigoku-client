@@ -297,7 +297,8 @@ export default function Application() {
                 ],
                 avatar: true,
                 emailHash: user.emailHash,
-                disableGravatar: user.settings.disableGravatar
+                disableGravatar: user.settings.disableGravatar,
+                isPatron: !!user.permissions?.isPatron
             }
         ];
     }
