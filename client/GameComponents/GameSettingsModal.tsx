@@ -45,7 +45,7 @@ export default function GameSettingsModal(props: GameSettingsModalProps) {
                     </div>
                 </div>
             </div>
-            { show && <div className="modal-backdrop fade in" onClick={ onClose } /> }
+            { show && <div className="modal-backdrop settings-modal-backdrop fade in" onClick={ onClose } /> }
         </>
     );
 }

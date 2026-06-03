@@ -159,6 +159,15 @@
     position: relative;
 }
 
+/* Game Configuration sits above the draggable dialogs (hand z 1030, chat 800, popups 1031). */
+#settings-modal {
+    z-index: var(--layer-top);
+}
+
+.settings-modal-backdrop {
+    z-index: calc(var(--layer-top) - 1);
+}
+
 .settings-popup::before {
     content: "";
     position: absolute;

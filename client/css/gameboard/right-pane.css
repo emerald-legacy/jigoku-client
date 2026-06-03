@@ -11,12 +11,83 @@
     right: 0;
     z-index: var(--layer-chat);
 
-    & .card-large {
+    & .card-zoom-frame {
+        pointer-events: auto;
         position: relative;
-        top: auto;
-        right: auto;
+        display: inline-flex;
+        flex-direction: column;
+        padding: 5px;
+        background: linear-gradient(180deg, rgba(20, 22, 18, 0.95), rgba(12, 14, 10, 0.95));
+        border: 1px solid rgba(120, 180, 80, 0.30);
+        border-radius: 7px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         overflow: hidden;
     }
+
+    /* Empty (no card hovered): keep grip grabbable, dim the frame, drop the shadow. */
+    & .card-zoom-frame.is-empty {
+        background: linear-gradient(180deg, rgba(20, 22, 18, 0.55), rgba(12, 14, 10, 0.55));
+        border-color: rgba(120, 180, 80, 0.18);
+        box-shadow: none;
+    }
+}
+
+.card-zoom-grip {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+    margin-bottom: 5px;
+    padding: 0 7px;
+    cursor: grab;
+    background: rgba(120, 180, 80, 0.12);
+    border: 1px solid rgba(120, 180, 80, 0.15);
+    border-radius: 4px;
+}
+
+.card-zoom-grip:active {
+    cursor: grabbing;
+}
+
+.card-zoom-grip .card-name {
+    flex: 1 1 auto;
+    font-family: "Source Serif 4", Georgia, serif;
+    font-size: 12px;
+    line-height: 22px;
+    color: rgba(180, 200, 150, 0.92);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-zoom-grip-dots {
+    flex: 0 0 auto;
+    width: 10px;
+    height: 8px;
+    background-image: radial-gradient(rgba(150, 220, 90, 0.7) 1px, transparent 1px);
+    background-size: 4px 4px;
+}
+
+.card-zoom-frame .card-zoomed {
+    position: relative;
+    width: 220px;
+    height: 307px;
+}
+
+.card-zoom-frame.horizontal .card-zoomed {
+    width: 307px;
+    height: 220px;
+}
+
+.card-zoom-frame.is-empty .card-zoomed {
+    box-sizing: border-box;
+    border: 1px dashed rgba(120, 180, 80, 0.20);
+    border-radius: 4px;
+}
+
+.card-zoom-frame .card-zoomed > img {
+    border-radius: 4px;
 }
 
 /* === Chat (self-contained card at bottom-right) === */
