@@ -163,6 +163,10 @@
     font-size: 0.9rem;
 }
 
+.samurai-name--patron {
+    color: #d4af37;
+}
+
 .samurai-rail {
     display: flex;
     flex-direction: column;

@@ -1,4 +1,7 @@
 
+import { resolveStoneImages } from "../patronOptions";
+import { usePatronViewerConfig } from "../PatronContext";
+
 interface HonorStatusCounterProps {
     cancel?: boolean;
     fade?: boolean;
@@ -9,6 +12,7 @@ interface HonorStatusCounterProps {
 }
 
 function HonorStatusCounter({ cancel, fade, name, honored, dishonored, tainted }: HonorStatusCounterProps) {
+    const stones = resolveStoneImages(usePatronViewerConfig());
     let className = `honorstatuscounter ${name}`;
 
     if(cancel) {
@@ -29,8 +33,8 @@ function HonorStatusCounter({ cancel, fade, name, honored, dishonored, tainted }
 
     return (
         <div key={ name } className={ className }>
-            { honored ? <img src="/img/honor-stone.png" title="Honored" alt="Honored" /> : null }
-            { dishonored ? <img src="/img/dishonor-stone.png" title="Dishonored" alt="Dishonored" /> : null }
+            { honored ? <img src={ stones.honored } title="Honored" alt="Honored" /> : null }
+            { dishonored ? <img src={ stones.dishonored } title="Dishonored" alt="Dishonored" /> : null }
             { totalProps > 1 ? <div className="honorstatusspacer" /> : null }
             { tainted ? <img src="/img/tainted-stone.png" title="Tainted" alt="Tainted" /> : null }
         </div>

@@ -22,7 +22,7 @@ export default function UserGroup({ label, status, users }: UserGroupProps) {
             </header>
             <ul className="samurai-group-list">
                 { users.map(u => (
-                    <UserRow key={ u.name } name={ u.name } status={ u.status } />
+                    <UserRow key={ u.name } name={ u.name } status={ u.status } isPatron={ u.isPatron } />
                 )) }
             </ul>
         </section>

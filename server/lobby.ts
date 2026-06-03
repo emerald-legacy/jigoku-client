@@ -26,6 +26,7 @@ interface LobbyUser {
     emailHash?: string;
     admin?: boolean;
     blockList?: string[];
+    permissions?: Record<string, boolean>;
     settings?: { disableGravatar?: boolean; [key: string]: unknown };
     [key: string]: unknown;
 }
@@ -190,6 +191,7 @@ class Lobby {
                 name: user.username,
                 emailHash: user.emailHash,
                 noAvatar: user.settings?.disableGravatar,
+                isPatron: !!user.permissions?.isPatron,
                 status: this.getUserStatus(user.username)
             };
         });
@@ -242,7 +244,7 @@ class Lobby {
             .sort((a, b) => (a.started === b.started) ? 0 : a.started ? 1 : -1);
     }
 
-    sendUserListFilteredWithBlockList(socket: Socket, userList: { name: string; emailHash?: string; noAvatar?: boolean; status: UserStatus }[]) {
+    sendUserListFilteredWithBlockList(socket: Socket, userList: { name: string; emailHash?: string; noAvatar?: boolean; isPatron?: boolean; status: UserStatus }[]) {
         let filteredUsers = userList;
 
         if(socket.user && socket.user.blockList) {

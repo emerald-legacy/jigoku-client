@@ -1,4 +1,7 @@
 
+import { resolveFateImage } from "../patronOptions";
+import { usePatronViewerConfig } from "../PatronContext";
+
 interface FateCounterProps {
     cancel?: boolean;
     fade?: boolean;
@@ -7,6 +10,7 @@ interface FateCounterProps {
 }
 
 function FateCounter({ cancel, fade, name, value }: FateCounterProps) {
+    const fateImage = resolveFateImage(usePatronViewerConfig());
     let className = `fatecounter ${name}`;
 
     if(cancel) {
@@ -19,7 +23,7 @@ function FateCounter({ cancel, fade, name, value }: FateCounterProps) {
 
     return (
         <div key={ name } className={ className }>
-            <img src="/img/Fate.png" title="Fate" alt="Fate" />
+            <img src={ fateImage } title="Fate" alt="Fate" />
             <div className="fatecountertext">{ value }</div>
         </div>
     );

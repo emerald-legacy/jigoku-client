@@ -1,5 +1,7 @@
 import Clock from "./Clock";
 import ClockPopup from "./ClockPopup";
+import { resolveFateImage, resolveHonorImage } from "../patronOptions";
+import { usePatronViewerConfig } from "../PatronContext";
 import type { ClockState, Player } from "../types/game";
 import type { AnimationEvent } from "../types/redux";
 
@@ -32,6 +34,10 @@ export function PlayerStatsBox({
     playerName,
     onAnimationEnd
 }: PlayerStatsBoxProps) {
+    const viewer = usePatronViewerConfig();
+    const fateImage = resolveFateImage(viewer);
+    const honorImage = resolveHonorImage(viewer);
+
     const airAnim = pendingAnimations?.find(a => a.type === "air" && a.playerName === playerName);
     const sendUpdate = (type: string, direction: string) => {
         sendGameMessage?.("changeStat", type, direction === "up" ? 1 : -1);
@@ -44,8 +50,8 @@ export function PlayerStatsBox({
         return stats[stat] || 0;
     };
 
-    const getButton = (stat: string, name: string, statToSet = stat) => {
-        const imageStyle = { backgroundImage: `url(/img/${name}.png)` };
+    const getButton = (stat: string, name: string, statToSet = stat, image = `/img/${name}.png`) => {
+        const imageStyle = { backgroundImage: `url(${image})` };
 
         return (
             <div className="state">
@@ -140,8 +146,8 @@ export function PlayerStatsBox({
                         <div className="stat-value">{ handSize }</div>
                     </div>
                 </div>
-                <div className="stats-row">{ getButton("fate", "Fate") }</div>
-                <div className="stats-row">{ getButton("honor", "Honor") }</div>
+                <div className="stats-row">{ getButton("fate", "Fate", "fate", fateImage) }</div>
+                <div className="stats-row">{ getButton("honor", "Honor", "honor", honorImage) }</div>
             </div>
         </div>
     );

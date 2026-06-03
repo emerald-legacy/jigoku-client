@@ -17,6 +17,7 @@ import {
     type ProfileUserLike
 } from "./Profile.reducer";
 import { backgrounds, type BackgroundOption } from "./backgrounds";
+import { patronHonorDials, patronFateTokens } from "./patronOptions";
 
 const windows = [
     { name: "dynasty", label: "Dynasty phase", style: "col-sm-4" },
@@ -61,6 +62,10 @@ export function InnerProfile({ user }: InnerProfileProps) {
     const handleSaveClick = async (event: React.MouseEvent) => {
         event.preventDefault();
 
+        if(!user) {
+            return;
+        }
+
         const emailError = validateEmail(account.email);
         const passwordError = validatePassword(account.newPassword, account.newPasswordAgain, true);
         dispatch({ type: "validation", field: "email", error: emailError });
@@ -94,7 +99,8 @@ export function InnerProfile({ user }: InnerProfileProps) {
                         optionSettings: settings.optionSettings,
                         timerSettings: settings.timerSettings,
                         background: settings.background,
-                        cardSize: settings.cardSize
+                        cardSize: settings.cardSize,
+                        patron: settings.patron
                     }
                 }
             })).unwrap();
@@ -140,6 +146,8 @@ export function InnerProfile({ user }: InnerProfileProps) {
     if(!user) {
         return <AlertPanel type="error" message="You must be logged in to update your profile" />;
     }
+
+    const isPatron = !!user.permissions?.isPatron;
 
     return (
         <div className="row profile full-height">
@@ -292,6 +300,40 @@ export function InnerProfile({ user }: InnerProfileProps) {
                             )) }
                         </div>
                     </div>
+                    { isPatron ? (
+                        <div>
+                            <div className="panel-title">
+                                Patron Cosmetics
+                            </div>
+                            <div className="panel">
+                                <p className="help-block small">Thanks for supporting us! Choose your custom in-game imagery. Opponents and spectators see a default patron honour dial and ring set; you (and other patrons) see your choices here.</p>
+                                <label className="control-label">Honour dial</label>
+                                <div className="row">
+                                    { patronHonorDials.map(opt => (
+                                        <div key={ opt.value } className="col-sm-3 card-settings" onClick={ () => dispatch({ type: "patron", field: "dial", value: opt.value }) }>
+                                            <img className={ `img-responsive${settings.patron.dial === opt.value ? " selected" : ""}` } src={ opt.thumbnail } />
+                                            <span className="bg-label">{ opt.label }</span>
+                                        </div>
+                                    )) }
+                                </div>
+                                <label className="control-label">Fate tokens</label>
+                                <div className="row">
+                                    { patronFateTokens.map(opt => (
+                                        <div key={ opt.value } className="col-sm-2 card-settings" onClick={ () => dispatch({ type: "patron", field: "fate", value: opt.value }) }>
+                                            <img className={ `img-responsive${settings.patron.fate === opt.value ? " selected" : ""}` } src={ opt.thumbnail } />
+                                            <span className="bg-label">{ opt.label }</span>
+                                        </div>
+                                    )) }
+                                </div>
+                                <div className="form-group">
+                                    <Checkbox name="patron.rings" noGroup label="Use patron ring set" fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "patron", field: "rings", value: e.target.checked }) } checked={ settings.patron.rings } />
+                                    <Checkbox name="patron.tokens" noGroup label="Use patron honoured/dishonoured tokens" fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "patron", field: "tokens", value: e.target.checked }) } checked={ settings.patron.tokens } />
+                                </div>
+                            </div>
+                        </div>
+                    ) : null }
                     <div>
                         <div className="panel-title">
                             Card Image Size

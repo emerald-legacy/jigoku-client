@@ -20,7 +20,8 @@ describe("initProfileState", () => {
                 cardSize: "normal",
                 promptedActionWindows: {},
                 optionSettings: {},
-                timerSettings: {}
+                timerSettings: {},
+                patron: { dial: "default", fate: "default", rings: false, tokens: false }
             },
             validation: {},
             loading: false
@@ -48,7 +49,8 @@ describe("initProfileState", () => {
             cardSize: "large",
             promptedActionWindows: { dynasty: true },
             optionSettings: { sortHandByName: true },
-            timerSettings: { events: true }
+            timerSettings: { events: true },
+            patron: { dial: "default", fate: "default", rings: false, tokens: false }
         });
     });
 });

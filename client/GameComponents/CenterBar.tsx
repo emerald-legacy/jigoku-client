@@ -3,6 +3,8 @@ import RingRow from "./RingRow";
 import ConflictPanel from "./ConflictPanel";
 import CardsPlayedTracker from "./CardsPlayedTracker";
 import RingAttachmentRow from "./RingAttachmentRow";
+import { resolveCenterRingsPatron } from "../patronOptions";
+import { usePatronViewerConfig } from "../PatronContext";
 import type { Card as CardType, Ring as RingType, Player, MenuItem, GameState, ConflictInfo } from "../types/game";
 
 export { default as RingRow } from "./RingRow";
@@ -35,6 +37,7 @@ function getControlledRingAttachments(rings: RingType[], player: Player): Record
 
 export default function CenterBar(props: CenterBarProps) {
     const { currentGame, thisPlayer, otherPlayer, cardSize, showRingEffects } = props;
+    const centerRingsPatron = resolveCenterRingsPatron(usePatronViewerConfig());
     const rings = currentGame.rings as Record<string, RingType>;
     const anyRemoved = rings.air.removedFromGame || rings.earth.removedFromGame || rings.water.removedFromGame || rings.fire.removedFromGame || rings.void.removedFromGame;
     const gameMode = currentGame.gameMode;
@@ -57,9 +60,9 @@ export default function CenterBar(props: CenterBarProps) {
                     </div>
                 )
             ) : null }
-            <RingRow rings={ rings } owner={ null } cardSize={ cardSize } showRingEffects={ showRingEffects } gameMode={ gameMode } onClick={ props.onRingClick } onMenuItemClick={ props.onRingMenuItemClick } removed={ false } className="ring-panel" />
+            <RingRow rings={ rings } owner={ null } cardSize={ cardSize } showRingEffects={ showRingEffects } gameMode={ gameMode } onClick={ props.onRingClick } onMenuItemClick={ props.onRingMenuItemClick } removed={ false } className="ring-panel" patron={ centerRingsPatron } />
             { anyRemoved
-                ? <RingRow rings={ rings } owner={ null } cardSize={ cardSize } showRingEffects={ showRingEffects } gameMode={ gameMode } onClick={ props.onRingClick } onMenuItemClick={ props.onRingMenuItemClick } removed className="ring-panel removed-rings" />
+                ? <RingRow rings={ rings } owner={ null } cardSize={ cardSize } showRingEffects={ showRingEffects } gameMode={ gameMode } onClick={ props.onRingClick } onMenuItemClick={ props.onRingMenuItemClick } removed className="ring-panel removed-rings" patron={ centerRingsPatron } />
                 : null }
             <ConflictPanel conflict={ conflict } otherPlayer={ otherPlayer } />
             <CardsPlayedTracker conflict={ conflict } thisPlayer={ thisPlayer } otherPlayer={ otherPlayer } />

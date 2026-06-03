@@ -299,6 +299,13 @@ export interface GameState {
     skirmishMode?: boolean;
 }
 
+export interface PatronSettings {
+    dial?: string;
+    fate?: string;
+    rings?: boolean;
+    tokens?: boolean;
+}
+
 export interface UserSettings {
     cardSize?: string;
     background?: string;
@@ -307,6 +314,7 @@ export interface UserSettings {
     promptedActionWindows?: Record<string, boolean>;
     timerSettings?: Record<string, unknown>;
     windowTimer?: number;
+    patron?: PatronSettings;
 }
 
 export type OnlineUserStatus = "lobby" | "playing" | "spectating";
@@ -315,5 +323,6 @@ export interface OnlineUser {
     name: string;
     emailHash?: string;
     noAvatar?: boolean;
+    isPatron?: boolean;
     status: OnlineUserStatus;
 }

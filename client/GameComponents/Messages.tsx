@@ -3,6 +3,8 @@ import React, { useRef } from "react";
 import EmojiConvertor from "emoji-js";
 import { CheckCircle, Info, AlertCircle, AlertTriangle } from "lucide-react";
 import Avatar from "../Avatar";
+import { resolveFateImage, resolveHonorImage } from "../patronOptions";
+import { usePatronViewerConfig } from "../PatronContext";
 import type { GameMessage, MessageFragment } from "../types/game";
 
 const iconsConflict = ["military", "political"];
@@ -30,6 +32,8 @@ type MessageInput = MessageFragment | string | number | null | undefined | Messa
 
 function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }: InnerMessagesProps) {
     const highlightedCardIdRef = useRef<string | null>(null);
+    const viewer = usePatronViewerConfig();
+    const patronIconSrc: Record<string, string> = { fate: resolveFateImage(viewer), honor: resolveHonorImage(viewer) };
 
     const handleMouseOver = (fragment: MessageFragment) => {
         const highlightedElement = highlightedCardIdRef.current ? document.getElementById(highlightedCardIdRef.current) : null;
@@ -108,7 +112,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }: InnerMessa
                         className={ otherIcons[rawFragment].className }
                         key={ index++ }
                         title={ rawFragment }
-                        src={ otherIcons[rawFragment].imageSrc }
+                        src={ patronIconSrc[rawFragment] || otherIcons[rawFragment].imageSrc }
                     />
                 );
             }
