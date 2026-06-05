@@ -167,10 +167,10 @@
     position: relative;
     border-radius: 6px;
     z-index: var(--layer-cards);
-    --card-token-size: calc(var(--card-width) * 0.39);
+    --card-token-size: calc(var(--card-width) * 0.279);
 
     &.small {
-        --card-token-size: calc(var(--card-sm-width) * 0.39);
+        --card-token-size: calc(var(--card-sm-width) * 0.279);
 
         &.vertical {
             height: var(--card-sm-height);
@@ -184,7 +184,7 @@
     }
 
     &.large {
-        --card-token-size: calc(var(--card-lg-width) * 0.39);
+        --card-token-size: calc(var(--card-lg-width) * 0.279);
 
         &.vertical {
             height: var(--card-lg-height);
@@ -198,7 +198,7 @@
     }
 
     &.x-large {
-        --card-token-size: calc(var(--card-xl-width) * 0.39);
+        --card-token-size: calc(var(--card-xl-width) * 0.279);
 
         &.vertical {
             height: var(--card-xl-height);
@@ -212,7 +212,7 @@
     }
 
     &.xxl {
-        --card-token-size: calc(var(--card-xxl-width) * 0.39);
+        --card-token-size: calc(var(--card-xxl-width) * 0.279);
 
         &.vertical {
             height: var(--card-xxl-height);
@@ -592,7 +592,7 @@
 
 .fatecounter {
     box-sizing: border-box;
-    font-size: 25px;
+    font-size: var(--card-token-size, 25px);
     font-weight: bold;
     width: 1em;
     height: 1em;
