@@ -84,7 +84,7 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
             { glorySummary?.modifiers && (
                 <div className="stat-container">
                     <div className="stat-total">
-                        <img className="icon-glory stat--type-icon" src="/img/glory.png" />
+                        <img className="icon-glory stat--type-icon" src="/img/glory.webp" />
                         <span className="stat-value">{ glorySummary.stat }</span>
                     </div>
                     <div className="stat-specifics">{ renderModifiers(glorySummary.modifiers) }</div>
