@@ -37,7 +37,7 @@ function dialBase(value: string): string {
 }
 
 export function honorDialImage(value: string, bid: number): string {
-    return `${dialBase(value)}/honorfan-${bid}.png`;
+    return `${dialBase(value)}/honorfan-${bid}.webp`;
 }
 
 // Add patron dial sets here as their assets are added under /public/img/patron/dials/<value>/.
