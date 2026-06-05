@@ -62,8 +62,8 @@ export const patronFateTokens: PatronOption[] = [
 ];
 
 // --- Honour / dishonour stones (single patron pair, toggled) ----------------
-export const DEFAULT_HONORED_STONE = "/img/honor-stone.png";
-export const DEFAULT_DISHONORED_STONE = "/img/dishonor-stone.png";
+export const DEFAULT_HONORED_STONE = "/img/honor_stone.webp";
+export const DEFAULT_DISHONORED_STONE = "/img/dishonor_stone.webp";
 export const PATRON_HONORED_STONE = "/img/patron/honor-stone.png";
 export const PATRON_DISHONORED_STONE = "/img/patron/dishonor-stone.png";
 
