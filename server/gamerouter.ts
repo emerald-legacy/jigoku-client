@@ -143,7 +143,10 @@ class GameRouter extends EventEmitter {
         if(!game.node) {
             return;
         }
-        this.sendCommand(game.node.identity, "SPECTATOR", { game: game, user: user });
+        this.sendCommand(game.node.identity, "SPECTATOR", {
+            game: { ...game, owner: game.owner.username },
+            user: { username: user.username, emailHash: user.emailHash }
+        });
     }
 
     getNextAvailableGameNode(): GameWorker | undefined {
