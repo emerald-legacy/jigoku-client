@@ -135,7 +135,7 @@ class GameRouter extends EventEmitter {
 
         node.numGames++;
 
-        this.sendCommand(node.identity, "STARTGAME", game);
+        this.sendCommand(node.identity, "STARTGAME", { ...game, owner: game.owner.username });
         return node;
     }
 
