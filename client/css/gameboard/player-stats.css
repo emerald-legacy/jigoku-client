@@ -93,12 +93,18 @@
 }
 
 .btn-stat:hover {
-    background-color: var(--color-info);
-    border-color: var(--color-info);
+    background-color: transparent;
+    border-color: transparent;
+    color: rgba(150, 220, 90, 1);
 }
 
 .btn-stat:focus {
     outline: 0px;
+}
+
+.btn-stat svg {
+    display: block;
+    margin: auto;
 }
 
 .first-player-indicator {

@@ -1,3 +1,4 @@
+import { Plus, Minus } from "lucide-react";
 import Avatar from "../Avatar";
 import Clock from "./Clock";
 import type { ClockState, Player } from "../types/game";
@@ -46,7 +47,7 @@ export function PlayerStatsRow({
                         className="btn btn-stat"
                         onClick={ () => sendUpdate(statToSet, "down") }
                     >
-                        <img src="/img/Minus.png" title="-" alt="-" />
+                        <Minus size={ 16 } strokeWidth={ 3 } aria-label="-" />
                     </button>
                 ) }
                 <div className="stat-image" style={ imageStyle }>
@@ -57,7 +58,7 @@ export function PlayerStatsRow({
                         className="btn btn-stat"
                         onClick={ () => sendUpdate(statToSet, "up") }
                     >
-                        <img src="/img/Plus.png" title="+" alt="+" />
+                        <Plus size={ 16 } strokeWidth={ 3 } aria-label="+" />
                     </button>
                 ) }
             </div>
