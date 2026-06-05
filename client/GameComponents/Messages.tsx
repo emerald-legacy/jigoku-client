@@ -16,8 +16,8 @@ const iconsClan = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "un
 const otherIcons: Record<string, { className: string; imageSrc: string }> = {
     fate: { className: "icon-fate", imageSrc: "/img/Fate.png" },
     honor: { className: "icon-honor", imageSrc: "/img/Honor.png" },
-    card: { className: "icon-card", imageSrc: "/img/cards/conflictcardback.png" },
-    cards: { className: "icon-card", imageSrc: "/img/cards/conflictcardback.png" }
+    card: { className: "icon-card", imageSrc: "/img/cards/conflictcardback.webp" },
+    cards: { className: "icon-card", imageSrc: "/img/cards/conflictcardback.webp" }
 };
 
 const emoji = new EmojiConvertor();

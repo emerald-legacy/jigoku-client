@@ -344,35 +344,35 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "small" }) }>
                                         <div className={ `card small vertical${settings.cardSize === "small" ? " selected" : ""}` }>
                                             <img className="card small vertical"
-                                                src="img/cards/dynastycardback.png" />
+                                                src="img/cards/dynastycardback.webp" />
                                         </div>
                                         <span className="bg-label">Small</span>
                                     </div>
                                     <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "normal" }) }>
                                         <div className={ `card vertical${settings.cardSize === "normal" ? " selected" : ""}` }>
                                             <img className="card vertical"
-                                                src="img/cards/dynastycardback.png" />
+                                                src="img/cards/dynastycardback.webp" />
                                         </div>
                                         <span className="bg-label">Normal</span>
                                     </div>
                                     <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "large" }) }>
                                         <div className={ `card vertical large${settings.cardSize === "large" ? " selected" : ""}` }>
                                             <img className="card-image large vertical"
-                                                src="/img/cards/dynastycardback.png" />
+                                                src="/img/cards/dynastycardback.webp" />
                                         </div>
                                         <span className="bg-label">Large</span>
                                     </div>
                                     <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "x-large" }) }>
                                         <div className={ `card vertical x-large${settings.cardSize === "x-large" ? " selected" : ""}` }>
                                             <img className="card-image x-large vertical"
-                                                src="img/cards/dynastycardback.png" />
+                                                src="img/cards/dynastycardback.webp" />
                                         </div>
                                         <span className="bg-label">Extra-Large</span>
                                     </div>
                                     <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "xxl" }) }>
                                         <div className={ `card vertical xxl${settings.cardSize === "xxl" ? " selected" : ""}` }>
                                             <img className="card-image xxl vertical"
-                                                src="img/cards/dynastycardback.png" />
+                                                src="img/cards/dynastycardback.webp" />
                                         </div>
                                         <span className="bg-label">XXL</span>
                                     </div>
