@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import logger from "./log.js";
 import GameChat from "./game/gamechat.js";
 import GameModes from "../shared/GameModes.js";
+import type { UserIdentity } from "./LobbyProtocol.js";
 
 export interface PendingGameOwner {
     username: string;
@@ -14,7 +15,7 @@ export interface PendingGameOwner {
 export interface PendingGamePlayer {
     id: string;
     name: string;
-    user?: { username: string; emailHash?: string; settings?: Record<string, unknown> };
+    user?: UserIdentity & { settings?: Record<string, unknown> };
     emailHash?: string;
     owner?: boolean;
     deck?: { name?: string; selected?: boolean; status?: unknown; faction?: { name: string; value: string }; [key: string]: unknown };
@@ -121,7 +122,7 @@ class PendingGame {
         this.gameChat.addMessage(message, ...args);
     }
 
-    addPlayer(id: string, user: { username: string; emailHash?: string }) {
+    addPlayer(id: string, user: UserIdentity) {
         this.players[user.username] = {
             id: id,
             name: user.username,
@@ -131,7 +132,7 @@ class PendingGame {
         };
     }
 
-    addSpectator(id: string, user: { username: string; emailHash?: string }) {
+    addSpectator(id: string, user: UserIdentity) {
         this.spectators[user.username] = {
             id: id,
             name: user.username,
@@ -140,7 +141,7 @@ class PendingGame {
         };
     }
 
-    newGame(id: string, user: { username: string; emailHash?: string }, password: string | undefined, callback: (err?: Error | null, message?: string) => void) {
+    newGame(id: string, user: UserIdentity, password: string | undefined, callback: (err?: Error | null, message?: string) => void) {
         if(password) {
             bcrypt.hash(password, 10, (err, hash) => {
                 if(err) {
@@ -167,7 +168,7 @@ class PendingGame {
         return this.owner.blockList && this.owner.blockList.includes(user.username.toLowerCase());
     }
 
-    join(id: string, user: { username: string; emailHash?: string }, password: string | undefined, callback: (err?: Error | null, message?: string) => void) {
+    join(id: string, user: UserIdentity, password: string | undefined, callback: (err?: Error | null, message?: string) => void) {
         if(Object.keys(this.players).length === 2 || this.started) {
             return;
         }
@@ -197,7 +198,7 @@ class PendingGame {
         }
     }
 
-    watch(id: string, user: { username: string; emailHash?: string }, password: string | undefined, callback: (err?: Error | null, message?: string) => void) {
+    watch(id: string, user: UserIdentity, password: string | undefined, callback: (err?: Error | null, message?: string) => void) {
         if(!this.allowSpectators) {
             callback(new Error("Join not permitted"));
 
@@ -343,7 +344,7 @@ class PendingGame {
                 left: player.left,
                 name: player.name,
                 owner: player.owner,
-                settings: player.user ? player.user.settings : {}
+                settings: { disableGravatar: player.user?.settings?.disableGravatar }
             };
         });
 
