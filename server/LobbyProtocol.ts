@@ -14,6 +14,11 @@ export interface LobbyUser {
     [key: string]: unknown;
 }
 
+export interface UserIdentity {
+    username: string;
+    emailHash?: string;
+}
+
 export interface DeckDTO {
     _id?: unknown;
     name?: string;
@@ -31,7 +36,7 @@ export interface DeckDTO {
 export interface PendingPlayerDTO {
     id: string;
     name: string;
-    user?: LobbyUser;
+    user?: UserIdentity & { settings?: unknown };
     emailHash?: string;
     owner?: boolean;
     left?: boolean;
@@ -44,7 +49,7 @@ export interface PendingPlayerDTO {
 export interface PendingSpectatorDTO {
     id: string;
     name: string;
-    user?: LobbyUser;
+    user?: UserIdentity;
     emailHash?: string;
     settings?: unknown;
 }
@@ -52,7 +57,7 @@ export interface PendingSpectatorDTO {
 export interface PendingGameDTO {
     id: string;
     name: string;
-    owner: LobbyUser | string;
+    owner: string;
     players: Record<string, PendingPlayerDTO>;
     spectators: Record<string, PendingSpectatorDTO>;
     allowSpectators: boolean;
@@ -108,7 +113,7 @@ export interface GameSummary {
     manualMode: boolean;
     messages: unknown[];
     name: string;
-    owner: Record<string, unknown>;
+    owner: string;
     players: Record<string, PlayerSummary>;
     started: boolean;
     startedAt?: Date | string;
@@ -154,7 +159,7 @@ export type InboundCommand = InboundMessage["command"];
 
 export interface SpectatorArg {
     game: PendingGameDTO;
-    user: LobbyUser;
+    user: UserIdentity;
 }
 
 export interface ConnectFailedArg {

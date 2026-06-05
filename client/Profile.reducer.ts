@@ -1,5 +1,12 @@
 import type { User } from "./types/user";
-import type { PlayerOptionSettings } from "./types/game";
+import type { PlayerOptionSettings, PatronSettings } from "./types/game";
+
+export const defaultPatronProfileSettings: Required<PatronSettings> = {
+    dial: "default",
+    fate: "default",
+    rings: false,
+    tokens: false
+};
 
 export interface ProfileAccount {
     email: string;
@@ -16,6 +23,7 @@ export interface ProfileSettings {
     promptedActionWindows: Record<string, boolean>;
     optionSettings: PlayerOptionSettings;
     timerSettings: Record<string, unknown>;
+    patron: Required<PatronSettings>;
 }
 
 export interface ProfileState {
@@ -32,6 +40,7 @@ export type ToggleMap = "promptedActionWindows" | "optionSettings" | "timerSetti
 export type ProfileAction =
     | { type: "account"; field: keyof ProfileAccount; value: string }
     | { type: "setting"; field: "disableGravatar" | "windowTimer" | "background" | "cardSize"; value: boolean | number | string }
+    | { type: "patron"; field: keyof PatronSettings; value: string | boolean }
     | { type: "toggle"; map: ToggleMap; field: string; value: boolean }
     | { type: "validation"; field: string; error?: string }
     | { type: "submitStart" }
@@ -58,7 +67,8 @@ export function initProfileState(user?: ProfileUserLike): ProfileState {
             cardSize: user?.settings?.cardSize || "normal",
             promptedActionWindows: user?.promptedActionWindows || {},
             optionSettings: user?.settings?.optionSettings || {},
-            timerSettings: user?.settings?.timerSettings || {}
+            timerSettings: user?.settings?.timerSettings || {},
+            patron: { ...defaultPatronProfileSettings, ...(user?.settings?.patron || {}) }
         },
         validation: {},
         loading: false
@@ -71,6 +81,8 @@ export function profileReducer(state: ProfileState, action: ProfileAction): Prof
             return { ...state, account: { ...state.account, [action.field]: action.value } };
         case "setting":
             return { ...state, settings: { ...state.settings, [action.field]: action.value } };
+        case "patron":
+            return { ...state, settings: { ...state.settings, patron: { ...state.settings.patron, [action.field]: action.value } } };
         case "toggle":
             return {
                 ...state,
@@ -101,7 +113,8 @@ export function profileReducer(state: ProfileState, action: ProfileAction): Prof
                 settings: {
                     ...state.settings,
                     disableGravatar: action.user.settings?.disableGravatar || false,
-                    promptedActionWindows: action.user.promptedActionWindows || {}
+                    promptedActionWindows: action.user.promptedActionWindows || {},
+                    patron: { ...defaultPatronProfileSettings, ...(action.user.settings?.patron || {}) }
                 }
             };
         default:

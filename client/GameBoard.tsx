@@ -4,6 +4,8 @@ import { bindActionCreators } from "@reduxjs/toolkit";
 import * as actions from "./actions";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { InnerGameBoard, type InnerGameBoardProps } from "./InnerGameBoard";
+import { PatronProvider } from "./PatronContext";
+import { computeViewerConfig } from "./patronOptions";
 
 export { InnerGameBoard, type InnerGameBoardProps };
 
@@ -23,16 +25,22 @@ export default function GameBoard() {
         [dispatch]
     );
 
+    const spectating = !currentGame || !username || !currentGame.players[username];
+    const patronViewer = useMemo(() => computeViewerConfig(user, spectating), [user, spectating]);
+    const patronPlayerUsernames = currentGame ? Object.values(currentGame.players).map(p => p.user?.username) : [];
+
     return (
-        <InnerGameBoard
-            cardToZoom={ cardToZoom }
-            cards={ cards }
-            currentGame={ currentGame }
-            pendingAnimations={ pendingAnimations }
-            user={ user }
-            username={ username }
-            dispatch={ dispatch }
-            boundActions={ boundActions }
-        />
+        <PatronProvider viewer={ patronViewer } playerUsernames={ patronPlayerUsernames }>
+            <InnerGameBoard
+                cardToZoom={ cardToZoom }
+                cards={ cards }
+                currentGame={ currentGame }
+                pendingAnimations={ pendingAnimations }
+                user={ user }
+                username={ username }
+                dispatch={ dispatch }
+                boundActions={ boundActions }
+            />
+        </PatronProvider>
     );
 }

@@ -14,6 +14,14 @@
     }
 }
 
+/* Keep the patron name inline (overrides `.navbar li span { display: block }`) */
+.navbar .patron-name {
+    display: inline;
+    padding: 0;
+    line-height: inherit;
+    color: #d4af37;
+}
+
 @media (max-width: 1366px) {
     .navbar li a .gravatar {
         height: 16px;

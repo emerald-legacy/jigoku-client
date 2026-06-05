@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { shallowEqual } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
-import { UserCog, Search, ScrollText, ShieldCheck, Bug, KeyRound, Stamp, Users } from "lucide-react";
+import { UserCog, Search, ScrollText, ShieldCheck, Bug, KeyRound, Stamp, Users, Sword } from "lucide-react";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 
@@ -14,13 +14,15 @@ import type { LucideIcon } from "lucide-react";
 const defaultPermissions: Record<string, boolean> = {
     canEditNews: false,
     canManageUsers: false,
-    canViewGameErrors: false
+    canViewGameErrors: false,
+    isPatron: false
 };
 
 const permissionsList: { name: string; label: string; desc: string; Icon: LucideIcon }[] = [
     { name: "canEditNews", label: "News Editor", desc: "Publish and edit the site's dispatches.", Icon: ScrollText },
     { name: "canManageUsers", label: "User Manager", desc: "Find players and grant their privileges.", Icon: ShieldCheck },
-    { name: "canViewGameErrors", label: "Game Errors Viewer", desc: "Inspect server-side game error reports.", Icon: Bug }
+    { name: "canViewGameErrors", label: "Game Errors Viewer", desc: "Inspect server-side game error reports.", Icon: Bug },
+    { name: "isPatron", label: "Patron", desc: "Supporter perks: custom honour dial, fate, token and ring imagery.", Icon: Sword }
 ];
 
 interface InnerUserAdminProps {

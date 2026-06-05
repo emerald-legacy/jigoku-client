@@ -2,7 +2,7 @@ import React from "react";
 import Ring from "./Ring";
 import type { Ring as RingType, MenuItem, GameState } from "../types/game";
 
-export default function RingRow({ rings, owner, cardSize, showRingEffects, gameMode, onClick, onMenuItemClick, removed, className }: {
+export default function RingRow({ rings, owner, cardSize, showRingEffects, gameMode, onClick, onMenuItemClick, removed, className, patron }: {
     rings: GameState["rings"];
     owner: string | null;
     cardSize: string;
@@ -12,6 +12,7 @@ export default function RingRow({ rings, owner, cardSize, showRingEffects, gameM
     onMenuItemClick: (ring: RingType, menuItem: MenuItem) => void;
     removed: boolean;
     className: string;
+    patron?: boolean;
 }) {
     const elements: Array<keyof GameState["rings"]> = ["air", "earth", "fire", "void", "water"];
     return (
@@ -32,6 +33,7 @@ export default function RingRow({ rings, owner, cardSize, showRingEffects, gameM
                         onMenuItemClick={ onMenuItemClick }
                         showRingEffects={ showRingEffects }
                         gameMode={ gameMode }
+                        patron={ patron }
                     />
                 );
             }) }

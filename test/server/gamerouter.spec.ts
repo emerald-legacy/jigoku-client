@@ -240,14 +240,14 @@ describe("GameRouter.startGame", () => {
             getNextAvailableGameNode: vi.fn(() => worker)
         });
         const saveState = { gameId: "g1", players: [] };
-        const game = { id: "g1", getSaveState: () => saveState };
+        const game = { id: "g1", owner: { username: "owner1" }, getSaveState: () => saveState };
 
         const result = call<{ identity: string } | undefined>("startGame", ctx, game);
 
         expect(result?.identity).toBe("node-1");
         expect(worker.numGames).toBe(3);
         expect(ctx.gameService.create).toHaveBeenCalledWith(saveState);
-        expect(ctx.sendCommand).toHaveBeenCalledWith("node-1", "STARTGAME", game);
+        expect(ctx.sendCommand).toHaveBeenCalledWith("node-1", "STARTGAME", { ...game, owner: "owner1" });
     });
 });
 
@@ -260,10 +260,13 @@ describe("GameRouter.addSpectator", () => {
 
     it("sends SPECTATOR with game + user to the node", () => {
         const ctx = makeRouterCtx();
-        const game = { id: "g1", node: { identity: "node-1" } };
-        const user = { username: "u1" };
+        const game = { id: "g1", node: { identity: "node-1" }, owner: { username: "owner1" } };
+        const user = { username: "u1", emailHash: "h1" };
         call("addSpectator", ctx, game, user);
-        expect(ctx.sendCommand).toHaveBeenCalledWith("node-1", "SPECTATOR", { game: game, user: user });
+        expect(ctx.sendCommand).toHaveBeenCalledWith("node-1", "SPECTATOR", {
+            game: { ...game, owner: "owner1" },
+            user: { username: "u1", emailHash: "h1" }
+        });
     });
 });
 

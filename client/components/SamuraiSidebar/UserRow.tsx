@@ -11,13 +11,14 @@ const GLYPHS: Record<OnlineUserStatus, string> = {
 interface UserRowProps {
     name: string;
     status: OnlineUserStatus;
+    isPatron?: boolean;
 }
 
-export default function UserRow({ name, status }: UserRowProps) {
+export default function UserRow({ name, status, isPatron }: UserRowProps) {
     return (
         <li className="samurai-row" data-status={ status }>
             <span className="samurai-glyph" aria-hidden="true">{ GLYPHS[status] }</span>
-            <span className="samurai-name">{ name }</span>
+            <span className={ `samurai-name${isPatron ? " samurai-name--patron" : ""}` }>{ name }</span>
         </li>
     );
 }

@@ -4,6 +4,11 @@
     display: block;
 }
 
+/* Patron name highlight (menu bar, game list, etc.) */
+.patron-name {
+    color: #d4af37;
+}
+
 /* === Format badges (matches GameList game-badge-mode) === */
 .format-badge {
     display: inline-block;

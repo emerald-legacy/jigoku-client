@@ -1,3 +1,5 @@
+import { resolveHonorImage } from "../patronOptions";
+import { usePatronViewerConfig } from "../PatronContext";
 
 interface HonorCounterProps {
     cancel?: boolean;
@@ -7,6 +9,7 @@ interface HonorCounterProps {
 }
 
 function HonorCounter({ cancel, fade, name, value }: HonorCounterProps) {
+    const honorImage = resolveHonorImage(usePatronViewerConfig());
     let className = `honorcounter ${name}`;
 
     if(cancel) {
@@ -19,7 +22,7 @@ function HonorCounter({ cancel, fade, name, value }: HonorCounterProps) {
 
     return (
         <div key={ name } className={ className }>
-            <img src="/img/Honor.png" title="Honor" alt="Honor" />
+            <img src={ honorImage } title="Honor" alt="Honor" />
             <div className="honorcountertext">{ value }</div>
         </div>
     );

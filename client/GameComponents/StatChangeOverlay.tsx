@@ -1,4 +1,6 @@
 import React from "react";
+import { resolveFateImage, resolveHonorImage } from "../patronOptions";
+import { usePatronViewerConfig } from "../PatronContext";
 import type { AnimationEvent } from "../types/redux";
 
 interface StatChangeOverlayProps {
@@ -14,6 +16,9 @@ type StatChange = {
 };
 
 const StatChangeOverlay: React.FC<StatChangeOverlayProps> = ({ animations, onDismiss }) => {
+    const viewer = usePatronViewerConfig();
+    const honorIcon = resolveHonorImage(viewer);
+    const fateIcon = resolveFateImage(viewer);
     const changes: StatChange[] = animations
         .filter((a): a is (Extract<AnimationEvent, { type: "honor" }> | Extract<AnimationEvent, { type: "fate" }>) =>
             a.type === "honor" || a.type === "fate"
@@ -22,7 +27,7 @@ const StatChangeOverlay: React.FC<StatChangeOverlayProps> = ({ animations, onDis
             kind: a.type,
             playerName: a.playerName,
             amount: a.amount,
-            icon: a.type === "honor" ? "/img/Honor.png" : "/img/Fate.png"
+            icon: a.type === "honor" ? honorIcon : fateIcon
         }));
 
     if(changes.length === 0) {

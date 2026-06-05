@@ -29,6 +29,21 @@ export function init(server) {
         }
     });
 
+    server.get("/api/user/:username/patron", async function(req, res) {
+        if(!req.user) {
+            return res.status(401).send({ message: "Unauthorized" });
+        }
+
+        try {
+            const user = await userService.getUserByUsername(req.params.username);
+            const isPatron = !!(user && user.permissions && user.permissions.isPatron);
+            res.send({ success: true, username: req.params.username, isPatron });
+        } catch(err) {
+            logger.error(`Error fetching patron status for ${req.params.username}: ${err}`);
+            res.status(500).send({ success: false, message: "Error fetching patron status" });
+        }
+    });
+
     server.put("/api/user/:username", async function(req, res) {
         if(!req.user) {
             return res.status(401).send({ message: "Unauthorized" });
@@ -52,7 +67,7 @@ export function init(server) {
                 return res.status(404).send({ message: "Not found" });
             }
 
-            const allowedPermissions = ["canEditNews", "canManageUsers", "canViewGameErrors"];
+            const allowedPermissions = ["canEditNews", "canManageUsers", "canViewGameErrors", "isPatron"];
             const incomingPerms = userToSet.permissions || {};
             user.permissions = {
                 ...user.permissions,

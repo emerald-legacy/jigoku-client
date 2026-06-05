@@ -186,7 +186,7 @@ export function init(server) {
 
     server.post("/api/account/login", passport.authenticate("local"), function (req: express.Request, res: express.Response) {
         const user = (req.user || {}) as Record<string, unknown>;
-        const { password: _pw, resetToken: _rt, tokenExpires: _te, ...safeUser } = user;
+        const { password: _pw, resetToken: _rt, tokenExpires: _te, blockList: _bl, ...safeUser } = user;
         res.send({ success: true, user: safeUser, token: jwt.sign(safeUser, config.get("secret"), { expiresIn: "7d" }) });
     });
 

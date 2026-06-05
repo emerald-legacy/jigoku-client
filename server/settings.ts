@@ -29,6 +29,13 @@ const defaultTimerSettings = {
     eventsInDeck: false
 };
 
+const defaultPatronSettings = {
+    dial: "default",
+    fate: "default",
+    rings: false,
+    tokens: false
+};
+
 function getUserWithDefaultsSet(user) {
     let userToReturn = user;
 
@@ -39,6 +46,7 @@ function getUserWithDefaultsSet(user) {
     userToReturn.settings = Object.assign({}, defaultSettings, userToReturn.settings);
     userToReturn.settings.optionSettings = Object.assign({}, defaultOptionSettings, userToReturn.settings.optionSettings);
     userToReturn.settings.timerSettings = Object.assign({}, defaultTimerSettings, userToReturn.settings.timerSettings);
+    userToReturn.settings.patron = Object.assign({}, defaultPatronSettings, userToReturn.settings.patron);
     userToReturn.permissions = Object.assign({}, userToReturn.permissions);
     userToReturn.promptedActionWindows = Object.assign({}, defaultWindows, userToReturn.promptedActionWindows);
     if(!userToReturn.blockList) {

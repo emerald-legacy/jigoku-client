@@ -134,6 +134,21 @@ svg.ring-svg {
     }
 }
 
+/* Patron ring imagery: keep the glyph div for layout/sizing but hide it, overlay the image. */
+.ring-glyph-hidden {
+    visibility: hidden;
+}
+
+.ring-patron-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
 .tint-military {
     fill: var(--color-military-ring);
 

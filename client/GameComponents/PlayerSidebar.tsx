@@ -3,6 +3,8 @@ import Avatar from "../Avatar";
 import HonorFan from "./HonorFan";
 import PlayerStatsBox from "./PlayerStatsBox";
 import { RingRow } from "./CenterBar";
+import { resolveDialSet, resolveOwnedRingsPatron } from "../patronOptions";
+import { usePatronViewerConfig, usePatronOwnerStatus } from "../PatronContext";
 import type { Player, Ring as RingType, MenuItem, GameState } from "../types/game";
 import type { AnimationEvent } from "../types/redux";
 
@@ -24,6 +26,9 @@ interface PlayerSidebarProps {
 
 export default function PlayerSidebar(props: PlayerSidebarProps) {
     const { thisPlayer, otherPlayer, cardSize, showRingEffects, gameMode, rings, spectating, manualMode, boundActions, pendingAnimations, onAnimationEnd } = props;
+    const viewer = usePatronViewerConfig();
+    const thisIsPatron = usePatronOwnerStatus(thisPlayer.user?.username);
+    const otherIsPatron = usePatronOwnerStatus(otherPlayer?.user?.username);
     return (
         <div className={ `province-pane ${cardSize}` }>
             <div className="player-nameplate">
@@ -33,7 +38,7 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                 </div>
             </div>
             <div className={ `sidebar-pane their-side ${cardSize}` }>
-                { thisPlayer.hideProvinceDeck && <HonorFan size={ cardSize } value={ otherPlayer?.showBid ?? 0 } /> }
+                { thisPlayer.hideProvinceDeck && <HonorFan size={ cardSize } value={ otherPlayer?.showBid ?? 0 } dialSet={ resolveDialSet(otherIsPatron, viewer) } /> }
                 <RingRow
                     rings={ rings }
                     owner={ otherPlayer ? otherPlayer.name : "\0" }
@@ -44,6 +49,7 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                     onMenuItemClick={ props.onRingMenuItemClick }
                     removed={ false }
                     className={ `claimed-pool their-pool ${cardSize || ""}` }
+                    patron={ resolveOwnedRingsPatron(otherIsPatron, viewer) }
                 />
                 <div className="sidebar-pane their-side">
                     <PlayerStatsBox
@@ -86,8 +92,9 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                     onMenuItemClick={ props.onRingMenuItemClick }
                     removed={ false }
                     className={ `claimed-pool my-pool ${cardSize || ""}` }
+                    patron={ resolveOwnedRingsPatron(thisIsPatron, viewer) }
                 />
-                { thisPlayer.hideProvinceDeck && <HonorFan size={ cardSize } value={ thisPlayer.showBid ?? 0 } /> }
+                { thisPlayer.hideProvinceDeck && <HonorFan size={ cardSize } value={ thisPlayer.showBid ?? 0 } dialSet={ resolveDialSet(thisIsPatron, viewer) } /> }
             </div>
             <div className="player-nameplate our-side">
                 <Avatar emailHash={ thisPlayer.user ? thisPlayer.user.emailHash : "unknown" } />

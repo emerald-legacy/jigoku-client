@@ -17,6 +17,7 @@ interface NavMenuItem {
     avatar?: boolean;
     emailHash?: string;
     disableGravatar?: boolean;
+    isPatron?: boolean;
 }
 
 interface NavContextItem {
@@ -91,7 +92,7 @@ export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: I
                     <a href="#" className="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded={ isOpen }
                         onClick={ (e) => handleDropdownToggle(menuItem.name, e) }>
                         { menuItem.avatar ? <Avatar emailHash={ menuItem.emailHash } forceDefault={ menuItem.disableGravatar } /> : null }
-                        { menuItem.name } <ChevronDown size={ 12 } style={ { display: "inline", verticalAlign: "middle" } } />
+                        { menuItem.isPatron ? <span className="patron-name">{ menuItem.name }</span> : menuItem.name } <ChevronDown size={ 12 } style={ { display: "inline", verticalAlign: "middle" } } />
                     </a>
                     <ul className="dropdown-menu">
                         { childItems }
