@@ -52,7 +52,7 @@ export const DEFAULT_PATRON_DIAL = "sakura";
 
 // --- Fate tokens ------------------------------------------------------------
 function fateImage(value: string): string {
-    return value === "default" ? "/img/Fate.png" : `/img/patron/fate/${value}.png`;
+    return value === "default" ? "/img/tokens/fate.webp" : `/img/patron/fate/${value}.png`;
 }
 
 // Add patron fate sets here as their assets are added under /public/img/patron/fate/.
@@ -62,8 +62,8 @@ export const patronFateTokens: PatronOption[] = [
 ];
 
 // --- Honour / dishonour stones (single patron pair, toggled) ----------------
-export const DEFAULT_HONORED_STONE = "/img/honor_stone.webp";
-export const DEFAULT_DISHONORED_STONE = "/img/dishonor_stone.webp";
+export const DEFAULT_HONORED_STONE = "/img/tokens/honor_stone.webp";
+export const DEFAULT_DISHONORED_STONE = "/img/tokens/dishonor_stone.webp";
 export const PATRON_HONORED_STONE = "/img/patron/honor-stone.png";
 export const PATRON_DISHONORED_STONE = "/img/patron/dishonor-stone.png";
 
@@ -113,7 +113,7 @@ export function resolveFateImage(viewer: PatronViewerConfig): string {
     if(viewer.isPatron && !viewer.spectating && viewer.fate !== "default") {
         return fateImage(viewer.fate);
     }
-    return "/img/Fate.png";
+    return "/img/tokens/fate.webp";
 }
 
 // Honour resource icon for the viewer's own client. Patrons with the token option enabled
@@ -122,7 +122,7 @@ export function resolveHonorImage(viewer: PatronViewerConfig): string {
     if(viewer.isPatron && !viewer.spectating && viewer.tokens) {
         return PATRON_HONORED_STONE;
     }
-    return "/img/Honor.png";
+    return "/img/tokens/honor.webp";
 }
 
 // Honour/dishonour stone images for the viewer's own client (viewer-personal cosmetic).
