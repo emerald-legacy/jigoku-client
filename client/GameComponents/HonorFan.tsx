@@ -1,4 +1,4 @@
-import { honorDialImage } from "../patronOptions";
+import { honorDialDigit, honorDialFrame } from "../patronOptions";
 
 interface HonorFanProps {
     size: string;
@@ -9,7 +9,11 @@ interface HonorFanProps {
 function HonorFan({ size, value, dialSet }: HonorFanProps) {
     return (
         <div className={ `honor-fan no-highlight ${size}` }>
-            <img className="honor-fan-value" src={ honorDialImage(dialSet || "default", value) } />
+            <img
+                className="honor-fan-value"
+                src={ honorDialDigit(value) }
+                style={ { backgroundImage: `url(${honorDialFrame(dialSet || "default")})` } }
+            />
         </div>
     );
 }

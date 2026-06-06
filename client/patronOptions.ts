@@ -29,26 +29,24 @@ export interface PatronViewerConfig extends PatronSettings {
 export const ringElements = ["air", "earth", "fire", "void", "water"] as const;
 
 // --- Honour dials -----------------------------------------------------------
-// Each dial set provides honorfan-0..5 images under its base path. "default" = stock images.
-const DIAL_DEFAULT_BASE = "/img/dials";
-
-function dialBase(value: string): string {
-    return value === "default" ? DIAL_DEFAULT_BASE : `/img/patron/dials/${value}`;
+// The dial digits (0..5) are the same plain numbers for every set and live under
+// /img/dials. Only the fan FRAME (the background behind the digit) changes per set.
+export function honorDialDigit(bid: number): string {
+    return `/img/dials/honorfan-${bid}.webp`;
 }
 
-export function honorDialImage(value: string, bid: number): string {
-    return `${dialBase(value)}/honorfan-${bid}.webp`;
+export function honorDialFrame(value: string): string {
+    return value === "default" ? "/img/dials/honorfan.webp" : `/img/patron/dials/${value}/honorfan.webp`;
 }
 
-// Add patron dial sets here as their assets are added under /public/img/patron/dials/<value>/.
+// Add patron dial sets here as their frame is added under /public/img/patron/dials/<value>/honorfan.webp.
 export const patronHonorDials: PatronOption[] = [
-    { value: "default", label: "Default", thumbnail: "/img/dials/honorfan.webp" },
-    { value: "sakura", label: "Sakura", thumbnail: honorDialImage("sakura", 3) },
-    { value: "ember", label: "Ember", thumbnail: honorDialImage("ember", 3) }
+    { value: "default", label: "Default", thumbnail: honorDialFrame("default") },
+    { value: "gold", label: "Gold", thumbnail: honorDialFrame("gold") }
 ];
 
 // What a non-patron opponent / spectator sees for a patron player's dial.
-export const DEFAULT_PATRON_DIAL = "sakura";
+export const DEFAULT_PATRON_DIAL = "gold";
 
 // --- Fate tokens ------------------------------------------------------------
 function fateImage(value: string): string {
