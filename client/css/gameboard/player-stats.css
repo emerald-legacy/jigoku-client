@@ -146,7 +146,7 @@
     width: 24px;
     height: 24px;
     margin-right: 5px;
-    background: center;
+    background: center no-repeat;
     background-size: contain;
     cursor: default;
 
