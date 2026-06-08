@@ -1,5 +1,6 @@
 import React from "react";
 import Card from "./Card";
+import { asset } from "../assetUrl";
 import type { Card as CardType, MenuItem } from "../types/game";
 
 function attachmentOffsetFor(cardSize: string) {
@@ -34,7 +35,7 @@ export default function RingAttachmentRow({ element, attachments, amController, 
     const cardLayer = 45;
     return (
         <div id={ `ring-attachments-${element}` } className="ring-attachments--element" style={ { marginLeft: `${(attachments.length - 1) * attachmentOffset}px` } } >
-            <img className="ring-attachments__ring-symbol" src={ `/img/military-${element}.png` } />
+            <img className="ring-attachments__ring-symbol" src={ asset(`military-${element}.png`) } />
             { attachments.map((card: CardType, index: number) => (
                 <div key={ card.uuid } className={ index !== 0 ? "ring-attachment--stacked" : "ring-attachment" } style={ { marginLeft: `${-1 * (index * attachmentOffset)}px`, zIndex: (cardLayer - index) } }>
                     <Card

@@ -46,7 +46,7 @@ describe("the <Card /> component", () => {
 
         it("should show a facedown card with a card back rendered", () => {
             const cardImage = document.querySelector(".card-image-src");
-            expect(cardImage.src).toContain("/img/cardbacks/cardback.png");
+            expect(cardImage.src).toContain("conflictcardback.webp");
         });
     });
 
@@ -107,7 +107,7 @@ describe("the <Card /> component", () => {
         it("should show a facedown image", () => {
             const cardImage = document.querySelector(".card-image-src");
             expect(cardImage.src).not.toContain("/img/cards/test-card-1");
-            expect(cardImage.src).toContain("/img/cardbacks/cardback.png");
+            expect(cardImage.src).toContain("conflictcardback.webp");
         });
     });
 

@@ -16,5 +16,4 @@ build/
 !tsconfig.client.json
 !package-lock.json
 .idea/
-assets/
 memory/

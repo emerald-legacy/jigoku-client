@@ -1,5 +1,6 @@
 
 import { resolveStoneImages } from "../boardCosmetics";
+import { asset } from "../assetUrl";
 
 interface HonorStatusCounterProps {
     cancel?: boolean;
@@ -35,7 +36,7 @@ function HonorStatusCounter({ cancel, fade, name, honored, dishonored, tainted }
             { honored ? <img src={ stones.honored } title="Honored" alt="Honored" /> : null }
             { dishonored ? <img src={ stones.dishonored } title="Dishonored" alt="Dishonored" /> : null }
             { totalProps > 1 ? <div className="honorstatusspacer" /> : null }
-            { tainted ? <img src="/img/tokens/tainted_stone.webp" title="Tainted" alt="Tainted" /> : null }
+            { tainted ? <img src={ asset("tokens/tainted_stone.webp") } title="Tainted" alt="Tainted" /> : null }
         </div>
     );
 }

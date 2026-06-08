@@ -230,7 +230,6 @@
 
 .bg {
     padding-top: 40px;
-    background-image: url("/img/bgs/main.jpg");
     min-height: 100vh;
     background-position: center;
     background-repeat: no-repeat;
@@ -238,39 +237,16 @@
     background-attachment: fixed;
 }
 
-/* Shared bg-board properties */
-[class^="bg-board-"], [class*=" bg-board-"] {
+/* Board layout. The actual board image is applied to document.body as an inline style
+   via backgroundImageByValue() (Application.tsx) so it resolves to the Vite
+   content-hashed asset URL; CSS url() can't be hashed here under Tailwind v4. */
+.bg-board {
     min-height: 100vh;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
 }
-
-.bg-board-default { background-image: url("/img/bgs/main.jpg"); }
-.bg-board-crab { background-image: url("/img/bgs/crab.jpg"); }
-.bg-board-crane { background-image: url("/img/bgs/crane.jpg"); }
-.bg-board-dragon { background-image: url("/img/bgs/dragon.jpg"); }
-.bg-board-lion { background-image: url("/img/bgs/lion.jpg"); }
-.bg-board-phoenix { background-image: url("/img/bgs/phoenix.jpg"); }
-.bg-board-scorpion { background-image: url("/img/bgs/scorpion.jpg"); }
-.bg-board-unicorn { background-image: url("/img/bgs/unicorn.jpg"); }
-.bg-board-crab2 { background-image: url("/img/bgs/crab2.jpg"); }
-.bg-board-crab3 { background-image: url("/img/bgs/crab3.jpg"); }
-.bg-board-crane2 { background-image: url("/img/bgs/crane2.jpg"); }
-.bg-board-crane3 { background-image: url("/img/bgs/crane3.jpg"); }
-.bg-board-crane4 { background-image: url("/img/bgs/crane4.jpg"); }
-.bg-board-dragon2 { background-image: url("/img/bgs/dragon2.jpg"); }
-.bg-board-dragon3 { background-image: url("/img/bgs/dragon3.jpg"); }
-.bg-board-lion2 { background-image: url("/img/bgs/lion2.jpg"); }
-.bg-board-lion3 { background-image: url("/img/bgs/lion3.jpg"); }
-.bg-board-phoenix2 { background-image: url("/img/bgs/phoenix2.jpg"); }
-.bg-board-phoenix3 { background-image: url("/img/bgs/phoenix3.jpg"); }
-.bg-board-scorpion2 { background-image: url("/img/bgs/scorpion2.jpg"); }
-.bg-board-scorpion3 { background-image: url("/img/bgs/scorpion3.jpg"); }
-.bg-board-unicorn2 { background-image: url("/img/bgs/unicorn2.jpg"); }
-.bg-board-unicorn3 { background-image: url("/img/bgs/unicorn3.jpg"); }
-.bg-board-otter { background-image: url("/img/bgs/otter.jpg"); }
 
 .flex-container {
     display: flex;

@@ -2,6 +2,7 @@
 import Province from "./Province";
 import Placeholder from "./Placeholder";
 import CardPile from "./CardPile";
+import { asset } from "../assetUrl";
 import type { Card, MenuItem, Player } from "../types/game";
 
 interface StrongholdRowProps {
@@ -47,9 +48,7 @@ function StrongholdRow({
                             player.imperialFavor ? "" : "hidden"
                         } ` }
                         src={
-                            "/img/" +
-                            (player.imperialFavor ? player.imperialFavor : "political") +
-                            "-favor.jpg"
+                            asset((player.imperialFavor ? player.imperialFavor : "political") + "-favor.jpg")
                         }
                     />
                 ) }
@@ -101,9 +100,7 @@ function StrongholdRow({
                     <img
                         className={ `card-image skirmish-stronghold ${cardSize}` }
                         src={
-                            "/img/skirmish-images/skirmish-stronghold-" +
-                            getFaction(player) +
-                            ".jpg"
+                            asset("skirmish-images/skirmish-stronghold-" + getFaction(player) + ".jpg")
                         }
                     />
                 </div>

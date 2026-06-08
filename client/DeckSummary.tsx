@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import DeckStatus from "./DeckStatus";
 import DeckStats from "./DeckStats";
 import { getCardImageUrl, preferredPackId, type CardWithVersions } from "./cardImageUrl";
+import { asset } from "./assetUrl";
 import type { Card } from "./types/game";
 import type { Deck, DeckCard } from "./types/deck";
 
@@ -141,7 +142,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
                     { deck.faction ? (
                         <img
                             className="deck-mon img-responsive"
-                            src={ `/img/mons/${deck.faction.value}.png` }
+                            src={ asset(`mons/${deck.faction.value}.png`) }
                         />
                     ) : null }
                 </div>
@@ -187,7 +188,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
                     { deck.alliance && deck.alliance.value !== "none" ? (
                         <img
                             className="deck-alliance-mon img-responsive"
-                            src={ `/img/mons/${deck.alliance.value}.png` }
+                            src={ asset(`mons/${deck.alliance.value}.png`) }
                         />
                     ) : null }
                 </div>

@@ -51,7 +51,7 @@
 }
 
 .select-cursor {
-    cursor: url(/img/crosshairs.cur), default;
+    cursor: var(--select-cursor, crosshair), default;
 }
 
 .prompt-area {

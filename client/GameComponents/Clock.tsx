@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { asset } from "../assetUrl";
 
 const formattedSeconds = (sec: number) =>
     `${sec <= 0 ? "-" : ""}${Math.floor(Math.abs(sec) / 60)}:${String(Math.abs(sec) % 60).padStart(2, "0")}`;
@@ -116,7 +117,7 @@ function Clock({
     return (
         <div className={ className }>
             <span>
-                <img src="/img/free-clock-icon-png.png" className="clock-icon" />
+                <img src={ asset("free-clock-icon-png.png") } className="clock-icon" />
             </span>
             { getFormattedClock() }
         </div>

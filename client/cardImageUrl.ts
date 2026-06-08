@@ -1,4 +1,5 @@
 import bootstrap from "./bootstrap";
+import { asset } from "./assetUrl";
 import type { Card } from "./types/game";
 
 export interface CardVersion {
@@ -24,7 +25,7 @@ export function getCardImageUrl(cardId: string, packId?: string): string {
 }
 
 export function getCardBackUrl(filename: string): string {
-    return `/img/cardbacks/${filename}${versionSuffix}`;
+    return asset(`cardbacks/${filename}`);
 }
 
 const communityFormats = new Set(["emerald", "sanctuary", "obsidian"]);

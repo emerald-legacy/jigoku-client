@@ -1,4 +1,4 @@
-
+import { asset } from "./assetUrl";
 import type { Deck, DeckStatus as DeckStatusType } from "./types/deck";
 
 interface DeckRowProps {
@@ -50,11 +50,11 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
                 </div>
             ) }
             <div className="deck-row-clans">
-                <img className="deck-clan-icon" src={ `/img/mons/${deck.faction.value}.png` } />
+                <img className="deck-clan-icon" src={ asset(`mons/${deck.faction.value}.png`) } />
                 { deck.alliance && deck.alliance.value ? (
                     <>
                         <span className="deck-clan-separator">/</span>
-                        <img className="deck-clan-icon" src={ `/img/mons/${deck.alliance.value}.png` } />
+                        <img className="deck-clan-icon" src={ asset(`mons/${deck.alliance.value}.png`) } />
                     </>
                 ) : null }
             </div>

@@ -5,6 +5,7 @@ import { CheckCircle, Info, AlertCircle, AlertTriangle } from "lucide-react";
 import Avatar from "../Avatar";
 import { resolveFateImage, resolveHonorImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
+import { asset } from "../assetUrl";
 import type { GameMessage, MessageFragment } from "../types/game";
 
 const iconsConflict = ["military", "political"];
@@ -14,10 +15,10 @@ const iconsElement = ["air", "earth", "fire", "water", "void"];
 const iconsClan = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
 const otherIcons: Record<string, { className: string; imageSrc: string }> = {
-    fate: { className: "icon-fate", imageSrc: "/img/tokens/fate.webp" },
-    honor: { className: "icon-honor", imageSrc: "/img/tokens/honor.webp" },
-    card: { className: "icon-card", imageSrc: "/img/cardbacks/conflictcardback.webp" },
-    cards: { className: "icon-card", imageSrc: "/img/cardbacks/conflictcardback.webp" }
+    fate: { className: "icon-fate", imageSrc: asset("tokens/fate.webp") },
+    honor: { className: "icon-honor", imageSrc: asset("tokens/honor.webp") },
+    card: { className: "icon-card", imageSrc: asset("cardbacks/conflictcardback.webp") },
+    cards: { className: "icon-card", imageSrc: asset("cardbacks/conflictcardback.webp") }
 };
 
 const emoji = new EmojiConvertor();

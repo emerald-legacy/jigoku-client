@@ -12,6 +12,7 @@ import { useAppSelector, useAppDispatch } from "./hooks";
 import type { GameState, UserSettings } from "./types/game";
 import type { RootState } from "./types/redux";
 import { getLobbySocket } from "./socket";
+import { asset } from "./assetUrl";
 
 interface LobbyGamePlayer {
     name: string;
@@ -115,7 +116,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, u
                     { game.needsPassword ? <span className="game-badge game-badge-lock">{ "\uD83D\uDD12" }</span> : null }
                     { modeLabel ? <span className="game-badge game-badge-mode">{ modeLabel }</span> : null }
                     { game.gameType ? <span className={ `game-badge game-badge-type-${game.gameType}` }>{ game.gameType }</span> : null }
-                    { game.clocks && game.clocks.type !== "none" ? <img src="/img/free-clock-icon-png.png" className="clock-icon" /> : null }
+                    { game.clocks && game.clocks.type !== "none" ? <img src={ asset("free-clock-icon-png.png") } className="clock-icon" /> : null }
                     <span className="game-row-name">{ game.name }</span>
                 </div>
                 <div className="game-row-content">

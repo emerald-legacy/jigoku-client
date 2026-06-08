@@ -19,7 +19,7 @@ interface HandoffServer {
     name: string;
     gameId?: string;
 }
-import { backgroundClassByValue, backgroundImageByClass } from "./backgrounds";
+import { backgroundImageByValue } from "./backgrounds";
 
 import ErrorBoundary from "./SiteComponents/ErrorBoundary";
 import NavBar from "./NavBar";
@@ -45,11 +45,7 @@ function mapStateToProps(state: RootState) {
 }
 
 function computeBackgroundClass(gameBoardVisible: boolean, user?: User): string {
-    if(!gameBoardVisible || !user) {
-        return "bg";
-    }
-    const background = user.settings.background;
-    return (background && backgroundClassByValue[background]) || "bg-board-default";
+    return gameBoardVisible && user ? "bg-board" : "bg";
 }
 
 interface BoundActions {
@@ -341,9 +337,10 @@ export default function Application() {
 
     const gameBoardVisible = location.pathname === "/play" && !!currentGame && !!currentGame.started;
     const backgroundClass = computeBackgroundClass(gameBoardVisible, user);
+    const backgroundValue = gameBoardVisible && user ? user.settings.background : undefined;
 
     useEffect(() => {
-        const url = backgroundImageByClass(backgroundClass);
+        const url = backgroundImageByValue(backgroundValue);
         const prevImage = document.body.style.backgroundImage;
         const prevSize = document.body.style.backgroundSize;
         const prevPos = document.body.style.backgroundPosition;
@@ -361,7 +358,7 @@ export default function Application() {
             document.body.style.backgroundAttachment = prevAttach;
             document.body.style.backgroundRepeat = prevRepeat;
         };
-    }, [backgroundClass]);
+    }, [backgroundValue]);
 
     return (
         <div className={ backgroundClass }>
