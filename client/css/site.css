@@ -345,6 +345,18 @@
     backdrop-filter: blur(6px);
 }
 
+@media (min-width: 768px) {
+    .profile-actions {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: 66.6667%;
+        border-left: 1px solid rgba(120, 180, 80, 0.30);
+        border-right: 1px solid rgba(120, 180, 80, 0.30);
+        border-radius: 6px 6px 0 0;
+    }
+}
+
 .profile .about-container {
     padding-bottom: 84px;
 }
