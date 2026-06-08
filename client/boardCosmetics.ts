@@ -122,8 +122,8 @@ export function resolveDialSet(ownerDial: string | undefined, ownerIsPatron: boo
     return formatDial(material, type);
 }
 
-// --- Tokens (fate + honor share a material) --------------------------------
-export function tokenImage(material: string, kind: "fate" | "honor"): string {
+// --- Tokens (fate + honor + first-player share a material) ------------------
+export function tokenImage(material: string, kind: "fate" | "honor" | "firstplayer"): string {
     return asset(`tokens/${material}/${kind}.webp`);
 }
 
@@ -153,6 +153,11 @@ export function resolveFateImage(viewer: PatronViewerConfig): string {
 // Honor resource icon / honored token for the viewer's own client (viewer-personal).
 export function resolveHonorImage(viewer: PatronViewerConfig): string {
     return tokenImage(viewerTokenMaterial(viewer), "honor");
+}
+
+// First-player token for the viewer's own client (viewer-personal, shares the token material).
+export function resolveFirstPlayerImage(viewer: PatronViewerConfig): string {
+    return tokenImage(viewerTokenMaterial(viewer), "firstplayer");
 }
 
 // Honour-status stones use their dedicated stone art, NOT the per-material honor token

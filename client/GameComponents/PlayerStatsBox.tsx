@@ -1,7 +1,7 @@
 import { Plus, Minus } from "lucide-react";
 import Clock from "./Clock";
 import ClockPopup from "./ClockPopup";
-import { resolveFateImage, resolveHonorImage } from "../boardCosmetics";
+import { resolveFateImage, resolveHonorImage, resolveFirstPlayerImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
 import { asset } from "../assetUrl";
 import type { ClockState, Player } from "../types/game";
@@ -39,6 +39,7 @@ export function PlayerStatsBox({
     const viewer = usePatronViewerConfig();
     const fateImage = resolveFateImage(viewer);
     const honorImage = resolveHonorImage(viewer);
+    const firstPlayerImage = resolveFirstPlayerImage(viewer);
 
     const airAnim = pendingAnimations?.find(a => a.type === "air" && a.playerName === playerName);
     const sendUpdate = (type: string, direction: string) => {
@@ -113,7 +114,7 @@ export function PlayerStatsBox({
                 <div className="state first-player-state">
                     <img
                         className={ `first-player-indicator${firstPlayer ? "" : " hidden"}` }
-                        src={ asset("first-player.png") }
+                        src={ firstPlayerImage }
                         title="First Player"
                     />
                 </div>

@@ -109,7 +109,7 @@ export function DialPicker({ value, isPatron, onChange }: PickerProps) {
     );
 }
 
-// --- Token picker: one swatch per material, showing the fate + honor pair ---
+// --- Token picker: one swatch per material, showing the fate + honor + first-player set ---
 export function TokenPicker({ value, isPatron, onChange }: PickerProps) {
     return (
         <div className="token-row">
@@ -132,6 +132,7 @@ export function TokenPicker({ value, isPatron, onChange }: PickerProps) {
                         <span className="token-pair">
                             <FallbackImg className="token-img" src={ tokenImage(mat.id, "fate") } fallback={ tokenImage(DEFAULT_TOKENS, "fate") } alt={ `${mat.label} fate token` } />
                             <FallbackImg className="token-img" src={ tokenImage(mat.id, "honor") } fallback={ tokenImage(DEFAULT_TOKENS, "honor") } alt={ `${mat.label} honor token` } />
+                            <FallbackImg className="token-img" src={ tokenImage(mat.id, "firstplayer") } fallback={ tokenImage(DEFAULT_TOKENS, "firstplayer") } alt={ `${mat.label} first-player token` } />
                         </span>
                         <span className="dial-label">
                             { mat.label }

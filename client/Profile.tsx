@@ -357,7 +357,7 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     isPatron={ isPatron }
                                     onChange={ (value) => dispatch({ type: "patron", field: "dial", value }) }
                                 />
-                                <label className="control-label cosmetic-section-label">Fate &amp; honor tokens</label>
+                                <label className="control-label cosmetic-section-label">Fate, Honor, and First Player tokens</label>
                                 <TokenPicker
                                     value={ settings.patron.tokens }
                                     isPatron={ isPatron }
