@@ -93,20 +93,20 @@ describe("the <PlayerStatsBox /> component", () => {
         });
 
         it("should render increment and decrement buttons", () => {
-            const minusButtons = screen.getAllByTitle("-");
-            const plusButtons = screen.getAllByTitle("+");
+            const minusButtons = screen.getAllByRole("button", { name: "-" });
+            const plusButtons = screen.getAllByRole("button", { name: "+" });
             expect(minusButtons.length).toBeGreaterThan(0);
             expect(plusButtons.length).toBeGreaterThan(0);
         });
 
         it("should call sendGameMessage with changeStat when minus is clicked", () => {
-            const minusButtons = screen.getAllByTitle("-");
+            const minusButtons = screen.getAllByRole("button", { name: "-" });
             fireEvent.click(minusButtons[0]);
             expect(sendGameMessage).toHaveBeenCalledWith("changeStat", expect.any(String), -1);
         });
 
         it("should call sendGameMessage with changeStat when plus is clicked", () => {
-            const plusButtons = screen.getAllByTitle("+");
+            const plusButtons = screen.getAllByRole("button", { name: "+" });
             fireEvent.click(plusButtons[0]);
             expect(sendGameMessage).toHaveBeenCalledWith("changeStat", expect.any(String), 1);
         });
