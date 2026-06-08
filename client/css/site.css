@@ -330,35 +330,61 @@
 }
 
 .profile-actions {
-    position: fixed;
-    left: 0;
-    right: 0;
+    position: sticky;
     bottom: 0;
     z-index: 50;
     display: flex;
     justify-content: center;
     gap: 0.75rem;
+    margin: 10px 5px 0;
     padding: 14px 16px;
     background: linear-gradient(180deg, rgba(20, 30, 12, 0.85), rgba(8, 10, 6, 0.98));
-    border-top: 1px solid rgba(120, 180, 80, 0.30);
+    border: 1px solid rgba(120, 180, 80, 0.30);
+    border-radius: 6px 6px 0 0;
     box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(6px);
 }
 
-@media (min-width: 768px) {
-    .profile-actions {
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-        width: 66.6667%;
-        border-left: 1px solid rgba(120, 180, 80, 0.30);
-        border-right: 1px solid rgba(120, 180, 80, 0.30);
-        border-radius: 6px 6px 0 0;
+.panel-help {
+    margin: 0 0 0.85rem;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(200, 210, 180, 0.6);
+}
+
+/* Profile page layout: equal-height two-up rows, responsive background grid. */
+@media (min-width: 992px) {
+    .profile-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .profile-row > [class*="col-"] {
+        display: flex;
+        flex-direction: column;
+    }
+    .profile-row > [class*="col-"] > .panel {
+        flex: 1 1 auto;
     }
 }
 
+.bg-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.bg-swatch {
+    cursor: pointer;
+}
+
+.bg-swatch .bg-label {
+    display: block;
+    text-align: center;
+}
+
 .profile .about-container {
-    padding-bottom: 84px;
+    height: 100%;
+    margin-bottom: 0;
 }
 
 .profile-actions::before {
