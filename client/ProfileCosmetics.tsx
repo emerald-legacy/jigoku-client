@@ -15,19 +15,16 @@ import {
 // An <img> that swaps to a fallback once if its source fails to load. Used so the
 // pickers stay populated while placeholder/in-progress art is still missing.
 function FallbackImg({ src, fallback, alt, className }: { src: string; fallback: string; alt: string; className?: string }) {
-    // Keyed on `src` so it remounts (and retries the real art) whenever the source changes.
-    const [current, setCurrent] = useState(src);
+    const [failed, setFailed] = useState(false);
+    useEffect(() => {
+        setFailed(false);
+    }, [src]);
     return (
         <img
-            key={ src }
             className={ className }
-            src={ current }
+            src={ failed ? fallback : src }
             alt={ alt }
-            onError={ () => {
-                if(current !== fallback) {
-                    setCurrent(fallback);
-                }
-            } }
+            onError={ () => setFailed(true) }
         />
     );
 }
@@ -112,7 +109,7 @@ export function DialPicker({ value, isPatron, onChange }: PickerProps) {
     );
 }
 
-// --- Token picker: one swatch per material, showing the fate + honour pair ---
+// --- Token picker: one swatch per material, showing the fate + honor pair ---
 export function TokenPicker({ value, isPatron, onChange }: PickerProps) {
     return (
         <div className="token-row">
@@ -134,7 +131,7 @@ export function TokenPicker({ value, isPatron, onChange }: PickerProps) {
                     >
                         <span className="token-pair">
                             <FallbackImg className="token-img" src={ tokenImage(mat.id, "fate") } fallback={ tokenImage(DEFAULT_TOKENS, "fate") } alt={ `${mat.label} fate token` } />
-                            <FallbackImg className="token-img" src={ tokenImage(mat.id, "honor") } fallback={ tokenImage(DEFAULT_TOKENS, "honor") } alt={ `${mat.label} honour token` } />
+                            <FallbackImg className="token-img" src={ tokenImage(mat.id, "honor") } fallback={ tokenImage(DEFAULT_TOKENS, "honor") } alt={ `${mat.label} honor token` } />
                         </span>
                         <span className="dial-label">
                             { mat.label }
