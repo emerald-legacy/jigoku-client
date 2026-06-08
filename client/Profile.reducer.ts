@@ -1,12 +1,8 @@
 import type { User } from "./types/user";
 import type { PlayerOptionSettings, PatronSettings } from "./types/game";
+import { normalizePatronSettings } from "./patronOptions";
 
-export const defaultPatronProfileSettings: Required<PatronSettings> = {
-    dial: "default",
-    fate: "default",
-    rings: false,
-    tokens: false
-};
+export const defaultPatronProfileSettings: Required<PatronSettings> = normalizePatronSettings(undefined);
 
 export interface ProfileAccount {
     email: string;
@@ -68,7 +64,7 @@ export function initProfileState(user?: ProfileUserLike): ProfileState {
             promptedActionWindows: user?.promptedActionWindows || {},
             optionSettings: user?.settings?.optionSettings || {},
             timerSettings: user?.settings?.timerSettings || {},
-            patron: { ...defaultPatronProfileSettings, ...(user?.settings?.patron || {}) }
+            patron: normalizePatronSettings(user?.settings?.patron as Record<string, unknown> | undefined)
         },
         validation: {},
         loading: false
@@ -114,7 +110,7 @@ export function profileReducer(state: ProfileState, action: ProfileAction): Prof
                     ...state.settings,
                     disableGravatar: action.user.settings?.disableGravatar || false,
                     promptedActionWindows: action.user.promptedActionWindows || {},
-                    patron: { ...defaultPatronProfileSettings, ...(action.user.settings?.patron || {}) }
+                    patron: normalizePatronSettings(action.user.settings?.patron as Record<string, unknown> | undefined)
                 }
             };
         default:

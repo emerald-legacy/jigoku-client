@@ -10,6 +10,7 @@
 @import "./css/samurai.css";
 @import "./css/deckbuilder.css";
 @import "./css/gamelist.css";
+@import "./css/cosmetics.css";
 /* gameboard */
 @import "./css/gameboard/general.css";
 @import "./css/gameboard/right-pane.css";

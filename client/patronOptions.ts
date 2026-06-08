@@ -1,12 +1,19 @@
 import type { User } from "./types/user";
 
-// Registry + resolution for patron cosmetic options. Mirrors the pattern in backgrounds.ts.
+// Registry + resolution for board cosmetics. Two axes:
+//   MATERIAL  wood (free) · nacre, gold (patron)
+//   TYPE      default + the seven clans + five rings + imperial
 //
-// Visibility rules (see feature spec):
-// - Honour dial + rings are OWNER-dependent: opponents and spectators of a patron see the
-//   patron's themed dial/rings. A patron VIEWER overrides with their own chosen dial/rings.
-// - Fate tokens + honour/dishonour stones are VIEWER-personal cosmetics: only the patron
-//   themselves sees them, applied across their own client. Opponents/spectators never see them.
+// A dial choice is stored as the string "<material>/<type>" (e.g. "wood/default",
+// "gold/crab"). Token choices store just a material id — the fate + honour tokens
+// share one material.
+//
+// Visibility:
+// - Honour dial is OWNER-visible: every player's own chosen dial is shown to everyone.
+//   A patron-only material chosen by someone who is not (or no longer) a patron
+//   downgrades to the same type in wood.
+// - Fate + honour tokens are VIEWER-personal: only you see your own token material,
+//   applied across your whole client. Spectators always see the default set.
 
 export interface PatronOption {
     value: string;
@@ -14,19 +21,53 @@ export interface PatronOption {
     thumbnail: string;
 }
 
-export interface PatronSettings {
-    dial: string;
-    fate: string;
-    rings: boolean;
-    tokens: boolean;
+export interface CosmeticMaterial {
+    id: string;
+    label: string;
+    patron: boolean;
 }
 
-export interface PatronViewerConfig extends PatronSettings {
-    isPatron: boolean;
-    spectating: boolean;
+export interface CosmeticType {
+    id: string;
+    label: string;
 }
 
-export const ringElements = ["air", "earth", "fire", "void", "water"] as const;
+// --- Registries -------------------------------------------------------------
+
+export const dialMaterials: CosmeticMaterial[] = [
+    { id: "wood", label: "Wood", patron: false },
+    { id: "nacre", label: "Nacre", patron: true },
+    { id: "gold", label: "Gold", patron: true }
+];
+
+export const dialTypes: CosmeticType[] = [
+    { id: "default", label: "Default" },
+    { id: "crab", label: "Crab" },
+    { id: "crane", label: "Crane" },
+    { id: "dragon", label: "Dragon" },
+    { id: "lion", label: "Lion" },
+    { id: "phoenix", label: "Phoenix" },
+    { id: "scorpion", label: "Scorpion" },
+    { id: "unicorn", label: "Unicorn" },
+    { id: "5rings", label: "Five Rings" },
+    { id: "imperial", label: "Imperial" }
+];
+
+export const tokenMaterials: CosmeticMaterial[] = [
+    { id: "default", label: "Default", patron: false },
+    { id: "wood", label: "Wood", patron: false },
+    { id: "gold", label: "Gold", patron: true },
+    { id: "nacre", label: "Nacre", patron: true }
+];
+
+const PATRON_MATERIALS = new Set(["gold", "nacre"]);
+
+export const DEFAULT_DIAL = "wood/default"; // free default rendered for everyone
+export const DEFAULT_PATRON_DIAL = "nacre/default"; // shown for a patron whose pick isn't transmitted
+export const DEFAULT_TOKENS = "default";
+
+// Fallback frame used when a (placeholder/missing) dial asset fails to load in the picker.
+export const FALLBACK_DIAL_FRAME = "/img/dials/wood/default.webp";
 
 // --- Honour dials -----------------------------------------------------------
 // The dial digits (0..5) are the same plain numbers for every set and live under
@@ -35,60 +76,91 @@ export function honorDialDigit(bid: number): string {
     return `/img/dials/honorfan-${bid}.webp`;
 }
 
-export function honorDialFrame(value: string): string {
-    return value === "default" ? "/img/dials/honorfan.webp" : `/img/patron/dials/${value}/honorfan.webp`;
+export function parseDial(set: string | undefined): { material: string; type: string } {
+    if(set && set.includes("/")) {
+        const [material, type] = set.split("/", 2);
+        return { material, type };
+    }
+    return migrateLegacyDial(set);
 }
 
-// Add patron dial sets here as their frame is added under /public/img/patron/dials/<value>/honorfan.webp.
-export const patronHonorDials: PatronOption[] = [
-    { value: "default", label: "Default", thumbnail: honorDialFrame("default") },
-    { value: "gold", label: "Gold", thumbnail: honorDialFrame("gold") }
-];
-
-// What a non-patron opponent / spectator sees for a patron player's dial.
-export const DEFAULT_PATRON_DIAL = "gold";
-
-// --- Fate tokens ------------------------------------------------------------
-function fateImage(value: string): string {
-    return value === "default" ? "/img/tokens/fate.webp" : `/img/patron/fate/${value}.png`;
+// Pre-redesign dial values were a bare set name ("default", "gold", "sakura", "ember").
+function migrateLegacyDial(value: string | undefined): { material: string; type: string } {
+    switch(value) {
+        case "gold": return { material: "gold", type: "default" };
+        case "nacre": return { material: "nacre", type: "default" };
+        default: return { material: "wood", type: "default" };
+    }
 }
 
-// Add patron fate sets here as their assets are added under /public/img/patron/fate/.
-export const patronFateTokens: PatronOption[] = [
-    { value: "default", label: "Default", thumbnail: fateImage("default") },
-    { value: "sakura", label: "Sakura", thumbnail: fateImage("sakura") }
-];
+export function formatDial(material: string, type: string): string {
+    return `${material}/${type}`;
+}
 
-// --- Honour / dishonour stones (single patron pair, toggled) ----------------
-export const DEFAULT_HONORED_STONE = "/img/tokens/honor_stone.webp";
+export function dialFrame(material: string, type: string): string {
+    return `/img/dials/${material}/${type}.webp`;
+}
+
+export function honorDialFrame(set: string): string {
+    const { material, type } = parseDial(set);
+    return dialFrame(material, type);
+}
+
+// Which dial to render for a player, given the dial they chose (transmitted in their
+// user settings) and whether they are currently a patron. Patron materials are gated
+// at SELECTION (the picker locks them for non-patrons), so here we simply render the
+// chosen dial as-is — opponents and spectators see a patron's real gold/nacre art.
+// `ownerIsPatron` only decides the fallback when no dial choice was transmitted.
+export function resolveDialSet(ownerDial: string | undefined, ownerIsPatron: boolean): string {
+    if(!ownerDial) {
+        return ownerIsPatron ? DEFAULT_PATRON_DIAL : DEFAULT_DIAL;
+    }
+    const { material, type } = parseDial(ownerDial);
+    return formatDial(material, type);
+}
+
+// --- Tokens (fate + honour share a material) --------------------------------
+export function tokenImage(material: string, kind: "fate" | "honor"): string {
+    return `/img/tokens/${material}/${kind}.webp`;
+}
+
+// Dishonoured stone is not yet a selectable cosmetic; always the default art.
 export const DEFAULT_DISHONORED_STONE = "/img/tokens/dishonor_stone.webp";
-export const PATRON_HONORED_STONE = "/img/patron/honor-stone.png";
-export const PATRON_DISHONORED_STONE = "/img/patron/dishonor-stone.png";
+
+// The token material the viewer actually sees: patron materials require patron status,
+// and spectators always fall back to the default set.
+function viewerTokenMaterial(viewer: PatronViewerConfig): string {
+    if(viewer.spectating) {
+        return DEFAULT_TOKENS;
+    }
+    const material = viewer.tokens || DEFAULT_TOKENS;
+    if(PATRON_MATERIALS.has(material) && !viewer.isPatron) {
+        return DEFAULT_TOKENS;
+    }
+    return material;
+}
+
+// Fate image for the viewer's own client (viewer-personal cosmetic).
+export function resolveFateImage(viewer: PatronViewerConfig): string {
+    return tokenImage(viewerTokenMaterial(viewer), "fate");
+}
+
+// Honour resource icon / honoured token for the viewer's own client (viewer-personal).
+export function resolveHonorImage(viewer: PatronViewerConfig): string {
+    return tokenImage(viewerTokenMaterial(viewer), "honor");
+}
+
+// Honoured / dishonoured stone images for the viewer's own client (viewer-personal).
+export function resolveStoneImages(viewer: PatronViewerConfig): { honored: string; dishonored: string } {
+    return { honored: tokenImage(viewerTokenMaterial(viewer), "honor"), dishonored: DEFAULT_DISHONORED_STONE };
+}
 
 // --- Rings (single patron set, toggled) -------------------------------------
 export function patronRingImage(element: string): string {
     return `/img/patron/rings/${element}.png`;
 }
 
-export const defaultPatronSettings: PatronSettings = {
-    dial: "default",
-    fate: "default",
-    rings: false,
-    tokens: false
-};
-
-// --- Resolution (pure) ------------------------------------------------------
-
-// Which dial SET value to render for a player's dial, given the owner's patron status.
-export function resolveDialSet(ownerIsPatron: boolean, viewer: PatronViewerConfig): string {
-    if(!ownerIsPatron) {
-        return "default";
-    }
-    if(viewer.isPatron && !viewer.spectating) {
-        return viewer.dial;
-    }
-    return DEFAULT_PATRON_DIAL;
-}
+export const ringElements = ["air", "earth", "fire", "void", "water"] as const;
 
 // Whether to render patron ring imagery for a claimed-pool ring owned by a player.
 export function resolveOwnedRingsPatron(ownerIsPatron: boolean, viewer: PatronViewerConfig): boolean {
@@ -106,32 +178,50 @@ export function resolveCenterRingsPatron(viewer: PatronViewerConfig): boolean {
     return viewer.isPatron && !viewer.spectating && viewer.rings;
 }
 
-// Fate image for the viewer's own client (viewer-personal cosmetic).
-export function resolveFateImage(viewer: PatronViewerConfig): string {
-    if(viewer.isPatron && !viewer.spectating && viewer.fate !== "default") {
-        return fateImage(viewer.fate);
-    }
-    return "/img/tokens/fate.webp";
+// --- Settings + viewer config ----------------------------------------------
+
+export interface PatronSettings {
+    dial: string; // "<material>/<type>"
+    tokens: string; // token material id
+    rings: boolean;
 }
 
-// Honour resource icon for the viewer's own client. Patrons with the token option enabled
-// reuse their honoured-token art for honour icons (viewer-personal cosmetic).
-export function resolveHonorImage(viewer: PatronViewerConfig): string {
-    if(viewer.isPatron && !viewer.spectating && viewer.tokens) {
-        return PATRON_HONORED_STONE;
-    }
-    return "/img/tokens/honor.webp";
+export interface PatronViewerConfig extends PatronSettings {
+    isPatron: boolean;
+    spectating: boolean;
 }
 
-// Honour/dishonour stone images for the viewer's own client (viewer-personal cosmetic).
-export function resolveStoneImages(viewer: PatronViewerConfig): { honored: string; dishonored: string } {
-    if(viewer.isPatron && !viewer.spectating && viewer.tokens) {
-        return { honored: PATRON_HONORED_STONE, dishonored: PATRON_DISHONORED_STONE };
+export const defaultPatronSettings: PatronSettings = {
+    dial: DEFAULT_DIAL,
+    tokens: DEFAULT_TOKENS,
+    rings: false
+};
+
+// Coerce a stored dial value to a valid "<material>/<type>" string (handles legacy names).
+export function normalizeDialValue(value: unknown): string {
+    if(typeof value !== "string" || !value) {
+        return DEFAULT_DIAL;
     }
-    return { honored: DEFAULT_HONORED_STONE, dishonored: DEFAULT_DISHONORED_STONE };
+    const { material, type } = parseDial(value);
+    return formatDial(material, type);
 }
 
-// --- Viewer config ----------------------------------------------------------
+// Coerce a stored token value to a valid material id (handles the legacy boolean toggle).
+export function normalizeTokenValue(value: unknown): string {
+    if(typeof value === "string" && tokenMaterials.some(m => m.id === value)) {
+        return value;
+    }
+    return DEFAULT_TOKENS;
+}
+
+export function normalizePatronSettings(raw: Record<string, unknown> | undefined): PatronSettings {
+    const value = raw ?? {};
+    return {
+        dial: normalizeDialValue(value.dial),
+        tokens: normalizeTokenValue(value.tokens),
+        rings: typeof value.rings === "boolean" ? value.rings : false
+    };
+}
 
 export const defaultViewerConfig: PatronViewerConfig = {
     isPatron: false,
@@ -142,14 +232,9 @@ export const defaultViewerConfig: PatronViewerConfig = {
 // Builds the viewer config from the logged-in user's account + whether they are spectating.
 // Pure (no hooks): the value is computed once in InnerGameBoard and provided via PatronContext.
 export function computeViewerConfig(user: User | undefined, spectating: boolean): PatronViewerConfig {
-    const isPatron = !!user?.permissions?.isPatron;
-    const raw = (user?.settings?.patron ?? {}) as Partial<PatronSettings>;
     return {
-        isPatron,
+        isPatron: !!user?.permissions?.isPatron,
         spectating,
-        dial: raw.dial || defaultPatronSettings.dial,
-        fate: raw.fate || defaultPatronSettings.fate,
-        rings: raw.rings ?? defaultPatronSettings.rings,
-        tokens: raw.tokens ?? defaultPatronSettings.tokens
+        ...normalizePatronSettings(user?.settings?.patron as Record<string, unknown> | undefined)
     };
 }
