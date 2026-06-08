@@ -36,8 +36,9 @@ export interface CosmeticType {
 
 export const dialMaterials: CosmeticMaterial[] = [
     { id: "wood", label: "Wood", patron: false },
-    { id: "gold", label: "Gold", patron: true },
-    { id: "nacre", label: "Nacre", patron: true }
+    { id: "etched", label: "Etched", patron: false },
+    { id: "nacre", label: "Nacre", patron: true },
+    { id: "gold", label: "Gold", patron: true }
 ];
 
 export const dialTypes: CosmeticType[] = [
@@ -56,8 +57,9 @@ export const dialTypes: CosmeticType[] = [
 export const tokenMaterials: CosmeticMaterial[] = [
     { id: "default", label: "Default", patron: false },
     { id: "wood", label: "Wood", patron: false },
-    { id: "gold", label: "Gold", patron: true },
-    { id: "nacre", label: "Nacre", patron: true }
+    { id: "etched", label: "Etched", patron: false },
+    { id: "nacre", label: "Nacre", patron: true },
+    { id: "gold", label: "Gold", patron: true }
 ];
 
 const PATRON_MATERIALS = new Set(["gold", "nacre"]);
