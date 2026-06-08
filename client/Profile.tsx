@@ -7,6 +7,8 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 import Input from "./FormComponents/Input";
 import Checkbox from "./FormComponents/Checkbox";
 
+import { toast } from "sonner";
+
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { saveProfile } from "./ReduxActions/user";
 import {
@@ -39,7 +41,7 @@ interface InnerProfileProps {
 export function InnerProfile({ user }: InnerProfileProps) {
     const reduxDispatch = useAppDispatch();
     const [state, dispatch] = useReducer(profileReducer, user as ProfileUserLike | undefined, initProfileState);
-    const { account, settings, validation, loading, errorMessage, successMessage } = state;
+    const { account, settings, validation, loading } = state;
 
     useEffect(() => {
         if(user) {
@@ -72,14 +74,18 @@ export function InnerProfile({ user }: InnerProfileProps) {
         dispatch({ type: "validation", field: "password", error: passwordError });
 
         if(emailError || passwordError) {
-            dispatch({ type: "submitError", message: "There was an error in one or more fields, please see below, correct the error and try again" });
+            const message = "There was an error in one or more fields, please see below, correct the error and try again";
+            dispatch({ type: "submitError", message });
+            toast.error(message, { id: "profile-save" });
             return;
         }
 
         const emailChanged = !!user && account.email !== user.email;
         const passwordChanged = account.newPassword.length > 0;
         if((emailChanged || passwordChanged) && !account.currentPassword) {
-            dispatch({ type: "submitError", message: "Please enter your current password to change your email or password" });
+            const message = "Please enter your current password to change your email or password";
+            dispatch({ type: "submitError", message });
+            toast.error(message, { id: "profile-save" });
             return;
         }
 
@@ -104,12 +110,16 @@ export function InnerProfile({ user }: InnerProfileProps) {
                     }
                 }
             })).unwrap();
-            dispatch({ type: "submitSuccess", message: "Profile saved successfully.  Please note settings changed here will only apply at the start of your next game" });
+            const message = "Profile saved successfully. Please note settings changed here will only apply at the start of your next game";
+            dispatch({ type: "submitSuccess", message });
+            toast.success(message, { id: "profile-save" });
         } catch(err) {
-            const message = err instanceof Error
+            const rawMessage = err instanceof Error
                 ? err.message
                 : typeof err === "string" ? err : undefined;
-            dispatch({ type: "submitError", message: message || "An error occurred while saving your profile" });
+            const message = rawMessage || "An error occurred while saving your profile";
+            dispatch({ type: "submitError", message });
+            toast.error(message, { id: "profile-save" });
         }
     };
 
@@ -152,8 +162,6 @@ export function InnerProfile({ user }: InnerProfileProps) {
     return (
         <div className="row profile full-height">
             <div className="col-sm-8 col-sm-offset-2 about-container">
-                { errorMessage ? <AlertPanel type="error" message={ errorMessage } /> : null }
-                { successMessage ? <AlertPanel type="success" message={ successMessage } /> : null }
                 <form className="form form-horizontal">
                     <div className="panel-title">
                         Profile
