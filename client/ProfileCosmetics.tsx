@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
     dialMaterials,
     dialTypes,
@@ -39,11 +39,15 @@ interface PickerProps {
 }
 
 // --- Dial picker: material tabs + a grid of dial frames ---------------------
-const SAMPLE_DIGIT = 3;
+const SAMPLE_DIGIT = 0;
 
 export function DialPicker({ value, isPatron, onChange }: PickerProps) {
     const selected = parseDial(value);
     const [activeMaterial, setActiveMaterial] = useState(selected.material);
+
+    useEffect(() => {
+        setActiveMaterial(selected.material);
+    }, [selected.material]);
 
     const material = dialMaterials.find(m => m.id === activeMaterial) ?? dialMaterials[0];
     const materialLocked = material.patron && !isPatron;
