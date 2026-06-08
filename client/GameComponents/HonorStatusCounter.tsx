@@ -1,6 +1,5 @@
 
 import { resolveStoneImages } from "../boardCosmetics";
-import { usePatronViewerConfig } from "../PatronContext";
 
 interface HonorStatusCounterProps {
     cancel?: boolean;
@@ -12,7 +11,7 @@ interface HonorStatusCounterProps {
 }
 
 function HonorStatusCounter({ cancel, fade, name, honored, dishonored, tainted }: HonorStatusCounterProps) {
-    const stones = resolveStoneImages(usePatronViewerConfig());
+    const stones = resolveStoneImages();
     let className = `honorstatuscounter ${name}`;
 
     if(cancel) {

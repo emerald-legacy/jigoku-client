@@ -126,7 +126,9 @@ export function tokenImage(material: string, kind: "fate" | "honor"): string {
     return `/img/tokens/${material}/${kind}.webp`;
 }
 
-// Dishonored stone is not yet a selectable cosmetic; always the default art.
+// Honour-status stones (honored / dishonored / tainted) are not selectable cosmetics;
+// they always use their own stone art, independent of the chosen token material.
+export const DEFAULT_HONORED_STONE = "/img/tokens/honor_stone.webp";
 export const DEFAULT_DISHONORED_STONE = "/img/tokens/dishonor_stone.webp";
 
 // The token material the viewer actually sees: patron materials require patron status,
@@ -152,9 +154,10 @@ export function resolveHonorImage(viewer: PatronViewerConfig): string {
     return tokenImage(viewerTokenMaterial(viewer), "honor");
 }
 
-// Honored / dishonored stone images for the viewer's own client (viewer-personal).
-export function resolveStoneImages(viewer: PatronViewerConfig): { honored: string; dishonored: string } {
-    return { honored: tokenImage(viewerTokenMaterial(viewer), "honor"), dishonored: DEFAULT_DISHONORED_STONE };
+// Honour-status stones use their dedicated stone art, NOT the per-material honor token
+// (the honor token is for the player honour bar and cards that place honor tokens).
+export function resolveStoneImages(): { honored: string; dishonored: string } {
+    return { honored: DEFAULT_HONORED_STONE, dishonored: DEFAULT_DISHONORED_STONE };
 }
 
 // --- Rings (single patron set, toggled) -------------------------------------
