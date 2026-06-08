@@ -213,7 +213,8 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                         <input className="form-control text-center" name="timer" value={ settings.windowTimer } onChange={ handleSlideStop } />
                                     </div>
                                     <label className="col-sm-1 control-label">seconds</label>
-
+                                </div>
+                                <div className="form-group timer-toggles">
                                     <Checkbox name="timerSettings.events" noGroup label="Show timer for opponent's events" fieldClass="col-sm-6"
                                         onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "events", value: e.target.checked }) } checked={ !!settings.timerSettings.events } />
                                     <Checkbox name="timerSettings.abilities" noGroup label="Show timer for events in my deck" fieldClass="col-sm-6"

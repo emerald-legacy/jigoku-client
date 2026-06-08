@@ -352,6 +352,11 @@
     color: rgba(200, 210, 180, 0.6);
 }
 
+.timer-toggles {
+    clear: both;
+    margin-top: 1.25rem;
+}
+
 /* Profile page layout: equal-height two-up rows, responsive background grid. */
 @media (min-width: 992px) {
     .profile-row {
