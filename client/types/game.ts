@@ -300,9 +300,9 @@ export interface GameState {
 }
 
 export interface PatronSettings {
-    // Honour dial, stored as "<material>/<type>" e.g. "wood/default", "gold/crab".
+    // Honor dial, stored as "<material>/<type>" e.g. "wood/default", "gold/crab".
     dial?: string;
-    // Fate + honour token material id, e.g. "default", "wood", "gold", "nacre".
+    // Fate + honor token material id, e.g. "default", "wood", "gold", "nacre".
     tokens?: string;
     rings?: boolean;
 }

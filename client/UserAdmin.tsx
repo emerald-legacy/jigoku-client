@@ -22,7 +22,7 @@ const permissionsList: { name: string; label: string; desc: string; Icon: Lucide
     { name: "canEditNews", label: "News Editor", desc: "Publish and edit the site's dispatches.", Icon: ScrollText },
     { name: "canManageUsers", label: "User Manager", desc: "Find players and grant their privileges.", Icon: ShieldCheck },
     { name: "canViewGameErrors", label: "Game Errors Viewer", desc: "Inspect server-side game error reports.", Icon: Bug },
-    { name: "isPatron", label: "Patron", desc: "Supporter perks: custom honour dial, fate, token and ring imagery.", Icon: Sword }
+    { name: "isPatron", label: "Patron", desc: "Supporter perks: custom honor dial, fate, token and ring imagery.", Icon: Sword }
 ];
 
 interface InnerUserAdminProps {
