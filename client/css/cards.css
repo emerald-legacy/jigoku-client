@@ -167,8 +167,11 @@
     position: relative;
     border-radius: 6px;
     z-index: var(--layer-cards);
+    --card-token-size: calc(var(--card-width) * 0.279);
 
     &.small {
+        --card-token-size: calc(var(--card-sm-width) * 0.279);
+
         &.vertical {
             height: var(--card-sm-height);
             width: var(--card-sm-width);
@@ -181,6 +184,8 @@
     }
 
     &.large {
+        --card-token-size: calc(var(--card-lg-width) * 0.279);
+
         &.vertical {
             height: var(--card-lg-height);
             width: var(--card-lg-width);
@@ -193,6 +198,8 @@
     }
 
     &.x-large {
+        --card-token-size: calc(var(--card-xl-width) * 0.279);
+
         &.vertical {
             height: var(--card-xl-height);
             width: var(--card-xl-width);
@@ -205,6 +212,8 @@
     }
 
     &.xxl {
+        --card-token-size: calc(var(--card-xxl-width) * 0.279);
+
         &.vertical {
             height: var(--card-xxl-height);
             width: var(--card-xxl-width);
@@ -583,7 +592,7 @@
 
 .fatecounter {
     box-sizing: border-box;
-    font-size: 25px;
+    font-size: var(--card-token-size, 25px);
     font-weight: bold;
     width: 1em;
     height: 1em;
@@ -641,7 +650,7 @@
 
 .card.horizontal .honorstatuscounter {
     box-sizing: border-box;
-    width: 25px;
+    width: var(--card-token-size, 25px);
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -653,7 +662,7 @@
 .honorstatuscounter {
     box-sizing: border-box;
     width: 100%;
-    height: 25px;
+    height: var(--card-token-size, 25px);
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -662,10 +671,16 @@
     animation: token-place 280ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
+.honorstatuscounter img {
+    width: var(--card-token-size, 25px);
+    height: var(--card-token-size, 25px);
+    object-fit: contain;
+}
+
 .honorstatusspacer {
     box-sizing: border-box;
     width: 5px;
-    height: 25px;
+    height: var(--card-token-size, 25px);
 }
 
 .honorcountertext {

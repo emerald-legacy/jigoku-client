@@ -5,7 +5,7 @@ import * as actions from "./actions";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { InnerGameBoard, type InnerGameBoardProps } from "./InnerGameBoard";
 import { PatronProvider } from "./PatronContext";
-import { computeViewerConfig } from "./patronOptions";
+import { computeViewerConfig } from "./boardCosmetics";
 
 export { InnerGameBoard, type InnerGameBoardProps };
 

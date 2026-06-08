@@ -3,7 +3,7 @@ import Avatar from "../Avatar";
 import HonorFan from "./HonorFan";
 import PlayerStatsBox from "./PlayerStatsBox";
 import { RingRow } from "./CenterBar";
-import { resolveDialSet, resolveOwnedRingsPatron } from "../patronOptions";
+import { resolveDialSet, resolveOwnedRingsPatron } from "../boardCosmetics";
 import { usePatronViewerConfig, usePatronOwnerStatus } from "../PatronContext";
 import type { Player, Ring as RingType, MenuItem, GameState } from "../types/game";
 import type { AnimationEvent } from "../types/redux";
@@ -38,7 +38,7 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                 </div>
             </div>
             <div className={ `sidebar-pane their-side ${cardSize}` }>
-                { thisPlayer.hideProvinceDeck && <HonorFan size={ cardSize } value={ otherPlayer?.showBid ?? 0 } dialSet={ resolveDialSet(otherIsPatron, viewer) } /> }
+                { thisPlayer.hideProvinceDeck && <HonorFan size={ cardSize } value={ otherPlayer?.showBid ?? 0 } dialSet={ resolveDialSet(otherPlayer?.user?.settings?.patron?.dial, otherIsPatron) } /> }
                 <RingRow
                     rings={ rings }
                     owner={ otherPlayer ? otherPlayer.name : "\0" }
@@ -94,7 +94,7 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                     className={ `claimed-pool my-pool ${cardSize || ""}` }
                     patron={ resolveOwnedRingsPatron(thisIsPatron, viewer) }
                 />
-                { thisPlayer.hideProvinceDeck && <HonorFan size={ cardSize } value={ thisPlayer.showBid ?? 0 } dialSet={ resolveDialSet(thisIsPatron, viewer) } /> }
+                { thisPlayer.hideProvinceDeck && <HonorFan size={ cardSize } value={ thisPlayer.showBid ?? 0 } dialSet={ resolveDialSet(thisPlayer.user?.settings?.patron?.dial, thisIsPatron) } /> }
             </div>
             <div className="player-nameplate our-side">
                 <Avatar emailHash={ thisPlayer.user ? thisPlayer.user.emailHash : "unknown" } />

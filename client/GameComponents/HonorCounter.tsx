@@ -1,4 +1,4 @@
-import { resolveHonorImage } from "../patronOptions";
+import { resolveHonorImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
 
 interface HonorCounterProps {

@@ -7,6 +7,8 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 import Input from "./FormComponents/Input";
 import Checkbox from "./FormComponents/Checkbox";
 
+import { toast } from "sonner";
+
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { saveProfile } from "./ReduxActions/user";
 import {
@@ -16,8 +18,8 @@ import {
     validatePassword,
     type ProfileUserLike
 } from "./Profile.reducer";
-import { backgrounds, type BackgroundOption } from "./backgrounds";
-import { patronHonorDials, patronFateTokens } from "./patronOptions";
+import { backgrounds } from "./backgrounds";
+import { DialPicker, TokenPicker } from "./ProfileCosmetics";
 
 const windows = [
     { name: "dynasty", label: "Dynasty phase", style: "col-sm-4" },
@@ -27,11 +29,6 @@ const windows = [
     { name: "fate", label: "Fate phase", style: "col-sm-4" }
 ];
 
-const backgroundRows: BackgroundOption[][] = [];
-for(let i = 0; i < backgrounds.length; i += 3) {
-    backgroundRows.push(backgrounds.slice(i, i + 3));
-}
-
 interface InnerProfileProps {
     user?: User & { promptedActionWindows?: Record<string, boolean> };
 }
@@ -39,7 +36,7 @@ interface InnerProfileProps {
 export function InnerProfile({ user }: InnerProfileProps) {
     const reduxDispatch = useAppDispatch();
     const [state, dispatch] = useReducer(profileReducer, user as ProfileUserLike | undefined, initProfileState);
-    const { account, settings, validation, loading, errorMessage, successMessage } = state;
+    const { account, settings, validation, loading } = state;
 
     useEffect(() => {
         if(user) {
@@ -72,14 +69,18 @@ export function InnerProfile({ user }: InnerProfileProps) {
         dispatch({ type: "validation", field: "password", error: passwordError });
 
         if(emailError || passwordError) {
-            dispatch({ type: "submitError", message: "There was an error in one or more fields, please see below, correct the error and try again" });
+            const message = "There was an error in one or more fields, please see below, correct the error and try again";
+            dispatch({ type: "submitError", message });
+            toast.error(message, { id: "profile-save" });
             return;
         }
 
         const emailChanged = !!user && account.email !== user.email;
         const passwordChanged = account.newPassword.length > 0;
         if((emailChanged || passwordChanged) && !account.currentPassword) {
-            dispatch({ type: "submitError", message: "Please enter your current password to change your email or password" });
+            const message = "Please enter your current password to change your email or password";
+            dispatch({ type: "submitError", message });
+            toast.error(message, { id: "profile-save" });
             return;
         }
 
@@ -104,12 +105,16 @@ export function InnerProfile({ user }: InnerProfileProps) {
                     }
                 }
             })).unwrap();
-            dispatch({ type: "submitSuccess", message: "Profile saved successfully.  Please note settings changed here will only apply at the start of your next game" });
+            const message = "Profile saved successfully. Please note settings changed here will only apply at the start of your next game";
+            dispatch({ type: "submitSuccess", message });
+            toast.success(message, { id: "profile-save" });
         } catch(err) {
-            const message = err instanceof Error
+            const rawMessage = err instanceof Error
                 ? err.message
                 : typeof err === "string" ? err : undefined;
-            dispatch({ type: "submitError", message: message || "An error occurred while saving your profile" });
+            const message = rawMessage || "An error occurred while saving your profile";
+            dispatch({ type: "submitError", message });
+            toast.error(message, { id: "profile-save" });
         }
     };
 
@@ -151,237 +156,254 @@ export function InnerProfile({ user }: InnerProfileProps) {
 
     return (
         <div className="row profile full-height">
-            <div className="col-sm-8 col-sm-offset-2 about-container">
-                { errorMessage ? <AlertPanel type="error" message={ errorMessage } /> : null }
-                { successMessage ? <AlertPanel type="success" message={ successMessage } /> : null }
-                <form className="form form-horizontal">
-                    <div className="panel-title">
-                        Profile
-                    </div>
-                    <div className="panel">
-                        <Input name="email" label="Email Address" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Enter email address"
-                            type="text" onChange={ setAccount("email") } value={ account.email }
-                            onBlur={ handleEmailBlur } validationMessage={ validation.email } />
-                        <Input name="newPassword" label="New Password" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Enter new password"
-                            type="password" onChange={ setAccount("newPassword") } value={ account.newPassword }
-                            onBlur={ handlePasswordBlur } validationMessage={ validation.password } />
-                        <Input name="newPasswordAgain" label="New Password (again)" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Enter new password (again)"
-                            type="password" onChange={ setAccount("newPasswordAgain") } value={ account.newPasswordAgain }
-                            onBlur={ handlePasswordBlur } validationMessage={ validation.password1 } />
-                        <Input name="currentPassword" label="Current Password" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Required to change email or password"
-                            type="password" onChange={ setAccount("currentPassword") } value={ account.currentPassword } />
-                        <Checkbox name="disableGravatar" label="Disable Gravatar integration" fieldClass="col-sm-offset-4 col-sm-8"
-                            onChange={ (e) => dispatch({ type: "setting", field: "disableGravatar", value: e.target.checked }) } checked={ settings.disableGravatar } />
-                    </div>
-                    <div>
-                        <div className="panel-title">
-                            Action window defaults
-                        </div>
-                        <div className="panel">
-                            <p className="help-block small">If an option is selected here, you will always be prompted if you want to take an action in that window.  If an option is not selected, you will receive no prompts for that window.  For some windows (e.g. dominance) this could mean the whole window is skipped.</p>
-                            <div className="form-group">
-                                { windowsElements }
+            <div className="col-xs-12 about-container">
+                <form className="form form-horizontal profile-form">
+                    <div className="row profile-row">
+                        <div className="col-md-6">
+                            <div className="panel-title">
+                                Profile
+                            </div>
+                            <div className="panel">
+                                <Input name="email" label="Email Address" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Enter email address"
+                                    type="text" onChange={ setAccount("email") } value={ account.email }
+                                    onBlur={ handleEmailBlur } validationMessage={ validation.email } />
+                                <Input name="newPassword" label="New Password" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Enter new password"
+                                    type="password" onChange={ setAccount("newPassword") } value={ account.newPassword }
+                                    onBlur={ handlePasswordBlur } validationMessage={ validation.password } />
+                                <Input name="newPasswordAgain" label="New Password (again)" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Enter new password (again)"
+                                    type="password" onChange={ setAccount("newPasswordAgain") } value={ account.newPasswordAgain }
+                                    onBlur={ handlePasswordBlur } validationMessage={ validation.password1 } />
+                                <Input name="currentPassword" label="Current Password" labelClass="col-sm-4" fieldClass="col-sm-8" placeholder="Required to change email or password"
+                                    type="password" onChange={ setAccount("currentPassword") } value={ account.currentPassword } />
+                                <Checkbox name="disableGravatar" label="Disable Gravatar integration" fieldClass="col-sm-offset-4 col-sm-8"
+                                    onChange={ (e) => dispatch({ type: "setting", field: "disableGravatar", value: e.target.checked }) } checked={ settings.disableGravatar } />
                             </div>
                         </div>
-                        <div className="panel-title">
-                            Timed Bluff Window
-                        </div>
-                        <div className="panel">
-                            <p className="help-block small">Sometimes, it is useful to have the game prompt you to play an event, even when you can't play one, as it makes it more difficult for your opponent to deduce what you have in your hand. This 'bluff' window has a timer will count down.
-                            At the end of that timer, the window will automatically pass. This option controls the duration of the timer.  The timer will only show when you *don't* have an ability which can be used. The timer can be configure to show when events are played by your opponent, or
-                            to show when there's a window to play an event which you don't currently have in your hand.</p>
-                            <div className="form-group">
-                                <label className="col-sm-3 control-label">Window timeout</label>
-                                <div className="col-sm-5">
-                                    <input type="range"
-                                        className="form-control"
-                                        value={ settings.windowTimer }
-                                        onChange={ handleSlideStop }
-                                        step={ 1 }
-                                        max={ 10 }
-                                        min={ 0 } />
+                        <div className="col-md-6">
+                            <div className="panel-title">
+                                Action window defaults
+                            </div>
+                            <div className="panel">
+                                <p className="panel-help">If an option is selected here, you will always be prompted if you want to take an action in that window.  If an option is not selected, you will receive no prompts for that window.  For some windows (e.g. dominance) this could mean the whole window is skipped.</p>
+                                <div className="form-group">
+                                    { windowsElements }
                                 </div>
-                                <div className="col-sm-2">
-                                    <input className="form-control text-center" name="timer" value={ settings.windowTimer } onChange={ handleSlideStop } />
-                                </div>
-                                <label className="col-sm-1 control-label">seconds</label>
-
-                                <Checkbox name="timerSettings.events" noGroup label="Show timer for opponent's events" fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "events", value: e.target.checked }) } checked={ !!settings.timerSettings.events } />
-                                <Checkbox name="timerSettings.abilities" noGroup label="Show timer for events in my deck" fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "eventsInDeck", value: e.target.checked }) } checked={ !!settings.timerSettings.eventsInDeck } />
                             </div>
                         </div>
-                        <div className="panel-title">
-                            Options
+                    </div>
+                    <div className="row profile-row">
+                        <div className="col-md-6">
+                            <div className="panel-title">
+                                Timed Bluff Window
+                            </div>
+                            <div className="panel">
+                                <p className="panel-help">A bluff window prompts you to act even when you have no event to play, making it harder for opponents to read your hand. It appears only when you have no usable ability, and auto-passes once the timer below runs out. Use the toggles to choose when it shows.</p>
+                                <div className="form-group">
+                                    <label className="col-sm-3 control-label">Window timeout</label>
+                                    <div className="col-sm-5">
+                                        <input type="range"
+                                            className="form-control"
+                                            value={ settings.windowTimer }
+                                            onChange={ handleSlideStop }
+                                            step={ 1 }
+                                            max={ 10 }
+                                            min={ 0 } />
+                                    </div>
+                                    <div className="col-sm-2">
+                                        <input className="form-control text-center" name="timer" value={ settings.windowTimer } onChange={ handleSlideStop } />
+                                    </div>
+                                    <label className="col-sm-1 control-label">seconds</label>
+                                </div>
+                                <div className="form-group timer-toggles">
+                                    <Checkbox name="timerSettings.events" noGroup label="Show timer for opponent's events" fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "events", value: e.target.checked }) } checked={ !!settings.timerSettings.events } />
+                                    <Checkbox name="timerSettings.abilities" noGroup label="Show timer for events in my deck" fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "toggle", map: "timerSettings", field: "eventsInDeck", value: e.target.checked }) } checked={ !!settings.timerSettings.eventsInDeck } />
+                                </div>
+                            </div>
                         </div>
-                        <div className="panel">
-                            <div className="form-group">
-                                <Checkbox
-                                    name="optionSettings.markCardsUnselectable"
-                                    noGroup
-                                    label="Grey out cards with no relevant abilities during interrupt/reaction windows"
-                                    fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "markCardsUnselectable", value: e.target.checked }) }
-                                    checked={ !!settings.optionSettings.markCardsUnselectable }
+                        <div className="col-md-6">
+                            <div className="panel-title">
+                                Options
+                            </div>
+                            <div className="panel">
+                                <div className="form-group">
+                                    <Checkbox
+                                        name="optionSettings.markCardsUnselectable"
+                                        noGroup
+                                        label="Grey out cards with no relevant abilities during interrupt/reaction windows"
+                                        fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "markCardsUnselectable", value: e.target.checked }) }
+                                        checked={ !!settings.optionSettings.markCardsUnselectable }
+                                    />
+                                    <Checkbox
+                                        name="optionSettings.cancelOwnAbilities"
+                                        noGroup
+                                        label="Prompt to cancel/react to initiation of my own abilities"
+                                        fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "cancelOwnAbilities", value: e.target.checked }) }
+                                        checked={ !!settings.optionSettings.cancelOwnAbilities } />
+                                    <Checkbox
+                                        name="optionSettings.orderForcedAbilities"
+                                        noGroup
+                                        label="Prompt to order forced triggered/simultaneous abilities"
+                                        fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "orderForcedAbilities", value: e.target.checked }) }
+                                        checked={ !!settings.optionSettings.orderForcedAbilities }
+                                    />
+                                    <Checkbox
+                                        name="optionSettings.confirmOneClick"
+                                        noGroup
+                                        label="Show a confirmation prompt when initating 1-click abilities"
+                                        fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "confirmOneClick", value: e.target.checked }) }
+                                        checked={ !!settings.optionSettings.confirmOneClick }
+                                    />
+                                    <Checkbox
+                                        name="optionSettings.disableCardStats"
+                                        noGroup
+                                        label="Disable card hover statistics popup"
+                                        fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "disableCardStats", value: e.target.checked }) }
+                                        checked={ !!settings.optionSettings.disableCardStats }
+                                    />
+                                    <Checkbox
+                                        name="optionSettings.hideEffectMarkers"
+                                        noGroup
+                                        label="Hide effect markers on cards (info still in hover popup)"
+                                        fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "hideEffectMarkers", value: e.target.checked }) }
+                                        checked={ !!settings.optionSettings.hideEffectMarkers }
+                                    />
+                                    <Checkbox
+                                        name="optionSettings.sortHandByName"
+                                        noGroup
+                                        label="Sort Hand by Name"
+                                        fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "sortHandByName", value: e.target.checked }) }
+                                        checked={ !!settings.optionSettings.sortHandByName }
+                                    />
+                                    <Checkbox
+                                        name="optionSettings.showRingEffects"
+                                        noGroup
+                                        label="Show ring effect descriptions on hover"
+                                        fieldClass="col-sm-6"
+                                        onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "showRingEffects", value: e.target.checked }) }
+                                        checked={ !!settings.optionSettings.showRingEffects }
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <div className="panel-title">
+                                Card Image Size
+                            </div>
+                            <div className="panel">
+                                <div className="row">
+                                    <div className="col-xs-12">
+                                        <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "small" }) }>
+                                            <div className={ `card small vertical${settings.cardSize === "small" ? " selected" : ""}` }>
+                                                <img className="card small vertical"
+                                                    src="/img/cardbacks/dynastycardback.webp" />
+                                            </div>
+                                            <span className="bg-label">Small</span>
+                                        </div>
+                                        <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "normal" }) }>
+                                            <div className={ `card vertical${settings.cardSize === "normal" ? " selected" : ""}` }>
+                                                <img className="card vertical"
+                                                    src="/img/cardbacks/dynastycardback.webp" />
+                                            </div>
+                                            <span className="bg-label">Normal</span>
+                                        </div>
+                                        <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "large" }) }>
+                                            <div className={ `card vertical large${settings.cardSize === "large" ? " selected" : ""}` }>
+                                                <img className="card-image large vertical"
+                                                    src="/img/cardbacks/dynastycardback.webp" />
+                                            </div>
+                                            <span className="bg-label">Large</span>
+                                        </div>
+                                        <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "x-large" }) }>
+                                            <div className={ `card vertical x-large${settings.cardSize === "x-large" ? " selected" : ""}` }>
+                                                <img className="card-image x-large vertical"
+                                                    src="/img/cardbacks/dynastycardback.webp" />
+                                            </div>
+                                            <span className="bg-label">Extra-Large</span>
+                                        </div>
+                                        <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "xxl" }) }>
+                                            <div className={ `card vertical xxl${settings.cardSize === "xxl" ? " selected" : ""}` }>
+                                                <img className="card-image xxl vertical"
+                                                    src="/img/cardbacks/dynastycardback.webp" />
+                                            </div>
+                                            <span className="bg-label">XXL</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <div className="panel-title">
+                                Board Cosmetics
+                            </div>
+                            <div className="panel">
+                                <p className="panel-help">Choose the honor dial and tokens you play with. Everyone gets the wood and etched sets; patrons unlock nacre and gold. Your dial is shown to opponents and spectators; your tokens appear only on your own client.</p>
+                                <label className="control-label">Honor dial</label>
+                                <DialPicker
+                                    value={ settings.patron.dial }
+                                    isPatron={ isPatron }
+                                    onChange={ (value) => dispatch({ type: "patron", field: "dial", value }) }
                                 />
-                                <Checkbox
-                                    name="optionSettings.cancelOwnAbilities"
-                                    noGroup
-                                    label="Prompt to cancel/react to initiation of my own abilities"
-                                    fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "cancelOwnAbilities", value: e.target.checked }) }
-                                    checked={ !!settings.optionSettings.cancelOwnAbilities } />
-                                <Checkbox
-                                    name="optionSettings.orderForcedAbilities"
-                                    noGroup
-                                    label="Prompt to order forced triggered/simultaneous abilities"
-                                    fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "orderForcedAbilities", value: e.target.checked }) }
-                                    checked={ !!settings.optionSettings.orderForcedAbilities }
-                                />
-                                <Checkbox
-                                    name="optionSettings.confirmOneClick"
-                                    noGroup
-                                    label="Show a confirmation prompt when initating 1-click abilities"
-                                    fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "confirmOneClick", value: e.target.checked }) }
-                                    checked={ !!settings.optionSettings.confirmOneClick }
-                                />
-                                <Checkbox
-                                    name="optionSettings.disableCardStats"
-                                    noGroup
-                                    label="Disable card hover statistics popup"
-                                    fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "disableCardStats", value: e.target.checked }) }
-                                    checked={ !!settings.optionSettings.disableCardStats }
-                                />
-                                <Checkbox
-                                    name="optionSettings.hideEffectMarkers"
-                                    noGroup
-                                    label="Hide effect markers on cards (info still in hover popup)"
-                                    fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "hideEffectMarkers", value: e.target.checked }) }
-                                    checked={ !!settings.optionSettings.hideEffectMarkers }
-                                />
-                                <Checkbox
-                                    name="optionSettings.sortHandByName"
-                                    noGroup
-                                    label="Sort Hand by Name"
-                                    fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "sortHandByName", value: e.target.checked }) }
-                                    checked={ !!settings.optionSettings.sortHandByName }
-                                />
-                                <Checkbox
-                                    name="optionSettings.showRingEffects"
-                                    noGroup
-                                    label="Show ring effect descriptions on hover"
-                                    fieldClass="col-sm-6"
-                                    onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "showRingEffects", value: e.target.checked }) }
-                                    checked={ !!settings.optionSettings.showRingEffects }
+                                <label className="control-label cosmetic-section-label">Fate &amp; honor tokens</label>
+                                <TokenPicker
+                                    value={ settings.patron.tokens }
+                                    isPatron={ isPatron }
+                                    onChange={ (value) => dispatch({ type: "patron", field: "tokens", value }) }
                                 />
                             </div>
                         </div>
                     </div>
-                    <div>
-                        <div className="panel-title">
-                            Game Board Background
-                        </div>
-                        <div className="panel">
-                            { backgroundRows.map((row, rowIdx) => (
-                                <div className="row" key={ rowIdx }>
-                                    { row.map(bg => (
-                                        <div key={ bg.value } className="col-sm-4" onClick={ () => dispatch({ type: "setting", field: "background", value: bg.value }) }>
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <div className="panel-title">
+                                Game Board Background
+                            </div>
+                            <div className="panel">
+                                <div className="bg-grid">
+                                    { backgrounds.map(bg => (
+                                        <div key={ bg.value } className="bg-swatch" onClick={ () => dispatch({ type: "setting", field: "background", value: bg.value }) }>
                                             <img className={ `img-responsive${settings.background === bg.value ? " selected" : ""}` } src={ bg.thumbnail } />
                                             <span className="bg-label">{ bg.label }</span>
                                         </div>
                                     )) }
                                 </div>
-                            )) }
+                            </div>
                         </div>
                     </div>
+                    { /* Patron ring picker — hidden until a patron ring set exists. The setting
+                        (settings.patron.rings) and its resolvers are still wired; re-enable by
+                        restoring this block once ring art is available.
                     { isPatron ? (
                         <div>
                             <div className="panel-title">
-                                Patron Cosmetics
+                                Patron Extras
                             </div>
                             <div className="panel">
-                                <p className="help-block small">Thanks for supporting us! Choose your custom in-game imagery. Opponents and spectators see a default patron honour dial and ring set; you (and other patrons) see your choices here.</p>
-                                <label className="control-label">Honour dial</label>
-                                <div className="row">
-                                    { patronHonorDials.map(opt => (
-                                        <div key={ opt.value } className="col-sm-3 card-settings" onClick={ () => dispatch({ type: "patron", field: "dial", value: opt.value }) }>
-                                            <img className={ `img-responsive${settings.patron.dial === opt.value ? " selected" : ""}` } src={ opt.thumbnail } />
-                                            <span className="bg-label">{ opt.label }</span>
-                                        </div>
-                                    )) }
-                                </div>
-                                <label className="control-label">Fate tokens</label>
-                                <div className="row">
-                                    { patronFateTokens.map(opt => (
-                                        <div key={ opt.value } className="col-sm-2 card-settings" onClick={ () => dispatch({ type: "patron", field: "fate", value: opt.value }) }>
-                                            <img className={ `img-responsive${settings.patron.fate === opt.value ? " selected" : ""}` } src={ opt.thumbnail } />
-                                            <span className="bg-label">{ opt.label }</span>
-                                        </div>
-                                    )) }
-                                </div>
+                                <p className="panel-help">Thanks for supporting us!</p>
                                 <div className="form-group">
                                     <Checkbox name="patron.rings" noGroup label="Use patron ring set" fieldClass="col-sm-6"
                                         onChange={ (e) => dispatch({ type: "patron", field: "rings", value: e.target.checked }) } checked={ settings.patron.rings } />
-                                    <Checkbox name="patron.tokens" noGroup label="Use patron honoured/dishonoured tokens" fieldClass="col-sm-6"
-                                        onChange={ (e) => dispatch({ type: "patron", field: "tokens", value: e.target.checked }) } checked={ settings.patron.tokens } />
                                 </div>
                             </div>
                         </div>
                     ) : null }
-                    <div>
-                        <div className="panel-title">
-                            Card Image Size
-                        </div>
-                        <div className="panel">
-                            <div className="row">
-                                <div className="col-xs-12">
-                                    <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "small" }) }>
-                                        <div className={ `card small vertical${settings.cardSize === "small" ? " selected" : ""}` }>
-                                            <img className="card small vertical"
-                                                src="img/cards/dynastycardback.png" />
-                                        </div>
-                                        <span className="bg-label">Small</span>
-                                    </div>
-                                    <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "normal" }) }>
-                                        <div className={ `card vertical${settings.cardSize === "normal" ? " selected" : ""}` }>
-                                            <img className="card vertical"
-                                                src="img/cards/dynastycardback.png" />
-                                        </div>
-                                        <span className="bg-label">Normal</span>
-                                    </div>
-                                    <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "large" }) }>
-                                        <div className={ `card vertical large${settings.cardSize === "large" ? " selected" : ""}` }>
-                                            <img className="card-image large vertical"
-                                                src="/img/cards/dynastycardback.png" />
-                                        </div>
-                                        <span className="bg-label">Large</span>
-                                    </div>
-                                    <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "x-large" }) }>
-                                        <div className={ `card vertical x-large${settings.cardSize === "x-large" ? " selected" : ""}` }>
-                                            <img className="card-image x-large vertical"
-                                                src="img/cards/dynastycardback.png" />
-                                        </div>
-                                        <span className="bg-label">Extra-Large</span>
-                                    </div>
-                                    <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "xxl" }) }>
-                                        <div className={ `card vertical xxl${settings.cardSize === "xxl" ? " selected" : ""}` }>
-                                            <img className="card-image xxl vertical"
-                                                src="img/cards/dynastycardback.png" />
-                                        </div>
-                                        <span className="bg-label">XXL</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="col-sm-offset-10 col-sm-2">
-                        <button className="btn btn-primary" type="button" disabled={ loading } onClick={ handleSaveClick }>Save</button>
+                    */ }
+                    <div className="profile-actions">
+                        <button className="btn profile-save" type="button" disabled={ loading } onClick={ handleSaveClick }>
+                            { loading ? "Saving…" : "Save changes" }
+                        </button>
                     </div>
                 </form>
             </div>

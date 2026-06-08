@@ -28,7 +28,7 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }: AbilityT
     const getCardImagePath = (card: TargetingItem) => {
         const c = card as { id?: string; packId?: string; isDynasty?: boolean; isConflict?: boolean };
         if(!c.id) {
-            const backFile = `${c.isDynasty ? "dynasty" : c.isConflict ? "conflict" : "province"}cardback.jpg`;
+            const backFile = `${c.isDynasty ? "dynasty" : c.isConflict ? "conflict" : "province"}cardback.webp`;
             return getCardBackUrl(backFile);
         }
         return getCardImageUrl(c.id, c.packId);

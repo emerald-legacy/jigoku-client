@@ -367,11 +367,11 @@ function Card(props: CardProps) {
         }
 
         if(card.isConflict || source === "conflict deck") {
-            cardBack = "conflictcardback.png";
+            cardBack = "conflictcardback.webp";
         } else if(card.isDynasty || source === "dynasty deck") {
-            cardBack = "dynastycardback.png";
+            cardBack = "dynastycardback.webp";
         } else if(card.isProvince || source === "province deck") {
-            cardBack = "provincecardback.png";
+            cardBack = "provincecardback.webp";
         } else {
             cardBack = "cardback.png";
         }

@@ -1,6 +1,7 @@
+import { Plus, Minus } from "lucide-react";
 import Clock from "./Clock";
 import ClockPopup from "./ClockPopup";
-import { resolveFateImage, resolveHonorImage } from "../patronOptions";
+import { resolveFateImage, resolveHonorImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
 import type { ClockState, Player } from "../types/game";
 import type { AnimationEvent } from "../types/redux";
@@ -60,7 +61,7 @@ export function PlayerStatsBox({
                         className={ `btn btn-stat ${size}` }
                         onClick={ () => sendUpdate(statToSet, "down") }
                     >
-                        <img src="/img/Minus.png" title="-" alt="-" />
+                        <Minus size={ 16 } strokeWidth={ 3 } aria-label="-" />
                     </button>
                 ) }
                 <div className={ `stat-image ${size}` } style={ imageStyle } />
@@ -71,7 +72,7 @@ export function PlayerStatsBox({
                         className={ `btn btn-stat ${size}` }
                         onClick={ () => sendUpdate(statToSet, "up") }
                     >
-                        <img src="/img/Plus.png" title="+" alt="+" />
+                        <Plus size={ 16 } strokeWidth={ 3 } aria-label="+" />
                     </button>
                 ) }
             </div>

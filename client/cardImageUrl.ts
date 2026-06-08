@@ -24,7 +24,7 @@ export function getCardImageUrl(cardId: string, packId?: string): string {
 }
 
 export function getCardBackUrl(filename: string): string {
-    return `/img/cards/${filename}${versionSuffix}`;
+    return `/img/cardbacks/${filename}${versionSuffix}`;
 }
 
 const communityFormats = new Set(["emerald", "sanctuary", "obsidian"]);

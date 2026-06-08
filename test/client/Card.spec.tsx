@@ -46,7 +46,7 @@ describe("the <Card /> component", () => {
 
         it("should show a facedown card with a card back rendered", () => {
             const cardImage = document.querySelector(".card-image-src");
-            expect(cardImage.src).toContain("/img/cards/cardback.png");
+            expect(cardImage.src).toContain("/img/cardbacks/cardback.png");
         });
     });
 
@@ -107,7 +107,7 @@ describe("the <Card /> component", () => {
         it("should show a facedown image", () => {
             const cardImage = document.querySelector(".card-image-src");
             expect(cardImage.src).not.toContain("/img/cards/test-card-1");
-            expect(cardImage.src).toContain("/img/cards/cardback.png");
+            expect(cardImage.src).toContain("/img/cardbacks/cardback.png");
         });
     });
 
@@ -240,19 +240,19 @@ describe("the <Card /> component", () => {
         it("should use conflict card back for conflict cards", () => {
             render(<Card card={ { ...card, facedown: true, isConflict: true } } source="conflict deck" />);
             const cardImage = document.querySelector(".card-image-src");
-            expect(cardImage.src).toContain("conflictcardback.png");
+            expect(cardImage.src).toContain("conflictcardback.webp");
         });
 
         it("should use dynasty card back for dynasty cards", () => {
             render(<Card card={ { ...card, facedown: true, isDynasty: true } } source="dynasty deck" />);
             const cardImage = document.querySelector(".card-image-src");
-            expect(cardImage.src).toContain("dynastycardback.png");
+            expect(cardImage.src).toContain("dynastycardback.webp");
         });
 
         it("should use province card back for province cards", () => {
             render(<Card card={ { ...card, facedown: true, isProvince: true } } source="province deck" />);
             const cardImage = document.querySelector(".card-image-src");
-            expect(cardImage.src).toContain("provincecardback.png");
+            expect(cardImage.src).toContain("provincecardback.webp");
         });
     });
 
