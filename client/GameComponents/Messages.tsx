@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import EmojiConvertor from "emoji-js";
 import { CheckCircle, Info, AlertCircle, AlertTriangle } from "lucide-react";
 import Avatar from "../Avatar";
-import { resolveFateImage, resolveHonorImage } from "../patronOptions";
+import { resolveFateImage, resolveHonorImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
 import type { GameMessage, MessageFragment } from "../types/game";
 

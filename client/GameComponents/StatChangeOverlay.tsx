@@ -1,5 +1,5 @@
 import React from "react";
-import { resolveFateImage, resolveHonorImage } from "../patronOptions";
+import { resolveFateImage, resolveHonorImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
 import type { AnimationEvent } from "../types/redux";
 

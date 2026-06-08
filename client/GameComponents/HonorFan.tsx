@@ -1,4 +1,4 @@
-import { honorDialDigit, honorDialFrame } from "../patronOptions";
+import { honorDialDigit, honorDialFrame } from "../boardCosmetics";
 
 interface HonorFanProps {
     size: string;

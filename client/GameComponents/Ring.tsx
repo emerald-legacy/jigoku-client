@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, memo } from "react";
 import CardCounters from "./CardCounters";
 import CardMenu from "./CardMenu";
 import { getRingEffect } from "../RingEffectDescriptions";
-import { patronRingImage } from "../patronOptions";
+import { patronRingImage } from "../boardCosmetics";
 import type { Ring as RingType, MenuItem } from "../types/game";
 
 interface RingProps {

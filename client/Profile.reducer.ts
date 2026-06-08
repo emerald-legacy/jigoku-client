@@ -1,6 +1,6 @@
 import type { User } from "./types/user";
 import type { PlayerOptionSettings, PatronSettings } from "./types/game";
-import { normalizePatronSettings } from "./patronOptions";
+import { normalizePatronSettings } from "./boardCosmetics";
 
 export const defaultPatronProfileSettings: Required<PatronSettings> = normalizePatronSettings(undefined);
 

@@ -1,5 +1,5 @@
 
-import { resolveStoneImages } from "../patronOptions";
+import { resolveStoneImages } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
 
 interface HonorStatusCounterProps {

@@ -3,7 +3,7 @@ import RingRow from "./RingRow";
 import ConflictPanel from "./ConflictPanel";
 import CardsPlayedTracker from "./CardsPlayedTracker";
 import RingAttachmentRow from "./RingAttachmentRow";
-import { resolveCenterRingsPatron } from "../patronOptions";
+import { resolveCenterRingsPatron } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
 import type { Card as CardType, Ring as RingType, Player, MenuItem, GameState, ConflictInfo } from "../types/game";
 

@@ -10,7 +10,7 @@ import {
     honorDialDigit,
     FALLBACK_DIAL_FRAME,
     DEFAULT_TOKENS
-} from "./patronOptions";
+} from "./boardCosmetics";
 
 // An <img> that swaps to a fallback once if its source fails to load. Used so the
 // pickers stay populated while placeholder/in-progress art is still missing.

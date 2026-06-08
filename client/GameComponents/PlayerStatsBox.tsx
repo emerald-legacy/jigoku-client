@@ -1,7 +1,7 @@
 import { Plus, Minus } from "lucide-react";
 import Clock from "./Clock";
 import ClockPopup from "./ClockPopup";
-import { resolveFateImage, resolveHonorImage } from "../patronOptions";
+import { resolveFateImage, resolveHonorImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
 import type { ClockState, Player } from "../types/game";
 import type { AnimationEvent } from "../types/redux";

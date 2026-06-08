@@ -3,7 +3,7 @@ import Avatar from "../Avatar";
 import HonorFan from "./HonorFan";
 import PlayerStatsBox from "./PlayerStatsBox";
 import { RingRow } from "./CenterBar";
-import { resolveDialSet, resolveOwnedRingsPatron } from "../patronOptions";
+import { resolveDialSet, resolveOwnedRingsPatron } from "../boardCosmetics";
 import { usePatronViewerConfig, usePatronOwnerStatus } from "../PatronContext";
 import type { Player, Ring as RingType, MenuItem, GameState } from "../types/game";
 import type { AnimationEvent } from "../types/redux";

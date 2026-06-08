@@ -1,5 +1,5 @@
 
-import { resolveFateImage } from "../patronOptions";
+import { resolveFateImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
 
 interface FateCounterProps {

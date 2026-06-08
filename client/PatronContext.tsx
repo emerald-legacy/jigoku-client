@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useMemo } from "react";
 import { usePatronStatuses } from "./patronStatus";
-import { defaultViewerConfig, type PatronViewerConfig } from "./patronOptions";
+import { defaultViewerConfig, type PatronViewerConfig } from "./boardCosmetics";
 
 interface PatronContextValue {
     viewer: PatronViewerConfig;
