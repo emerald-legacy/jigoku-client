@@ -17,7 +17,7 @@ import {
     type ProfileUserLike
 } from "./Profile.reducer";
 import { backgrounds, type BackgroundOption } from "./backgrounds";
-import { patronHonorDials, patronFateTokens } from "./patronOptions";
+import { DialPicker, TokenPicker } from "./ProfileCosmetics";
 
 const windows = [
     { name: "dynasty", label: "Dynasty phase", style: "col-sm-4" },
@@ -300,40 +300,44 @@ export function InnerProfile({ user }: InnerProfileProps) {
                             )) }
                         </div>
                     </div>
+                    <div>
+                        <div className="panel-title">
+                            Board Cosmetics
+                        </div>
+                        <div className="panel">
+                            <p className="help-block small">Choose the honour dial and tokens you play with. Everyone gets the wooden sets; patrons unlock nacre and gold. Your dial is shown to opponents and spectators; your tokens appear only on your own client.</p>
+                            <label className="control-label">Honour dial</label>
+                            <DialPicker
+                                value={ settings.patron.dial }
+                                isPatron={ isPatron }
+                                onChange={ (value) => dispatch({ type: "patron", field: "dial", value }) }
+                            />
+                            <label className="control-label cosmetic-section-label">Fate &amp; honour tokens</label>
+                            <TokenPicker
+                                value={ settings.patron.tokens }
+                                isPatron={ isPatron }
+                                onChange={ (value) => dispatch({ type: "patron", field: "tokens", value }) }
+                            />
+                        </div>
+                    </div>
+                    { /* Patron ring picker — hidden until a patron ring set exists. The setting
+                        (settings.patron.rings) and its resolvers are still wired; re-enable by
+                        restoring this block once ring art is available.
                     { isPatron ? (
                         <div>
                             <div className="panel-title">
-                                Patron Cosmetics
+                                Patron Extras
                             </div>
                             <div className="panel">
-                                <p className="help-block small">Thanks for supporting us! Choose your custom in-game imagery. Opponents and spectators see a default patron honour dial and ring set; you (and other patrons) see your choices here.</p>
-                                <label className="control-label">Honour dial</label>
-                                <div className="row">
-                                    { patronHonorDials.map(opt => (
-                                        <div key={ opt.value } className="col-sm-3 card-settings" onClick={ () => dispatch({ type: "patron", field: "dial", value: opt.value }) }>
-                                            <img className={ `img-responsive${settings.patron.dial === opt.value ? " selected" : ""}` } src={ opt.thumbnail } />
-                                            <span className="bg-label">{ opt.label }</span>
-                                        </div>
-                                    )) }
-                                </div>
-                                <label className="control-label">Fate tokens</label>
-                                <div className="row">
-                                    { patronFateTokens.map(opt => (
-                                        <div key={ opt.value } className="col-sm-2 card-settings" onClick={ () => dispatch({ type: "patron", field: "fate", value: opt.value }) }>
-                                            <img className={ `img-responsive${settings.patron.fate === opt.value ? " selected" : ""}` } src={ opt.thumbnail } />
-                                            <span className="bg-label">{ opt.label }</span>
-                                        </div>
-                                    )) }
-                                </div>
+                                <p className="help-block small">Thanks for supporting us!</p>
                                 <div className="form-group">
                                     <Checkbox name="patron.rings" noGroup label="Use patron ring set" fieldClass="col-sm-6"
                                         onChange={ (e) => dispatch({ type: "patron", field: "rings", value: e.target.checked }) } checked={ settings.patron.rings } />
-                                    <Checkbox name="patron.tokens" noGroup label="Use patron honoured/dishonoured tokens" fieldClass="col-sm-6"
-                                        onChange={ (e) => dispatch({ type: "patron", field: "tokens", value: e.target.checked }) } checked={ settings.patron.tokens } />
                                 </div>
                             </div>
                         </div>
                     ) : null }
+                    */ }
                     <div>
                         <div className="panel-title">
                             Card Image Size
