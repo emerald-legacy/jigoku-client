@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Draggable from "react-draggable";
+import { asset } from "./assetUrl";
 
 import type { AnimationEvent } from "./types/redux";
 import type { GameState, Card as CardType, Ring as RingType, Player, MenuItem, Spectator, GameMessage, MessageFragment, ConflictInfo } from "./types/game";
@@ -227,6 +228,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         setSpectating(!thisPlayer);
 
         if(thisPlayer && thisPlayer.selectCard) {
+            document.body.style.setProperty("--select-cursor", `url(${asset("crosshairs.cur")})`);
             document.body.classList.add("select-cursor");
         } else {
             document.body.classList.remove("select-cursor");

@@ -1,6 +1,9 @@
 import { Plus, Minus } from "lucide-react";
 import Avatar from "../Avatar";
 import Clock from "./Clock";
+import { asset } from "../assetUrl";
+import { resolveFirstPlayerImage } from "../boardCosmetics";
+import { usePatronViewerConfig } from "../PatronContext";
 import type { ClockState, Player } from "../types/game";
 
 interface PlayerStatsRowProps {
@@ -26,6 +29,8 @@ export function PlayerStatsRow({
     stats,
     user
 }: PlayerStatsRowProps) {
+    const firstPlayerImage = resolveFirstPlayerImage(usePatronViewerConfig());
+
     const sendUpdate = (type: string, direction: string) => {
         sendGameMessage("changeStat", type, direction === "up" ? 1 : -1);
     };
@@ -38,7 +43,7 @@ export function PlayerStatsRow({
     };
 
     const getButton = (stat: string, name: string, statToSet = stat) => {
-        const imageStyle = { backgroundImage: `url(/img/${name}.png)` };
+        const imageStyle = { backgroundImage: `url(${asset(`${name}.png`)})` };
 
         return (
             <div className="state">
@@ -92,7 +97,7 @@ export function PlayerStatsRow({
                 <div className="state first-player-state">
                     <img
                         className="first-player-indicator"
-                        src="/img/first-player.png"
+                        src={ firstPlayerImage }
                         title="First Player"
                     />
                 </div>

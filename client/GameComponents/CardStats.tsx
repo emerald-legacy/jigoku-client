@@ -1,3 +1,4 @@
+import { asset } from "../assetUrl";
 
 interface Modifier {
     name: string;
@@ -84,7 +85,7 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
             { glorySummary?.modifiers && (
                 <div className="stat-container">
                     <div className="stat-total">
-                        <img className="icon-glory stat--type-icon" src="/img/glory.webp" />
+                        <img className="icon-glory stat--type-icon" src={ asset("glory.webp") } />
                         <span className="stat-value">{ glorySummary.stat }</span>
                     </div>
                     <div className="stat-specifics">{ renderModifiers(glorySummary.modifiers) }</div>

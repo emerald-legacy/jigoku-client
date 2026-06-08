@@ -299,7 +299,7 @@ function Card(props: CardProps) {
     const getCardElement = () => {
         let cardClass = "card";
         let imageClass = "card-image";
-        let cardBack = "cardback.png";
+        let cardBack = "conflictcardback.webp";
 
         if(!card) {
             return <div />;
@@ -373,7 +373,7 @@ function Card(props: CardProps) {
         } else if(card.isProvince || source === "province deck") {
             cardBack = "provincecardback.webp";
         } else {
-            cardBack = "cardback.png";
+            cardBack = "conflictcardback.webp";
         }
 
         const cardPile = player && card && player.cardPiles[card.uuid];

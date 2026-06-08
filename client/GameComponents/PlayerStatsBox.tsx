@@ -1,8 +1,9 @@
 import { Plus, Minus } from "lucide-react";
 import Clock from "./Clock";
 import ClockPopup from "./ClockPopup";
-import { resolveFateImage, resolveHonorImage } from "../boardCosmetics";
+import { resolveFateImage, resolveHonorImage, resolveFirstPlayerImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
+import { asset } from "../assetUrl";
 import type { ClockState, Player } from "../types/game";
 import type { AnimationEvent } from "../types/redux";
 
@@ -38,6 +39,7 @@ export function PlayerStatsBox({
     const viewer = usePatronViewerConfig();
     const fateImage = resolveFateImage(viewer);
     const honorImage = resolveHonorImage(viewer);
+    const firstPlayerImage = resolveFirstPlayerImage(viewer);
 
     const airAnim = pendingAnimations?.find(a => a.type === "air" && a.playerName === playerName);
     const sendUpdate = (type: string, direction: string) => {
@@ -51,7 +53,7 @@ export function PlayerStatsBox({
         return stats[stat] || 0;
     };
 
-    const getButton = (stat: string, name: string, statToSet = stat, image = `/img/${name}.png`) => {
+    const getButton = (stat: string, name: string, statToSet = stat, image = asset(`${name}.png`)) => {
         const imageStyle = { backgroundImage: `url(${image})` };
 
         return (
@@ -79,7 +81,7 @@ export function PlayerStatsBox({
         );
     };
 
-    const handImageStyle = { backgroundImage: "url(/img/conflictcard.png)" };
+    const handImageStyle = { backgroundImage: `url(${asset("conflictcard.png")})` };
 
     const clock =
         !clockState || clockState.mode === "off" ? null : (
@@ -112,7 +114,7 @@ export function PlayerStatsBox({
                 <div className="state first-player-state">
                     <img
                         className={ `first-player-indicator${firstPlayer ? "" : " hidden"}` }
-                        src="/img/first-player.png"
+                        src={ firstPlayerImage }
                         title="First Player"
                     />
                 </div>

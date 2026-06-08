@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { asset } from "./assetUrl";
 
 interface ClanMatchup {
     winRate: number;
@@ -91,7 +92,7 @@ function GameStats({ stats }: GameStatsProps) {
                                         >
                                             <img
                                                 className="game-stats-clan-icon"
-                                                src={ `/img/mons/${clan}.png` }
+                                                src={ asset(`mons/${clan}.png`) }
                                                 title={ clan }
                                             />
                                             <span>{ data.gamesPlayed } played</span>
@@ -109,7 +110,7 @@ function GameStats({ stats }: GameStatsProps) {
                                                         <div key={ opp } className="game-stats-matchup">
                                                             <img
                                                                 className="game-stats-clan-icon"
-                                                                src={ `/img/mons/${opp}.png` }
+                                                                src={ asset(`mons/${opp}.png`) }
                                                                 title={ opp }
                                                             />
                                                             <span>{ m.winRate }%</span>
@@ -133,7 +134,7 @@ function GameStats({ stats }: GameStatsProps) {
                                         <span key={ clan } className="game-stats-best-entry">
                                             <img
                                                 className="game-stats-clan-icon"
-                                                src={ `/img/mons/${clan}.png` }
+                                                src={ asset(`mons/${clan}.png`) }
                                                 title={ clan }
                                             />
                                             <span className="game-stats-best-name">

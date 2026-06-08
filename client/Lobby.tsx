@@ -11,6 +11,7 @@ import SamuraiSidebar from "./components/SamuraiSidebar/SamuraiSidebar";
 import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { loadServerVersion } from "./ReduxActions/serverVersion";
+import { asset } from "./assetUrl";
 import type { NewsItem } from "./types/redux";
 
 interface InnerLobbyProps {
@@ -89,7 +90,7 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news }: InnerLobby
                         <span className="ring ring-air" />
                         <span className="ring ring-void" />
                     </div>
-                    <img src="/img/emerald-legacy-logo.png" alt="Emerald Legacy" className="lobby-hero-logo" />
+                    <img src={ asset("emerald-legacy-logo.png") } alt="Emerald Legacy" className="lobby-hero-logo" />
                     <p className="lobby-hero-tagline">
                         Play the Legend of the Five Rings LCG and Emerald Legacy in your browser.
                     </p>

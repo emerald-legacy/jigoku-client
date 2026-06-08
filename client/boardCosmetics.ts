@@ -1,4 +1,5 @@
 import type { User } from "./types/user";
+import { asset } from "./assetUrl";
 
 // Registry + resolution for board cosmetics. Two axes:
 //   MATERIAL  wood (free) · nacre, gold (patron)
@@ -69,13 +70,13 @@ export const DEFAULT_PATRON_DIAL = "nacre/default"; // shown for a patron whose 
 export const DEFAULT_TOKENS = "default";
 
 // Fallback frame used when a (placeholder/missing) dial asset fails to load in the picker.
-export const FALLBACK_DIAL_FRAME = "/img/dials/wood/default.webp";
+export const FALLBACK_DIAL_FRAME = asset("dials/wood/default.webp");
 
 // --- Honor dials -----------------------------------------------------------
 // The dial digits (0..5) are the same plain numbers for every set and live under
-// /img/dials. Only the fan FRAME (the background behind the digit) changes per set.
+// the dials asset folder. Only the fan FRAME (the background behind the digit) changes per set.
 export function honorDialDigit(bid: number): string {
-    return `/img/dials/honorfan-${bid}.webp`;
+    return asset(`dials/honorfan-${bid}.webp`);
 }
 
 export function parseDial(set: string | undefined): { material: string; type: string } {
@@ -100,7 +101,7 @@ export function formatDial(material: string, type: string): string {
 }
 
 export function dialFrame(material: string, type: string): string {
-    return `/img/dials/${material}/${type}.webp`;
+    return asset(`dials/${material}/${type}.webp`);
 }
 
 export function honorDialFrame(set: string): string {
@@ -121,15 +122,15 @@ export function resolveDialSet(ownerDial: string | undefined, ownerIsPatron: boo
     return formatDial(material, type);
 }
 
-// --- Tokens (fate + honor share a material) --------------------------------
-export function tokenImage(material: string, kind: "fate" | "honor"): string {
-    return `/img/tokens/${material}/${kind}.webp`;
+// --- Tokens (fate + honor + first-player share a material) ------------------
+export function tokenImage(material: string, kind: "fate" | "honor" | "firstplayer"): string {
+    return asset(`tokens/${material}/${kind}.webp`);
 }
 
 // Honour-status stones (honored / dishonored / tainted) are not selectable cosmetics;
 // they always use their own stone art, independent of the chosen token material.
-export const DEFAULT_HONORED_STONE = "/img/tokens/honor_stone.webp";
-export const DEFAULT_DISHONORED_STONE = "/img/tokens/dishonor_stone.webp";
+export const DEFAULT_HONORED_STONE = asset("tokens/honor_stone.webp");
+export const DEFAULT_DISHONORED_STONE = asset("tokens/dishonor_stone.webp");
 
 // The token material the viewer actually sees: patron materials require patron status,
 // and spectators always fall back to the default set.
@@ -154,6 +155,11 @@ export function resolveHonorImage(viewer: PatronViewerConfig): string {
     return tokenImage(viewerTokenMaterial(viewer), "honor");
 }
 
+// First-player token for the viewer's own client (viewer-personal, shares the token material).
+export function resolveFirstPlayerImage(viewer: PatronViewerConfig): string {
+    return tokenImage(viewerTokenMaterial(viewer), "firstplayer");
+}
+
 // Honour-status stones use their dedicated stone art, NOT the per-material honor token
 // (the honor token is for the player honour bar and cards that place honor tokens).
 export function resolveStoneImages(): { honored: string; dishonored: string } {
@@ -162,7 +168,7 @@ export function resolveStoneImages(): { honored: string; dishonored: string } {
 
 // --- Rings (single patron set, toggled) -------------------------------------
 export function patronRingImage(element: string): string {
-    return `/img/patron/rings/${element}.png`;
+    return asset(`patron/rings/${element}.png`);
 }
 
 export const ringElements = ["air", "earth", "fire", "void", "water"] as const;

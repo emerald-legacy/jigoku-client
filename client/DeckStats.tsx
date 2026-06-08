@@ -1,3 +1,4 @@
+import { asset } from "./assetUrl";
 
 const clanOrder = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
 
@@ -76,7 +77,7 @@ function DeckStats({ stats }: DeckStatsProps) {
                         <div key={ clan } className="deck-stats-clan">
                             <img
                                 className="deck-stats-clan-icon"
-                                src={ `/img/mons/${clan}.png` }
+                                src={ asset(`mons/${clan}.png`) }
                                 title={ clan }
                             />
                             <span>{ wins }/{ losses }</span>
