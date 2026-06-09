@@ -5,6 +5,7 @@ import { CheckCircle, Info, AlertCircle, AlertTriangle } from "lucide-react";
 import Avatar from "../Avatar";
 import { resolveFateImage, resolveHonorImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
+import { PatronName } from "../PatronName";
 import { asset } from "../assetUrl";
 import type { GameMessage, MessageFragment } from "../types/game";
 
@@ -186,7 +187,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }: InnerMessa
                             float
                         />
                         <span key={ index++ }>
-                            <b>{ fragment.name }</b>
+                            <b><PatronName name={ fragment.name } /></b>
                         </span>
                     </div>
                 );
@@ -194,7 +195,7 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }: InnerMessa
                 if(fragment.type === "ring") {
                     return formatMessageText(["the ", fragment.element, " ring"]);
                 } else if(fragment.type === "player") {
-                    return fragment.name;
+                    return <PatronName key={ index++ } name={ fragment.name } />;
                 }
                 if(fragment.type === "") {
                     return fragment.label;

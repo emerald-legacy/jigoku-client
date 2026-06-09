@@ -7,6 +7,7 @@ import DeckRow from "./DeckRow";
 import Messages from "./GameComponents/Messages";
 import Avatar from "./Avatar";
 import DeckStatus from "./DeckStatus";
+import { PatronName } from "./PatronName";
 
 import * as actions from "./actions";
 import { useAppSelector, useAppDispatch } from "./hooks";
@@ -165,7 +166,7 @@ export function InnerPendingGame({
         return (
             <div className="player-row" key={ player.name }>
                 <Avatar emailHash={ player.emailHash } forceDefault={ player.settings ? player.settings.disableGravatar : false } />
-                <span className="player-row-name">{ player.name }</span>
+                <PatronName name={ player.name } className="player-row-name" />
                 { deck }
                 { status }
                 { selectLink }
@@ -342,7 +343,7 @@ export function InnerPendingGame({
             </div>
             <div className="spectators panel">
                 { currentGame.spectators.map((spectator: Spectator) => (
-                    <div key={ spectator.name }>{ spectator.name }</div>
+                    <div key={ spectator.name }><PatronName name={ spectator.name } /></div>
                 )) }
             </div>
             <div className="panel-title text-center">
