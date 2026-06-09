@@ -532,7 +532,6 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
                 <div className="right-side">
                     <CardZoom
                         imageUrl={ cardToZoom ? computeImageUrl(cardToZoom) : "" }
-                        orientation={ cardToZoom ? cardToZoom.type === "plot" ? "horizontal" : "vertical" : "vertical" }
                         show={ !!cardToZoom }
                         cardName={ cardToZoom ? cardToZoom.name : null }
                     />

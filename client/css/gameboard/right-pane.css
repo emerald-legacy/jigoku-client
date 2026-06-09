@@ -75,11 +75,6 @@
     height: 307px;
 }
 
-.card-zoom-frame.horizontal .card-zoomed {
-    width: 307px;
-    height: 220px;
-}
-
 .card-zoom-frame.is-empty .card-zoomed {
     box-sizing: border-box;
     border: 1px dashed rgba(120, 180, 80, 0.20);
@@ -88,6 +83,18 @@
 
 .card-zoom-frame .card-zoomed > img {
     border-radius: 4px;
+}
+
+.card-zoom-resize {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 16px;
+    height: 16px;
+    cursor: nesw-resize;
+    z-index: 2;
+    background:
+        linear-gradient(225deg, transparent 0 50%, rgba(150, 220, 90, 0.7) 50% 60%, transparent 60% 70%, rgba(150, 220, 90, 0.7) 70% 80%, transparent 80%);
 }
 
 /* === Chat (self-contained card at bottom-right) === */
