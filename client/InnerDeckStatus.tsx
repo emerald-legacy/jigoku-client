@@ -98,6 +98,16 @@ export default function InnerDeckStatus({ className: propsClassName, deck, updat
 
         const prevDeck = prevDeckRef.current;
 
+        // Pending-game decks have no _id/card arrays, only server `status`; sync it directly.
+        if(!deck._id && deck.status) {
+            if(!prevDeck || prevDeck.name !== deck.name || prevDeck.status?.valid !== deck.status.valid) {
+                clearValidationTimeout();
+                setDeckStatus(deck.status);
+            }
+            prevDeckRef.current = deck;
+            return;
+        }
+
         if(!prevDeck || prevDeck._id !== deck._id) {
             clearValidationTimeout();
             getDeckStatusAsync(deck);
