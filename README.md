@@ -1,5 +1,7 @@
 # Jigoku Client
 
+[![DeepWiki Architecture Documentation](https://deepwiki.com/badge.svg)](https://deepwiki.com/emerald-legacy/jigoku-client)
+
 Web based implementation of The Legend of the Five Rings LCG — lobby server and React frontend.
 
 ## FAQ
