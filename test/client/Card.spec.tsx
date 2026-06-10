@@ -18,6 +18,21 @@ vi.mock("../../client/GameComponents/CardPile.tsx", () => ({
     default: ({ title }) => <div data-testid="card-pile">{ title }</div>
 }));
 
+const patronState = vi.hoisted(() => ({ promoOwners: {} as Record<string, boolean> }));
+
+vi.mock("../../client/PatronContext", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../../client/PatronContext")>();
+    return { ...actual, useOwnerShowsPromo: (username?: string | null) => !!(username && patronState.promoOwners[username]) };
+});
+
+vi.mock("../../client/assetUrl", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("../../client/assetUrl")>();
+    return {
+        ...actual,
+        promoArt: (stem: string) => (stem === "promo-card-promo-pack" ? "/assets/promo-card.abc123.webp" : undefined)
+    };
+});
+
 import Card from "../../client/GameComponents/Card.tsx";
 
 describe("the <Card /> component", () => {
@@ -37,6 +52,7 @@ describe("the <Card /> component", () => {
         onMouseOver = vi.fn();
         onMouseOut = vi.fn();
         onClick = vi.fn();
+        patronState.promoOwners = {};
     });
 
     describe("when initially rendered with empty card", () => {
@@ -281,6 +297,41 @@ describe("the <Card /> component", () => {
             render(<Card card={ { ...card, packId: "core" } } source="hand" />);
             const cardImage = document.querySelector(".card-image-src");
             expect(cardImage.src).toContain("/img/cards/test-card-1-core.jpg");
+        });
+    });
+
+    // Promo art is owner-broadcast: Card resolves the card's owner (from card.controller, with a
+    // player fallback) and asks useOwnerShowsPromo whether that owner should see promo art. The
+    // patron + usePromos decision itself lives in PatronContext and is covered by its own spec.
+    describe("promo art", () => {
+        let promoCard;
+        let patronPlayer;
+
+        beforeEach(() => {
+            promoCard = { id: "promo-card", name: "Promo Card", uuid: "promo-1", type: "character", packId: "promo-pack", controller: { name: "patron-user" } };
+            patronPlayer = { name: "P", user: { username: "patron-user", settings: { patron: { usePromos: true } } }, cardPiles: {} };
+        });
+
+        it("uses promo art when the card owner (from controller) shows promos", () => {
+            patronState.promoOwners = { "patron-user": true };
+            render(<Card card={ promoCard } source="play area" />);
+            const cardImage = document.querySelector(".card-image-src");
+            expect(cardImage.src).toContain("/assets/promo-card.abc123.webp");
+        });
+
+        it("uses standard art when the card owner does not show promos", () => {
+            patronState.promoOwners = {};
+            render(<Card card={ promoCard } source="play area" />);
+            const cardImage = document.querySelector(".card-image-src");
+            expect(cardImage.src).toContain("/img/cards/promo-card-promo-pack.jpg");
+        });
+
+        it("falls back to the player prop for the owner when the card has no controller", () => {
+            patronState.promoOwners = { "patron-user": true };
+            const { controller: _omit, ...noControllerCard } = promoCard;
+            render(<Card card={ noControllerCard } player={ patronPlayer } source="play area" />);
+            const cardImage = document.querySelector(".card-image-src");
+            expect(cardImage.src).toContain("/assets/promo-card.abc123.webp");
         });
     });
 });

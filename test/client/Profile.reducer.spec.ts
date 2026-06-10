@@ -21,7 +21,7 @@ describe("initProfileState", () => {
                 promptedActionWindows: {},
                 optionSettings: {},
                 timerSettings: {},
-                patron: { dial: "wood/default", tokens: "default", rings: false }
+                patron: { dial: "wood/default", tokens: "default", rings: false, usePromos: false }
             },
             validation: {},
             loading: false
@@ -50,7 +50,7 @@ describe("initProfileState", () => {
             promptedActionWindows: { dynasty: true },
             optionSettings: { sortHandByName: true },
             timerSettings: { events: true },
-            patron: { dial: "wood/default", tokens: "default", rings: false }
+            patron: { dial: "wood/default", tokens: "default", rings: false, usePromos: false }
         });
     });
 });
@@ -66,6 +66,13 @@ describe("profileReducer", () => {
         const next = profileReducer(baseState, { type: "setting", field: "background", value: "DRAGON" });
         expect(next.settings.background).toBe("DRAGON");
         expect(next.settings.cardSize).toBe("normal");
+    });
+
+    it("updates the patron usePromos flag without disturbing other patron settings", () => {
+        const next = profileReducer(baseState, { type: "patron", field: "usePromos", value: true });
+        expect(next.settings.patron.usePromos).toBe(true);
+        expect(next.settings.patron.dial).toBe("wood/default");
+        expect(next.settings.patron.tokens).toBe("default");
     });
 
     it("toggles a key inside a nested settings map without dropping siblings", () => {
