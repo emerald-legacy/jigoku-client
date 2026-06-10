@@ -305,6 +305,8 @@ export interface PatronSettings {
     // Fate + honor token material id, e.g. "default", "wood", "gold", "nacre".
     tokens?: string;
     rings?: boolean;
+    // Render this patron's cards with promo art (owner-broadcast, like the dial).
+    usePromos?: boolean;
 }
 
 export interface UserSettings {

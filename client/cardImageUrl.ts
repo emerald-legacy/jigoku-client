@@ -1,5 +1,5 @@
 import bootstrap from "./bootstrap";
-import { asset } from "./assetUrl";
+import { asset, promoArt } from "./assetUrl";
 import type { Card } from "./types/game";
 
 export interface CardVersion {
@@ -14,14 +14,18 @@ const versionSuffix = bootstrap.cardImageVersion
     ? `?v=${bootstrap.cardImageVersion}`
     : "";
 
-export function getCardImageUrl(cardId: string, packId?: string): string {
+export function getCardImageUrl(cardId: string, packId?: string, showPromo?: boolean): string {
     if(!cardId) {
         return "";
     }
-    const base = packId
-        ? `/img/cards/${cardId}-${packId}.jpg`
-        : `/img/cards/${cardId}.jpg`;
-    return `${base}${versionSuffix}`;
+    const stem = packId ? `${cardId}-${packId}` : cardId;
+    if(showPromo) {
+        const promo = promoArt(stem);
+        if(promo) {
+            return promo;
+        }
+    }
+    return `/img/cards/${stem}.jpg${versionSuffix}`;
 }
 
 export function getCardBackUrl(filename: string): string {
