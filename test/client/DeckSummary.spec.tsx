@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { configureStore } from "@reduxjs/toolkit";
 import React from "react";
 import DeckSummary from "../../client/DeckSummary.tsx";
 
@@ -7,6 +9,13 @@ import DeckSummary from "../../client/DeckSummary.tsx";
 vi.mock("../../client/DeckStatus.tsx", () => ({
     default: ({ deck }) => <span data-testid="deck-status">{ deck?.valid ? "Valid" : "Invalid" }</span>
 }));
+
+// DeckSummary reads the logged-in user from the store to decide promo art; render under a
+// minimal store (no user → stock art, which these layout-focused specs assert against).
+const makeStore = () => configureStore({
+    reducer: { auth: (state = { username: undefined, user: undefined }) => state }
+});
+const renderDeck = (ui: React.ReactElement) => render(<Provider store={ makeStore() }>{ ui }</Provider>);
 
 describe("the <DeckSummary /> component", () => {
     const createMockDeck = (overrides = {}) => ({
@@ -40,7 +49,7 @@ describe("the <DeckSummary /> component", () => {
 
     describe("when deck is not provided", () => {
         beforeEach(() => {
-            render(<DeckSummary cards={ mockCards } deck={ null } />);
+            renderDeck(<DeckSummary cards={ mockCards } deck={ null } />);
         });
 
         it("should display waiting message", () => {
@@ -53,7 +62,7 @@ describe("the <DeckSummary /> component", () => {
 
         beforeEach(() => {
             deck = createMockDeck();
-            render(<DeckSummary cards={ mockCards } deck={ deck } />);
+            renderDeck(<DeckSummary cards={ mockCards } deck={ deck } />);
         });
 
         it("should display the clan name", () => {
@@ -98,7 +107,7 @@ describe("the <DeckSummary /> component", () => {
     describe("when alliance is none", () => {
         beforeEach(() => {
             const deck = createMockDeck({ alliance: { name: "", value: "none" } });
-            render(<DeckSummary cards={ mockCards } deck={ deck } />);
+            renderDeck(<DeckSummary cards={ mockCards } deck={ deck } />);
         });
 
         it("should display \"None\" for alliance", () => {
@@ -109,7 +118,7 @@ describe("the <DeckSummary /> component", () => {
     describe("when format is not specified", () => {
         beforeEach(() => {
             const deck = createMockDeck({ format: null });
-            render(<DeckSummary cards={ mockCards } deck={ deck } />);
+            renderDeck(<DeckSummary cards={ mockCards } deck={ deck } />);
         });
 
         it("should default to Emerald format", () => {
@@ -120,7 +129,7 @@ describe("the <DeckSummary /> component", () => {
     describe("card list rendering", () => {
         beforeEach(() => {
             const deck = createMockDeck();
-            render(<DeckSummary cards={ mockCards } deck={ deck } />);
+            renderDeck(<DeckSummary cards={ mockCards } deck={ deck } />);
         });
 
         it("should display card names", () => {
@@ -142,7 +151,7 @@ describe("the <DeckSummary /> component", () => {
     describe("card hover functionality", () => {
         beforeEach(() => {
             const deck = createMockDeck();
-            render(<DeckSummary cards={ mockCards } deck={ deck } />);
+            renderDeck(<DeckSummary cards={ mockCards } deck={ deck } />);
         });
 
         it("should show hover image when mousing over a card", () => {
@@ -172,7 +181,7 @@ describe("the <DeckSummary /> component", () => {
                     { card: { id: "p3", name: "Province 3", type: "province" }, count: 1 }
                 ]
             });
-            render(<DeckSummary cards={ mockCards } deck={ deck } />);
+            renderDeck(<DeckSummary cards={ mockCards } deck={ deck } />);
 
             // Should show "3 cards" for provinces
             expect(screen.getByText("3 cards")).toBeInTheDocument();
@@ -185,7 +194,7 @@ describe("the <DeckSummary /> component", () => {
                     { card: { id: "d2", name: "Card 2", type: "holding" }, count: 5 }
                 ]
             });
-            render(<DeckSummary cards={ mockCards } deck={ deck } />);
+            renderDeck(<DeckSummary cards={ mockCards } deck={ deck } />);
 
             expect(screen.getByText("15 cards")).toBeInTheDocument();
         });

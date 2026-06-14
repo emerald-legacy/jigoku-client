@@ -30,10 +30,10 @@ const defaultTimerSettings = {
 };
 
 const defaultPatronSettings = {
-    dial: "default",
-    fate: "default",
+    dial: "wood/default",
+    tokens: "default",
     rings: false,
-    tokens: false
+    usePromos: false
 };
 
 function getUserWithDefaultsSet(user) {
@@ -46,7 +46,10 @@ function getUserWithDefaultsSet(user) {
     userToReturn.settings = Object.assign({}, defaultSettings, userToReturn.settings);
     userToReturn.settings.optionSettings = Object.assign({}, defaultOptionSettings, userToReturn.settings.optionSettings);
     userToReturn.settings.timerSettings = Object.assign({}, defaultTimerSettings, userToReturn.settings.timerSettings);
-    userToReturn.settings.patron = Object.assign({}, defaultPatronSettings, userToReturn.settings.patron);
+    const patronDefaults = userToReturn.permissions?.isPatron
+        ? Object.assign({}, defaultPatronSettings, { dial: "nacre/default" })
+        : defaultPatronSettings;
+    userToReturn.settings.patron = Object.assign({}, patronDefaults, userToReturn.settings.patron);
     userToReturn.permissions = Object.assign({}, userToReturn.permissions);
     userToReturn.promptedActionWindows = Object.assign({}, defaultWindows, userToReturn.promptedActionWindows);
     if(!userToReturn.blockList) {

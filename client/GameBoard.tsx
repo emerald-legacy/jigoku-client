@@ -28,9 +28,21 @@ export default function GameBoard() {
     const spectating = !currentGame || !username || !currentGame.players[username];
     const patronViewer = useMemo(() => computeViewerConfig(user, spectating), [user, spectating]);
     const patronPlayerUsernames = currentGame ? Object.values(currentGame.players).map(p => p.user?.username) : [];
+    const usePromosByUsername = useMemo(() => {
+        const map: Record<string, boolean> = {};
+        if(currentGame) {
+            for(const p of Object.values(currentGame.players)) {
+                const name = p.user?.username;
+                if(name) {
+                    map[name] = !!p.user?.settings?.patron?.usePromos;
+                }
+            }
+        }
+        return map;
+    }, [currentGame]);
 
     return (
-        <PatronProvider viewer={ patronViewer } playerUsernames={ patronPlayerUsernames }>
+        <PatronProvider viewer={ patronViewer } playerUsernames={ patronPlayerUsernames } usePromosByUsername={ usePromosByUsername }>
             <InnerGameBoard
                 cardToZoom={ cardToZoom }
                 cards={ cards }

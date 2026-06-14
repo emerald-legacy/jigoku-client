@@ -11,6 +11,7 @@ import {
     FALLBACK_DIAL_FRAME,
     DEFAULT_TOKENS
 } from "./boardCosmetics";
+import { getCardImageUrl } from "./cardImageUrl";
 
 // An <img> that swaps to a fallback once if its source fails to load. Used so the
 // pickers stay populated while placeholder/in-progress art is still missing.
@@ -142,5 +143,54 @@ export function TokenPicker({ value, isPatron, onChange }: PickerProps) {
                 );
             }) }
         </div>
+    );
+}
+
+// --- Promo card art picker: standard vs promo, previewed on a sample card ---
+const PROMO_SAMPLE_ID = "hida-honoka";
+const PROMO_SAMPLE_PACK = "emerald-core-set";
+
+interface PromoPickerProps {
+    value: boolean;
+    isPatron: boolean;
+    onChange: (value: boolean) => void;
+}
+
+export function PromoPicker({ value, isPatron, onChange }: PromoPickerProps) {
+    const standardSrc = getCardImageUrl(PROMO_SAMPLE_ID, PROMO_SAMPLE_PACK);
+    const promoSrc = getCardImageUrl(PROMO_SAMPLE_ID, PROMO_SAMPLE_PACK, true);
+    const options = [
+        { promo: false, label: "Standard", src: standardSrc },
+        { promo: true, label: "Promo", src: promoSrc }
+    ];
+
+    return (
+        <>
+            { !isPatron ? (
+                <p className="cosmetic-lock-hint">Become a patron to play with promo card art.</p>
+            ) : null }
+            <div className="promo-row">
+                { options.map(option => (
+                    <button
+                        key={ option.label }
+                        type="button"
+                        disabled={ !isPatron }
+                        className={ `promo-swatch${value === option.promo ? " selected" : ""}${!isPatron ? " locked" : ""}` }
+                        title={ option.label }
+                        onClick={ () => {
+                            if(isPatron) {
+                                onChange(option.promo);
+                            }
+                        } }
+                    >
+                        <FallbackImg className="promo-card-img" src={ option.src } fallback={ standardSrc } alt={ `${option.label} card art` } />
+                        <span className="dial-label">
+                            { option.label }
+                            { option.promo && !isPatron ? <span className="lock-badge" aria-label="Patron only">🔒</span> : null }
+                        </span>
+                    </button>
+                )) }
+            </div>
+        </>
     );
 }

@@ -4,6 +4,8 @@ import DeckStatus from "./DeckStatus";
 import DeckStats from "./DeckStats";
 import { getCardImageUrl, preferredPackId, type CardWithVersions } from "./cardImageUrl";
 import { asset } from "./assetUrl";
+import { useAppSelector } from "./hooks";
+import { usePatronStatus } from "./patronStatus";
 import type { Card } from "./types/game";
 import type { Deck, DeckCard } from "./types/deck";
 
@@ -34,12 +36,18 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
 
     const formatValue = deck?.format?.value || "";
 
+    // Deckbuilder previews the logged-in user's own deck, so promo follows their patron settings.
+    const username = useAppSelector(state => state.auth.username);
+    const authUser = useAppSelector(state => state.auth.user);
+    const isPatron = usePatronStatus(username);
+    const showPromo = isPatron && !!authUser?.settings?.patron?.usePromos;
+
     const getCardImagePath = (card: Card | undefined, packId?: string) => {
         if(!card) {
             return "";
         }
         const effectivePackId = packId || preferredPackId(card as CardWithVersions, formatValue);
-        return getCardImageUrl(card.id, effectivePackId);
+        return getCardImageUrl(card.id, effectivePackId, showPromo);
     };
 
     const getCardsToRender = () => {

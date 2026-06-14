@@ -195,6 +195,7 @@ export interface PatronSettings {
     dial: string; // "<material>/<type>"
     tokens: string; // token material id
     rings: boolean;
+    usePromos: boolean; // owner-broadcast: render this player's cards with promo art
 }
 
 export interface PatronViewerConfig extends PatronSettings {
@@ -205,7 +206,8 @@ export interface PatronViewerConfig extends PatronSettings {
 export const defaultPatronSettings: PatronSettings = {
     dial: DEFAULT_DIAL,
     tokens: DEFAULT_TOKENS,
-    rings: false
+    rings: false,
+    usePromos: false
 };
 
 // Coerce a stored dial value to a valid "<material>/<type>" string (handles legacy names).
@@ -230,7 +232,8 @@ export function normalizePatronSettings(raw: Record<string, unknown> | undefined
     return {
         dial: normalizeDialValue(value.dial),
         tokens: normalizeTokenValue(value.tokens),
-        rings: typeof value.rings === "boolean" ? value.rings : false
+        rings: typeof value.rings === "boolean" ? value.rings : false,
+        usePromos: typeof value.usePromos === "boolean" ? value.usePromos : false
     };
 }
 

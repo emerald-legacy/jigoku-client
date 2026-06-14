@@ -6,6 +6,7 @@ import CardCounters from "./CardCounters";
 import CardPile from "./CardPile";
 import AbilityUsedMarker from "./AbilityUsedMarker";
 import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl";
+import { useOwnerShowsPromo } from "../PatronContext";
 import { buildCardCounters } from "./buildCardCounters";
 import { startCardDrag, useCardTouchDrag } from "./cardDrag";
 import CardAttachments from "./CardAttachments";
@@ -74,6 +75,12 @@ function Card(props: CardProps) {
     } = props;
 
     const card = cardInput as CardType;
+
+    // Promo is owner-broadcast: resolve owner from card.controller (always present), not the viewer.
+    const ownerUsername = typeof card?.controller === "string"
+        ? card.controller
+        : card?.controller?.name ?? player?.user?.username;
+    const showPromo = useOwnerShowsPromo(ownerUsername);
 
     const [showPopup, setShowPopup] = useState(false);
     const [showMenu, setShowMenu] = useState(false);
@@ -270,7 +277,16 @@ function Card(props: CardProps) {
     };
 
     const getCardImagePath = () => {
-        return getCardImageUrl(card.id, card.packId);
+        return getCardImageUrl(card.id, card.packId, showPromo);
+    };
+
+    const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+        const img = event.currentTarget;
+        if(img.dataset.promoFellBack) {
+            return;
+        }
+        img.dataset.promoFellBack = "1";
+        img.src = getCardImageUrl(card.id, card.packId);
     };
 
     const handleCloseClick = (event: React.MouseEvent) => {
@@ -414,7 +430,7 @@ function Card(props: CardProps) {
                         <span className="card-name">{ card.name }</span>
                     </div>
                     <div className={ imageClass }>
-                        <img className="card-image-src" src={ !isFacedown() ? getCardImagePath() : getCardBackUrl(cardBack) } />
+                        <img className="card-image-src" src={ !isFacedown() ? getCardImagePath() : getCardBackUrl(cardBack) } onError={ showPromo && !isFacedown() ? handleImageError : undefined } />
                         { card.abilityLimits && <AbilityUsedMarker abilityLimits={ card.abilityLimits } isAttachment={ card.type === "attachment" } /> }
                         { !hideEffectMarkers && card.effectMarkers && card.effectMarkers.length > 0 && (
                             <div

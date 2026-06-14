@@ -174,3 +174,57 @@
     margin-left: 0.3rem;
     color: var(--color-warning);
 }
+
+/* --- Promo card art swatches (standard vs promo preview) --- */
+.promo-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 0.4rem;
+}
+
+.promo-swatch {
+    appearance: none;
+    background: rgba(255, 255, 255, 0.025);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    cursor: pointer;
+    color: var(--color-foreground);
+    transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease, box-shadow 0.12s ease;
+}
+
+.promo-swatch:hover:not(.locked) {
+    transform: translateY(-2px);
+    background: rgba(120, 180, 80, 0.08);
+    border-color: var(--color-header-border);
+}
+
+.promo-swatch.selected {
+    border-color: var(--color-tertiary);
+    background: var(--color-table-bg-accent);
+    box-shadow: 0 0 0 1px var(--color-tertiary), 0 0 12px -2px rgba(94, 160, 38, 0.6);
+}
+
+.promo-swatch.locked {
+    cursor: not-allowed;
+    opacity: 0.4;
+    filter: grayscale(0.65);
+}
+
+.promo-card-img {
+    width: 140px;
+    height: auto;
+    border-radius: 6px;
+    display: block;
+}
+
+.promo-swatch .lock-badge {
+    font-size: 0.72em;
+    margin-left: 0.3rem;
+    color: var(--color-warning);
+}

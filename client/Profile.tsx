@@ -19,7 +19,7 @@ import {
     type ProfileUserLike
 } from "./Profile.reducer";
 import { backgrounds } from "./backgrounds";
-import { DialPicker, TokenPicker } from "./ProfileCosmetics";
+import { DialPicker, TokenPicker, PromoPicker } from "./ProfileCosmetics";
 import { asset } from "./assetUrl";
 
 const windows = [
@@ -362,6 +362,21 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     value={ settings.patron.tokens }
                                     isPatron={ isPatron }
                                     onChange={ (value) => dispatch({ type: "patron", field: "tokens", value }) }
+                                />
+                            </div>
+                        </div>
+                    </div>
+                    <div className="row">
+                        <div className="col-xs-12">
+                            <div className="panel-title">
+                                Card Cosmetics
+                            </div>
+                            <div className="panel">
+                                <p className="panel-help">Patrons can play with alternate promo card art. When enabled, your opponents and spectators see promo art on your cards wherever a promo exists.</p>
+                                <PromoPicker
+                                    value={ settings.patron.usePromos }
+                                    isPatron={ isPatron }
+                                    onChange={ (value) => dispatch({ type: "patron", field: "usePromos", value }) }
                                 />
                             </div>
                         </div>
