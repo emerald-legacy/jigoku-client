@@ -39,11 +39,16 @@ export type CardAnimationEvent = { type: "water" | "fire" | "void"; targetUuid: 
 export type PlayerAnimationEvent = { type: "earth" | "air"; playerName: string; effect: string };
 export type HonorAnimationEvent = { type: "honor"; playerName: string; amount: number };
 export type FateAnimationEvent = { type: "fate"; playerName: string; amount: number };
+export type ClaimAnimationEvent = { type: "claim"; playerName: string; element: string };
 
-export type AnimationEvent = CardAnimationEvent | PlayerAnimationEvent | HonorAnimationEvent | FateAnimationEvent;
+export type AnimationEvent = CardAnimationEvent | PlayerAnimationEvent | HonorAnimationEvent | FateAnimationEvent | ClaimAnimationEvent;
 
 export function isCardAnimation(a: AnimationEvent): a is CardAnimationEvent {
     return a.type === "water" || a.type === "fire" || a.type === "void";
+}
+
+export function isClaimAnimation(a: AnimationEvent): a is ClaimAnimationEvent {
+    return a.type === "claim";
 }
 
 export interface NavigationState {

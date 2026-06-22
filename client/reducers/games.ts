@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { GameMessage, GameState, OnlineUser } from "../types/game";
 import type { AnimationEvent, GamesState, PendingGameInfo } from "../types/redux";
-import { isCardAnimation } from "../types/redux";
+import { isCardAnimation, isClaimAnimation } from "../types/redux";
 import { loadGameStats } from "../ReduxActions/gamestats";
 import { gameSocketClosed } from "./socket";
 
@@ -75,8 +75,17 @@ const gamesSlice = createSlice({
                 if(isCardAnimation(a)) {
                     return a.targetUuid !== action.payload;
                 }
+                if(isClaimAnimation(a)) {
+                    return true;
+                }
                 return a.playerName !== action.payload;
             });
+        },
+        clearRingAnimation(state, action: PayloadAction<{ element: string; playerName: string }>) {
+            const pending = state.pendingAnimations || [];
+            state.pendingAnimations = pending.filter((a: AnimationEvent) =>
+                !(isClaimAnimation(a) && a.element === action.payload.element && a.playerName === action.payload.playerName)
+            );
         },
         receiveUsers(state, action: PayloadAction<OnlineUser[]>) {
             state.users = action.payload;
@@ -119,7 +128,7 @@ const gamesSlice = createSlice({
 
 export const {
     startNewGame, cancelNewGame, receiveGames, receiveNewGame, receiveGameState,
-    clearAnimation, receiveUsers, joinPasswordGame, receivePasswordError,
+    clearAnimation, clearRingAnimation, receiveUsers, joinPasswordGame, receivePasswordError,
     cancelPasswordJoin, clearGameState, onGameHandoffReceived
 } = gamesSlice.actions;
 export default gamesSlice.reducer;
