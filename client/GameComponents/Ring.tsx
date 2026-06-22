@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef, memo } from "react";
 import CardCounters from "./CardCounters";
 import CardMenu from "./CardMenu";
 import { getRingEffect } from "../RingEffectDescriptions";
-import { patronRingImage } from "../boardCosmetics";
 import type { Ring as RingType, MenuItem } from "../types/game";
 
 interface RingProps {
@@ -153,10 +152,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
             <svg className={ svgClassName }>
                 <circle cx="50%" cy="50%" r="50%" className={ bgClassName } />
             </svg>
-            { patron ? (
-                <img className="ring-patron-image" src={ patronRingImage(ring.element) } alt={ ring.element } />
-            ) : null }
-            <div className={ patron ? `${className} ring-glyph-hidden` : className } />
+            <div className={ className } />
             { shouldShowCounters() && visible ? (
                 <CardCounters counters={ getCountersForRing() } />
             ) : null }
