@@ -161,10 +161,14 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
             onMouseLeave={ () => setIsHovered(false) }
         >
             <svg className={ svgClassName }>
-                <circle cx="50%" cy="50%" r="50%" className={ bgClassName } />
+                { ringImageSrc ? null : <circle cx="50%" cy="50%" r="50%" className={ bgClassName } /> }
             </svg>
             { ringImageSrc ? (
-                <img className="ring-patron-image" src={ ringImageSrc } alt={ ring.element } />
+                <img
+                    className={ `ring-patron-image tint-${ring.conflictType}${ring.selected || ring.contested ? " contested" : ""}` }
+                    src={ ringImageSrc }
+                    alt={ ring.element }
+                />
             ) : null }
             <div className={ ringImageSrc ? `${className} ring-glyph-hidden` : className } />
             { shouldShowCounters() && visible ? (

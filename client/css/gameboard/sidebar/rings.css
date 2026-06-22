@@ -149,6 +149,25 @@ svg.ring-svg {
     pointer-events: none;
 }
 
+/* Contested/selected glow. Under patron art the red/blue background circle is dropped,
+   so the highlight moves onto the ring image itself (traces the art, not a disc). */
+.ring-patron-image.contested {
+    &.tint-military {
+        -webkit-filter: drop-shadow(0 0 12px pink);
+        filter: drop-shadow(0 0 12px pink);
+    }
+
+    &.tint-political {
+        -webkit-filter: drop-shadow(0 0 12px lightblue);
+        filter: drop-shadow(0 0 12px lightblue);
+    }
+
+    &.tint-neutral {
+        -webkit-filter: drop-shadow(0 0 12px white);
+        filter: drop-shadow(0 0 12px white);
+    }
+}
+
 .tint-military {
     fill: var(--color-military-ring);
 
