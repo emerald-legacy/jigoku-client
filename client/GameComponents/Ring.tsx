@@ -3,8 +3,9 @@ import React, { useState, useEffect, useRef, memo } from "react";
 import CardCounters from "./CardCounters";
 import CardMenu from "./CardMenu";
 import { getRingEffect } from "../RingEffectDescriptions";
-import { patronRingImage } from "../boardCosmetics";
+import { isClaimAnimation } from "../types/redux";
 import type { Ring as RingType, MenuItem } from "../types/game";
+import type { AnimationEvent } from "../types/redux";
 
 interface RingProps {
     onClick?: (ringElement: string) => void;
@@ -15,25 +16,30 @@ interface RingProps {
     showRingEffects?: boolean;
     gameMode?: string;
     patron?: boolean;
+    pendingAnimations?: AnimationEvent[];
+    onClaimAnimationEnd?: (element: string, playerName: string) => void;
 }
 
-function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode, patron }: RingProps) {
+function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode, pendingAnimations, onClaimAnimationEnd }: RingProps) {
     const [showMenu, setShowMenu] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [claimFlash, setClaimFlash] = useState(false);
 
-    const isClaimedHere = !!owner && !!ring.claimed && owner === ring.claimedBy;
-    const wasClaimedHereRef = useRef(isClaimedHere);
+    const claimAnimation = !!owner && pendingAnimations?.some(
+        (a) => isClaimAnimation(a) && a.element === ring.element && a.playerName === owner
+    );
+    const flashTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
     useEffect(() => {
-        if(!wasClaimedHereRef.current && isClaimedHere) {
+        if(claimAnimation) {
             setClaimFlash(true);
-            const t = setTimeout(() => setClaimFlash(false), 2500);
-            wasClaimedHereRef.current = isClaimedHere;
-            return () => clearTimeout(t);
+            onClaimAnimationEnd?.(ring.element, owner as string);
+            clearTimeout(flashTimerRef.current);
+            flashTimerRef.current = setTimeout(() => setClaimFlash(false), 2500);
         }
-        wasClaimedHereRef.current = isClaimedHere;
-    }, [isClaimedHere]);
+    }, [claimAnimation, onClaimAnimationEnd, ring.element, owner]);
+
+    useEffect(() => () => clearTimeout(flashTimerRef.current), []);
 
     const handleClick = (event: React.MouseEvent, ringElement: string) => {
         event.preventDefault();
@@ -153,10 +159,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
             <svg className={ svgClassName }>
                 <circle cx="50%" cy="50%" r="50%" className={ bgClassName } />
             </svg>
-            { patron ? (
-                <img className="ring-patron-image" src={ patronRingImage(ring.element) } alt={ ring.element } />
-            ) : null }
-            <div className={ patron ? `${className} ring-glyph-hidden` : className } />
+            <div className={ className } />
             { shouldShowCounters() && visible ? (
                 <CardCounters counters={ getCountersForRing() } />
             ) : null }

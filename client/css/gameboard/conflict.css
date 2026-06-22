@@ -44,6 +44,10 @@
     z-index: calc(var(--layer-cards) - 20);
 }
 
+.center-bar:has(.menu) {
+    z-index: var(--layer-popups);
+}
+
 .center-bar::before {
     content: "";
     position: absolute;

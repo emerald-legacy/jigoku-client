@@ -20,7 +20,7 @@ import { tryParseJSON } from "./util";
 import { downloadGameLog } from "./GameComponents/gameLogSerializer";
 import { getCardImageUrl } from "./cardImageUrl";
 
-import { clearAnimation } from "./ReduxActions/game";
+import { clearAnimation, clearRingAnimation } from "./ReduxActions/game";
 import { useCardListWithExit } from "./GameComponents/useCardListWithExit";
 import { makeCardsInPlayGrouper } from "./selectors/cardsInPlay";
 import StatChangeOverlay from "./GameComponents/StatChangeOverlay";
@@ -479,6 +479,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
                     onRingMenuItemClick={ onRingMenuItemClick }
                     pendingAnimations={ pendingAnimations }
                     onAnimationEnd={ (name: string) => dispatch(clearAnimation(name)) }
+                    onRingAnimationEnd={ (element: string, name: string) => dispatch(clearRingAnimation({ element, playerName: name })) }
                 />
                 <div className={ `play-area${user.settings.cardSize ? ` ${user.settings.cardSize}` : ""}` }>
                     <OpponentBoardArea
