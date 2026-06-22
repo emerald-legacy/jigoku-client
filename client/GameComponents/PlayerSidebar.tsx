@@ -22,10 +22,11 @@ interface PlayerSidebarProps {
     onRingMenuItemClick: (ring: RingType, menuItem: MenuItem) => void;
     pendingAnimations?: AnimationEvent[];
     onAnimationEnd?: (playerName: string) => void;
+    onRingAnimationEnd?: (element: string, playerName: string) => void;
 }
 
 export default function PlayerSidebar(props: PlayerSidebarProps) {
-    const { thisPlayer, otherPlayer, cardSize, showRingEffects, gameMode, rings, spectating, manualMode, boundActions, pendingAnimations, onAnimationEnd } = props;
+    const { thisPlayer, otherPlayer, cardSize, showRingEffects, gameMode, rings, spectating, manualMode, boundActions, pendingAnimations, onAnimationEnd, onRingAnimationEnd } = props;
     const viewer = usePatronViewerConfig();
     const thisIsPatron = usePatronOwnerStatus(thisPlayer.user?.username);
     const otherIsPatron = usePatronOwnerStatus(otherPlayer?.user?.username);
@@ -50,6 +51,8 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                     removed={ false }
                     className={ `claimed-pool their-pool ${cardSize || ""}` }
                     patron={ resolveOwnedRingsPatron(otherIsPatron, viewer) }
+                    pendingAnimations={ pendingAnimations }
+                    onClaimAnimationEnd={ onRingAnimationEnd }
                 />
                 <div className="sidebar-pane their-side">
                     <PlayerStatsBox
@@ -93,6 +96,8 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                     removed={ false }
                     className={ `claimed-pool my-pool ${cardSize || ""}` }
                     patron={ resolveOwnedRingsPatron(thisIsPatron, viewer) }
+                    pendingAnimations={ pendingAnimations }
+                    onClaimAnimationEnd={ onRingAnimationEnd }
                 />
                 { thisPlayer.hideProvinceDeck && <HonorFan size={ cardSize } value={ thisPlayer.showBid ?? 0 } dialSet={ resolveDialSet(thisPlayer.user?.settings?.patron?.dial, thisIsPatron) } /> }
             </div>
