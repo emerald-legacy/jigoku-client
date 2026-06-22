@@ -19,7 +19,7 @@ import {
     type ProfileUserLike
 } from "./Profile.reducer";
 import { backgrounds } from "./backgrounds";
-import { DialPicker, TokenPicker, PromoPicker } from "./ProfileCosmetics";
+import { DialPicker, TokenPicker, RingPicker, PromoPicker } from "./ProfileCosmetics";
 import { asset } from "./assetUrl";
 
 const windows = [
@@ -363,6 +363,12 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     isPatron={ isPatron }
                                     onChange={ (value) => dispatch({ type: "patron", field: "tokens", value }) }
                                 />
+                                <label className="control-label cosmetic-section-label">Rings</label>
+                                <RingPicker
+                                    value={ settings.patron.rings }
+                                    isPatron={ isPatron }
+                                    onChange={ (value) => dispatch({ type: "patron", field: "rings", value }) }
+                                />
                             </div>
                         </div>
                     </div>
@@ -398,24 +404,6 @@ export function InnerProfile({ user }: InnerProfileProps) {
                             </div>
                         </div>
                     </div>
-                    { /* Patron ring picker — hidden until a patron ring set exists. The setting
-                        (settings.patron.rings) and its resolvers are still wired; re-enable by
-                        restoring this block once ring art is available.
-                    { isPatron ? (
-                        <div>
-                            <div className="panel-title">
-                                Patron Extras
-                            </div>
-                            <div className="panel">
-                                <p className="panel-help">Thanks for supporting us!</p>
-                                <div className="form-group">
-                                    <Checkbox name="patron.rings" noGroup label="Use patron ring set" fieldClass="col-sm-6"
-                                        onChange={ (e) => dispatch({ type: "patron", field: "rings", value: e.target.checked }) } checked={ settings.patron.rings } />
-                                </div>
-                            </div>
-                        </div>
-                    ) : null }
-                    */ }
                     <div className="profile-actions">
                         <button className="btn profile-save" type="button" disabled={ loading } onClick={ handleSaveClick }>
                             { loading ? "Saving…" : "Save changes" }
