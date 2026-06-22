@@ -40,9 +40,28 @@ export default function GameBoard() {
         }
         return map;
     }, [currentGame]);
+    const ringSetByUsername = useMemo(() => {
+        const map: Record<string, string> = {};
+        if(currentGame) {
+            for(const p of Object.values(currentGame.players)) {
+                const name = p.user?.username;
+                if(name) {
+                    map[name] = p.user?.settings?.patron?.rings ?? "default";
+                }
+            }
+        }
+        return map;
+    }, [currentGame]);
 
     return (
-        <PatronProvider viewer={ patronViewer } playerUsernames={ patronPlayerUsernames } usePromosByUsername={ usePromosByUsername }>
+        <PatronProvider
+            viewer={ patronViewer }
+            playerUsernames={ patronPlayerUsernames }
+            usePromosByUsername={ usePromosByUsername }
+            ringSetByUsername={ ringSetByUsername }
+            creatorUsername={ currentGame?.owner }
+            viewerUsername={ username }
+        >
             <InnerGameBoard
                 cardToZoom={ cardToZoom }
                 cards={ cards }

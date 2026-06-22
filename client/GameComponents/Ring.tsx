@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef, memo } from "react";
 import CardCounters from "./CardCounters";
 import CardMenu from "./CardMenu";
 import { getRingEffect } from "../RingEffectDescriptions";
+import { ringSetImage, DEFAULT_RINGS } from "../boardCosmetics";
 import { isClaimAnimation } from "../types/redux";
 import type { Ring as RingType, MenuItem } from "../types/game";
 import type { AnimationEvent } from "../types/redux";
@@ -15,12 +16,12 @@ interface RingProps {
     size?: string;
     showRingEffects?: boolean;
     gameMode?: string;
-    patron?: boolean;
+    ringSet?: string;
     pendingAnimations?: AnimationEvent[];
     onClaimAnimationEnd?: (element: string, playerName: string) => void;
 }
 
-function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode, pendingAnimations, onClaimAnimationEnd }: RingProps) {
+function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode, ringSet, pendingAnimations, onClaimAnimationEnd }: RingProps) {
     const [showMenu, setShowMenu] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [claimFlash, setClaimFlash] = useState(false);
@@ -149,6 +150,9 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
     const shouldShowTooltip = showRingEffects && isHovered && !ring.claimed && !showMenu;
     const ringEffect = shouldShowTooltip ? getRingEffect(gameMode, ring.element) : "";
 
+    // A patron ring set overlays an image and hides the stock glyph; "default" keeps the glyph.
+    const ringImageSrc = ringSet && ringSet !== DEFAULT_RINGS ? ringSetImage(ringSet, ring.conflictType, ring.element) : "";
+
     return (
         <div
             className={ `ring no-highlight ring-element-${ring.element}${ring.unselectable ? " unselectable" : ""}${claimFlash ? " ring-claim-flash" : ""}` }
@@ -159,7 +163,10 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
             <svg className={ svgClassName }>
                 <circle cx="50%" cy="50%" r="50%" className={ bgClassName } />
             </svg>
-            <div className={ className } />
+            { ringImageSrc ? (
+                <img className="ring-patron-image" src={ ringImageSrc } alt={ ring.element } />
+            ) : null }
+            <div className={ ringImageSrc ? `${className} ring-glyph-hidden` : className } />
             { shouldShowCounters() && visible ? (
                 <CardCounters counters={ getCountersForRing() } />
             ) : null }

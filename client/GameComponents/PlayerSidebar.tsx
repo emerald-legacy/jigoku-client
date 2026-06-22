@@ -3,8 +3,8 @@ import Avatar from "../Avatar";
 import HonorFan from "./HonorFan";
 import PlayerStatsBox from "./PlayerStatsBox";
 import { RingRow } from "./CenterBar";
-import { resolveDialSet, resolveOwnedRingsPatron } from "../boardCosmetics";
-import { usePatronViewerConfig, usePatronOwnerStatus } from "../PatronContext";
+import { resolveDialSet } from "../boardCosmetics";
+import { usePatronOwnerStatus, useRingSet } from "../PatronContext";
 import type { Player, Ring as RingType, MenuItem, GameState } from "../types/game";
 import type { AnimationEvent } from "../types/redux";
 
@@ -27,7 +27,7 @@ interface PlayerSidebarProps {
 
 export default function PlayerSidebar(props: PlayerSidebarProps) {
     const { thisPlayer, otherPlayer, cardSize, showRingEffects, gameMode, rings, spectating, manualMode, boundActions, pendingAnimations, onAnimationEnd, onRingAnimationEnd } = props;
-    const viewer = usePatronViewerConfig();
+    const ringSet = useRingSet();
     const thisIsPatron = usePatronOwnerStatus(thisPlayer.user?.username);
     const otherIsPatron = usePatronOwnerStatus(otherPlayer?.user?.username);
     return (
@@ -50,7 +50,7 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                     onMenuItemClick={ props.onRingMenuItemClick }
                     removed={ false }
                     className={ `claimed-pool their-pool ${cardSize || ""}` }
-                    patron={ resolveOwnedRingsPatron(otherIsPatron, viewer) }
+                    ringSet={ ringSet }
                     pendingAnimations={ pendingAnimations }
                     onClaimAnimationEnd={ onRingAnimationEnd }
                 />
@@ -95,7 +95,7 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
                     onMenuItemClick={ props.onRingMenuItemClick }
                     removed={ false }
                     className={ `claimed-pool my-pool ${cardSize || ""}` }
-                    patron={ resolveOwnedRingsPatron(thisIsPatron, viewer) }
+                    ringSet={ ringSet }
                     pendingAnimations={ pendingAnimations }
                     onClaimAnimationEnd={ onRingAnimationEnd }
                 />

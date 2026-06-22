@@ -3,7 +3,7 @@ import Ring from "./Ring";
 import type { Ring as RingType, MenuItem, GameState } from "../types/game";
 import type { AnimationEvent } from "../types/redux";
 
-export default function RingRow({ rings, owner, cardSize, showRingEffects, gameMode, onClick, onMenuItemClick, removed, className, patron, pendingAnimations, onClaimAnimationEnd }: {
+export default function RingRow({ rings, owner, cardSize, showRingEffects, gameMode, onClick, onMenuItemClick, removed, className, ringSet, pendingAnimations, onClaimAnimationEnd }: {
     rings: GameState["rings"];
     owner: string | null;
     cardSize: string;
@@ -13,7 +13,7 @@ export default function RingRow({ rings, owner, cardSize, showRingEffects, gameM
     onMenuItemClick: (ring: RingType, menuItem: MenuItem) => void;
     removed: boolean;
     className: string;
-    patron?: boolean;
+    ringSet?: string;
     pendingAnimations?: AnimationEvent[];
     onClaimAnimationEnd?: (element: string, playerName: string) => void;
 }) {
@@ -36,7 +36,7 @@ export default function RingRow({ rings, owner, cardSize, showRingEffects, gameM
                         onMenuItemClick={ onMenuItemClick }
                         showRingEffects={ showRingEffects }
                         gameMode={ gameMode }
-                        patron={ patron }
+                        ringSet={ ringSet }
                         pendingAnimations={ pendingAnimations }
                         onClaimAnimationEnd={ onClaimAnimationEnd }
                     />
