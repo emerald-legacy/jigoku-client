@@ -270,7 +270,8 @@
 
 .ring-swatch-default-glyph {
     position: relative;
-    font-size: 2.75rem;
+    margin-top: 0;
+    font-size: 4.25rem;
     line-height: 1;
     color: #fff;
 }
