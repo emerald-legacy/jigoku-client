@@ -1,6 +1,7 @@
 import React from "react";
 import Card from "./Card";
 import { asset } from "../assetUrl";
+import { ringSetImage, DEFAULT_RINGS } from "../boardCosmetics";
 import type { Card as CardType, MenuItem } from "../types/game";
 
 function attachmentOffsetFor(cardSize: string) {
@@ -17,11 +18,12 @@ function attachmentOffsetFor(cardSize: string) {
     }
 }
 
-export default function RingAttachmentRow({ element, attachments, amController, cardSize, onCardClick, onDragDrop, onMenuItemClick, onMouseOver, onMouseOut }: {
+export default function RingAttachmentRow({ element, attachments, amController, cardSize, ringSet, onCardClick, onDragDrop, onMenuItemClick, onMouseOver, onMouseOut }: {
     element: string;
     attachments: CardType[];
     amController: boolean;
     cardSize: string;
+    ringSet?: string;
     onCardClick: (card: CardType) => void;
     onDragDrop: (card: CardType, source: string, target: string) => void;
     onMenuItemClick: (card: CardType, menuItem: MenuItem) => void;
@@ -33,9 +35,10 @@ export default function RingAttachmentRow({ element, attachments, amController, 
     }
     const attachmentOffset = attachmentOffsetFor(cardSize);
     const cardLayer = 45;
+    const symbolSrc = ringSet && ringSet !== DEFAULT_RINGS ? ringSetImage(ringSet, "military", element) : asset(`military-${element}.png`);
     return (
         <div id={ `ring-attachments-${element}` } className="ring-attachments--element" style={ { marginLeft: `${(attachments.length - 1) * attachmentOffset}px` } } >
-            <img className="ring-attachments__ring-symbol" src={ asset(`military-${element}.png`) } />
+            <img className="ring-attachments__ring-symbol" src={ symbolSrc } />
             { attachments.map((card: CardType, index: number) => (
                 <div key={ card.uuid } className={ index !== 0 ? "ring-attachment--stacked" : "ring-attachment" } style={ { marginLeft: `${-1 * (index * attachmentOffset)}px`, zIndex: (cardLayer - index) } }>
                     <Card

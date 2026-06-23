@@ -15,9 +15,10 @@ const wrapperWith = (usePromosByUsername: Record<string, boolean>) =>
     function Wrapper({ children }: { children: React.ReactNode }) {
         return (
             <PatronProvider
-                viewer={ { dial: "wood/default", tokens: "default", rings: false, usePromos: false, isPatron: false, spectating: false } }
+                viewer={ { dial: "wood/default", tokens: "default", rings: "default", usePromos: false, isPatron: false, spectating: false } }
                 playerUsernames={ Object.keys({ ...patronByName.map, ...usePromosByUsername }) }
                 usePromosByUsername={ usePromosByUsername }
+                ringSetByUsername={ {} }
             >
                 { children }
             </PatronProvider>

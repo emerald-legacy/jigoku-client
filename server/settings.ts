@@ -32,7 +32,7 @@ const defaultTimerSettings = {
 const defaultPatronSettings = {
     dial: "wood/default",
     tokens: "default",
-    rings: false,
+    rings: "default",
     usePromos: false
 };
 

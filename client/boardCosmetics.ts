@@ -166,27 +166,55 @@ export function resolveStoneImages(): { honored: string; dishonored: string } {
     return { honored: DEFAULT_HONORED_STONE, dishonored: DEFAULT_DISHONORED_STONE };
 }
 
-// --- Rings (single patron set, toggled) -------------------------------------
-export function patronRingImage(element: string): string {
-    return asset(`patron/rings/${element}.png`);
-}
+// --- Rings ------------------------------------------------------------------
+// Ring imagery is one board-wide skin per viewer (NOT per pool/owner). Each set has a
+// military + political variant per element. "default" renders the stock bg + svg glyph.
+// All sets except "default" are patron-gated.
+export const ringSets: CosmeticMaterial[] = [
+    { id: "default", label: "Default", patron: false },
+    { id: "wood", label: "Wood", patron: true },
+    { id: "etched", label: "Etched", patron: true },
+    { id: "nacre", label: "Nacre", patron: true },
+    { id: "gold", label: "Gold", patron: true }
+];
 
+export const DEFAULT_RINGS = "default";
 export const ringElements = ["air", "earth", "fire", "void", "water"] as const;
 
-// Whether to render patron ring imagery for a claimed-pool ring owned by a player.
-export function resolveOwnedRingsPatron(ownerIsPatron: boolean, viewer: PatronViewerConfig): boolean {
-    if(!ownerIsPatron) {
-        return false;
-    }
-    if(viewer.isPatron && !viewer.spectating) {
-        return viewer.rings;
-    }
-    return true;
+export function ringSetImage(set: string, conflictType: string | undefined, element: string): string {
+    return asset(`rings/${set}/${conflictType || "military"}-${element}.webp`);
 }
 
-// Center (unclaimed) rings have no owner: only the patron viewer reskins them for themselves.
-export function resolveCenterRingsPatron(viewer: PatronViewerConfig): boolean {
-    return viewer.isPatron && !viewer.spectating && viewer.rings;
+export interface RingSetResolutionInput {
+    viewer: PatronViewerConfig;
+    isPatronByUsername: Record<string, boolean>;
+    ringSetByUsername: Record<string, string>;
+    playerUsernames: Array<string | null | undefined>;
+    creatorUsername?: string;
+    viewerUsername?: string | null;
+}
+
+// The single ring set the viewer sees across the whole board:
+// - spectator -> the game creator's set
+// - patron player -> their own selected set
+// - non-patron player -> the (patron) opponent's set
+// A non-patron owner's set is never shown (gating enforced here, at render).
+export function resolveRingSet(input: RingSetResolutionInput): string {
+    const { viewer, isPatronByUsername, ringSetByUsername, playerUsernames, creatorUsername, viewerUsername } = input;
+    const setFor = (username: string | null | undefined): string => {
+        if(!username || !isPatronByUsername[username]) {
+            return DEFAULT_RINGS;
+        }
+        return normalizeRingsValue(ringSetByUsername[username]);
+    };
+
+    if(viewer.spectating) {
+        return setFor(creatorUsername);
+    }
+    if(viewer.isPatron) {
+        return normalizeRingsValue(viewer.rings);
+    }
+    return setFor(playerUsernames.find(u => u && u !== viewerUsername));
 }
 
 // --- Settings + viewer config ----------------------------------------------
@@ -194,7 +222,7 @@ export function resolveCenterRingsPatron(viewer: PatronViewerConfig): boolean {
 export interface PatronSettings {
     dial: string; // "<material>/<type>"
     tokens: string; // token material id
-    rings: boolean;
+    rings: string; // ring set id ("default" + patron sets)
     usePromos: boolean; // owner-broadcast: render this player's cards with promo art
 }
 
@@ -206,9 +234,18 @@ export interface PatronViewerConfig extends PatronSettings {
 export const defaultPatronSettings: PatronSettings = {
     dial: DEFAULT_DIAL,
     tokens: DEFAULT_TOKENS,
-    rings: false,
+    rings: DEFAULT_RINGS,
     usePromos: false
 };
+
+// Coerce a stored ring value to a valid set id. Legacy boolean values (the old on/off
+// toggle, which never had real art) collapse to the default.
+export function normalizeRingsValue(value: unknown): string {
+    if(typeof value === "string" && ringSets.some(s => s.id === value)) {
+        return value;
+    }
+    return DEFAULT_RINGS;
+}
 
 // Coerce a stored dial value to a valid "<material>/<type>" string (handles legacy names).
 export function normalizeDialValue(value: unknown): string {
@@ -232,7 +269,7 @@ export function normalizePatronSettings(raw: Record<string, unknown> | undefined
     return {
         dial: normalizeDialValue(value.dial),
         tokens: normalizeTokenValue(value.tokens),
-        rings: typeof value.rings === "boolean" ? value.rings : false,
+        rings: normalizeRingsValue(value.rings),
         usePromos: typeof value.usePromos === "boolean" ? value.usePromos : false
     };
 }

@@ -21,7 +21,7 @@ describe("initProfileState", () => {
                 promptedActionWindows: {},
                 optionSettings: {},
                 timerSettings: {},
-                patron: { dial: "wood/default", tokens: "default", rings: false, usePromos: false }
+                patron: { dial: "wood/default", tokens: "default", rings: "default", usePromos: false }
             },
             validation: {},
             loading: false
@@ -50,7 +50,7 @@ describe("initProfileState", () => {
             promptedActionWindows: { dynasty: true },
             optionSettings: { sortHandByName: true },
             timerSettings: { events: true },
-            patron: { dial: "wood/default", tokens: "default", rings: false, usePromos: false }
+            patron: { dial: "wood/default", tokens: "default", rings: "default", usePromos: false }
         });
     });
 });

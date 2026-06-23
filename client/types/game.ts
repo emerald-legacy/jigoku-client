@@ -283,6 +283,7 @@ export interface GameState {
     id: string;
     name: string;
     started: boolean;
+    owner?: string;
     gameMode?: string;
     players: Record<string, Player>;
     spectators: Spectator[];
@@ -304,7 +305,8 @@ export interface PatronSettings {
     dial?: string;
     // Fate + honor token material id, e.g. "default", "wood", "gold", "nacre".
     tokens?: string;
-    rings?: boolean;
+    // Ring set id ("default" + patron sets: wood, etched, nacre, gold).
+    rings?: string;
     // Render this patron's cards with promo art (owner-broadcast, like the dial).
     usePromos?: boolean;
 }
