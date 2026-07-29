@@ -227,6 +227,8 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }: InnerMessa
     const getMessage = () => {
         return messages?.map((message: GameMessage, index: number) => {
             return (
+                // Append-only log with no server-side id, so position is the only stable identity
+                // eslint-disable-next-line @eslint-react/no-array-index-key
                 <div key={ `message${index}` } className="message">
                     { formatMessageText(message.message) }
                 </div>
