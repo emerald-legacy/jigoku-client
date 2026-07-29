@@ -111,8 +111,8 @@ export default function GameLobby() {
     const props = useAppSelector(mapStateToProps, shallowEqual);
     const dispatch = useAppDispatch();
     const boundActions = useMemo(() => bindActionCreators(actions, dispatch), [dispatch]);
-    return <InnerGameLobby { ...(props as Pick<InnerGameLobbyProps, "bannerNotice" | "currentGame" | "gameStats" | "games" | "newGame" | "passwordGame" | "username">) }
+    return (<InnerGameLobby { ...(props as Pick<InnerGameLobbyProps, "bannerNotice" | "currentGame" | "gameStats" | "games" | "newGame" | "passwordGame" | "username">) }
         loadGameStats={ boundActions.loadGameStats }
         setContextMenu={ boundActions.setContextMenu }
-        startNewGame={ boundActions.startNewGame } />;
+        startNewGame={ boundActions.startNewGame } />);
 }
