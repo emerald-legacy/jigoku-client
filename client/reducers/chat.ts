@@ -7,9 +7,12 @@ const chatSlice = createSlice({
     reducers: {
         receiveBannerNotice(state, action: PayloadAction<string>) {
             state.notice = action.payload;
+        },
+        clearBannerNotice(state) {
+            state.notice = undefined;
         }
     }
 });
 
-export const { receiveBannerNotice } = chatSlice.actions;
+export const { receiveBannerNotice, clearBannerNotice } = chatSlice.actions;
 export default chatSlice.reducer;

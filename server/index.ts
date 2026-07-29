@@ -11,7 +11,7 @@ async function runServer() {
     const server = new Server(process.env.NODE_ENV !== "production");
     await server.initDb();
 
-    let lobby;
+    let lobby: Lobby | undefined;
     server.app.get("/api/server-version", (req, res) => {
         if(!lobby) {
             return res.status(503).json({ nodes: [] });
@@ -21,6 +21,8 @@ async function runServer() {
 
     const httpServer = await server.init();
     lobby = new Lobby(httpServer, { config: config, db: database });
+    // Routes are registered before the lobby exists, so they reach it through app.locals
+    server.app.locals.lobby = lobby;
 
     server.run();
 }
