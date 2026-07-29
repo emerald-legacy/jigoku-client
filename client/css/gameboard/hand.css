@@ -111,6 +111,12 @@
             border-radius: 4px;
         }
 
+        &:has(.card.selected) {
+            flex-shrink: 0;
+            overflow: visible;
+            border-radius: 4px;
+        }
+
         &:hover {
             overflow: visible;
         }

@@ -165,6 +165,20 @@ describe("the <Card /> component", () => {
         });
     });
 
+    // The engine reports a chosen card as both selected and selectable. Only
+    // "selected" may win, or the pale selectable glow styles it instead of the ring.
+    describe("that is both selected and selectable", () => {
+        beforeEach(() => {
+            render(<Card card={ { ...card, selected: true, selectable: true } } source="hand" />);
+        });
+
+        it("should mark the card as selected and not selectable", () => {
+            const cardElement = document.querySelector(".card");
+            expect(cardElement.className).toContain("selected");
+            expect(cardElement.className.split(/\s+/)).not.toContain("selectable");
+        });
+    });
+
     describe("that is in danger", () => {
         beforeEach(() => {
             render(<Card card={ { ...card, inDanger: true } } source="hand" />);
