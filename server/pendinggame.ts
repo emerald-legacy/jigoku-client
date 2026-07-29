@@ -174,7 +174,7 @@ class PendingGame {
         }
 
         if(this.isUserBlocked(user)) {
-            return;
+            return callback(new Error("Blocked"), "You have been blocked by the owner of this game");
         }
 
         if(this.password) {
@@ -206,7 +206,7 @@ class PendingGame {
         }
 
         if(this.isUserBlocked(user)) {
-            return;
+            return callback(new Error("Blocked"), "You have been blocked by the owner of this game");
         }
 
         if(this.password) {
