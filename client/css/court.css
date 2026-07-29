@@ -1,0 +1,128 @@
+.court {
+    margin-top: 10px;
+}
+
+.court-body {
+    overflow: hidden;
+}
+
+.court-seal {
+    position: absolute;
+    right: 8px;
+    bottom: 0;
+    font-family: var(--lobby-font-glyph);
+    font-size: 64px;
+    line-height: 1;
+    color: rgba(120, 180, 80, 0.07);
+    pointer-events: none;
+    user-select: none;
+}
+
+.court-summary {
+    display: flex;
+    align-items: baseline;
+    gap: 0.3em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--lobby-rule-soft);
+}
+
+.court-count,
+.court-count-label {
+    font-size: 13px;
+    color: var(--lobby-bone-soft);
+}
+
+.court-roll {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    columns: 2;
+    column-gap: 14px;
+    column-rule: 1px solid var(--lobby-rule-soft);
+    max-height: 170px;
+    overflow-y: auto;
+}
+
+.court-roll[data-status="spectating"] {
+    max-height: 96px;
+}
+
+.court-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 2px 0;
+    break-inside: avoid;
+}
+
+.court-glyph {
+    color: var(--lobby-jade);
+    font-family: var(--lobby-font-glyph);
+    font-size: 11px;
+    width: 1em;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.court-roll[data-status="spectating"] .court-glyph {
+    color: rgba(160, 180, 140, 0.6);
+}
+
+.court-name {
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.court-name--patron {
+    color: #d4af37;
+}
+
+.court-group {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--lobby-rule);
+}
+
+.court-group-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+}
+
+.court-group-label {
+    font-family: var(--lobby-font-display);
+    font-size: 14px;
+    letter-spacing: 0.03em;
+    color: var(--lobby-jade);
+}
+
+.court-group-count {
+    font-family: var(--lobby-font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    color: var(--lobby-bone-soft);
+}
+
+.court-empty {
+    font-size: 13px;
+    color: var(--lobby-bone-soft);
+    padding: 2px 0;
+}
+
+.court-empty strong {
+    display: block;
+    font-family: var(--lobby-font-display);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    color: var(--lobby-bone);
+}
+
+@media (max-width: 767px) {
+    .court-roll {
+        columns: 1;
+        column-rule: none;
+    }
+}

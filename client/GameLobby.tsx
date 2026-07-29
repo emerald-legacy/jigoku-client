@@ -5,6 +5,7 @@ import { bindActionCreators } from "@reduxjs/toolkit";
 import NewGame from "./NewGame";
 import GameList from "./GameList";
 import GameStats from "./GameStats";
+import Court from "./Court";
 import PendingGame from "./PendingGame";
 import PasswordGame from "./PasswordGame";
 import AlertPanel from "./SiteComponents/AlertPanel";
@@ -90,6 +91,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
                     { (!currentGame && newGame) ? <NewGame defaultGameName={ `${username}'s game` } /> : null }
                     { rightside }
                     <GameStats stats={ gameStats } />
+                    <Court />
                 </div>
             </div>
         </div>
