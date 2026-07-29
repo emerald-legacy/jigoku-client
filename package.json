@@ -8,7 +8,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint server/ client/ --ext=ts --ext=tsx",
+    "lint": "eslint server/ client/",
     "typecheck": "tsc -p tsconfig.client.json --noEmit",
     "typecheck:server": "tsc --noEmit",
     "build": "vite build",
@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/jigoku/jigoku-client#readme",
   "engines": {
-    "node": ">=24.0.0"
+    "node": ">=26.0.0"
   },
   "dependencies": {
     "axios": "1.18.1",
@@ -69,9 +69,11 @@
     "ws": "8.21.1"
   },
   "devDependencies": {
-    "@eslint/js": "9.39.4",
+    "@eslint-react/eslint-plugin": "5.18.0",
+    "@eslint/js": "10.0.1",
     "@redux-devtools/extension": "4.0.0",
     "@reduxjs/toolkit": "2.12.0",
+    "@stylistic/eslint-plugin": "5.10.0",
     "@tailwindcss/postcss": "4.3.3",
     "@testing-library/jest-dom": "7.0.0",
     "@testing-library/react": "16.3.2",
@@ -82,8 +84,7 @@
     "@vitest/coverage-v8": "4.1.10",
     "babel-plugin-react-compiler": "1.0.0",
     "emoji-js": "3.9.0",
-    "eslint": "9.39.4",
-    "eslint-plugin-react": "7.37.5",
+    "eslint": "10.8.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "17.8.0",
     "jsdom": "29.1.1",
@@ -102,6 +103,6 @@
     "vitest": "4.1.10"
   },
   "volta": {
-    "node": "24.14.0"
+    "node": "26.5.0"
   }
 }
