@@ -253,7 +253,11 @@
     }
 
     &.selected {
-        & .card-image { box-shadow: 0 0 1px 4px var(--color-tertiary); }
+        & .card-image {
+            box-shadow:
+                0 0 0 3px var(--lobby-jade-bright, #7dc242),
+                0 0 12px 4px rgba(125, 194, 66, 0.55);
+        }
     }
 
     &.controlled {
