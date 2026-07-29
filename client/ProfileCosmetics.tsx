@@ -45,11 +45,9 @@ const SAMPLE_DIGIT = 0;
 
 export function DialPicker({ value, isPatron, onChange }: PickerProps) {
     const selected = parseDial(value);
-    const [activeMaterial, setActiveMaterial] = useState(selected.material);
-
-    useEffect(() => {
-        setActiveMaterial(selected.material);
-    }, [selected.material]);
+    const [materialOverride, setMaterialOverride] = useState<{ base: string; value: string } | null>(null);
+    const activeMaterial = materialOverride?.base === selected.material ? materialOverride.value : selected.material;
+    const setActiveMaterial = (materialId: string) => setMaterialOverride({ base: selected.material, value: materialId });
 
     const material = dialMaterials.find(m => m.id === activeMaterial) ?? dialMaterials[0];
     const materialLocked = material.patron && !isPatron;
