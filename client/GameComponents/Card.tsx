@@ -315,7 +315,7 @@ function Card(props: CardProps) {
     const getCardElement = () => {
         let cardClass = "card";
         let imageClass = "card-image";
-        let cardBack = "conflictcardback.webp";
+        let cardBack: string;
 
         if(!card) {
             return <div />;

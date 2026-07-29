@@ -36,7 +36,7 @@ class GameService {
             return { ...game, _id: result.insertedId };
         } catch(err) {
             logger.error(`Unable to create game: ${err}`);
-            throw new Error("Unable to create game");
+            throw new Error("Unable to create game", { cause: err });
         }
     }
 
@@ -56,7 +56,7 @@ class GameService {
             return await this.games.updateOne({ gameId: game.gameId }, { $set: properties });
         } catch(err) {
             logger.error(`Unable to update game: ${err}`);
-            throw new Error("Unable to update game");
+            throw new Error("Unable to update game", { cause: err });
         }
     }
 
@@ -68,7 +68,7 @@ class GameService {
             return games;
         } catch(err) {
             logger.error(`Unable to get all games from ${from} to ${to}: ${err}`);
-            throw new Error("Unable to get all games");
+            throw new Error("Unable to get all games", { cause: err });
         }
     }
 }

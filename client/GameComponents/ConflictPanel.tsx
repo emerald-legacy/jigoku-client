@@ -6,7 +6,7 @@ export default function ConflictPanel({ conflict, otherPlayer }: { conflict: Con
         return <div />;
     }
 
-    let thisPlayerSkill: number | string = "-";
+    let thisPlayerSkill: number | string;
     let otherPlayerSkill: number | string = "-";
     if(otherPlayer && otherPlayer.id && otherPlayer.id.includes(conflict.attackingPlayerId)) {
         otherPlayerSkill = (conflict.attackerSkill !== undefined) ? conflict.attackerSkill : "-";

@@ -157,7 +157,6 @@ function mergeHiddenInfo(state: GameState, hiddenInfo: HiddenInfo | undefined): 
     return merged;
 }
 
-// eslint-disable-next-line react/no-multi-comp
 function GameReplay() {
     const [logData, setLogData] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);

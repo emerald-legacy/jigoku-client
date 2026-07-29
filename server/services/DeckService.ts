@@ -23,7 +23,7 @@ class DeckService {
             return await this.decks.findOne({ _id: toObjectId(id) });
         } catch(err) {
             logger.error(`Unable to fetch deck ${id}: ${err}`);
-            throw new Error("Unable to fetch deck " + id);
+            throw new Error("Unable to fetch deck " + id, { cause: err });
         }
     }
 

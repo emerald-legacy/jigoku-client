@@ -96,8 +96,8 @@ function Clock({
             }
             return `${formattedSeconds(timeLeft)}`;
         }
-        let stage: string | number = "";
-        let timeLeftInPeriod = 0;
+        let stage: string | number;
+        let timeLeftInPeriod: number;
         if(timeLeft > periods * timePeriod) {
             stage = "M";
             timeLeftInPeriod = timeLeft - periods * timePeriod;

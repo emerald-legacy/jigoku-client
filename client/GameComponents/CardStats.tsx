@@ -27,7 +27,7 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
     const renderGroupedModifier = (groupedModifier: Modifier[]) => {
         const amount = groupedModifier.reduce((total, modifier) => total + modifier.amount, 0);
         let sign = "";
-        let amountDisplay = "";
+        let amountDisplay: string;
         if(!Number.isNaN(amount)) {
             sign = amount < 0 ? "-" : "+";
             amountDisplay = amount.toString().replace("-", "");

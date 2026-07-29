@@ -325,7 +325,7 @@ class PendingGame {
         var playersInGame = Object.values(this.players).filter(player => !player.left);
 
         playersInGame.forEach(player => {
-            var deck: Record<string, unknown> = {};
+            var deck: Record<string, unknown>;
 
             if(activePlayer === player.name && player.deck) {
                 deck = { name: player.deck.name, selected: player.deck.selected, status: player.deck.status };

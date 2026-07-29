@@ -16,7 +16,7 @@ interface DeckStatusSummaryProps {
 
 function DeckStatusSummary({ status }: DeckStatusSummaryProps) {
     const { basicRules, officialRole, noUnreleasedCards, faqVersion, faqRestrictedList, gameMode } = status;
-    let items = [];
+    let items: { title: string; value?: boolean }[];
 
     if(gameMode === GameModes.Skirmish) {
         items = [
