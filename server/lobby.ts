@@ -241,6 +241,46 @@ class Lobby {
         this.applyBlockList(username, await this.loadBlockList(username), socket);
     }
 
+    // Blocking someone should not leave you sitting in your own game with them. Only games the
+    // blocker owns are affected, and only before handoff — a started game lives on a game node.
+    ejectBlockedUsers(username: string, blockList: string[]) {
+        if(blockList.length === 0) {
+            return;
+        }
+
+        Object.values(this.games).forEach(game => {
+            if(game.owner.username !== username || game.started) {
+                return;
+            }
+
+            const blocked = Object.values(game.getPlayersAndSpectators())
+                .filter(participant => participant.name !== username && blockList.includes(participant.name.toLowerCase()));
+
+            if(blocked.length === 0) {
+                return;
+            }
+
+            blocked.forEach(participant => {
+                game.leave(participant.name);
+
+                const socket = this.sockets[participant.id];
+                if(socket) {
+                    socket.send("cleargamestate");
+                    socket.send("banner", `You have been removed from ${game.name} because the owner blocked you`);
+                    socket.leaveChannel(game.id);
+                }
+
+                logger.info(`removed ${participant.name} from game ${game.id}: blocked by ${username}`);
+            });
+
+            if(game.isEmpty()) {
+                delete this.games[game.id];
+            } else {
+                this.sendGameState(game);
+            }
+        });
+    }
+
     // Called by the account API when a user blocks or unblocks someone mid-session
     async refreshBlockList(username: string) {
         const blockList = await this.loadBlockList(username);
@@ -251,6 +291,8 @@ class Lobby {
         } else {
             sockets.forEach(socket => this.applyBlockList(username, blockList, socket));
         }
+
+        this.ejectBlockedUsers(username, blockList);
 
         this.broadcastGameList();
         this.broadcastUserList();

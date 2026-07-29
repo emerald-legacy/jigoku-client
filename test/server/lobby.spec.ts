@@ -169,6 +169,7 @@ type BlockListCtx = {
     userService: { getUserByUsername: (name: string) => Promise<{ blockList?: string[] } | null> };
     broadcastGameList: () => void;
     broadcastUserList: () => void;
+    ejectBlockedUsers: (name: string, blockList: string[]) => void;
     loadBlockList: (name: string) => Promise<string[]>;
     applyBlockList: (name: string, blockList: string[], socket?: { user?: BlockListUser }) => void;
 };
@@ -188,6 +189,7 @@ function blockListCtx(dbBlockList: string[] | undefined, overrides: Partial<Bloc
         userService: { getUserByUsername: vi.fn().mockResolvedValue({ blockList: dbBlockList }) },
         broadcastGameList: vi.fn(),
         broadcastUserList: vi.fn(),
+        ejectBlockedUsers: vi.fn(),
         ...overrides
     } as BlockListCtx;
     ctx.loadBlockList = (name: string) => blockListProto.loadBlockList.call(ctx, name);
@@ -258,6 +260,117 @@ describe("Lobby block list hydration", () => {
         await blockListProto.refreshBlockList.call(ctx, "alice");
 
         expect(ctx.users.alice.blockList).toEqual(["bob"]);
+    });
+});
+
+const ejectBlockedUsers = (Lobby as unknown as { prototype: {
+    ejectBlockedUsers: (this: EjectCtx, username: string, blockList: string[]) => void;
+} }).prototype.ejectBlockedUsers;
+
+type FakeSocket = { sent: Array<[string, unknown]>; left: string[]; send: (m: string, ...a: unknown[]) => void; leaveChannel: (c: string) => void };
+type EjectCtx = {
+    games: Record<string, PendingGame>;
+    sockets: Record<string, FakeSocket>;
+    sendGameState: (game: PendingGame) => void;
+};
+
+function fakeSocket(): FakeSocket {
+    const socket: FakeSocket = {
+        sent: [],
+        left: [],
+        send: (message: string, ...args: unknown[]) => socket.sent.push([message, args[0]]),
+        leaveChannel: (channel: string) => socket.left.push(channel)
+    };
+    return socket;
+}
+
+describe("Lobby.ejectBlockedUsers", () => {
+    function setup(ownerBlockList: string[], overrides: { started?: boolean } = {}) {
+        const game = gameOwnedBy({ username: "alice", blockList: ownerBlockList }, ["alice"]);
+        game.players.bob = { id: "bob-socket", name: "bob" };
+        game.spectators.charlie = { id: "charlie-socket", name: "charlie" };
+        game.started = overrides.started ?? false;
+
+        const sockets = { "bob-socket": fakeSocket(), "charlie-socket": fakeSocket() };
+        const ctx = { games: { [game.id]: game }, sockets, sendGameState: vi.fn() } as unknown as EjectCtx;
+        return { game, sockets, ctx };
+    }
+
+    it("removes a blocked player and tells them why", () => {
+        const { game, sockets, ctx } = setup(["bob"]);
+
+        ejectBlockedUsers.call(ctx, "alice", ["bob"]);
+
+        expect(game.players.bob).toBeUndefined();
+        expect(sockets["bob-socket"].sent.map(([m]) => m)).toEqual(["cleargamestate", "banner"]);
+        expect(sockets["bob-socket"].left).toEqual([game.id]);
+        expect(ctx.sendGameState).toHaveBeenCalledWith(game);
+    });
+
+    it("removes a blocked spectator too", () => {
+        const { game, ctx } = setup(["charlie"]);
+
+        ejectBlockedUsers.call(ctx, "alice", ["charlie"]);
+
+        expect(game.spectators.charlie).toBeUndefined();
+        expect(game.players.bob).toBeDefined();
+    });
+
+    it("leaves unblocked participants alone", () => {
+        const { game, sockets, ctx } = setup(["dave"]);
+
+        ejectBlockedUsers.call(ctx, "alice", ["dave"]);
+
+        expect(game.players.bob).toBeDefined();
+        expect(game.spectators.charlie).toBeDefined();
+        expect(sockets["bob-socket"].sent).toEqual([]);
+    });
+
+    it("never removes the owner, even if they are somehow on their own list", () => {
+        const { game, ctx } = setup(["alice"]);
+
+        ejectBlockedUsers.call(ctx, "alice", ["alice"]);
+
+        expect(game.players.alice).toBeDefined();
+    });
+
+    it("does not touch a game that has already started", () => {
+        const { game, ctx } = setup(["bob"], { started: true });
+
+        ejectBlockedUsers.call(ctx, "alice", ["bob"]);
+
+        expect(game.players.bob).toBeDefined();
+        expect(ctx.sendGameState).not.toHaveBeenCalled();
+    });
+
+    it("only touches games the blocker owns", () => {
+        const game = gameOwnedBy({ username: "charlie", blockList: [] }, ["charlie"]);
+        game.players.bob = { id: "bob-socket", name: "bob" };
+        const ctx = { games: { [game.id]: game }, sockets: {}, sendGameState: vi.fn() } as unknown as EjectCtx;
+
+        ejectBlockedUsers.call(ctx, "alice", ["bob"]);
+
+        expect(game.players.bob).toBeDefined();
+    });
+
+    it("deletes the game when nobody active is left", () => {
+        const game = gameOwnedBy({ username: "alice", blockList: ["bob"] }, []);
+        game.players.bob = { id: "bob-socket", name: "bob" };
+        const ctx = { games: { [game.id]: game }, sockets: {}, sendGameState: vi.fn() } as unknown as EjectCtx;
+
+        ejectBlockedUsers.call(ctx, "alice", ["bob"]);
+
+        expect(ctx.games[game.id]).toBeUndefined();
+        expect(ctx.sendGameState).not.toHaveBeenCalled();
+    });
+
+    it("does nothing when the block list is empty", () => {
+        const { game, ctx } = setup([]);
+
+        ejectBlockedUsers.call(ctx, "alice", []);
+
+        expect(game.players.bob).toBeDefined();
+        expect(ctx.sendGameState).not.toHaveBeenCalled();
     });
 });
 
