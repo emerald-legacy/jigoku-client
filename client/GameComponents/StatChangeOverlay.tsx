@@ -36,8 +36,8 @@ const StatChangeOverlay: React.FC<StatChangeOverlayProps> = ({ animations, onDis
 
     return (
         <div className="stat-change-overlay" onAnimationEnd={ onDismiss }>
-            { changes.map((change, i) => (
-                <div key={ i } className="stat-change-card">
+            { changes.map((change) => (
+                <div key={ `${change.kind}-${change.playerName}-${change.amount}` } className="stat-change-card">
                     <div className="stat-change-name">{ change.playerName }</div>
                     <div className={ `stat-change-amount ${ change.amount > 0 ? "gain" : "lose" }` }>
                         { change.amount > 0 ? `+${change.amount}` : `${change.amount}` }

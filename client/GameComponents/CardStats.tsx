@@ -108,8 +108,8 @@ function CardStats({ glorySummary, militarySkillSummary, politicalSkillSummary, 
                         <span className="stat--type-label effect-markers-label">効</span>
                     </div>
                     <div className="stat-specifics">
-                        { effectMarkers.map((e, i) => (
-                            <div className="stat-line" key={ `${e.source}-${i}` }>
+                        { effectMarkers.map((e) => (
+                            <div className="stat-line" key={ `${e.kind}-${e.source}` }>
                                 <div className="stat-name">{ e.source }</div>
                             </div>
                         )) }

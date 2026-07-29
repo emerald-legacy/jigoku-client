@@ -70,7 +70,7 @@ export default function InnerDeckEditor({
     updateDeck
 }: InnerDeckEditorProps) {
     const [cardList, setCardList] = useState("");
-    const [deck, setDeck] = useState(copyDeck(propDeck));
+    const [deck, setDeck] = useState(() => copyDeck(propDeck));
     const [numberToAdd, setNumberToAdd] = useState(1);
     const [cardToAdd, setCardToAdd] = useState<Card | null>(null);
     const [showModal, setShowModal] = useState(false);
