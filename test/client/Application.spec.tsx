@@ -87,7 +87,8 @@ vi.mock("../../client/hooks", () => ({
     useAppDispatch: () => (action: any) => (typeof action === "function" ? action() : action),
     useAppSelector: (selector: any) => selector({
         games: { games: [], currentGame: undefined, gameId: undefined },
-        auth: { user: undefined, username: undefined, token: "tok-1", loggedIn: false }
+        auth: { user: undefined, username: undefined, token: "tok-1", loggedIn: false },
+        chat: { notice: undefined }
     })
 }));
 

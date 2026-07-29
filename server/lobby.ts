@@ -10,6 +10,7 @@ import PendingGame from "./pendinggame.js";
 import GameRouter from "./gamerouter.js";
 import DeckService from "./services/DeckService.js";
 import CardService, { type CardRecord } from "./services/CardService.js";
+import UserService from "./services/UserService.js";
 import validateDeck from "../client/deck-validator.js";
 import * as Settings from "./settings.js";
 import GetShadowlandsSummonables from "./shadowLandsHelper.js";
@@ -38,6 +39,7 @@ interface LobbyOptions {
     db?: Db;
     deckService?: DeckService;
     cardService?: CardService;
+    userService?: UserService;
     router?: GameRouter;
     io?: Server;
 }
@@ -54,6 +56,7 @@ class Lobby {
     config: LobbyConfig;
     deckService: DeckService;
     cardService: CardService;
+    userService: UserService;
     router: GameRouter;
     titleCardData: unknown;
     io: Server;
@@ -68,6 +71,7 @@ class Lobby {
         this.config = options.config;
         this.deckService = options.deckService || new DeckService(options.db as Db);
         this.cardService = options.cardService || new CardService(options.db as Db);
+        this.userService = options.userService || new UserService(options.db as Db);
         this.router = options.router || new GameRouter(this.config);
         this.titleCardData = null;
 
@@ -199,6 +203,99 @@ class Lobby {
         userList = userList.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
         return userList;
+    }
+
+    async loadBlockList(username: string): Promise<string[]> {
+        try {
+            const dbUser = await this.userService.getUserByUsername(username);
+            return dbUser?.blockList || [];
+        } catch(err) {
+            logger.error(`Failed to load block list for ${username}: ${err}`);
+            return [];
+        }
+    }
+
+    applyBlockList(username: string, blockList: string[], socket?: Socket) {
+        if(socket?.user) {
+            socket.user.blockList = blockList;
+        }
+
+        if(this.users[username]) {
+            this.users[username].blockList = blockList;
+        }
+
+        // A game outlives its creator's socket, so its owner may be an older user object
+        Object.values(this.games).forEach(game => {
+            if(game.owner && game.owner.username === username) {
+                game.owner.blockList = blockList;
+            }
+        });
+    }
+
+    async hydrateBlockList(socket: Socket) {
+        if(!socket.user) {
+            return;
+        }
+
+        const username = socket.user.username;
+        this.applyBlockList(username, await this.loadBlockList(username), socket);
+    }
+
+    // Blocking someone should not leave you sitting in your own game with them. Only games the
+    // blocker owns are affected, and only before handoff — a started game lives on a game node.
+    ejectBlockedUsers(username: string, blockList: string[]) {
+        if(blockList.length === 0) {
+            return;
+        }
+
+        Object.values(this.games).forEach(game => {
+            if(game.owner.username !== username || game.started) {
+                return;
+            }
+
+            const blocked = Object.values(game.getPlayersAndSpectators())
+                .filter(participant => participant.name !== username && blockList.includes(participant.name.toLowerCase()));
+
+            if(blocked.length === 0) {
+                return;
+            }
+
+            blocked.forEach(participant => {
+                game.leave(participant.name);
+
+                const socket = this.sockets[participant.id];
+                if(socket) {
+                    socket.send("cleargamestate");
+                    socket.send("banner", `You have been removed from ${game.name} because the owner blocked you`);
+                    socket.leaveChannel(game.id);
+                }
+
+                logger.info(`removed ${participant.name} from game ${game.id}: blocked by ${username}`);
+            });
+
+            if(game.isEmpty()) {
+                delete this.games[game.id];
+            } else {
+                this.sendGameState(game);
+            }
+        });
+    }
+
+    // Called by the account API when a user blocks or unblocks someone mid-session
+    async refreshBlockList(username: string) {
+        const blockList = await this.loadBlockList(username);
+        const sockets = Object.values(this.sockets).filter(socket => socket.user?.username === username);
+
+        if(sockets.length === 0) {
+            this.applyBlockList(username, blockList);
+        } else {
+            sockets.forEach(socket => this.applyBlockList(username, blockList, socket));
+        }
+
+        this.ejectBlockedUsers(username, blockList);
+
+        this.broadcastGameList();
+        this.broadcastUserList();
     }
 
     handshake(socket: IoSocket, next: (err?: Error) => void) {
@@ -378,7 +475,7 @@ class Lobby {
     }
 
     // Events
-    onConnection(ioSocket: IoSocket) {
+    async onConnection(ioSocket: IoSocket) {
         var socket = new Socket(ioSocket, { config: this.config });
 
         socket.registerEvent("newgame", this.onNewGame.bind(this));
@@ -399,6 +496,9 @@ class Lobby {
         if(socket.user) {
             this.users[socket.user.username] = Settings.getUserWithDefaultsSet(socket.user);
 
+            // Must happen before the list sends below, or they go out unfiltered
+            await this.hydrateBlockList(socket);
+
             this.broadcastUserList();
         }
 
@@ -417,11 +517,14 @@ class Lobby {
         }
     }
 
-    onAuthenticated(_socket: Socket, user: LobbyUser) {
+    async onAuthenticated(socket: Socket, user: LobbyUser) {
         let userWithDefaults = Settings.getUserWithDefaultsSet(user);
         this.users[user.username] = userWithDefaults;
 
+        await this.hydrateBlockList(socket);
+
         this.broadcastUserList();
+        this.broadcastGameList(socket);
     }
 
     onSocketDisconnected(socket: Socket, reason: string) {
@@ -465,7 +568,8 @@ class Lobby {
             return;
         }
 
-        let game = new PendingGame(socket.user as import("./pendinggame.js").PendingGameOwner, gameDetails);
+        let owner = (this.users[socket.user.username] || socket.user) as import("./pendinggame.js").PendingGameOwner;
+        let game = new PendingGame(owner, gameDetails);
         game.newGame(socket.id, socket.user as { username: string; emailHash?: string }, gameDetails.password, (err, message) => {
             if(err) {
                 logger.info(`game failed to create: ${err} ${message}`);

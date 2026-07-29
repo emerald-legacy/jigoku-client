@@ -55,6 +55,15 @@ function getEmailTransport() {
     return emailTransport;
 }
 
+// blockList lives server-side only, so the lobby has to re-read it after a change
+async function refreshLobbyBlockList(req, username: string) {
+    try {
+        await req.app.locals.lobby?.refreshBlockList(username);
+    } catch(err) {
+        logger.error(`Failed to refresh lobby block list for ${username}: ${err}`);
+    }
+}
+
 function sendEmail(address, email) {
     return new Promise<void>((resolve, reject) => {
         var emailTransport = getEmailTransport();
@@ -397,6 +406,7 @@ export function init(server) {
         user.blockList.push(req.body.username.toLowerCase());
 
         await userService.updateBlockList(user);
+        await refreshLobbyBlockList(req, user.username);
 
         res.send({ success: true, message: "Block list entry added successfully", username: req.body.username.toLowerCase() });
     }));
@@ -423,6 +433,7 @@ export function init(server) {
         user.blockList = user.blockList.filter(u => u !== req.params.entry.toLowerCase());
 
         await userService.updateBlockList(user);
+        await refreshLobbyBlockList(req, user.username);
 
         res.send({ success: true, message: "Block list entry removed successfully", username: req.params.entry.toLowerCase() });
     }));

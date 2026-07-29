@@ -16,4 +16,4 @@ export { clearNewsStatus } from "./reducers/news";
 export { clearUserStatus } from "./reducers/admin";
 export { refreshUser, clearBlockListStatus } from "./reducers/user";
 export { setContextMenu } from "./reducers/navigation";
-export { receiveBannerNotice } from "./reducers/chat";
+export { receiveBannerNotice, clearBannerNotice } from "./reducers/chat";
