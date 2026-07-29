@@ -43,7 +43,6 @@ export function usePatronStatus(username?: string | null): boolean {
 
     useEffect(() => {
         if(!username) {
-            setPatron(false);
             return;
         }
         let active = true;
@@ -57,7 +56,7 @@ export function usePatronStatus(username?: string | null): boolean {
         };
     }, [username]);
 
-    return patron;
+    return username ? patron : false;
 }
 
 export function usePatronStatuses(usernames: Array<string | null | undefined>): Record<string, boolean> {
