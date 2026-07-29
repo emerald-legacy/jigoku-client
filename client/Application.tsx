@@ -32,8 +32,11 @@ import { toast } from "sonner";
 import * as actions from "./actions";
 import { useAppDispatch, useAppSelector } from "./hooks";
 
+const BANNER_TIMEOUT = 15000;
+
 function mapStateToProps(state: RootState) {
     return {
+        bannerNotice: state.chat.notice,
         currentGame: state.games.currentGame,
         currentGameId: state.games.gameId,
         games: state.games.games,
@@ -68,6 +71,7 @@ interface BoundActions {
     gameSocketConnected: () => void;
     sendGameSocketConnectFailed: () => void;
     receiveBannerNotice: (notice: string) => void;
+    clearBannerNotice: () => void;
     setContextMenu: (menu: { x: number; y: number; menuId?: string } | undefined) => void;
 }
 
@@ -88,7 +92,7 @@ export default function Application() {
         // at runtime even though TS cannot verify this statically.
         return bindActionCreators(actions as ActionCreatorsMapObject, dispatch) as unknown as BoundActions;
     }, [dispatch]);
-    const { currentGame, currentGameId, games, token, user, username } = useAppSelector(mapStateToProps, shallowEqual);
+    const { bannerNotice, currentGame, currentGameId, games, token, user, username } = useAppSelector(mapStateToProps, shallowEqual);
 
     const stateRef = useRef<SocketHandlerState>({ username, currentGameId, token, boundActions });
     useEffect(() => {
@@ -99,6 +103,15 @@ export default function Application() {
     useEffect(() => {
         navigateRef.current = navigate;
     });
+
+    useEffect(() => {
+        if(!bannerNotice) {
+            return;
+        }
+
+        const timer = setTimeout(() => boundActions.clearBannerNotice(), BANNER_TIMEOUT);
+        return () => clearTimeout(timer);
+    }, [bannerNotice, boundActions]);
 
     useEffect(() => {
         const { boundActions: initialActions, token: initialToken } = stateRef.current;
