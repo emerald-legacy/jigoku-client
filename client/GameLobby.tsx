@@ -44,12 +44,6 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
     }, [currentGame, setContextMenu]);
 
     useEffect(() => {
-        if(username) {
-            setErrorMessage(undefined);
-        }
-    }, [username]);
-
-    useEffect(() => {
         loadGameStats();
     }, [loadGameStats]);
 
@@ -75,7 +69,7 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
     return (
         <div className="full-height">
             { bannerNotice ? <AlertPanel type="error" message={ bannerNotice } /> : null }
-            { errorMessage ? <AlertPanel type="error" message={ errorMessage } /> : null }
+            { !username && errorMessage ? <AlertPanel type="error" message={ errorMessage } /> : null }
 
             <div className="row h-full">
                 <div className="col-sm-7 full-height relative">
