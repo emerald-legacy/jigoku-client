@@ -366,12 +366,12 @@ function Card(props: CardProps) {
             cardClass += " controlled";
         }
 
-        if(card.new && card.uuid && !seenEnterPlayAnimations.has(card.uuid)) {
-            cardClass += " new";
+        if(card.playableBy && card.playableBy.length > 0) {
+            cardClass += " playable-out-of-play";
         }
 
-        if(card.leaving) {
-            cardClass += " leaving";
+        if(card.new && card.uuid && !seenEnterPlayAnimations.has(card.uuid)) {
+            cardClass += " new";
         }
 
         if(anim) {

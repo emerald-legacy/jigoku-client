@@ -6,23 +6,22 @@ import type { AnimationEvent } from "./types/redux";
 import type { GameState, Card as CardType, Ring as RingType, Player, MenuItem, Spectator, GameMessage, MessageFragment, ConflictInfo } from "./types/game";
 import type { User } from "./types/user";
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- used in commented-out sidebar stats feature
-import PlayerStatsRow from "./GameComponents/PlayerStatsRow";
 import PlayerHand from "./GameComponents/PlayerHand";
 import GameSettingsModal from "./GameComponents/GameSettingsModal";
 import OpponentBoardArea from "./GameComponents/OpponentBoardArea";
 import MyBoardArea from "./GameComponents/MyBoardArea";
 import ActivePlayerPrompt from "./GameComponents/ActivePlayerPrompt";
 import CardZoom from "./GameComponents/CardZoom";
-import Card from "./GameComponents/Card";
 import Chat from "./GameComponents/Chat";
 import { tryParseJSON } from "./util";
 import { downloadGameLog } from "./GameComponents/gameLogSerializer";
 import { getCardImageUrl } from "./cardImageUrl";
 
 import { clearAnimation, clearRingAnimation } from "./ReduxActions/game";
-import { useCardListWithExit } from "./GameComponents/useCardListWithExit";
 import { makeCardsInPlayGrouper } from "./selectors/cardsInPlay";
+import { TransitionGroup } from "react-transition-group";
+import PlayAreaCard from "./GameComponents/PlayAreaCard";
+import PlayAreaRow from "./GameComponents/PlayAreaRow";
 import StatChangeOverlay from "./GameComponents/StatChangeOverlay";
 import CenterBar from "./GameComponents/CenterBar";
 import PlayerSidebar from "./GameComponents/PlayerSidebar";
@@ -35,6 +34,8 @@ type ContextMenuOption =
     | { text: string; popup: React.ReactNode };
 
 export interface InnerGameBoardProps {
+    // Extra controls for the chat control bar (replay playback controls).
+    extraControls?: React.ReactNode;
     cardToZoom?: CardType;
     cards?: Record<string, CardType>;
     currentGame?: GameState;
@@ -56,6 +57,21 @@ function getMessagesFromPlayers(messages: GameMessage[]) {
     );
 }
 
+function isGameActive(currentGame: GameState | undefined, username: string) {
+    if(!currentGame || currentGame.winner) {
+        return false;
+    }
+    let thisPlayer = currentGame.players[username];
+    if(!thisPlayer) {
+        thisPlayer = Object.values(currentGame.players).sort((a, b) => a.name.localeCompare(b.name))[0];
+    }
+    const otherPlayer = Object.values(currentGame.players).find(p => p.name !== thisPlayer.name);
+    if(!otherPlayer || otherPlayer.disconnected || otherPlayer.left) {
+        return false;
+    }
+    return true;
+}
+
 function computeImageUrl(card?: CardType) {
     if(!card || !card.id) {
         return "";
@@ -67,7 +83,7 @@ function computeImageUrl(card?: CardType) {
 }
 
 export function InnerGameBoard(props: InnerGameBoardProps) {
-    const { cardToZoom, cards, currentGame, pendingAnimations, user, username, dispatch, boundActions } = props;
+    const { cardToZoom, cards, currentGame, extraControls, pendingAnimations, user, username, dispatch, boundActions } = props;
 
     const sendGameMessage = (props.sendGameMessage ?? boundActions.sendGameMessage) as ActionFn;
     const closeGameSocket = (props.closeGameSocket ?? boundActions.closeGameSocket) as ActionFn;
@@ -90,39 +106,6 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
 
     const players = currentGame?.players;
     const spectating = !players?.[username];
-    const myPlayer = players ? (players[username] ?? Object.values(players).sort((a, b) => a.name.localeCompare(b.name))[0]) : undefined;
-    const opponent = players ? Object.values(players).find(p => p.name !== myPlayer?.name) : undefined;
-    const myInPlay = useCardListWithExit(myPlayer?.cardPiles.cardsInPlay);
-    const opponentInPlay = useCardListWithExit(opponent?.cardPiles.cardsInPlay);
-
-    const isGameActive = () => {
-        if(!currentGame || currentGame.winner) {
-            return false;
-        }
-        let thisPlayer = currentGame.players[username];
-        if(!thisPlayer) {
-            thisPlayer = Object.values(currentGame.players).sort((a, b) => a.name.localeCompare(b.name))[0];
-        }
-        const otherPlayer = Object.values(currentGame.players).find(p => p.name !== thisPlayer.name);
-        if(!otherPlayer || otherPlayer.disconnected || otherPlayer.left) {
-            return false;
-        }
-        return true;
-    };
-
-    const onConcedeClick = () => sendGameMessage("concede");
-
-    const onLeaveClick = () => {
-        if(!spectating && isGameActive()) {
-            if(window.confirm("Your game is not finished, are you sure you want to leave?")) {
-                sendGameMessage("leavegame");
-                closeGameSocket();
-            }
-            return;
-        }
-        sendGameMessage("leavegame");
-        closeGameSocket();
-    };
 
     const onMouseOver = (card: CardType) => zoomCard(card);
     const onMouseOut = () => clearZoom();
@@ -237,6 +220,20 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
             return;
         }
 
+        const onConcedeClick = () => sendGameMessage("concede");
+
+        const onLeaveClick = () => {
+            if(!spectating && isGameActive(currentGame, username)) {
+                if(window.confirm("Your game is not finished, are you sure you want to leave?")) {
+                    sendGameMessage("leavegame");
+                    closeGameSocket();
+                }
+                return;
+            }
+            sendGameMessage("leavegame");
+            closeGameSocket();
+        };
+
         const menuOptions: ContextMenuOption[] = [
             { text: "Leave Game", onClick: onLeaveClick }
         ];
@@ -261,8 +258,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         } else {
             setContextMenu([]);
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- handler closures stable; deps mirror old componentDidUpdate guard
-    }, [currentGame, username]);
+    }, [currentGame, username, spectating, sendGameMessage, closeGameSocket, setContextMenu]);
 
     useEffect(() => {
         if(!currentGame) {
@@ -290,7 +286,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     const otherPlayer = Object.values(currentGame.players).find(p => p.name !== thisPlayer.name);
     const manualMode = currentGame.manualMode;
 
-    const buildCardsInPlay = (player: Player & { id?: string }, isMe: boolean): React.ReactNode[][] => {
+    const buildCardsInPlay = (player: Player & { id?: string }, isMe: boolean): { type: string; cards: React.ReactNode[] }[] => {
         if(!player) {
             return [];
         }
@@ -299,56 +295,69 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         const disableCardStats = user.settings.optionSettings?.disableCardStats;
         const hideEffectMarkers = !!(thisPlayer?.optionSettings?.hideEffectMarkers ?? user.settings.optionSettings?.hideEffectMarkers);
         const grouper = isMe ? groupCardsInPlayForMe : groupCardsInPlayForOther;
-        const sourceCards = isMe ? myInPlay : opponentInPlay;
-        const cardsByType = grouper(sourceCards, isMe);
+        const cardsByType = grouper(player.cardPiles.cardsInPlay, isMe);
         const playerIsDefending = !!(player && conflict.defendingPlayerId && player.id && player.id.includes(conflict.defendingPlayerId));
         const playerDeclaringParticipants = !!(conflict && (!conflict.declarationComplete || (playerIsDefending && !conflict.defendersChosen)));
         const onAnimationEnd = (uuid: string) => dispatch(clearAnimation(uuid));
 
-        return cardsByType.map((cardGroup: CardType[]) => cardGroup.map((card: CardType) => (
-            <Card
-                key={ card.uuid }
-                id={ card.uuid }
-                source="play area"
-                card={ card }
-                disableMouseOver={ card.facedown && !card.code }
-                onMenuItemClick={ onMenuItemClick }
-                onMouseOver={ onMouseOver }
-                onMouseOut={ onMouseOut }
-                showStats={ !disableCardStats }
-                hideEffectMarkers={ hideEffectMarkers }
-                player={ player }
-                onClick={ onCardClick }
-                onDragDrop={ onDragDrop }
-                size={ cardSize }
-                isMe={ isMe }
-                declaring={ playerDeclaringParticipants }
-                pendingAnimations={ pendingAnimations }
-                onAnimationEnd={ onAnimationEnd }
-            />
-        )));
+        return cardsByType.map((cardGroup: CardType[]) => ({
+            type: cardGroup[0]?.type || "",
+            cards: cardGroup.map((card: CardType) => (
+                <PlayAreaCard
+                    key={ card.uuid }
+                    id={ card.uuid }
+                    source="play area"
+                    card={ card }
+                    disableMouseOver={ card.facedown && !card.code }
+                    onMenuItemClick={ onMenuItemClick }
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    showStats={ !disableCardStats }
+                    hideEffectMarkers={ hideEffectMarkers }
+                    player={ player }
+                    onClick={ onCardClick }
+                    onDragDrop={ onDragDrop }
+                    size={ cardSize }
+                    isMe={ isMe }
+                    declaring={ playerDeclaringParticipants }
+                    pendingAnimations={ pendingAnimations }
+                    onAnimationEnd={ onAnimationEnd }
+                />
+            ))
+        }));
     };
 
-    const thisPlayerCards: React.ReactNode[] = [];
-    let index = 0;
-    buildCardsInPlay(thisPlayer, true).forEach((cardRow: React.ReactNode) => {
-        thisPlayerCards.push(
-            <div className={ `card-row our-side player-home${thisPlayer.imperialFavor ? " favor" : ""}` } key={ `this-loc${index++}` }>
-                { cardRow }
-            </div>
-        );
-    });
+    // Rows are keyed by card type, not by position, so a type disappearing does not shuffle the
+    // keys of the rows after it and interrupt their exit animations.
+    const thisPlayerCards = (
+        <TransitionGroup component={ null }>
+            { buildCardsInPlay(thisPlayer, true).map((cardRow) => (
+                <PlayAreaRow
+                    key={ `this-${cardRow.type}` }
+                    className={ `card-row our-side player-home${thisPlayer.imperialFavor ? " favor" : ""}` }
+                >
+                    <TransitionGroup component={ null }>
+                        { cardRow.cards }
+                    </TransitionGroup>
+                </PlayAreaRow>
+            )) }
+        </TransitionGroup>
+    );
 
-    const otherPlayerCards: React.ReactNode[] = [];
-    if(otherPlayer) {
-        buildCardsInPlay(otherPlayer, false).forEach((cardRow: React.ReactNode) => {
-            otherPlayerCards.push(
-                <div className={ `card-row player-home${otherPlayer.imperialFavor ? " favor" : ""}` } key={ `other-loc${index++}` }>
-                    { cardRow }
-                </div>
-            );
-        });
-    }
+    const otherPlayerCards = otherPlayer ? (
+        <TransitionGroup component={ null }>
+            { buildCardsInPlay(otherPlayer, false).map((cardRow) => (
+                <PlayAreaRow
+                    key={ `other-${cardRow.type}` }
+                    className={ `card-row player-home${otherPlayer.imperialFavor ? " favor" : ""}` }
+                >
+                    <TransitionGroup component={ null }>
+                        { cardRow.cards }
+                    </TransitionGroup>
+                </PlayAreaRow>
+            )) }
+        </TransitionGroup>
+    ) : null;
 
     const renderPlayerHand = () => {
         if(spectating) {
@@ -536,6 +545,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
                         cardName={ cardToZoom ? cardToZoom.name : null }
                     />
                     <Chat
+                        extraControls={ extraControls }
                         visible={ showChat }
                         messages={ currentGame.messages }
                         onMouseOver={ (fragment: MessageFragment) => zoomCard(fragment) }

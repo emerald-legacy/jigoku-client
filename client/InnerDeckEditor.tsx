@@ -46,6 +46,58 @@ function copyDeck(deck: Deck | undefined, clearStatus = false): EditableDeck {
     };
 }
 
+function cardListEntry(count: number, card: DeckCardLike | undefined, packs: Pack[] | undefined, packId?: string) {
+    if(!card) {
+        return "";
+    }
+    let packName = "";
+    if(card.versions && card.versions.length) {
+        const packData = packId
+            ? card.versions.find((v: CardVersion) => v.pack_id === packId) || card.versions[card.versions.length - 1]
+            : card.versions[card.versions.length - 1];
+        const pack = packs?.find((p: Pack) => p.id === packData.pack_id);
+        if(pack && pack.name) {
+            packName = ` (${pack.name})`;
+        }
+    }
+    return `${count} ${card.name}${packName}\n`;
+}
+
+// The textarea starts out as a text rendering of whatever deck was passed in.
+function initialCardList(propDeck: Deck | undefined, packs: Pack[] | undefined) {
+    if(!propDeck || !(propDeck.stronghold || propDeck.role || propDeck.provinceCards ||
+        propDeck.conflictCards || propDeck.dynastyCards)) {
+        return "";
+    }
+
+    const groups = [propDeck.stronghold, propDeck.role, propDeck.conflictCards, propDeck.dynastyCards, propDeck.provinceCards];
+    return groups
+        .flatMap((group: DeckCard[] | undefined) => group ?? [])
+        .map((card: DeckCard) => cardListEntry(card.count, card.card, packs, card.pack_id))
+        .join("");
+}
+
+// A deck arriving without a faction/format gets the defaults filled in; returns null when
+// there was nothing to fill so callers know whether to notify the store.
+function deckDefaults(deck: EditableDeck, propDeck: Deck | undefined, factions?: Record<string, Faction>, formats?: Record<string, Format>): EditableDeck | null {
+    if(!propDeck) {
+        return null;
+    }
+
+    const updated = copyDeck(deck);
+    let changed = false;
+    if(!propDeck.faction && factions) {
+        updated.faction = factions["crab"];
+        updated.alliance = { name: "", value: "" };
+        changed = true;
+    }
+    if(!propDeck.format && formats) {
+        updated.format = formats["emerald"];
+        changed = true;
+    }
+    return changed ? updated : null;
+}
+
 export interface InnerDeckEditorProps {
     alliances?: Record<string, Faction>;
     cards?: Record<string, Card>;
@@ -69,8 +121,8 @@ export default function InnerDeckEditor({
     packs,
     updateDeck
 }: InnerDeckEditorProps) {
-    const [cardList, setCardList] = useState("");
-    const [deck, setDeck] = useState(() => copyDeck(propDeck));
+    const [cardList, setCardList] = useState(() => initialCardList(propDeck, packs));
+    const [deck, setDeck] = useState(() => deckDefaults(copyDeck(propDeck), propDeck, factions, formats) ?? copyDeck(propDeck));
     const [numberToAdd, setNumberToAdd] = useState(1);
     const [cardToAdd, setCardToAdd] = useState<Card | null>(null);
     const [showModal, setShowModal] = useState(false);
@@ -86,61 +138,16 @@ export default function InnerDeckEditor({
         return () => document.removeEventListener("keydown", handleEscape);
     }, [showModal]);
 
-    const getCardListEntry = (count: number, card: DeckCardLike | undefined, packId?: string) => {
-        if(!card) {
-            return "";
-        }
-        let packName = "";
-        if(card.versions && card.versions.length) {
-            const packData = packId
-                ? card.versions.find((v: CardVersion) => v.pack_id === packId) || card.versions[card.versions.length - 1]
-                : card.versions[card.versions.length - 1];
-            const pack = packs?.find((p: Pack) => p.id === packData.pack_id);
-            if(pack && pack.name) {
-                packName = ` (${pack.name})`;
-            }
-        }
-        return `${count} ${card.name}${packName}\n`;
-    };
-
+    // The defaults are already in local state (see the useState initialiser above); the store
+    // still needs telling about them once.
     useEffect(() => {
-        let updatedDeck = copyDeck(deck);
-        let updatedDefaultFields = false;
-        if(propDeck && !propDeck.faction && factions) {
-            updatedDeck.faction = factions["crab"];
-            updatedDeck.alliance = { name: "", value: "" };
-            updatedDefaultFields = true;
+        const withDefaults = deckDefaults(copyDeck(propDeck), propDeck, factions, formats);
+        if(withDefaults) {
+            updateDeck(withDefaults);
         }
-        if(propDeck && !propDeck.format && formats) {
-            updatedDeck.format = formats["emerald"];
-            updatedDefaultFields = true;
-        }
-        if(updatedDefaultFields) {
-            setDeck(updatedDeck);
-            updateDeck(updatedDeck);
-        }
-
-        let list = "";
-        if(propDeck && (propDeck.stronghold || propDeck.role || propDeck.provinceCards ||
-            propDeck.conflictCards || propDeck.dynastyCards)) {
-            propDeck.stronghold?.forEach((card: DeckCard) => {
-                list += getCardListEntry(card.count, card.card, card.pack_id);
-            });
-            propDeck.role?.forEach((card: DeckCard) => {
-                list += getCardListEntry(card.count, card.card, card.pack_id);
-            });
-            propDeck.conflictCards?.forEach((card: DeckCard) => {
-                list += getCardListEntry(card.count, card.card, card.pack_id);
-            });
-            propDeck.dynastyCards?.forEach((card: DeckCard) => {
-                list += getCardListEntry(card.count, card.card, card.pack_id);
-            });
-            propDeck.provinceCards?.forEach((card: DeckCard) => {
-                list += getCardListEntry(card.count, card.card, card.pack_id);
-            });
-            setCardList(list);
-        }
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    // Self-limiting: once the store has the defaults, propDeck carries them and deckDefaults
+    // returns null, so a re-run is a no-op.
+    }, [propDeck, factions, formats, updateDeck]);
 
     const addCard = (card: DeckCardLike, number: number, packId: string | undefined, currentDeck: Deck) => {
         const deckCopy = copyDeck(currentDeck);
@@ -235,7 +242,7 @@ export default function InnerDeckEditor({
         const defaultPackId = preferredPackId(cardToAdd as DeckCardLike, formatValue);
 
         let list = cardList;
-        list += getCardListEntry(numberToAdd, cardToAdd as DeckCardLike, defaultPackId);
+        list += cardListEntry(numberToAdd, cardToAdd as DeckCardLike, packs, defaultPackId);
 
         const updatedDeck = addCard(cardToAdd as DeckCardLike, Number(numberToAdd), defaultPackId, deck);
         const clearedDeck = copyDeck(updatedDeck, true);
@@ -354,7 +361,7 @@ export default function InnerDeckEditor({
                 const card = cards && (cards[id] as DeckCardLike | undefined);
                 if(card) {
                     const packId = cardPackIds[id] || preferredPackId(card, importFormatValue || "");
-                    list += getCardListEntry(count, card, packId);
+                    list += cardListEntry(count, card, packs, packId);
 
                     let targetList: DeckCard[] | undefined;
                     if(card.type === "province") {

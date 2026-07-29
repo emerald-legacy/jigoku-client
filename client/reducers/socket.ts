@@ -14,22 +14,30 @@ const socketSlice = createSlice({
         gameSocketConnected(state) {
             state.gameConnected = true;
             state.gameConnecting = false;
+            state.startRequested = false;
         },
         gameSocketConnecting(state, action: PayloadAction<string>) {
             state.gameConnecting = true;
             state.gameHost = action.payload;
+            state.startRequested = false;
         },
         gameSocketConnectFailed(state) {
             state.gameConnecting = false;
             state.gameHost = undefined;
+            state.startRequested = false;
         },
         gameSocketClosed(state, _action: PayloadAction<string | undefined>) {
             state.gameConnected = false;
             state.gameConnecting = false;
             state.gameHost = undefined;
+            state.startRequested = false;
         },
-        socketMessageSent(_state, _action: PayloadAction<string>) {
-            // no-op; emitted for devtools traceability
+        socketMessageSent(state, action: PayloadAction<string>) {
+            // Otherwise only emitted for devtools traceability; a start request is worth
+            // remembering so the pending game can say it is waiting on the lobby.
+            if(action.payload === "startgame") {
+                state.startRequested = true;
+            }
         },
         gameSocketConnectError(_state) {
             // no-op; emitted for devtools traceability

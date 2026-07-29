@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import Checkbox from "../FormComponents/Checkbox";
 
@@ -27,33 +27,12 @@ interface GameConfigurationProps {
 }
 
 function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettingToggle, onToggle, optionSettings, timerSettings }: GameConfigurationProps) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [windowTimer, setWindowTimer] = useState<number>(timerSettings.windowTimer ?? 0);
-
     const handleToggle = (option: string, value: boolean) => {
         if(onToggle) {
             onToggle(option, !value);
         }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleSlideStop = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let value = parseInt(event.target.value);
-
-        if(Number.isNaN(value)) {
-            return;
-        }
-
-        if(value < 0) {
-            value = 0;
-        }
-
-        if(value > 10) {
-            value = 10;
-        }
-
-        setWindowTimer(value);
-    };
 
     const handleTimerSettingToggle = (option: string, event: React.ChangeEvent<HTMLInputElement>) => {
         if(onTimerSettingToggle) {

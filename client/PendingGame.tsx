@@ -46,6 +46,9 @@ interface InnerPendingGameProps {
     loading?: boolean;
     sendSocketMessage?: (command: string, ...args: (string | number | boolean | Deck | undefined)[]) => void;
     username?: string;
+    // Set while a startgame message is outstanding; the socket slice clears it once the game
+    // hands over or the connection attempt ends.
+    waiting?: boolean;
     zoomCard?: (card: Card | MessageFragment) => void;
 }
 
@@ -60,20 +63,14 @@ export function InnerPendingGame({
     loading,
     sendSocketMessage,
     username,
+    waiting,
     zoomCard
 }: InnerPendingGameProps) {
     const notificationRef = useRef(null);
     const messagePanelRef = useRef(null);
     const prevPlayersRef = useRef(null);
 
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    const [playerCount, setPlayerCount] = useState(1);
-    const [playSound, setPlaySound] = useState(true);
-    /* eslint-enable @typescript-eslint/no-unused-vars */
     const [message, setMessage] = useState("");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [decksLoading, setDecksLoading] = useState(true);
-    const [waiting, setWaiting] = useState(false);
     const [filteredDecks, setFilteredDecks] = useState([]);
     const [showModal, setShowModal] = useState(false);
 
@@ -103,17 +100,7 @@ export function InnerPendingGame({
                 notificationRef.current.play();
             }
         }
-
-        if(prevPlayers !== players) {
-            setPlayerCount(players);
-        }
     }, [currentGame, username]);
-
-    useEffect(() => {
-        if(connecting) {
-            setWaiting(false);
-        }
-    }, [connecting]);
 
     useEffect(() => {
         if(messagePanelRef.current) {
@@ -204,7 +191,6 @@ export function InnerPendingGame({
 
     const handleStartClick = (event: React.MouseEvent) => {
         event.preventDefault();
-        setWaiting(true);
         sendSocketMessage("startgame", currentGame.id);
     };
 
@@ -222,12 +208,6 @@ export function InnerPendingGame({
             sendMessage();
             event.preventDefault();
         }
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleSendClick = (event: React.MouseEvent) => {
-        event.preventDefault();
-        sendMessage();
     };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -375,6 +355,7 @@ function mapStateToProps(state: RootState) {
         decks: state.cards.decks,
 
         host: state.socket.gameHost,
+        waiting: state.socket.startRequested,
         loading: state.cards.loading,
         username: state.auth.username
     };

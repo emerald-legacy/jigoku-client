@@ -6,7 +6,7 @@ import GameModes from "../../shared/GameModes";
 
 interface OpponentBoardAreaProps {
     otherPlayer?: Player;
-    otherPlayerCards: React.ReactNode[];
+    otherPlayerCards: React.ReactNode;
     cardSize: string;
     gameMode?: string;
     skirmishMode?: boolean;

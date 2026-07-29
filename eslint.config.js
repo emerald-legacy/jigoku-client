@@ -82,11 +82,6 @@ export default defineConfig([
         rules: {
             ...styleRules,
 
-            // TODO: 12 legacy prop-sync effects and the render-phase ref read in
-            // useCardListWithExit still need rewriting — warn until then
-            "react-hooks/set-state-in-effect": "warn",
-            "react-hooks/refs": "warn",
-
             // eslint-plugin-react-hooks (react-compiler based) owns everything hooks-related;
             // these @eslint-react rules are its duplicates
             "@eslint-react/error-boundaries": "off",

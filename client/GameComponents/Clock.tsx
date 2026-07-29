@@ -28,12 +28,8 @@ function Clock({
     const [timeLeft, setTimeLeft] = useState(0);
     const [periods, setPeriods] = useState(0);
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [mainTime, setMainTime] = useState(0);
     const [timePeriod, setTimePeriod] = useState(0);
     const [delayToStartClock, setDelayToStartClock] = useState(0);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [manuallyPaused, setManuallyPaused] = useState(false);
 
     const prevStateIdRef = useRef<string | number | null>(null);
     const timerHandleRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -47,9 +43,7 @@ function Clock({
             prevStateIdRef.current = stateId;
             setTimeLeft(secondsLeft);
             setPeriods(propPeriods || 0);
-            setMainTime(propMainTime || 0);
             setTimePeriod(propTimePeriod || 0);
-            setManuallyPaused(propManuallyPaused || false);
             setDelayToStartClock(propDelayToStartClock || 0);
 
             if(timerHandleRef.current) {

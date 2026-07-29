@@ -225,11 +225,17 @@ function InnerMessages({ messages, onCardMouseOut, onCardMouseOver }: InnerMessa
     };
 
     const getMessage = () => {
-        return messages?.map((message: GameMessage, index: number) => {
+        // Keyed by the server's timestamp, counting repeats so several messages landing in the
+        // same millisecond stay distinct. Keys then survive the log growing underneath them.
+        const seenAt = new Map<string, number>();
+
+        return messages?.map((message: GameMessage) => {
+            const stamp = String(message.date ?? "");
+            const occurrence = (seenAt.get(stamp) ?? 0) + 1;
+            seenAt.set(stamp, occurrence);
+
             return (
-                // Append-only log with no server-side id, so position is the only stable identity
-                // eslint-disable-next-line @eslint-react/no-array-index-key
-                <div key={ `message${index}` } className="message">
+                <div key={ `${stamp}#${occurrence}` } className="message">
                     { formatMessageText(message.message) }
                 </div>
             );
