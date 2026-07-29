@@ -83,7 +83,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
 
     const draggableRef = useRef<HTMLDivElement>(null);
     const opponentDraggableRef = useRef<HTMLDivElement>(null);
-    const prevPlayerMsgCount = useRef(0);
+    const prevPlayerMsgCountRef = useRef(0);
 
     const groupCardsInPlayForMe = useMemo(() => makeCardsInPlayGrouper(), []);
     const groupCardsInPlayForOther = useMemo(() => makeCardsInPlayGrouper(), []);
@@ -269,10 +269,10 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
             return;
         }
         const currentCount = getMessagesFromPlayers(currentGame.messages || []).length;
-        if(!showChat && currentCount > prevPlayerMsgCount.current) {
+        if(!showChat && currentCount > prevPlayerMsgCountRef.current) {
             setShowChatAlert(true);
         }
-        prevPlayerMsgCount.current = currentCount;
+        prevPlayerMsgCountRef.current = currentCount;
     }, [currentGame, showChat]);
 
     if(!currentGame) {
