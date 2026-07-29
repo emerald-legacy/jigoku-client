@@ -79,7 +79,6 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     const [showChatAlert, setShowChatAlert] = useState(false);
     const [showConflictDeck, setShowConflictDeck] = useState(false);
     const [showDynastyDeck, setShowDynastyDeck] = useState(false);
-    const [spectating, setSpectating] = useState(true);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
 
     const draggableRef = useRef<HTMLDivElement>(null);
@@ -90,6 +89,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     const groupCardsInPlayForOther = useMemo(() => makeCardsInPlayGrouper(), []);
 
     const players = currentGame?.players;
+    const spectating = !players?.[username];
     const myPlayer = players ? (players[username] ?? Object.values(players).sort((a, b) => a.name.localeCompare(b.name))[0]) : undefined;
     const opponent = players ? Object.values(players).find(p => p.name !== myPlayer?.name) : undefined;
     const myInPlay = useCardListWithExit(myPlayer?.cardPiles.cardsInPlay);
@@ -225,7 +225,6 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         }
 
         const thisPlayer = currentGame.players[username];
-        setSpectating(!thisPlayer);
 
         if(thisPlayer && thisPlayer.selectCard) {
             document.body.style.setProperty("--select-cursor", `url(${asset("crosshairs.cur")})`);
