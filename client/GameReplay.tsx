@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-// @ts-expect-error react-dom has no .d.ts in this layout
-import { createPortal } from "react-dom";
 import { Upload, SkipBack, ChevronLeft, Play, Pause, ChevronRight, SkipForward } from "lucide-react";
 import { InnerGameBoard } from "./GameBoard";
 import { useAppSelector } from "./hooks";
@@ -157,7 +155,6 @@ function mergeHiddenInfo(state: GameState, hiddenInfo: HiddenInfo | undefined): 
     return merged;
 }
 
-// eslint-disable-next-line react/no-multi-comp
 function GameReplay() {
     const [logData, setLogData] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -167,7 +164,6 @@ function GameReplay() {
     const [cardToZoom, setCardToZoom] = useState(null);
     const [error, setError] = useState(null);
     const [dragOver, setDragOver] = useState(false);
-    const [portalTarget, setPortalTarget] = useState(null);
 
     const cardSize = useAppSelector(state => state.auth.user?.settings?.cardSize) ?? "normal";
 
@@ -175,16 +171,6 @@ function GameReplay() {
     const intervalRef = useRef(null);
 
     const totalStates = logData?.replayData?.length || 0;
-
-    useEffect(() => {
-        if(logData) {
-            const el = document.querySelector(".replay-mode .right-side .chat-controls")
-                ?? document.querySelector(".replay-mode .right-side .controls");
-            if(el) {
-                setPortalTarget(el);
-            }
-        }
-    }, [logData, currentIndex]);
 
     useEffect(() => {
         if(isPlaying && totalStates > 0) {
@@ -259,7 +245,6 @@ function GameReplay() {
         setIsPlaying(false);
         setError(null);
         setCardToZoom(null);
-        setPortalTarget(null);
     };
 
     const handleJumpToStart = () => {
@@ -329,12 +314,31 @@ function GameReplay() {
     const metaText = metadata.players.map((p: { name: string; faction: string }) => `${p.name} (${p.faction})`).join(" vs ")
         + (metadata.winner ? ` — Winner: ${metadata.winner}` : "");
 
+    const replayControls = (
+        <ReplayControls
+            currentIndex={ currentIndex }
+            totalStates={ totalStates }
+            isPlaying={ isPlaying }
+            speedIndex={ speedIndex }
+            showHiddenInfo={ showHiddenInfo }
+            onJumpToStart={ handleJumpToStart }
+            onJumpToEnd={ handleJumpToEnd }
+            onStepBack={ () => setCurrentIndex((i) => Math.max(0, i - 1)) }
+            onStepForward={ () => setCurrentIndex((i) => Math.min(totalStates - 1, i + 1)) }
+            onTogglePlay={ () => setIsPlaying(!isPlaying) }
+            onSpeedChange={ setSpeedIndex }
+            onToggleHiddenInfo={ () => setShowHiddenInfo((v) => !v) }
+            onReset={ handleReset }
+        />
+    );
+
     return (
         <div className="replay-mode">
             <div className="replay-navbar-info">
                 { metadata.gameName } — { metaText }
             </div>
             <InnerGameBoard
+                extraControls={ replayControls }
                 currentGame={ currentState }
                 username={ username }
                 user={ replayUser }
@@ -348,24 +352,6 @@ function GameReplay() {
                 closeGameSocket={ noop }
                 setContextMenu={ noop }
             />
-            { portalTarget && createPortal(
-                <ReplayControls
-                    currentIndex={ currentIndex }
-                    totalStates={ totalStates }
-                    isPlaying={ isPlaying }
-                    speedIndex={ speedIndex }
-                    showHiddenInfo={ showHiddenInfo }
-                    onJumpToStart={ handleJumpToStart }
-                    onJumpToEnd={ handleJumpToEnd }
-                    onStepBack={ () => setCurrentIndex((i) => Math.max(0, i - 1)) }
-                    onStepForward={ () => setCurrentIndex((i) => Math.min(totalStates - 1, i + 1)) }
-                    onTogglePlay={ () => setIsPlaying(!isPlaying) }
-                    onSpeedChange={ setSpeedIndex }
-                    onToggleHiddenInfo={ () => setShowHiddenInfo((v) => !v) }
-                    onReset={ handleReset }
-                />,
-                portalTarget
-            ) }
         </div>
     );
 }

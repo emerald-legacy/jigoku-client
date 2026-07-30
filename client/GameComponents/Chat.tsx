@@ -4,6 +4,8 @@ import Messages from "./Messages";
 import type { GameMessage, MessageFragment } from "../types/game";
 
 interface ChatProps {
+    // Rendered inside the controls bar; replay mode puts its playback controls here.
+    extraControls?: React.ReactNode;
     messages: GameMessage[];
     onMouseOut?: (fragment: MessageFragment) => void;
     onMouseOver?: (fragment: MessageFragment) => void;
@@ -20,6 +22,7 @@ interface ChatProps {
 }
 
 function Chat({
+    extraControls,
     messages,
     onMouseOut,
     onMouseOver,
@@ -91,6 +94,7 @@ function Chat({
                 </form>
             </div>
             <div className="chat-controls">
+                { extraControls }
                 <button
                     type="button"
                     className={ `chat-control-btn${showChatAlert ? " has-alert" : ""}` }

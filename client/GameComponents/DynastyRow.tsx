@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 
-import AdditionalCardPile from "./AdditionalCardPile";
 import type { AdditionalPile } from "./AdditionalCardPile";
+
 import CardPile from "./CardPile";
 import Province from "./Province";
-import { tryParseJSON } from "../util";
 import type { Card, MenuItem, Player } from "../types/game";
 
 interface DynastyRowProps {
@@ -42,9 +41,7 @@ interface DynastyRowProps {
     spectating?: boolean;
 }
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
 function DynastyRow({
-    additionalPiles,
     cardSize,
     conflictDeck,
     conflictDeckTopCard,
@@ -60,7 +57,6 @@ function DynastyRow({
     onCardClick,
     onConflictClick,
     onConflictShuffleClick,
-    onDiscardedCardClick,
     onDragDrop,
     onDynastyClick,
     onDynastyShuffleClick,
@@ -73,45 +69,8 @@ function DynastyRow({
     province3Cards,
     province4Cards,
     removedFromGame,
-    showConflictDeck,
-    showDynastyDeck,
     spectating
 }: DynastyRowProps) {
-    const [showConflictMenu, setShowConflictMenu] = useState(false);
-    const [showDynastyMenu, setShowDynastyMenu] = useState(false);
-
-    const handleDragOver = (event: React.DragEvent<HTMLElement>) => {
-        (event.target as HTMLElement).classList.add("highlight-panel");
-        event.preventDefault();
-    };
-
-    const handleDragLeave = (event: React.DragEvent<HTMLElement>) => {
-        (event.target as HTMLElement).classList.remove("highlight-panel");
-    };
-
-    const handleDragDrop = (event: React.DragEvent<HTMLElement>, target: string) => {
-        event.stopPropagation();
-        event.preventDefault();
-
-        (event.target as HTMLElement).classList.remove("highlight-panel");
-
-        const card = event.dataTransfer.getData("Text");
-
-        if(!card) {
-            return;
-        }
-
-        const dragData = tryParseJSON(card);
-        if(!dragData) {
-            return;
-        }
-
-        if(onDragDrop) {
-            onDragDrop(dragData.card, dragData.source, target);
-        }
-    };
-    /* eslint-enable @typescript-eslint/no-unused-vars */
-
     const handleConflictCloseClick = () => {
         if(onConflictClick) {
             onConflictClick();
@@ -144,25 +103,6 @@ function DynastyRow({
         }
     };
 
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    const handleDiscardedCardClick = (event: React.MouseEvent, cardId: string) => {
-        event.preventDefault();
-        event.stopPropagation();
-
-        if(onDiscardedCardClick) {
-            onDiscardedCardClick(cardId);
-        }
-    };
-
-    const handleConflictClick = () => {
-        setShowConflictMenu(prev => !prev);
-    };
-
-    const handleDynastyMenuClick = () => {
-        setShowDynastyMenu(prev => !prev);
-    };
-    /* eslint-enable @typescript-eslint/no-unused-vars */
-
     const handleConflictShuffleClick = () => {
         if(onConflictShuffleClick) {
             onConflictShuffleClick();
@@ -186,27 +126,6 @@ function DynastyRow({
             onDynastyClick();
         }
     };
-
-    /* eslint-disable @typescript-eslint/no-unused-vars */
-    let additionalPilesElements;
-    if(!additionalPiles) {
-        additionalPilesElements = [];
-    } else {
-        const piles = Object.values(additionalPiles).filter((pile: AdditionalPile) => pile.cards.length > 0 && pile.area === "player row");
-        let index = 0;
-        additionalPilesElements = piles.map((pile: AdditionalPile) => (
-            <AdditionalCardPile
-                key={ `additional-pile-${index++}` }
-                className="additional-cards"
-                isMe={ isMe }
-                onMouseOut={ onMouseOut }
-                onMouseOver={ onMouseOver }
-                pile={ pile }
-                spectating={ spectating }
-            />
-        ));
-    }
-    /* eslint-enable @typescript-eslint/no-unused-vars */
 
     const conflictDeckMenu = [
         { text: "Show", handler: handleShowConflictDeckClick, showPopup: true },

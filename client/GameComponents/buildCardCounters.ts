@@ -38,7 +38,7 @@ export function buildCardCounters(card: CardType): Record<string, CounterData> {
 
     const filtered: Record<string, CounterData> = {};
     Object.entries(counters).forEach(([key, counter]: [string, CounterData | undefined]) => {
-        if(counter != null && !(typeof counter === "number" && counter < 0)) { // eslint-disable-line eqeqeq
+        if(counter !== null && counter !== undefined && !(typeof counter === "number" && counter < 0)) {
             filtered[key] = counter;
         }
     });

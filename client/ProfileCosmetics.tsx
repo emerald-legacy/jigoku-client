@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
     dialMaterials,
     dialTypes,
@@ -20,16 +20,14 @@ import { getCardImageUrl } from "./cardImageUrl";
 // An <img> that swaps to a fallback once if its source fails to load. Used so the
 // pickers stay populated while placeholder/in-progress art is still missing.
 function FallbackImg({ src, fallback, alt, className }: { src: string; fallback: string; alt: string; className?: string }) {
-    const [failed, setFailed] = useState(false);
-    useEffect(() => {
-        setFailed(false);
-    }, [src]);
+    const [failedSrc, setFailedSrc] = useState<string | null>(null);
+    const failed = failedSrc === src;
     return (
         <img
             className={ className }
             src={ failed ? fallback : src }
             alt={ alt }
-            onError={ () => setFailed(true) }
+            onError={ () => setFailedSrc(src) }
         />
     );
 }
@@ -45,11 +43,9 @@ const SAMPLE_DIGIT = 0;
 
 export function DialPicker({ value, isPatron, onChange }: PickerProps) {
     const selected = parseDial(value);
-    const [activeMaterial, setActiveMaterial] = useState(selected.material);
-
-    useEffect(() => {
-        setActiveMaterial(selected.material);
-    }, [selected.material]);
+    const [materialOverride, setMaterialOverride] = useState<{ base: string; value: string } | null>(null);
+    const activeMaterial = materialOverride?.base === selected.material ? materialOverride.value : selected.material;
+    const setActiveMaterial = (materialId: string) => setMaterialOverride({ base: selected.material, value: materialId });
 
     const material = dialMaterials.find(m => m.id === activeMaterial) ?? dialMaterials[0];
     const materialLocked = material.patron && !isPatron;

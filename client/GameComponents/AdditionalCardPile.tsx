@@ -18,7 +18,7 @@ function AdditionalCardPile({ className, isMe, onMouseOut, onMouseOver, pile, sp
     if(pile.isPrivate) {
         topCard = { facedown: true, bowed: true } as Card;
     } else if(topCard?.facedown) {
-        topCard.bowed = true;
+        topCard = { ...topCard, bowed: true };
     }
 
     return (

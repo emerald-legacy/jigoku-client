@@ -16,7 +16,7 @@ interface CardZoomProps {
 function CardZoom({ cardName, imageUrl, show }: CardZoomProps) {
     const nodeRef = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState(1);
-    const resizeState = useRef<{ startX: number; startScale: number } | null>(null);
+    const resizeStateRef = useRef<{ startX: number; startScale: number } | null>(null);
     const hasCard = !!show && !!cardName;
 
     const effScale = Math.min(Math.max(scale, 1), MAX_SCALE);
@@ -37,10 +37,10 @@ function CardZoom({ cardName, imageUrl, show }: CardZoomProps) {
     const onResizeStart = (e: ReactPointerEvent<HTMLSpanElement>) => {
         e.stopPropagation();
         e.currentTarget.setPointerCapture(e.pointerId);
-        resizeState.current = { startX: e.clientX, startScale: effScale };
+        resizeStateRef.current = { startX: e.clientX, startScale: effScale };
     };
     const onResizeMove = (e: ReactPointerEvent<HTMLSpanElement>) => {
-        const state = resizeState.current;
+        const state = resizeStateRef.current;
         if(!state) {
             return;
         }
@@ -49,7 +49,7 @@ function CardZoom({ cardName, imageUrl, show }: CardZoomProps) {
         setScale(newW / BASE_WIDTH);
     };
     const onResizeEnd = (e: ReactPointerEvent<HTMLSpanElement>) => {
-        resizeState.current = null;
+        resizeStateRef.current = null;
         e.currentTarget.releasePointerCapture(e.pointerId);
     };
 

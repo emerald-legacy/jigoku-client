@@ -73,6 +73,8 @@ export interface SocketState {
     gameConnected?: boolean;
     gameConnecting?: boolean;
     gameHost?: string;
+    // A startgame message is out and the lobby has not handed the game over yet.
+    startRequested?: boolean;
 }
 
 export interface ChatState {

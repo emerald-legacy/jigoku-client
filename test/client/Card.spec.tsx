@@ -154,6 +154,36 @@ describe("the <Card /> component", () => {
         });
     });
 
+    // Cards set aside by an effect (Favorable Alliance, Shachihoko Bay) sit in "removed from
+    // game" but stay playable; the engine sends playableBy so they can be told apart from the
+    // rest of the pile.
+    describe("that is playable from out of play", () => {
+        it("should mark the card as playable", () => {
+            render(<Card card={ { ...card, location: "removed from game", playableBy: ["player1"] } } source="removed from game" />);
+
+            const cardElement = document.querySelector(".card");
+            expect(cardElement.className).toContain("playable-out-of-play");
+        });
+
+        it("should mark it however many players can play it", () => {
+            render(<Card card={ { ...card, playableBy: ["player1", "player2"] } } source="removed from game" />);
+
+            expect(document.querySelector(".card").className).toContain("playable-out-of-play");
+        });
+
+        it("should not mark an ordinary removed from game card", () => {
+            render(<Card card={ { ...card, location: "removed from game" } } source="removed from game" />);
+
+            expect(document.querySelector(".card").className).not.toContain("playable-out-of-play");
+        });
+
+        it("should not mark a card whose playableBy has been emptied", () => {
+            render(<Card card={ { ...card, playableBy: [] } } source="removed from game" />);
+
+            expect(document.querySelector(".card").className).not.toContain("playable-out-of-play");
+        });
+    });
+
     describe("that is selectable", () => {
         beforeEach(() => {
             render(<Card card={ { ...card, selectable: true } } source="hand" />);

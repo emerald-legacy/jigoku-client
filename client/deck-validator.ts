@@ -122,8 +122,7 @@ export default async function validateDeck(deck: Deck, options?: ValidateOptions
     let result = await validator.validateDeck(deck);
 
     if(!options.includeExtendedStatus) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { extendedStatus, ...resultWithoutExtendedStatus } = result;
+        const { extendedStatus: _extendedStatus, ...resultWithoutExtendedStatus } = result;
         return resultWithoutExtendedStatus;
     }
 

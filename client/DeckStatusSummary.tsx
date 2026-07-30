@@ -16,7 +16,7 @@ interface DeckStatusSummaryProps {
 
 function DeckStatusSummary({ status }: DeckStatusSummaryProps) {
     const { basicRules, officialRole, noUnreleasedCards, faqVersion, faqRestrictedList, gameMode } = status;
-    let items = [];
+    let items: { title: string; value?: boolean }[];
 
     if(gameMode === GameModes.Skirmish) {
         items = [
@@ -52,8 +52,8 @@ function DeckStatusSummary({ status }: DeckStatusSummaryProps) {
 
     return (
         <ul className="deck-status-summary">
-            { items.map((item, index) => (
-                <li className={ item.value ? "valid" : "invalid" } key={ index }>
+            { items.map((item) => (
+                <li className={ item.value ? "valid" : "invalid" } key={ item.title }>
                     { item.value ? <Check size={ 14 } style={ { display: "inline", verticalAlign: "text-bottom" } } /> : <X size={ 14 } style={ { display: "inline", verticalAlign: "text-bottom" } } /> }
                     { ` ${item.title}` }
                 </li>

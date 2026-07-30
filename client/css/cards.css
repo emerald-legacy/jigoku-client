@@ -154,13 +154,18 @@
     animation: card-enter-play 0.55s cubic-bezier(0.3, 0.7, 0.4, 1) both;
 }
 
-.card.leaving {
+/* Exits are driven by TransitionGroup (see PlayAreaCard / PlayAreaRow): .play-card wraps a single
+   card leaving a row, .play-row wraps the last card of a type, where the whole row goes with it. */
+.play-card-exit .card-wrapper,
+.play-row-exit .card-wrapper {
     animation: card-leave-play 0.55s cubic-bezier(0.3, 0.7, 0.4, 1) forwards;
     pointer-events: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .card.new, .card.leaving { animation: none; }
+    .card.new,
+    .play-card-exit .card-wrapper,
+    .play-row-exit .card-wrapper { animation: none; }
 }
 
 .card {
@@ -250,6 +255,15 @@
 
     &.in-danger {
         & .card-image { box-shadow: 0 0 1px 2px red; }
+    }
+
+    /* Out of play but still playable (set aside by an effect for the round). Amber, so it does
+       not read as the green "you may select this now" highlight. */
+    &.playable-out-of-play {
+        & .card-image {
+            box-shadow: 0 0 8px 2px rgba(245, 176, 66, 0.95);
+            outline: 1px solid rgba(245, 176, 66, 0.8);
+        }
     }
 
     &.selected {
