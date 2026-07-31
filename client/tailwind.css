@@ -43,6 +43,7 @@
 @import "./css/replay.css";
 @import "./css/site.css";
 @import "./css/user-admin.css";
+@import "./css/blocklist.css";
 
 @import "tailwindcss";
 @source "../client/**/*.{jsx,js}";
