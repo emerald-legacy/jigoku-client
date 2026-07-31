@@ -41,7 +41,9 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
     // back to that user's saved permissions without syncing state from an effect.
     const [permissionsDraft, setPermissionsDraft] = useState<{ username?: string; permissions: Record<string, boolean> } | null>(null);
     const savedPermissions = currentUser ? (currentUser.permissions || defaultPermissions) : defaultPermissions;
-    const permissions = permissionsDraft?.username === currentUser?.username ? permissionsDraft.permissions : savedPermissions;
+    const permissions = permissionsDraft && permissionsDraft.username === currentUser?.username
+        ? permissionsDraft.permissions
+        : savedPermissions;
     const [username, setUsername] = useState("");
 
     useEffect(() => {
