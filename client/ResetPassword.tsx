@@ -5,6 +5,7 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 
 import { useAppDispatch } from "./hooks";
 import { finishPasswordReset } from "./ReduxActions/auth";
+import { rejectionMessage } from "./util";
 
 type ValidationMap = Record<string, string>;
 
@@ -65,10 +66,7 @@ export function ResetPassword() {
             await dispatch(finishPasswordReset({ id: id!, token: token!, newPassword: password })).unwrap();
             navigate("/login");
         } catch(err) {
-            const message = err instanceof Error
-                ? err.message
-                : typeof err === "string" ? err : undefined;
-            setError(message || "Could not communicate with the server.  Please try again later.");
+            setError(rejectionMessage(err, "Could not communicate with the server.  Please try again later."));
         }
     };
 

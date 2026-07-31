@@ -193,10 +193,25 @@ export function init(server) {
         });
     });
 
-    server.post("/api/account/login", passport.authenticate("local"), function (req: express.Request, res: express.Response) {
-        const user = (req.user || {}) as Record<string, unknown>;
-        const { password: _pw, resetToken: _rt, tokenExpires: _te, blockList: _bl, ...safeUser } = user;
-        res.send({ success: true, user: safeUser, token: jwt.sign(safeUser, config.get("secret"), { expiresIn: "7d" }) });
+    server.post("/api/account/login", function (req: express.Request, res: express.Response, next: express.NextFunction) {
+        passport.authenticate("local", function (err: Error | null, user: Record<string, unknown> | false, info?: { message?: string }) {
+            if(err) {
+                return next(err);
+            }
+
+            if(!user) {
+                return res.status(401).send({ success: false, message: info?.message || "Invalid username/password" });
+            }
+
+            req.logIn(user, function (loginErr) {
+                if(loginErr) {
+                    return next(loginErr);
+                }
+
+                const { password: _pw, resetToken: _rt, tokenExpires: _te, blockList: _bl, ...safeUser } = user;
+                res.send({ success: true, user: safeUser, token: jwt.sign(safeUser, config.get("secret"), { expiresIn: "7d" }) });
+            });
+        })(req, res, next);
     });
 
     server.post("/api/account/password-reset-finish", wrapAsync(async (req, res) => {

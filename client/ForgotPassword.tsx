@@ -4,6 +4,7 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 
 import { useAppDispatch } from "./hooks";
 import { requestPasswordReset } from "./ReduxActions/auth";
+import { rejectionMessage } from "./util";
 
 type ValidationMap = Record<string, string>;
 
@@ -52,10 +53,7 @@ export function ForgotPassword() {
                     setSuccess("Your request was submitted, if you have an account, an email will have been sent to the address you used to register with more instructions. This request could end up in your Spam folder, so make sure to check there if you do not see it.");
                 } catch(err) {
                     setSubmitting(false);
-                    const message = err instanceof Error
-                        ? err.message
-                        : typeof err === "string" ? err : undefined;
-                    setError(message || "Could not communicate with the server.  Please try again later.");
+                    setError(rejectionMessage(err, "Could not communicate with the server.  Please try again later."));
                 }
             });
         });

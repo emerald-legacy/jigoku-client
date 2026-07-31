@@ -5,6 +5,7 @@ import AlertPanel from "./SiteComponents/AlertPanel";
 
 import { useAppDispatch } from "./hooks";
 import { loginUser } from "./ReduxActions/auth";
+import { rejectionMessage } from "./util";
 
 type ValidationMap = Record<string, string>;
 
@@ -63,10 +64,7 @@ export function Login() {
             await dispatch(loginUser({ username, password })).unwrap();
             navigate("/");
         } catch(err) {
-            const message = err instanceof Error
-                ? err.message
-                : typeof err === "string" ? err : undefined;
-            setError(message || "Could not communicate with the server.  Please try again later.");
+            setError(rejectionMessage(err, "Could not communicate with the server.  Please try again later."));
         }
     };
 
