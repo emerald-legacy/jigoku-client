@@ -200,6 +200,7 @@ export interface TargetingDescriptor {
     type?: string;
     name?: string;
     id?: string;
+    uuid?: string;
     element?: string;
     isDynasty?: boolean;
     isConflict?: boolean;
