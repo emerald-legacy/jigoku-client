@@ -3,7 +3,7 @@ import Draggable from "react-draggable";
 import { asset } from "./assetUrl";
 
 import type { AnimationEvent } from "./types/redux";
-import type { GameState, Card as CardType, Ring as RingType, Player, MenuItem, Spectator, GameMessage, MessageFragment, ConflictInfo } from "./types/game";
+import type { GameState, Button, Card as CardType, Ring as RingType, Player, MenuItem, Spectator, GameMessage, MessageFragment, ConflictInfo } from "./types/game";
 import type { User } from "./types/user";
 
 import PlayerHand from "./GameComponents/PlayerHand";
@@ -178,7 +178,12 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     const onOptionSettingToggle = (option: string, value: unknown) =>
         sendGameMessage("toggleOptionSetting", option, value);
 
-    const onTimerExpired = () => sendGameMessage("menuButton", null, "pass");
+    const onTimerExpired = (button?: Button) => {
+        if(!button) {
+            return;
+        }
+        sendGameMessage("menuButton", button.arg, button.uuid, button.method);
+    };
 
     const onSettingsClick = (event: React.MouseEvent) => {
         event.preventDefault();

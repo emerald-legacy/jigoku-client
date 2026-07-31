@@ -13,7 +13,7 @@ interface ActivePlayerPromptProps {
     onButtonClick?: (command: string | undefined, arg: string | undefined, uuid: string | undefined, method: string | undefined) => void;
     onMouseOut?: (card: Card) => void;
     onMouseOver?: (card: Card) => void;
-    onTimerExpired?: () => void;
+    onTimerExpired?: (button?: Button) => void;
     onTitleClick?: () => void;
     phase?: string;
     promptTitle?: string;
@@ -44,7 +44,9 @@ function ActivePlayerPrompt({
     const onTimerExpiredRef = useRef(onTimerExpired);
     const draggableRef = useRef<HTMLDivElement | null>(null);
 
-    const hasTimerButton = buttons?.some((button: Button) => button.timer) ?? false;
+    const timerButton = buttons?.find((button: Button) => button.timer);
+    const hasTimerButton = !!timerButton;
+    const timerButtonRef = useRef(timerButton);
     const windowTimer = user?.settings?.windowTimer;
     const promptKey = JSON.stringify(buttons?.map((button: Button) => [button.command, button.arg, button.uuid, button.text, button.timer]) ?? []);
 
@@ -55,6 +57,10 @@ function ActivePlayerPrompt({
     useEffect(() => {
         onTimerExpiredRef.current = onTimerExpired;
     }, [onTimerExpired]);
+
+    useEffect(() => {
+        timerButtonRef.current = timerButton;
+    }, [timerButton]);
 
     useEffect(() => {
         if(!showTimer || !windowTimer) {
@@ -75,7 +81,7 @@ function ActivePlayerPrompt({
                 setExpiredPromptKey(promptKey);
 
                 if(onTimerExpiredRef.current) {
-                    onTimerExpiredRef.current();
+                    onTimerExpiredRef.current(timerButtonRef.current);
                 }
                 return;
             }

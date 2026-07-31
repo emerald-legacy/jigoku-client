@@ -88,6 +88,17 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
         expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
     });
 
+    it("should hand back the timer button so the auto-pass carries the prompt uuid", () => {
+        const timerButton = { text: "Pass", command: "menuButton", arg: "pass", uuid: "prompt-uuid", method: "pass", timer: true };
+        render(<ActivePlayerPrompt { ...baseProps } buttons={ [timerButton, { text: "Trigger", command: "trigger" }] } />);
+
+        act(() => {
+            vi.advanceTimersByTime(10000);
+        });
+
+        expect(onTimerExpired).toHaveBeenCalledWith(timerButton);
+    });
+
     it("should only expire once", () => {
         render(<ActivePlayerPrompt { ...baseProps } />);
 
