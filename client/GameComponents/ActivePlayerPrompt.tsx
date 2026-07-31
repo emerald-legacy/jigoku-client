@@ -185,8 +185,10 @@ function ActivePlayerPrompt({
             return [];
         }
 
-        return controls.map((control: Control) => {
-            const controlKey = `${control.type}-${control.uuid ?? control.command ?? ""}`;
+        return controls.map((control: Control, index: number) => {
+            const source = control.source;
+            const sourceKey = typeof source === "string" ? source : source?.uuid ?? source?.name ?? "";
+            const controlKey = `${control.type}-${sourceKey}-${index}`;
             switch(control.type) {
                 case "targeting": {
                     const targetingControl = control as unknown as Control & { source: { type?: string; name?: string }; targets: Array<{ type?: string; name?: string }> };
