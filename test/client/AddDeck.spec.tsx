@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import { InnerAddDeck } from "../../client/AddDeck.tsx";
@@ -112,6 +112,48 @@ describe("the <InnerAddDeck /> component", () => {
 
         it("should display \"New Deck\" as the title", () => {
             expect(screen.getByText("New Deck")).toBeInTheDocument();
+        });
+
+        it("should render the deck editor", () => {
+            expect(screen.getByTestId("deck-editor")).toBeInTheDocument();
+        });
+    });
+
+    // addDeck() swaps the selected deck for a fresh unsaved one, so a saved deck still being
+    // selected means that reset has not arrived yet.
+    describe("when a previously saved deck is still selected", () => {
+        beforeEach(() => {
+            render(<InnerAddDeck { ...defaultProps } deck={ { _id: "deck-1", name: "Saved Deck" } } />, { wrapper });
+        });
+
+        it("should display loading message", () => {
+            expect(screen.getByText(/Loading decks from the server/)).toBeInTheDocument();
+        });
+
+        it("should not render the deck editor", () => {
+            expect(screen.queryByTestId("deck-editor")).not.toBeInTheDocument();
+        });
+
+        it("should not show the saved deck's name", () => {
+            expect(screen.queryByText("Saved Deck")).not.toBeInTheDocument();
+        });
+    });
+
+    describe("when the fresh deck has arrived", () => {
+        beforeEach(() => {
+            render(<InnerAddDeck { ...defaultProps } deck={ { name: "New Deck" } } />, { wrapper });
+        });
+
+        it("should render the deck editor", () => {
+            expect(screen.getByTestId("deck-editor")).toBeInTheDocument();
+        });
+
+        it("should still show the API error in preference to the editor", () => {
+            cleanup();
+            render(<InnerAddDeck { ...defaultProps } deck={ { name: "New Deck" } } apiError="Boom" />, { wrapper });
+
+            expect(screen.getByTestId("alert-panel")).toBeInTheDocument();
+            expect(screen.queryByTestId("deck-editor")).not.toBeInTheDocument();
         });
     });
 

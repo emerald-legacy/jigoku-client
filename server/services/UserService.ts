@@ -34,7 +34,7 @@ class UserService {
             });
         } catch(err) {
             logger.error(`Error fetching user by username: ${err}`);
-            throw new Error("Error occurred fetching users");
+            throw new Error("Error occurred fetching users", { cause: err });
         }
     }
 
@@ -45,7 +45,7 @@ class UserService {
             });
         } catch(err) {
             logger.error(`Error fetching user by email: ${err}`);
-            throw new Error("Error occurred fetching users");
+            throw new Error("Error occurred fetching users", { cause: err });
         }
     }
 
@@ -54,7 +54,7 @@ class UserService {
             return await this.users.findOne({ _id: toObjectId(id) });
         } catch(err) {
             logger.error(`Error fetching user by id: ${err}`);
-            throw new Error("Error occurred fetching users");
+            throw new Error("Error occurred fetching users", { cause: err });
         }
     }
 
@@ -64,7 +64,7 @@ class UserService {
             return user;
         } catch(err) {
             logger.error(`Error adding user ${user.username}: ${err}`);
-            throw new Error("Error occurred adding user");
+            throw new Error("Error occurred adding user", { cause: err });
         }
     }
 
@@ -84,7 +84,7 @@ class UserService {
             return await this.users.updateOne({ username: user.username }, { $set: toSet });
         } catch(err) {
             logger.error(`Error updating user: ${err}`);
-            throw new Error("Error setting user details");
+            throw new Error("Error setting user details", { cause: err });
         }
     }
 
@@ -96,7 +96,7 @@ class UserService {
             );
         } catch(err) {
             logger.error(`Error updating block list: ${err}`);
-            throw new Error("Error setting user details");
+            throw new Error("Error setting user details", { cause: err });
         }
     }
 
@@ -108,7 +108,7 @@ class UserService {
             );
         } catch(err) {
             logger.error(`Error setting reset token: ${err}`);
-            throw new Error("Error setting reset token");
+            throw new Error("Error setting reset token", { cause: err });
         }
     }
 
@@ -120,7 +120,7 @@ class UserService {
             );
         } catch(err) {
             logger.error(`Error setting password: ${err}`);
-            throw new Error("Error setting password");
+            throw new Error("Error setting password", { cause: err });
         }
     }
 
@@ -132,7 +132,7 @@ class UserService {
             );
         } catch(err) {
             logger.error(`Error clearing reset token: ${err}`);
-            throw new Error("Error clearing reset token");
+            throw new Error("Error clearing reset token", { cause: err });
         }
     }
 }

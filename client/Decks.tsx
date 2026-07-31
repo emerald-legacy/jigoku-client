@@ -113,7 +113,7 @@ export function InnerDecks({
         }
     };
 
-    let content = null;
+    let content: React.ReactNode;
 
     if(loading) {
         content = <div>Loading decks from the server...</div>;

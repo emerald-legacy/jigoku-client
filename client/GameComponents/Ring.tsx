@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, memo } from "react";
+import React, { useState, useEffect, memo } from "react";
 
 import CardCounters from "./CardCounters";
 import CardMenu from "./CardMenu";
@@ -21,26 +21,25 @@ interface RingProps {
     onClaimAnimationEnd?: (element: string, playerName: string) => void;
 }
 
+const CLAIM_FLASH_MS = 2500;
+
 function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode, ringSet, pendingAnimations, onClaimAnimationEnd }: RingProps) {
     const [showMenu, setShowMenu] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
-    const [claimFlash, setClaimFlash] = useState(false);
 
-    const claimAnimation = !!owner && pendingAnimations?.some(
+    // The flash is the animation still being pending, so it needs no state of its own:
+    // the event is cleared once the 2.5s burst (see .ring-claim-flash) has run.
+    const claimFlash = !!owner && !!pendingAnimations?.some(
         (a) => isClaimAnimation(a) && a.element === ring.element && a.playerName === owner
     );
-    const flashTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
     useEffect(() => {
-        if(claimAnimation) {
-            setClaimFlash(true);
-            onClaimAnimationEnd?.(ring.element, owner as string);
-            clearTimeout(flashTimerRef.current);
-            flashTimerRef.current = setTimeout(() => setClaimFlash(false), 2500);
+        if(!claimFlash) {
+            return;
         }
-    }, [claimAnimation, onClaimAnimationEnd, ring.element, owner]);
-
-    useEffect(() => () => clearTimeout(flashTimerRef.current), []);
+        const timer = setTimeout(() => onClaimAnimationEnd?.(ring.element, owner as string), CLAIM_FLASH_MS);
+        return () => clearTimeout(timer);
+    }, [claimFlash, onClaimAnimationEnd, ring.element, owner]);
 
     const handleClick = (event: React.MouseEvent, ringElement: string) => {
         event.preventDefault();
@@ -86,7 +85,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
 
         const filteredCounters: Record<string, { count: number; fade?: boolean; shortName?: string }> = {};
         for(const [key, counter] of Object.entries(counters)) {
-            if(counter != null && counter.count >= 0) { // eslint-disable-line eqeqeq
+            if(counter !== null && counter !== undefined && counter.count >= 0) {
                 filteredCounters[key] = counter;
             }
         }
@@ -103,22 +102,6 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
             return false;
         }
         return true;
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const getIcon = () => {
-        if(ring.conflictType === "military") {
-            return (
-                <span className="icon-military">
-                    <span className="hide-text">military</span>
-                </span>
-            );
-        }
-        return (
-            <span className="icon-political">
-                <span className="hide-text">political</span>
-            </span>
-        );
     };
 
     let size = propSize;

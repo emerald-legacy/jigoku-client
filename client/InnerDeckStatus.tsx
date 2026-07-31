@@ -155,8 +155,8 @@ export default function InnerDeckStatus({ className: propsClassName, deck, updat
                 <div>
                     { deckStatus.extendedStatus && deckStatus.extendedStatus.length !== 0 && (
                         <ul className="deck-status-errors">
-                            { deckStatus.extendedStatus.map((error, index) => (
-                                <li key={ index }>{ error }</li>
+                            { deckStatus.extendedStatus.map((error) => (
+                                <li key={ error }>{ error }</li>
                             )) }
                         </ul>
                     ) }

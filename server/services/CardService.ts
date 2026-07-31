@@ -21,6 +21,13 @@ export interface CardRecord {
     [key: string]: unknown;
 }
 
+// Field names come from the card data feed, so they stay snake_case; keeping them as strings
+// avoids declaring snake_case identifiers just to copy them across.
+const SHORT_FORM_FIELDS = [
+    "id", "name", "type", "clan", "faction", "side", "deck_limit", "elements", "is_unique",
+    "influence_cost", "influence_pool", "versions", "role_restriction", "allowed_clans"
+] as const;
+
 class CardService {
     cards: Collection<CardRecord>;
     packs: Collection<Pack>;
@@ -51,10 +58,9 @@ class CardService {
 
             result.forEach(card => {
                 if(options && options.shortForm) {
-                    // eslint-disable-next-line camelcase
-                    const { id, name, type, clan, faction, side, deck_limit, elements, is_unique, influence_cost, influence_pool, versions, role_restriction, allowed_clans } = card;
-                    // eslint-disable-next-line camelcase
-                    cards[card.id] = { id, name, type, clan, faction, side, deck_limit, elements, is_unique, influence_cost, influence_pool, versions, role_restriction, allowed_clans };
+                    cards[card.id] = Object.fromEntries(
+                        SHORT_FORM_FIELDS.map(field => [field, card[field]])
+                    ) as CardRecord;
                 } else {
                     cards[card.id] = card;
                 }

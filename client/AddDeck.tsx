@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { shallowEqual } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
 import { useNavigate } from "react-router-dom";
@@ -25,12 +25,14 @@ interface InnerAddDeckProps {
 
 export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loading, saveDeck }: InnerAddDeckProps) {
     const navigate = useNavigate();
-    const [ready, setReady] = useState(false);
 
     useEffect(() => {
         addDeck();
-        setReady(true);
     }, [addDeck]);
+
+    // addDeck() replaces the selected deck with a fresh unsaved one, so a still-selected saved
+    // deck (it has an _id) means the reset hasn't landed yet.
+    const ready = !deck?._id;
 
     useEffect(() => {
         if(deckSaved) {

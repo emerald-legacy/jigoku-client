@@ -70,14 +70,20 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }: AbilityT
         );
     };
 
-    const targetCards = targets?.map((target, index) => {
+    const targetKey = (target: TargetingItem) => {
+        const t = target as { uuid?: string; element?: string; name?: string; id?: string };
+        return t.uuid ?? t.element ?? t.name ?? t.id ?? "";
+    };
+
+    const targetCards = targets?.map((target) => {
         const t = target as { type?: string; name?: string };
+        const key = targetKey(target);
         if(t.type === "select") {
-            return <span key={ index }>{ renderStringChoice(t.name ?? "") }</span>;
+            return <span key={ key }>{ renderStringChoice(t.name ?? "") }</span>;
         } else if(t.type === "ring") {
-            return <span key={ index }>{ renderSimpleRing(target) }</span>;
+            return <span key={ key }>{ renderSimpleRing(target) }</span>;
         }
-        return <span key={ index }>{ renderSimpleCard(target) }</span>;
+        return <span key={ key }>{ renderSimpleCard(target) }</span>;
     });
 
     let sourceElement;

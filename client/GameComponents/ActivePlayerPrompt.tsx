@@ -13,7 +13,7 @@ interface ActivePlayerPromptProps {
     onButtonClick?: (command: string | undefined, arg: string | undefined, uuid: string | undefined, method: string | undefined) => void;
     onMouseOut?: (card: Card) => void;
     onMouseOver?: (card: Card) => void;
-    onTimerExpired?: () => void;
+    onTimerExpired?: (button?: Button) => void;
     onTitleClick?: () => void;
     phase?: string;
     promptTitle?: string;
@@ -35,27 +35,35 @@ function ActivePlayerPrompt({
     title,
     user
 }: ActivePlayerPromptProps) {
-    const [showTimer, setShowTimer] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(0);
-    const [timerClass, setTimerClass] = useState("100%");
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [timerCancelled, setTimerCancelled] = useState(false);
+    const [progress, setProgress] = useState<{ promptKey: string; timerClass: string; timeLeft: number } | null>(null);
+    const [cancelledPromptKey, setCancelledPromptKey] = useState<string | null>(null);
+    const [expiredPromptKey, setExpiredPromptKey] = useState<string | null>(null);
 
     const timerRef = useRef<{ started: Date | null; timerTime: number }>({ started: null, timerTime: 0 });
     const timerHandleRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const onTimerExpiredRef = useRef(onTimerExpired);
     const draggableRef = useRef<HTMLDivElement | null>(null);
 
-    const hasTimerButton = buttons?.some((button: Button) => button.timer) ?? false;
+    const timerButton = buttons?.find((button: Button) => button.timer);
+    const hasTimerButton = !!timerButton;
+    const timerButtonRef = useRef(timerButton);
     const windowTimer = user?.settings?.windowTimer;
     const promptKey = JSON.stringify(buttons?.map((button: Button) => [button.command, button.arg, button.uuid, button.text, button.timer]) ?? []);
+
+    const showTimer = hasTimerButton && !!windowTimer && cancelledPromptKey !== promptKey && expiredPromptKey !== promptKey;
+    const timerClass = progress?.promptKey === promptKey ? progress.timerClass : "100%";
+    const timeLeft = progress?.promptKey === promptKey ? progress.timeLeft : Number(windowTimer ?? 0);
 
     useEffect(() => {
         onTimerExpiredRef.current = onTimerExpired;
     }, [onTimerExpired]);
 
     useEffect(() => {
-        if(!hasTimerButton || !windowTimer) {
+        timerButtonRef.current = timerButton;
+    }, [timerButton]);
+
+    useEffect(() => {
+        if(!showTimer || !windowTimer) {
             return;
         }
 
@@ -68,35 +76,30 @@ function ActivePlayerPrompt({
             const difference = (now.getTime() - startedAt) / 1000;
 
             if(difference >= timerRef.current.timerTime) {
-                if(timerHandleRef.current) {
-                    clearInterval(timerHandleRef.current);
-                }
+                clearInterval(handle);
                 timerHandleRef.current = null;
-                setShowTimer(false);
+                setExpiredPromptKey(promptKey);
 
                 if(onTimerExpiredRef.current) {
-                    onTimerExpiredRef.current();
+                    onTimerExpiredRef.current(timerButtonRef.current);
                 }
                 return;
             }
 
-            const newTimerClass = `${(((timerRef.current.timerTime - difference) / timerRef.current.timerTime) * 100).toFixed()}%`;
-            setTimerClass(newTimerClass);
-            setTimeLeft(Number((timerRef.current.timerTime - difference).toFixed()));
+            setProgress({
+                promptKey,
+                timerClass: `${(((timerRef.current.timerTime - difference) / timerRef.current.timerTime) * 100).toFixed()}%`,
+                timeLeft: Number((timerRef.current.timerTime - difference).toFixed())
+            });
         }, 100);
 
         timerHandleRef.current = handle;
-        setShowTimer(true);
-        setTimerClass("100%");
 
         return () => {
-            if(timerHandleRef.current) {
-                clearInterval(timerHandleRef.current);
-                timerHandleRef.current = null;
-            }
-            setShowTimer(false);
+            clearInterval(handle);
+            timerHandleRef.current = null;
         };
-    }, [promptKey, hasTimerButton, windowTimer]);
+    }, [promptKey, showTimer, windowTimer]);
 
     const handleButtonClick = (event: React.MouseEvent, command: string | undefined, arg: string | undefined, uuid: string | undefined, method: string | undefined) => {
         event.preventDefault();
@@ -106,8 +109,7 @@ function ActivePlayerPrompt({
             timerHandleRef.current = null;
         }
 
-        setShowTimer(false);
-        setTimerCancelled(true);
+        setCancelledPromptKey(promptKey);
 
         if(onButtonClick) {
             onButtonClick(command, arg, uuid, method);
@@ -122,8 +124,7 @@ function ActivePlayerPrompt({
             timerHandleRef.current = null;
         }
 
-        setShowTimer(false);
-        setTimerCancelled(true);
+        setCancelledPromptKey(promptKey);
 
         if(button.method && onButtonClick) {
             onButtonClick(button.command, button.arg, button.uuid, button.method);
@@ -191,12 +192,15 @@ function ActivePlayerPrompt({
         }
 
         return controls.map((control: Control, index: number) => {
+            const source = control.source;
+            const sourceKey = typeof source === "string" ? source : source?.uuid ?? source?.name ?? "";
+            const controlKey = `${control.type}-${sourceKey}-${index}`;
             switch(control.type) {
                 case "targeting": {
                     const targetingControl = control as unknown as Control & { source: { type?: string; name?: string }; targets: Array<{ type?: string; name?: string }> };
                     return (
                         <AbilityTargeting
-                            key={ index }
+                            key={ controlKey }
                             onMouseOut={ onMouseOut }
                             onMouseOver={ onMouseOver }
                             source={ targetingControl.source }
@@ -207,7 +211,7 @@ function ActivePlayerPrompt({
                 case "card-name":
                     return (
                         <CardNameLookup
-                            key={ index }
+                            key={ controlKey }
                             cards={ cards ?? {} }
                             onCardSelected={ (cardName: string | null) => handleCardNameSelected(control.command, control.uuid, control.method, cardName ?? "") }
                         />

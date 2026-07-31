@@ -7,7 +7,7 @@ import GameModes from "../../shared/GameModes";
 
 interface MyBoardAreaProps {
     thisPlayer: Player;
-    thisPlayerCards: React.ReactNode[];
+    thisPlayerCards: React.ReactNode;
     cardSize: string;
     spectating: boolean;
     manualMode: boolean;

@@ -7,6 +7,43 @@ import type { Card as CardType } from "../types/game";
 
 const EMPTY_STYLE = {};
 
+type HandCardProps = Partial<React.ComponentProps<typeof CSSTransition>> & {
+    card: CardType;
+    cardClassName: string;
+    cardSize?: string;
+    isMe?: boolean;
+    staggerDelay: string;
+    onCardClick?: (card: CardType) => void;
+    onDragDrop?: (card: CardType, source: string, target: string) => void;
+    onMouseOut?: (card: CardType) => void;
+    onMouseOver?: (card: CardType) => void;
+};
+
+// Each card owns its transition node ref — TransitionGroup injects the transition
+// props (in/onExited/…), which are forwarded straight through to CSSTransition.
+function HandCard({ card, cardClassName, cardSize, isMe, staggerDelay, onCardClick, onDragDrop, onMouseOut, onMouseOver, ...transitionProps }: HandCardProps) {
+    const nodeRef = React.useRef<HTMLDivElement>(null);
+
+    return (
+        <CSSTransition { ...transitionProps as React.ComponentProps<typeof CSSTransition> } classNames="hand-card" nodeRef={ nodeRef }>
+            <div ref={ nodeRef } style={ { display: "contents", "--hand-stagger-delay": staggerDelay } as React.CSSProperties }>
+                <Card
+                    card={ card }
+                    className={ cardClassName }
+                    style={ EMPTY_STYLE }
+                    disableMouseOver={ !isMe }
+                    source="hand"
+                    onMouseOver={ onMouseOver }
+                    onMouseOut={ onMouseOut }
+                    onClick={ onCardClick }
+                    onDragDrop={ onDragDrop }
+                    size={ cardSize }
+                />
+            </div>
+        </CSSTransition>
+    );
+}
+
 interface PlayerHandProps {
     cardSize?: string;
     cards: CardType[];
@@ -111,25 +148,20 @@ function PlayerHand({ cardSize, cards, isMe, onAnimationEnd, onCardClick, onDrag
                 }
             }
 
-            const nodeRef = React.createRef<HTMLDivElement>();
-            const staggerDelay = `${index * 40}ms`;
             return (
-                <CSSTransition key={ card.uuid } timeout={ 300 + index * 40 } classNames="hand-card" nodeRef={ nodeRef }>
-                    <div ref={ nodeRef } style={ { display: "contents", "--hand-stagger-delay": staggerDelay } as React.CSSProperties }>
-                        <Card
-                            card={ card }
-                            className={ className }
-                            style={ EMPTY_STYLE }
-                            disableMouseOver={ !isMe }
-                            source="hand"
-                            onMouseOver={ onMouseOver }
-                            onMouseOut={ onMouseOut }
-                            onClick={ onCardClick }
-                            onDragDrop={ onDragDrop }
-                            size={ cardSize }
-                        />
-                    </div>
-                </CSSTransition>
+                <HandCard
+                    key={ card.uuid }
+                    timeout={ 300 + index * 40 }
+                    card={ card }
+                    cardClassName={ className }
+                    cardSize={ cardSize }
+                    isMe={ isMe }
+                    staggerDelay={ `${index * 40}ms` }
+                    onCardClick={ onCardClick }
+                    onDragDrop={ onDragDrop }
+                    onMouseOut={ onMouseOut }
+                    onMouseOver={ onMouseOver }
+                />
             );
         }) || [];
     })();

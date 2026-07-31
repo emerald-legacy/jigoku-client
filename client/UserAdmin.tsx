@@ -37,12 +37,12 @@ interface InnerUserAdminProps {
 }
 
 export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUser, findUser, loading, saveUser, userSaved }: InnerUserAdminProps) {
-    const [permissions, setPermissions] = useState<Record<string, boolean>>(currentUser ? (currentUser.permissions || defaultPermissions) : defaultPermissions);
+    // The draft is tagged with the user it belongs to, so looking up a different user falls
+    // back to that user's saved permissions without syncing state from an effect.
+    const [permissionsDraft, setPermissionsDraft] = useState<{ username?: string; permissions: Record<string, boolean> } | null>(null);
+    const savedPermissions = currentUser ? (currentUser.permissions || defaultPermissions) : defaultPermissions;
+    const permissions = permissionsDraft?.username === currentUser?.username ? permissionsDraft.permissions : savedPermissions;
     const [username, setUsername] = useState("");
-
-    useEffect(() => {
-        setPermissions(currentUser ? (currentUser.permissions || defaultPermissions) : defaultPermissions);
-    }, [currentUser]);
 
     useEffect(() => {
         if(userSaved) {
@@ -70,10 +70,10 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
     };
 
     const onPermissionToggle = (field: string, event: React.ChangeEvent<HTMLInputElement>) => {
-        setPermissions((prev: Record<string, boolean>) => ({
-            ...prev,
-            [field]: event.target.checked
-        }));
+        setPermissionsDraft({
+            username: currentUser?.username,
+            permissions: { ...permissions, [field]: event.target.checked }
+        });
     };
 
     const notFound = apiStatus === 404;

@@ -48,8 +48,8 @@ function getEmailTransport() {
                 ? JSON.parse(emailPath)
                 : emailPath;
             emailTransport = nodemailer.createTransport(emailConfig);
-        } catch(_e) {
-            throw new Error("Failed to initialise email transport: check EMAIL_PATH configuration");
+        } catch(err) {
+            throw new Error("Failed to initialise email transport: check EMAIL_PATH configuration", { cause: err });
         }
     }
     return emailTransport;

@@ -101,10 +101,10 @@ export function InnerNewsAdmin({ addNews, apiError, clearNewsStatus, loadNews, l
                             <div className="news-admin-empty">No dispatches yet.</div>
                         ) : (
                             <ol className="news-admin-list">
-                                { news.map((item: NewsItem, index: number) => {
+                                { news.map((item: NewsItem) => {
                                     const date = item.datePublished ? new Date(item.datePublished) : null;
                                     return (
-                                        <li key={ index } className="news-admin-list-item">
+                                        <li key={ item._id ?? item.text } className="news-admin-list-item">
                                             <div className="news-admin-item-meta">
                                                 <span className="news-admin-item-day">{ date ? format(date, "dd") : "--" }</span>
                                                 <span className="news-admin-item-monthyear">

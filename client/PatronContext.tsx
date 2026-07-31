@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from "react";
+import React, { createContext, use, useMemo } from "react";
 import { usePatronStatuses } from "./patronStatus";
 import { defaultViewerConfig, resolveRingSet, DEFAULT_RINGS, type PatronViewerConfig } from "./boardCosmetics";
 
@@ -21,22 +21,22 @@ const PatronContext = createContext<PatronContextValue>({
 // Consumed by board components. With no provider (e.g. isolated component tests) these return
 // neutral defaults, so rendering falls back to the stock (non-patron) imagery.
 export function usePatronViewerConfig(): PatronViewerConfig {
-    return useContext(PatronContext).viewer;
+    return use(PatronContext).viewer;
 }
 
 export function usePatronOwnerStatus(username?: string | null): boolean {
-    const map = useContext(PatronContext).isPatronByUsername;
+    const map = use(PatronContext).isPatronByUsername;
     return username ? !!map[username] : false;
 }
 
 // The ring set the viewer should see, board-wide. "default" means stock bg + svg glyph.
 export function useRingSet(): string {
-    return useContext(PatronContext).ringSet;
+    return use(PatronContext).ringSet;
 }
 
 // Whether a card owned by `username` should render promo art: owner is a patron with promos on.
 export function useOwnerShowsPromo(username?: string | null): boolean {
-    const { isPatronByUsername, usePromosByUsername } = useContext(PatronContext);
+    const { isPatronByUsername, usePromosByUsername } = use(PatronContext);
     if(!username) {
         return false;
     }
@@ -63,5 +63,5 @@ export function PatronProvider({ viewer, playerUsernames, usePromosByUsername, r
         () => ({ viewer, isPatronByUsername, usePromosByUsername, ringSet }),
         [viewer, isPatronByUsername, usePromosByUsername, ringSet]
     );
-    return <PatronContext.Provider value={ value }>{ children }</PatronContext.Provider>;
+    return <PatronContext value={ value }>{ children }</PatronContext>;
 }

@@ -12,8 +12,8 @@ function CardMenu({ menu, onMenuItemClick }: CardMenuProps) {
         }
     };
 
-    const menuItems = menu.map((menuItem, index) => (
-        <div key={ index } onClick={ () => handleMenuItemClick(menuItem) }>
+    const menuItems = menu.map((menuItem) => (
+        <div key={ `${menuItem.command}-${menuItem.text}` } onClick={ () => handleMenuItemClick(menuItem) }>
             { menuItem.text }
         </div>
     ));

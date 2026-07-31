@@ -1,6 +1,6 @@
 import { Typeahead, TypeaheadRef } from "react-bootstrap-typeahead";
-import { useRef, useImperativeHandle, forwardRef } from "react";
-import type { ReactNode, KeyboardEvent } from "react";
+import { useRef, useImperativeHandle } from "react";
+import type { ReactNode, KeyboardEvent, Ref } from "react";
 
 import type { Option as RBTOption } from "react-bootstrap-typeahead/types/types";
 
@@ -22,6 +22,7 @@ interface TypeaheadInputProps {
     onKeyDown?: (e: KeyboardEvent) => void;
     options: TypeaheadOption[];
     placeholder?: string;
+    ref?: Ref<TypeaheadInputHandle>;
     validationMessage?: string;
 }
 
@@ -29,27 +30,25 @@ export interface TypeaheadInputHandle {
     clear: () => void;
 }
 
-const TypeaheadInput = forwardRef<TypeaheadInputHandle, TypeaheadInputProps>(function TypeaheadInput(
-    {
-        autoFocus,
-        children,
-        dropup,
-        emptyLabel,
-        fieldClass,
-        label,
-        labelClass,
-        labelKey,
-        minLength,
-        name,
-        onChange,
-        onInputChange,
-        onKeyDown,
-        options,
-        placeholder,
-        validationMessage
-    },
-    ref
-) {
+function TypeaheadInput({
+    autoFocus,
+    children,
+    dropup,
+    emptyLabel,
+    fieldClass,
+    label,
+    labelClass,
+    labelKey,
+    minLength,
+    name,
+    onChange,
+    onInputChange,
+    onKeyDown,
+    options,
+    placeholder,
+    ref,
+    validationMessage
+}: TypeaheadInputProps) {
     const typeaheadRef = useRef<TypeaheadRef | null>(null);
 
     useImperativeHandle(ref, () => ({
@@ -90,7 +89,7 @@ const TypeaheadInput = forwardRef<TypeaheadInputHandle, TypeaheadInputProps>(fun
             { children }
         </div>
     );
-});
+}
 
 TypeaheadInput.displayName = "TypeAhead";
 

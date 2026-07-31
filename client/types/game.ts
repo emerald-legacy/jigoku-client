@@ -29,6 +29,9 @@ export interface SkillSummary {
 }
 
 export interface Card {
+    // Players who can play this card from where it currently sits (set by the engine for cards
+    // that are out of play but still playable, e.g. set aside in "removed from game").
+    playableBy?: string[];
     uuid: string;
     id: string;
     name: string;
@@ -49,7 +52,6 @@ export interface Card {
     bowed?: boolean;
     covert?: boolean;
     new?: boolean;
-    leaving?: boolean;
     fate?: number;
     location?: string;
     controlled?: boolean;
@@ -198,6 +200,7 @@ export interface TargetingDescriptor {
     type?: string;
     name?: string;
     id?: string;
+    uuid?: string;
     element?: string;
     isDynasty?: boolean;
     isConflict?: boolean;
@@ -264,6 +267,8 @@ export interface MessageFragment {
 
 export interface GameMessage {
     message: MessageFragment[];
+    // Stamped by the game server when the message is added (GameChat.addMessage).
+    date?: string;
     timestamp?: number;
 }
 

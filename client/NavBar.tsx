@@ -117,11 +117,11 @@ export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: I
             onMouseOut={ onMenuItemMouseOut }
         >
             <a
-                href="javascript:void(0)"
-                onClick={ menuItem.onClick ? (event) => {
+                href="#"
+                onClick={ (event) => {
                     event.preventDefault();
-                    menuItem.onClick!();
-                } : undefined }
+                    menuItem.onClick?.();
+                } }
             >
                 { menuItem.text }
             </a>
