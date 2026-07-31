@@ -168,16 +168,6 @@ ul.htp-sub-list {
     padding-right: 0;
 }
 
-.blocklist {
-    & td {
-        vertical-align: middle !important;
-    }
-
-    & a {
-        color: var(--color-danger);
-    }
-}
-
 .card-settings {
     display: inline-block;
     margin-left: 5px;

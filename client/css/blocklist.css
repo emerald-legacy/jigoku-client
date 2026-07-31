@@ -1,0 +1,215 @@
+.blocklist-panel {
+    position: relative;
+    padding: 1.1rem 1.1rem 1.1rem 1.4rem;
+    background: linear-gradient(180deg, rgba(20, 22, 18, 0.6), rgba(10, 12, 8, 0.6));
+    border: 1px solid rgba(120, 180, 80, 0.16);
+    border-radius: 6px;
+}
+
+.blocklist-panel::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    width: 2px;
+    border-radius: 2px;
+    background: linear-gradient(180deg, transparent, rgba(120, 200, 100, 0.7), transparent);
+}
+
+.blocklist-intro {
+    max-width: 60ch;
+    margin-bottom: 1.1rem;
+    color: rgba(200, 210, 185, 0.75);
+    font-size: 0.88rem;
+    line-height: 1.55;
+}
+
+.blocklist-add {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    padding-bottom: 1.1rem;
+    margin-bottom: 1.1rem;
+    border-bottom: 1px solid rgba(120, 180, 80, 0.12);
+}
+
+.blocklist-add-field {
+    flex: 1 1 16rem;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.blocklist-add-label {
+    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: rgba(160, 180, 140, 0.5);
+}
+
+.blocklist-add-input {
+    width: 100%;
+    padding: 0.45rem 0.6rem;
+    border-radius: 4px;
+    border: 1px solid rgba(120, 180, 80, 0.22);
+    background: rgba(10, 12, 8, 0.6);
+    color: rgba(232, 234, 220, 0.96);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 0.95rem;
+    transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.blocklist-add-input:focus {
+    outline: none;
+    border-color: rgba(150, 220, 90, 0.6);
+    box-shadow: 0 0 12px rgba(80, 160, 60, 0.18);
+}
+
+.blocklist-section-title {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(180, 200, 150, 0.85);
+    margin-bottom: 0.65rem;
+}
+
+.blocklist-section-title svg {
+    color: var(--color-link, #5ea026);
+}
+
+.blocklist-count {
+    margin-left: auto;
+    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    color: rgba(160, 180, 140, 0.5);
+}
+
+.blocklist-entries {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.blocklist-entry {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    transition: background 0.18s, border-color 0.18s;
+}
+
+.blocklist-entry + .blocklist-entry {
+    margin-top: 0.25rem;
+}
+
+.blocklist-entry:hover {
+    background: rgba(51, 102, 0, 0.1);
+    border-color: rgba(120, 180, 80, 0.15);
+}
+
+.blocklist-entry-icon {
+    flex-shrink: 0;
+    color: rgba(160, 180, 140, 0.55);
+}
+
+.blocklist-entry-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1rem;
+    color: rgba(232, 234, 220, 0.96);
+}
+
+.blocklist-remove {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.85rem;
+    height: 1.85rem;
+    padding: 0;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: rgba(160, 180, 140, 0.5);
+    cursor: pointer;
+    transition: color 0.18s, border-color 0.18s, background 0.18s;
+}
+
+.blocklist-remove:hover,
+.blocklist-remove:focus-visible {
+    color: rgba(255, 140, 130, 0.95);
+    border-color: rgba(200, 70, 60, 0.45);
+    background: rgba(120, 30, 25, 0.25);
+}
+
+.blocklist-remove:focus-visible {
+    outline: 2px solid rgba(200, 70, 60, 0.5);
+    outline-offset: 1px;
+}
+
+.blocklist-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2rem 1rem;
+    color: rgba(160, 180, 140, 0.5);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+    font-style: italic;
+}
+
+.blocklist-skeleton {
+    pointer-events: none;
+}
+
+.blocklist-skeleton-block {
+    display: block;
+    height: 15px;
+    border-radius: 3px;
+    background-image: linear-gradient(
+        90deg,
+        rgba(120, 180, 80, 0.08) 0%,
+        rgba(150, 220, 90, 0.20) 50%,
+        rgba(120, 180, 80, 0.08) 100%
+    );
+    background-size: 200% 100%;
+    animation: blocklist-skeleton-shimmer 1.6s ease-in-out infinite;
+    width: 45%;
+}
+
+.blocklist-skeleton:nth-child(2n) .blocklist-skeleton-block {
+    width: 32%;
+}
+
+.blocklist-skeleton:nth-child(3n) .blocklist-skeleton-block {
+    width: 56%;
+}
+
+@keyframes blocklist-skeleton-shimmer {
+    0% { background-position: 150% 0; }
+    100% { background-position: -50% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .blocklist-skeleton-block {
+        animation: none;
+    }
+}

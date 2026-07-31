@@ -2,9 +2,8 @@ import React, { useState, useEffect, useMemo } from "react";
 import { shallowEqual } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
 
-import { X } from "lucide-react";
+import { ShieldBan, UserX, X } from "lucide-react";
 import AlertPanel from "./SiteComponents/AlertPanel";
-import Input from "./FormComponents/Input";
 
 import * as actions from "./actions";
 import { useAppSelector, useAppDispatch } from "./hooks";
@@ -55,9 +54,13 @@ export function InnerBlockList({
         setUsername(event.target.value);
     };
 
-    const onAddClick = (event: React.MouseEvent) => {
+    const onAddClick = (event: React.FormEvent | React.MouseEvent) => {
         event.preventDefault();
+        if(!username) {
+            return;
+        }
         addBlockListEntry({ user, username });
+        setUsername("");
     };
 
     const onRemoveClick = (usernameToRemove: string, event: React.MouseEvent) => {
@@ -79,81 +82,88 @@ export function InnerBlockList({
         );
     }
 
-    let content;
-
-    if(loading) {
-        content = <div>Loading block list from the server...</div>;
-    } else if(apiError) {
-        content = <AlertPanel type="error" message={ apiError } />;
-    } else {
-        const blockListRows = blockList && blockList.map((blockedUser: string) => (
-            <tr key={ blockedUser }>
-                <td>{ blockedUser }</td>
-                <td>
-                    <a href="#" className="btn" onClick={ (e) => onRemoveClick(blockedUser, e) }>
-                        <X size={ 16 } />
-                    </a>
-                </td>
-            </tr>
-        ));
-
-        const table = (!blockList || blockList.length === 0) ? (
-            <div>No users currently blocked</div>
-        ) : (
-            <table className="table table-striped blocklist">
-                <thead>
-                    <tr>
-                        <th>Username</th>
-                        <th>Remove</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    { blockListRows }
-                </tbody>
-            </table>
-        );
-
-        content = (
-            <div className="col-sm-8 col-sm-offset-2 full-height">
-                <div className="about-container">
-                    { successPanel }
-
-                    <form className="form form-horizontal">
-                        <div className="panel-title text-center">
-                            Block list
-                        </div>
-                        <div className="panel">
-                            <p>
-                                It can sometimes become necessary to prevent someone joining your games,
-                                or stop seeing their messages, or both. Users on this list will not be
-                                able to join your games, and you will not see their chat messages or their games.
-                            </p>
-
-                            <div className="form-group">
-                                <Input
-                                    name="blockee"
-                                    label="Username"
-                                    labelClass="col-sm-4"
-                                    fieldClass="col-sm-4"
-                                    placeholder="Enter username to block"
-                                    type="text"
-                                    onChange={ onUsernameChange }
-                                    value={ username }
-                                    noGroup
-                                />
-                                <button className="btn btn-primary col-sm-1" onClick={ onAddClick }>Add</button>
-                            </div>
-
-                            <h3>Users Blocked</h3>
-                            { table }
-                        </div>
-                    </form>
-                </div>
-            </div>
-        );
+    if(apiError && !loading) {
+        return <AlertPanel type="error" message={ apiError } />;
     }
 
-    return content;
+    const blockedCount = blockList ? blockList.length : 0;
+
+    let entries: React.ReactNode;
+    if(loading) {
+        entries = Array.from({ length: 3 }, (_value, index) => (
+            <li className="blocklist-entry blocklist-skeleton" key={ `skeleton-${index}` } aria-hidden="true">
+                <UserX className="blocklist-entry-icon" size={ 16 } />
+                <span className="blocklist-skeleton-block" />
+            </li>
+        ));
+    } else if(blockedCount === 0) {
+        entries = (
+            <li className="blocklist-empty">
+                Nobody is blocked. Add a username above to keep them out of your games.
+            </li>
+        );
+    } else {
+        entries = blockList?.map((blockedUser: string) => (
+            <li className="blocklist-entry" key={ blockedUser }>
+                <UserX className="blocklist-entry-icon" size={ 16 } aria-hidden="true" />
+                <span className="blocklist-entry-name">{ blockedUser }</span>
+                <button
+                    type="button"
+                    className="blocklist-remove"
+                    aria-label={ `Unblock ${blockedUser}` }
+                    title={ `Unblock ${blockedUser}` }
+                    onClick={ (e) => onRemoveClick(blockedUser, e) }
+                >
+                    <X size={ 16 } aria-hidden="true" />
+                </button>
+            </li>
+        ));
+    }
+
+    return (
+        <div className="col-sm-8 col-sm-offset-2 full-height">
+            <div className="about-container">
+                { successPanel }
+
+                <div className="panel-title text-center">
+                    Block list
+                </div>
+                <div className="blocklist-panel">
+                    <p className="blocklist-intro">
+                        Blocked players cannot join games you host, and you will not see their chat
+                        messages or their games in the lobby.
+                    </p>
+
+                    <form className="blocklist-add" onSubmit={ onAddClick }>
+                        <div className="blocklist-add-field">
+                            <label className="blocklist-add-label" htmlFor="blockee">Username</label>
+                            <input
+                                id="blockee"
+                                name="blockee"
+                                className="blocklist-add-input"
+                                type="text"
+                                placeholder="Who should be kept out?"
+                                onChange={ onUsernameChange }
+                                value={ username }
+                            />
+                        </div>
+                        <button className="user-admin-btn" type="submit" disabled={ !username }>Block</button>
+                    </form>
+
+                    <div className="blocklist-section-title">
+                        <ShieldBan size={ 14 } aria-hidden="true" />
+                        Blocked
+                        { !loading && blockedCount > 0 && (
+                            <span className="blocklist-count">{ blockedCount }</span>
+                        ) }
+                    </div>
+                    <ul className="blocklist-entries" aria-busy={ loading }>
+                        { entries }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 InnerBlockList.displayName = "BlockList";
