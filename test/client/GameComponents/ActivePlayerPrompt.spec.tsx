@@ -15,6 +15,7 @@ vi.mock("../../../client/GameComponents/CardNameLookup.tsx", () => ({
 }));
 
 import ActivePlayerPrompt from "../../../client/GameComponents/ActivePlayerPrompt";
+import type { Control } from "../../../client/types/game";
 
 const timerUser = { settings: { windowTimer: 10 } };
 
@@ -143,5 +144,46 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
         });
 
         expect(onTimerExpired).not.toHaveBeenCalled();
+    });
+});
+
+describe("the <ActivePlayerPrompt /> targeting controls", () => {
+    const control = (sourceUuid: string, sourceName: string): Control => ({
+        type: "targeting",
+        uuid: "prompt-uuid",
+        source: { uuid: sourceUuid, name: sourceName },
+        targets: []
+    });
+
+    it("should render one entry per control when they share a prompt uuid", () => {
+        const error = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+        render(<ActivePlayerPrompt
+            title="Any reactions?"
+            controls={ [control("src-1", "Framework effect"), control("src-2", "Framework effect")] }
+        />);
+
+        expect(screen.getAllByTestId("ability-targeting")).toHaveLength(2);
+        expect(error).not.toHaveBeenCalledWith(
+            expect.stringContaining("same key"),
+            expect.anything(),
+            expect.anything()
+        );
+
+        error.mockRestore();
+    });
+
+    it("should drop stale controls when the next prompt has fewer", () => {
+        const { rerender } = render(<ActivePlayerPrompt
+            title="Any reactions?"
+            controls={ [control("src-1", "Framework effect"), control("src-2", "Framework effect")] }
+        />);
+
+        rerender(<ActivePlayerPrompt
+            title="Initiate an action"
+            controls={ [] }
+        />);
+
+        expect(screen.queryAllByTestId("ability-targeting")).toHaveLength(0);
     });
 });
