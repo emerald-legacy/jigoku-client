@@ -8,7 +8,9 @@ import { apiCall } from "./apiCall";
 import {
     prepareDecksLoad,
     receiveDecksUnvalidated,
+    decksLoadFailed,
     updateDecksValidation,
+    decksRevalidating,
     decksValidationComplete
 } from "../reducers/cards";
 
@@ -105,8 +107,17 @@ export const saveDeck = createAsyncThunk(
 );
 
 export function loadDecksWithLazyValidation() {
-    return async (dispatch: AppDispatch) => {
+    return async (dispatch: AppDispatch, getState: () => RootState) => {
         dispatch(prepareDecksLoad());
+
+        const cached = getState().cards.decks;
+        if(getState().cards.allDecksLoaded && cached) {
+            if(cached.length > 0) {
+                dispatch(decksRevalidating());
+                validateDecksInBatches(cached, dispatch);
+            }
+            return;
+        }
 
         try {
             const response = await axios.get<{ decks: Deck[] }>("/api/decks");
@@ -116,7 +127,7 @@ export function loadDecksWithLazyValidation() {
                 validateDecksInBatches(response.data.decks, dispatch);
             }
         } catch(_error: unknown) {
-            // Lazy load fails silently; user can refresh.
+            dispatch(decksLoadFailed("Your decks could not be loaded. Reload the page to try again."));
         }
     };
 }

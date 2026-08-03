@@ -32,13 +32,12 @@ describe("the <InnerDecks /> component", () => {
             loadDecksWithLazyValidation: vi.fn(),
             selectDeck: vi.fn(),
             cards: {},
-            decks: [],
-            loading: false
+            decks: []
         };
     });
 
     it("should show the panel while decks are still loading", () => {
-        render(<InnerDecks { ...defaultProps } loading decks={ undefined } />, { wrapper });
+        render(<InnerDecks { ...defaultProps } decks={ undefined } />, { wrapper });
 
         expect(screen.getByText("My Decks")).toBeInTheDocument();
         expect(screen.getByText("New Deck")).toBeInTheDocument();
@@ -46,7 +45,7 @@ describe("the <InnerDecks /> component", () => {
     });
 
     it("should hide the deck count until the decks have arrived", () => {
-        const { rerender } = render(<InnerDecks { ...defaultProps } loading decks={ undefined } />, { wrapper });
+        const { rerender } = render(<InnerDecks { ...defaultProps } decks={ undefined } />, { wrapper });
 
         expect(screen.queryByText(/\/ 50/)).not.toBeInTheDocument();
 
@@ -55,14 +54,14 @@ describe("the <InnerDecks /> component", () => {
         expect(screen.getByText(/My Decks \(1 \/ 50\)/)).toBeInTheDocument();
     });
 
-    it("should disable New Deck while loading so the limit cannot be bypassed", () => {
-        render(<InnerDecks { ...defaultProps } loading decks={ undefined } />, { wrapper });
+    it("should disable New Deck until the deck count is known", () => {
+        render(<InnerDecks { ...defaultProps } decks={ undefined } />, { wrapper });
 
         expect(screen.getByRole("button", { name: "New Deck" })).toBeDisabled();
     });
 
     it("should replace the skeleton with the decks once loaded", () => {
-        const { rerender } = render(<InnerDecks { ...defaultProps } loading decks={ undefined } />, { wrapper });
+        const { rerender } = render(<InnerDecks { ...defaultProps } decks={ undefined } />, { wrapper });
 
         rerender(<InnerDecks
             { ...defaultProps }
@@ -85,5 +84,55 @@ describe("the <InnerDecks /> component", () => {
 
         expect(screen.getByTestId("alert-panel")).toHaveAttribute("data-type", "error");
         expect(screen.queryByText("My Decks")).not.toBeInTheDocument();
+    });
+
+    it("should keep the detail box mounted with a placeholder when nothing is selected", () => {
+        render(<InnerDecks { ...defaultProps } decks={ undefined } />, { wrapper });
+
+        expect(screen.getByText("Deck")).toBeInTheDocument();
+        expect(screen.getByText("Select a deck to see its cards.")).toBeInTheDocument();
+        expect(screen.queryByTestId("deck-summary")).not.toBeInTheDocument();
+    });
+
+    it("should not swap the detail box in when the decks arrive unselected", () => {
+        const { rerender } = render(<InnerDecks { ...defaultProps } decks={ undefined } />, { wrapper });
+
+        rerender(<InnerDecks { ...defaultProps } decks={ [{ name: "Crab", faction: { value: "crab" } }] } />);
+
+        expect(screen.getByText("Select a deck to see its cards.")).toBeInTheDocument();
+        expect(screen.queryByTestId("deck-summary")).not.toBeInTheDocument();
+    });
+
+    it("should populate the detail box once a deck is selected", () => {
+        const deck = { name: "Crab", faction: { value: "crab" }, _id: "1" };
+        render(<InnerDecks { ...defaultProps } decks={ [deck] } selectedDeck={ deck } />, { wrapper });
+
+        expect(screen.getByTestId("deck-summary")).toHaveTextContent("Crab");
+        expect(screen.queryByText("Select a deck to see its cards.")).not.toBeInTheDocument();
+    });
+
+    it("should keep showing the skeleton until the decks land, regardless of other cards requests", () => {
+        render(<InnerDecks { ...defaultProps } decks={ undefined } />, { wrapper });
+
+        expect(skeletons()).toHaveLength(6);
+        expect(screen.queryByText("You have no decks, try adding one.")).not.toBeInTheDocument();
+    });
+
+    it("should report a failed decks load instead of claiming the account has none", () => {
+        render(<InnerDecks { ...defaultProps } decks={ undefined } decksError="Boom" />, { wrapper });
+
+        expect(screen.getByTestId("alert-panel")).toHaveAttribute("data-type", "error");
+        expect(screen.getByTestId("alert-panel")).toHaveTextContent("Boom");
+        expect(screen.queryByText("You have no decks, try adding one.")).not.toBeInTheDocument();
+        expect(skeletons()).toHaveLength(0);
+    });
+
+
+    it("should keep the panel and let a new deck be started after a failed load", () => {
+        render(<InnerDecks { ...defaultProps } decks={ undefined } decksError="Boom" />, { wrapper });
+
+        expect(screen.getByText("My Decks")).toBeInTheDocument();
+        expect(screen.queryByText(/\/ 50/)).not.toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "New Deck" })).toBeInTheDocument();
     });
 });

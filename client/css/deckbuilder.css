@@ -198,6 +198,15 @@
     }
 }
 
+.deck-detail-placeholder {
+    padding: 40px 20px;
+    text-align: center;
+    color: rgba(232, 234, 220, 0.45);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 16px;
+    letter-spacing: 0.02em;
+}
+
 .deck-row-skeleton {
     cursor: default;
     pointer-events: none;

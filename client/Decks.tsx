@@ -19,7 +19,7 @@ interface InnerDecksProps {
     deckDeleted?: boolean;
     deckStats?: Record<string, DeckStatusType>;
     decks?: Deck[];
-    loading?: boolean;
+    decksError?: string;
     selectedDeck?: Deck;
     clearDeckStatus: (payload?: void) => void;
     deleteDeck: (deck: Deck | undefined) => void;
@@ -36,11 +36,11 @@ export function InnerDecks({
     deckDeleted,
     deckStats,
     decks,
+    decksError,
     deleteDeck,
     deleteDecks,
     loadDeckStats,
     loadDecksWithLazyValidation,
-    loading,
     selectDeck,
     selectedDeck
 }: InnerDecksProps) {
@@ -113,14 +113,16 @@ export function InnerDecks({
         }
     };
 
-    if(apiError && !loading) {
+    const decksPending = !decks && !decksError;
+
+    if(apiError && !decksPending && !decksError) {
         return <AlertPanel type="error" message={ apiError } />;
     }
 
     const deckCount = decks ? decks.length : 0;
-    const isAtLimit = !loading && deckCount >= 50;
-    const isNearLimit = !loading && deckCount >= 45 && deckCount < 50;
-    const hasDecks = !loading && deckCount > 0;
+    const isAtLimit = !decksPending && !decksError && deckCount >= 50;
+    const isNearLimit = !decksPending && !decksError && deckCount >= 45 && deckCount < 50;
+    const hasDecks = !decksPending && !decksError && deckCount > 0;
 
     let limitWarning = null;
     if(isAtLimit) {
@@ -165,7 +167,9 @@ export function InnerDecks({
     ));
 
     let listBody: React.ReactNode;
-    if(loading) {
+    if(decksError) {
+        listBody = <AlertPanel type="error" message={ decksError } />;
+    } else if(decksPending) {
         listBody = deckListSkeleton;
     } else if(deckCount === 0) {
         listBody = "You have no decks, try adding one.";
@@ -173,10 +177,10 @@ export function InnerDecks({
         listBody = deckList;
     }
 
-    let deckInfo = null;
-    if(!loading && selectedDeck) {
+    let deckInfo: React.ReactNode;
+    if(selectedDeck) {
         deckInfo = (
-            <div className="col-sm-7">
+            <>
                 <div className="panel-title text-center">
                     { selectedDeck.name }
                 </div>
@@ -190,7 +194,20 @@ export function InnerDecks({
                     </div>
                     <DeckSummary deck={ selectedDeck } cards={ cards } stats={ deckStats && selectedDeck && selectedDeck._id ? (deckStats[selectedDeck._id] as React.ComponentProps<typeof DeckSummary>["stats"]) : undefined } />
                 </div>
-            </div>
+            </>
+        );
+    } else {
+        deckInfo = (
+            <>
+                <div className="panel-title text-center">
+                    Deck
+                </div>
+                <div className="panel">
+                    <div className="deck-detail-placeholder">
+                        Select a deck to see its cards.
+                    </div>
+                </div>
+            </>
         );
     }
 
@@ -201,15 +218,15 @@ export function InnerDecks({
             <div className="row h-full">
                 <div className="col-sm-5 full-height relative">
                     <div className="panel-title text-center">
-                        My Decks{ loading ? "" : ` (${deckCount} / 50)` }
+                        My Decks{ decksPending || decksError ? "" : ` (${deckCount} / 50)` }
                     </div>
                     <div className="panel deck-list-container">
                         <div className="btn-group">
-                            { isAtLimit || loading ? (
+                            { isAtLimit || decksPending ? (
                                 <button
                                     className="btn btn-primary"
                                     disabled
-                                    title={ loading ? "Loading decks" : "Maximum deck limit reached" }
+                                    title={ decksPending ? "Loading decks" : "Maximum deck limit reached" }
                                 >
                                     New Deck
                                 </button>
@@ -239,12 +256,14 @@ export function InnerDecks({
                                 </label>
                             </div>
                         ) }
-                        <div className="deck-list" style={ { top: hasDecks ? "95px" : "55px" } } aria-busy={ loading }>
+                        <div className="deck-list" style={ { top: hasDecks ? "95px" : "55px" } } aria-busy={ decksPending }>
                             { listBody }
                         </div>
                     </div>
                 </div>
-                { deckInfo }
+                <div className="col-sm-7 full-height">
+                    { deckInfo }
+                </div>
             </div>
         </div>
     );
@@ -259,7 +278,7 @@ function mapStateToProps(state: RootState) {
         deckDeleted: state.cards.deckDeleted,
         deckStats: state.cards.deckStats,
         decks: state.cards.decks,
-        loading: state.cards.loading,
+        decksError: state.cards.decksError,
         selectedDeck: state.cards.selectedDeck
     };
 }
