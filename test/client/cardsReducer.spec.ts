@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { configureStore } from "@reduxjs/toolkit";
-import cardsReducer, { selectDeck, addDeck, updateDeck, receiveDecksUnvalidated } from "../../client/reducers/cards";
+import cardsReducer, { selectDeck, addDeck, updateDeck, receiveDecksUnvalidated, decksLoadFailed } from "../../client/reducers/cards";
 import { loadCards, loadFactions } from "../../client/ReduxActions/cards";
 import { loadDecks } from "../../client/ReduxActions/deck";
 
@@ -88,16 +88,32 @@ describe("cards reducer", () => {
                 dynastyCards: [], provinceCards: [], role: [], stronghold: []
             }
         ]));
-        const sel = store.getState().cards.selectedDeck;
-        expect(sel?.conflictCards?.[0]?.card).toMatchObject({ id: "c1", name: "Card 1", type: "character" });
+        const deck = store.getState().cards.decks?.[0];
+        expect(deck?.conflictCards?.[0]?.card).toMatchObject({ id: "c1", name: "Card 1", type: "character" });
     });
 
-    it("receiveDecksUnvalidated still selects the first deck even when only stubs are sent (preserves the existing selection flow)", () => {
+    it("receiveDecksUnvalidated leaves the selection alone so the detail panel does not pop in after the list loads", () => {
         store.dispatch(receiveDecksUnvalidated([
             { _id: "first", name: "First", faction: { name: "Crab", value: "crab" }, conflictCards: [], dynastyCards: [], provinceCards: [], role: [], stronghold: [] },
             { _id: "second", name: "Second", faction: { name: "Crab", value: "crab" }, conflictCards: [], dynastyCards: [], provinceCards: [], role: [], stronghold: [] }
         ]));
-        expect(store.getState().cards.selectedDeck?._id).toBe("first");
+        expect(store.getState().cards.selectedDeck).toBeUndefined();
+        expect(store.getState().cards.decks).toHaveLength(2);
         expect(store.getState().cards.decksValidating).toBe(true);
+    });
+
+    it("decksLoadFailed records the failure so the list does not read as an empty account", () => {
+        store.dispatch(decksLoadFailed("Boom"));
+        expect(store.getState().cards.decksError).toBe("Boom");
+        expect(store.getState().cards.decks).toBeUndefined();
+        expect(store.getState().cards.decksValidating).toBe(false);
+    });
+
+    it("receiveDecksUnvalidated clears a previous failure", () => {
+        store.dispatch(decksLoadFailed("Boom"));
+        store.dispatch(receiveDecksUnvalidated([
+            { _id: "first", name: "First", faction: { name: "Crab", value: "crab" }, conflictCards: [], dynastyCards: [], provinceCards: [], role: [], stronghold: [] }
+        ]));
+        expect(store.getState().cards.decksError).toBeUndefined();
     });
 });

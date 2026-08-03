@@ -118,7 +118,13 @@ const cardsSlice = createSlice({
             state.singleDeck = false;
             state.decks = processDecks(action.payload, state);
             state.decksValidating = true;
-            applySelectDeck(state, state.decks[0]);
+            state.decksError = undefined;
+            state.allDecksLoaded = true;
+        },
+        decksLoadFailed(state, action: PayloadAction<string>) {
+            state.decksValidating = false;
+            state.decksError = action.payload;
+            state.allDecksLoaded = false;
         },
         updateDecksValidation(state, action: PayloadAction<DeckValidationUpdate[]>) {
             if(state.decks) {
@@ -135,12 +141,16 @@ const cardsSlice = createSlice({
                 }
             }
         },
+        decksRevalidating(state) {
+            state.decksValidating = true;
+        },
         decksValidationComplete(state) {
             state.decksValidating = false;
         },
         prepareDecksLoad(state) {
             state.deckSaved = false;
             state.deckDeleted = false;
+            state.decksError = undefined;
             if(state.selectedDeck && !state.selectedDeck._id) {
                 if(state.decks && state.decks.length > 0) {
                     state.selectedDeck = state.decks[0];
@@ -199,11 +209,13 @@ const cardsSlice = createSlice({
                 }
                 state.singleDeck = false;
                 state.decks = processDecks(action.payload.decks, state);
+                state.allDecksLoaded = false;
                 applySelectDeck(state, state.decks[0]);
             })
             .addCase(loadDeck.fulfilled, (state: CardsState, action: PayloadAction<{ deck: Deck }>) => {
                 state.singleDeck = true;
                 state.deckSaved = false;
+                state.allDecksLoaded = false;
                 const processed = processDeck(action.payload.deck, state);
                 if(!state.decks) {
                     state.decks = [];
@@ -221,6 +233,7 @@ const cardsSlice = createSlice({
                 state.deckSaved = true;
                 state.decks = undefined;
                 state.deckStats = undefined;
+                state.allDecksLoaded = false;
             })
             .addCase(deleteDeck.fulfilled, (state: CardsState, action: PayloadAction<{ deckId: string }>) => {
                 state.deckDeleted = true;
@@ -256,7 +269,7 @@ const cardsSlice = createSlice({
 
 export const {
     zoomCard, clearZoom, selectDeck, addDeck, updateDeck, updateDeckStatus,
-    clearDeckStatus, receiveDecksUnvalidated, updateDecksValidation, decksValidationComplete,
-    prepareDecksLoad
+    clearDeckStatus, receiveDecksUnvalidated, decksLoadFailed, updateDecksValidation,
+    decksRevalidating, decksValidationComplete, prepareDecksLoad
 } = cardsSlice.actions;
 export default cardsSlice.reducer;
