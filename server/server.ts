@@ -126,11 +126,28 @@ class Server {
         const cookieLifetime = config.has("cookieLifetime") ? config.get("cookieLifetime") : null;
         const https = config.has("https") ? config.get("https") : false;
         const domain = config.has("domain") ? config.get("domain") : null;
+        const sessionStore = MongoStore.create({
+            mongoUrl: config.get("dbPath"),
+            ttl: cookieLifetime ? cookieLifetime / 1000 : 14 * 24 * 60 * 60 // Default 14 days in seconds
+        });
+
+        // A cookie for a session that is no longer in Mongo (expired, or wiped by a
+        // DB reset) makes connect-mongo's touch fail, which express-session turns
+        // into a request error. Nothing to touch is fine — the session is simply gone.
+        const touch = sessionStore.touch.bind(sessionStore);
+        sessionStore.touch = (sid, sessionData, callback) => {
+            touch(sid, sessionData, (err?: Error) => {
+                if(err && err.message === "Unable to find the session to touch") {
+                    logger.debug(`Ignoring touch for missing session ${sid}`);
+                    callback?.(null);
+                    return;
+                }
+                callback?.(err);
+            });
+        };
+
         app.use(session({
-            store: MongoStore.create({
-                mongoUrl: config.get("dbPath"),
-                ttl: cookieLifetime ? cookieLifetime / 1000 : 14 * 24 * 60 * 60 // Default 14 days in seconds
-            }),
+            store: sessionStore,
             saveUninitialized: false,
             resave: false,
             secret: config.get("secret"),
