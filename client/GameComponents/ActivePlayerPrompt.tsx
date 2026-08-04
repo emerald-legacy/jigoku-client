@@ -35,9 +35,14 @@ function ActivePlayerPrompt({
     title,
     user
 }: ActivePlayerPromptProps) {
-    const [progress, setProgress] = useState<{ promptKey: string; timerClass: string; timeLeft: number } | null>(null);
+    // Resolution is tracked per prompt occurrence, i.e. per `buttons` array identity: each
+    // gamestate push brings a new array, so the same prompt offered twice (a card whose
+    // ability gained an additional use) gets its own timer instead of inheriting the first
+    // one's resolved state. Re-renders keep the array, so a running timer is not restarted.
+    const [progress, setProgress] = useState<{ buttons?: Button[]; timerClass: string; timeLeft: number } | null>(null);
+    const [resolvedButtons, setResolvedButtons] = useState<Button[] | undefined>(undefined);
+    // "I need more time" is an explicit request, so it sticks until the prompt itself changes.
     const [cancelledPromptKey, setCancelledPromptKey] = useState<string | null>(null);
-    const [expiredPromptKey, setExpiredPromptKey] = useState<string | null>(null);
 
     const timerRef = useRef<{ started: Date | null; timerTime: number }>({ started: null, timerTime: 0 });
     const timerHandleRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -47,12 +52,13 @@ function ActivePlayerPrompt({
     const timerButton = buttons?.find((button: Button) => button.timer);
     const hasTimerButton = !!timerButton;
     const timerButtonRef = useRef(timerButton);
+    const buttonsRef = useRef(buttons);
     const windowTimer = user?.settings?.windowTimer;
     const promptKey = JSON.stringify(buttons?.map((button: Button) => [button.command, button.arg, button.uuid, button.text, button.timer]) ?? []);
 
-    const showTimer = hasTimerButton && !!windowTimer && cancelledPromptKey !== promptKey && expiredPromptKey !== promptKey;
-    const timerClass = progress?.promptKey === promptKey ? progress.timerClass : "100%";
-    const timeLeft = progress?.promptKey === promptKey ? progress.timeLeft : Number(windowTimer ?? 0);
+    const showTimer = hasTimerButton && !!windowTimer && cancelledPromptKey !== promptKey && resolvedButtons !== buttons;
+    const timerClass = progress && progress.buttons === buttons ? progress.timerClass : "100%";
+    const timeLeft = progress && progress.buttons === buttons ? progress.timeLeft : Number(windowTimer ?? 0);
 
     useEffect(() => {
         onTimerExpiredRef.current = onTimerExpired;
@@ -61,6 +67,10 @@ function ActivePlayerPrompt({
     useEffect(() => {
         timerButtonRef.current = timerButton;
     }, [timerButton]);
+
+    useEffect(() => {
+        buttonsRef.current = buttons;
+    }, [buttons]);
 
     useEffect(() => {
         if(!showTimer || !windowTimer) {
@@ -78,7 +88,7 @@ function ActivePlayerPrompt({
             if(difference >= timerRef.current.timerTime) {
                 clearInterval(handle);
                 timerHandleRef.current = null;
-                setExpiredPromptKey(promptKey);
+                setResolvedButtons(buttonsRef.current);
 
                 if(onTimerExpiredRef.current) {
                     onTimerExpiredRef.current(timerButtonRef.current);
@@ -87,7 +97,7 @@ function ActivePlayerPrompt({
             }
 
             setProgress({
-                promptKey,
+                buttons: buttonsRef.current,
                 timerClass: `${(((timerRef.current.timerTime - difference) / timerRef.current.timerTime) * 100).toFixed()}%`,
                 timeLeft: Number((timerRef.current.timerTime - difference).toFixed())
             });
@@ -109,7 +119,7 @@ function ActivePlayerPrompt({
             timerHandleRef.current = null;
         }
 
-        setCancelledPromptKey(promptKey);
+        setResolvedButtons(buttons);
 
         if(onButtonClick) {
             onButtonClick(command, arg, uuid, method);
@@ -125,6 +135,7 @@ function ActivePlayerPrompt({
         }
 
         setCancelledPromptKey(promptKey);
+        setResolvedButtons(buttons);
 
         if(button.method && onButtonClick) {
             onButtonClick(button.command, button.arg, button.uuid, button.method);
