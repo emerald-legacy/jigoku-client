@@ -146,6 +146,82 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
         expect(onTimerExpired).toHaveBeenCalledTimes(2);
     });
 
+    it("should restart the countdown when the same prompt is offered again after a click", () => {
+        const { rerender } = render(<ActivePlayerPrompt { ...baseProps } />);
+
+        act(() => {
+            screen.getByRole("button", { name: "Trigger" }).click();
+        });
+        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+
+        // Same ability offered a second time (e.g. its use limit was increased): identical
+        // button contents, but a fresh array from the next gamestate push.
+        rerender(<ActivePlayerPrompt { ...baseProps } buttons={ [...baseProps.buttons] } />);
+
+        expect(screen.getByText(/Auto passing in/)).toBeInTheDocument();
+        act(() => {
+            vi.advanceTimersByTime(10000);
+        });
+        expect(onTimerExpired).toHaveBeenCalledTimes(1);
+    });
+
+    it("should restart the countdown when the same prompt is offered again after expiring", () => {
+        const { rerender } = render(<ActivePlayerPrompt { ...baseProps } />);
+
+        act(() => {
+            vi.advanceTimersByTime(10000);
+        });
+        expect(onTimerExpired).toHaveBeenCalledTimes(1);
+
+        rerender(<ActivePlayerPrompt { ...baseProps } buttons={ [...baseProps.buttons] } />);
+
+        expect(screen.getByText(/Auto passing in/)).toBeInTheDocument();
+        act(() => {
+            vi.advanceTimersByTime(10000);
+        });
+        expect(onTimerExpired).toHaveBeenCalledTimes(2);
+    });
+
+    it("should stay resolved across re-renders that do not bring a new prompt", () => {
+        const { rerender } = render(<ActivePlayerPrompt { ...baseProps } />);
+
+        act(() => {
+            screen.getByRole("button", { name: "Trigger" }).click();
+        });
+
+        rerender(<ActivePlayerPrompt { ...baseProps } title="Any reactions?" />);
+
+        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+        act(() => {
+            vi.advanceTimersByTime(20000);
+        });
+        expect(onTimerExpired).not.toHaveBeenCalled();
+    });
+
+    it("should keep the timer off for an identical prompt after asking for more time", () => {
+        const props = {
+            ...baseProps,
+            buttons: [
+                { text: "Pass", command: "pass", timer: true },
+                { text: "I need more time", timerCancel: true }
+            ]
+        };
+        const { rerender } = render(<ActivePlayerPrompt { ...props } />);
+
+        act(() => {
+            screen.getByRole("button", { name: "I need more time" }).click();
+        });
+        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+
+        rerender(<ActivePlayerPrompt { ...props } buttons={ [...props.buttons] } />);
+
+        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+        act(() => {
+            vi.advanceTimersByTime(20000);
+        });
+        expect(onTimerExpired).not.toHaveBeenCalled();
+    });
+
     it("should not fire after unmounting", () => {
         const { unmount } = render(<ActivePlayerPrompt { ...baseProps } />);
 
