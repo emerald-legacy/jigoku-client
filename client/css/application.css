@@ -148,17 +148,19 @@
     text-align: center;
 }
 
-ul.htp-main-list, ul.htp-sub-list {
+/* Scoped to .about-container to outrank its `list-style`/`margin`/`padding: revert`
+   rule in tailwind.css, which is imported after this file. */
+.about-container ul.htp-main-list, .about-container ul.htp-sub-list {
     list-style-type: none;
     margin: 0;
     padding: 0;
 }
 
-ul.htp-main-list {
+.about-container ul.htp-main-list {
     font-weight: bold;
 }
 
-ul.htp-sub-list {
+.about-container ul.htp-sub-list {
     font-weight: normal;
     margin-left: 20px;
 }
