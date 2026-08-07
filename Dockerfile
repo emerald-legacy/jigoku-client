@@ -1,5 +1,5 @@
 # Build stage
-FROM node:26.5-alpine3.23@sha256:0473b6671ff22c8eeb570c0e1e51408595d3171e73f8002c269b763f0a943149 AS builder
+FROM node:26.5-alpine3.23@sha256:2a633e101381371ba148c7c212bf447c00cd267d814b708a9fe52c4984204729 AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ ENV BUILD_VERSION=$BUILD_VERSION
 RUN mkdir -p server/logs public/img/cards && npm run build:all && npm prune --omit=dev
 
 # Production stage
-FROM node:26.5-alpine3.23@sha256:0473b6671ff22c8eeb570c0e1e51408595d3171e73f8002c269b763f0a943149
+FROM node:26.5-alpine3.23@sha256:2a633e101381371ba148c7c212bf447c00cd267d814b708a9fe52c4984204729
 
 
 WORKDIR /app
