@@ -67,7 +67,14 @@
     background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.55), transparent);
 }
 
-/* === How To Play screenshots === */
+/* === How To Play === */
+
+.full-height.htp-page {
+    height: auto;
+    min-height: calc(100vh - 88px);
+    padding-bottom: 2rem;
+}
+
 .htp-figure {
     margin: 1rem 0 1.25rem;
 }
