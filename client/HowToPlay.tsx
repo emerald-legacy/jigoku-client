@@ -1,5 +1,27 @@
 import { Link } from "react-router-dom";
 
+import { asset } from "./assetUrl";
+
+type ShotProps = {
+    name: string;
+    alt: string;
+    caption: string;
+};
+
+// Screenshots open full size in a new tab — the in-page copies are scaled down.
+function Shot({ name, alt, caption }: ShotProps) {
+    const url = asset(`howtoplay/${ name }.webp`);
+
+    return (
+        <figure className="htp-figure">
+            <a href={ url } target="_blank" rel="noopener noreferrer">
+                <img src={ url } alt={ alt } loading="lazy" />
+            </a>
+            <figcaption>{ caption }</figcaption>
+        </figure>
+    );
+}
+
 function HowToPlay() {
     return (
         <div className="col-xs-12 full-height relative">
