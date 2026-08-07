@@ -67,6 +67,82 @@
     background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.55), transparent);
 }
 
+/* === How To Play screenshots === */
+.htp-figure {
+    margin: 1rem 0 1.25rem;
+}
+
+.htp-figure a {
+    display: block;
+    max-width: max-content;
+}
+
+.htp-figure img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid rgba(120, 180, 80, 0.25);
+    border-radius: 4px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.htp-figure figcaption {
+    margin-top: 0.4rem;
+    font-size: 0.85em;
+    color: rgba(160, 180, 140, 0.75);
+}
+
+.htp-figure-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.htp-figure-row .htp-figure {
+    flex: 1 1 280px;
+    min-width: 0;
+}
+
+/* Legend keyed to the numbered badges in layout-overview. Scoped to
+   .about-container to outrank its `list-style: revert` rule in tailwind.css,
+   which is imported after this file and would otherwise restore the markers. */
+.about-container ol.htp-legend {
+    list-style: none;
+    margin: 1rem 0 0;
+    padding: 0;
+    counter-reset: htp-legend;
+}
+
+ol.htp-legend > li {
+    position: relative;
+    counter-increment: htp-legend;
+    margin-bottom: 0.55rem;
+    padding-left: 2.4rem;
+    min-height: 1.75rem;
+    line-height: 1.5;
+}
+
+ol.htp-legend > li::before {
+    content: counter(htp-legend);
+    position: absolute;
+    left: 0;
+    top: -0.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    border: 2px solid rgb(190, 40, 40);
+    background: rgba(20, 14, 16, 0.9);
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: white;
+}
+
 /* === News admin === */
 .news-admin {
     width: 100%;
