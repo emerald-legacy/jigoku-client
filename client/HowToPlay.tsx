@@ -1,8 +1,30 @@
 import { Link } from "react-router-dom";
 
+import { asset } from "./assetUrl";
+
+type ShotProps = {
+    name: string;
+    alt: string;
+    caption: string;
+};
+
+// Screenshots open full size in a new tab — the in-page copies are scaled down.
+function Shot({ name, alt, caption }: ShotProps) {
+    const url = asset(`howtoplay/${ name }.webp`);
+
+    return (
+        <figure className="htp-figure">
+            <a href={ url } target="_blank" rel="noopener noreferrer">
+                <img src={ url } alt={ alt } loading="lazy" />
+            </a>
+            <figcaption>{ caption }</figcaption>
+        </figure>
+    );
+}
+
 function HowToPlay() {
     return (
-        <div className="col-xs-12 full-height relative">
+        <div className="col-xs-12 full-height relative htp-page">
             <div className="panel-title text-center">How To Play on Jigoku Online</div>
             <div className="panel about-container">
                 <p>
@@ -39,6 +61,16 @@ function HowToPlay() {
                     <h3>Topics</h3>
                     <ul className="htp-main-list">
                         <li><a href="#decks">Adding Decks</a></li>
+                        <li><a href="#starting">Starting a Game</a></li>
+                        <li><a href="#setup">Setting Up the Board</a></li>
+                        <li><a href="#layout">The Game Screen</a></li>
+                        <li><a href="#playing">Playing the Game</a></li>
+                        <ul className="htp-sub-list">
+                            <li><a href="#dynasty">Dynasty Phase</a></li>
+                            <li><a href="#draw">Draw Phase</a></li>
+                            <li><a href="#conflict">Conflict Phase</a></li>
+                            <li><a href="#interrupts">Interrupts, Reactions and Card Piles</a></li>
+                        </ul>
                         <li><a href="#profile">Profile Options</a></li>
                         <ul className="htp-sub-list">
                             <li><a href="#action">Action Windows</a></li>
@@ -65,6 +97,177 @@ function HowToPlay() {
                         brought up when you click &lsquo;Import Deck&rsquo;. You are now ready to start playing.
                         Head over to the <Link to="/play">Play</Link> section to create, join or
                         watch games.
+                    </p>
+                </section>
+
+                <section className="format-section">
+                    <h3 id="starting">Starting a Game</h3>
+                    <p>
+                        In the <Link to="/play">Play</Link> section, click &lsquo;New Game&rsquo; to create a
+                        game of your own, or &lsquo;Join&rsquo; on one that is already open. The New Game
+                        window lets you choose your game&rsquo;s format.
+                    </p>
+                    <p>
+                        Both players then click the green &lsquo;Select deck...&rsquo; link to open a popup
+                        window showing all of their imported decks that are legal for the game&rsquo;s
+                        format.
+                    </p>
+                    <Shot
+                        name="new-game-select-deck"
+                        alt="The lobby waiting room with a green Select deck link next to each player"
+                        caption="Click the green ‘Select deck...’ link next to your name."
+                    />
+                    <p>
+                        Once both players have selected a deck, the player who set up the game can
+                        click &lsquo;Start&rsquo; to begin the match.
+                    </p>
+                    <Shot
+                        name="new-game-start"
+                        alt="The waiting room showing 'Ready to begin, click start to begin the game'"
+                        caption="With both decks chosen, the Start button becomes available to the game’s host."
+                    />
+                </section>
+
+                <section className="format-section">
+                    <h3 id="setup">Setting Up the Board</h3>
+                    <p>
+                        Once the game begins, your first decision after first player is determined is
+                        to choose which province will be your stronghold province. Your province deck
+                        is highlighted in the bottom-left of the screen &mdash; click it, click one
+                        eligible province, then click &lsquo;Done&rsquo;. By default your other provinces are
+                        randomised in their position in your non-stronghold province row.
+                    </p>
+                    <Shot
+                        name="setup-stronghold-province"
+                        alt="Setup phase prompt to select a stronghold province, with the province deck highlighted bottom-left"
+                        caption="The setup phase prompt, with your province deck highlighted in the bottom-left."
+                    />
+                    <Shot
+                        name="setup-province-deck"
+                        alt="Province deck popup showing the five provinces, with one selected"
+                        caption="Clicking the province deck opens it so you can pick your stronghold province."
+                    />
+                    <p>
+                        You will then see your initial dynasty draw. Click any cards you wish to
+                        mulligan, then click &lsquo;Done&rsquo;. Repeat the process for your conflict draw.
+                    </p>
+                    <div className="htp-figure-row">
+                        <Shot
+                            name="setup-dynasty-mulligan"
+                            alt="Dynasty mulligan prompt with one selected dynasty card highlighted in green"
+                            caption="Dynasty mulligan — selected cards are outlined in green."
+                        />
+                        <Shot
+                            name="setup-conflict-mulligan"
+                            alt="Conflict mulligan prompt showing the opening hand"
+                            caption="Conflict mulligan, using the same selection and Done flow."
+                        />
+                    </div>
+                </section>
+
+                <section className="format-section">
+                    <h3 id="layout">The Game Screen</h3>
+                    <p>
+                        The numbers below match the labels on the screenshot. Your own side of the
+                        board is always at the bottom of the screen; your opponent&rsquo;s mirrors it at
+                        the top.
+                    </p>
+                    <Shot
+                        name="layout-overview"
+                        alt="The Jigoku game board with eleven numbered callouts"
+                        caption="Click the image to open it full size in a new tab."
+                    />
+                    <ol className="htp-legend">
+                        <li>
+                            <strong>Game Log and Chat Window</strong> &mdash; click in the text entry box at
+                            the bottom to message your opponent, or to enter a manual command.
+                        </li>
+                        <li>
+                            <strong>Manual Mode Button</strong> &mdash; if you need to correct the game state
+                            for any reason, first click here.
+                        </li>
+                        <li>
+                            <strong>Your Hand</strong> &mdash; a floating window you can move around the
+                            screen by dragging and holding the green bar.
+                        </li>
+                        <li><strong>Your Province Row and Dynasty Cards.</strong></li>
+                        <li><strong>Your Stronghold and Role Card.</strong></li>
+                        <li><strong>Unclaimed Ring Pool.</strong></li>
+                        <li><strong>Claimed Ring Pool</strong> (your opponent&rsquo;s).</li>
+                        <li>
+                            <strong>Counters</strong> for cards in hand, fate in pool and honor total
+                            (your opponent&rsquo;s).
+                        </li>
+                        <li>
+                            <strong>Conflicts Available</strong> (your opponent&rsquo;s) &mdash; how many conflicts
+                            a player still has the opportunity to declare, and which conflict types
+                            are available, political or military.
+                        </li>
+                        <li><strong>First Player Token.</strong></li>
+                        <li><strong>Bid Dial.</strong></li>
+                    </ol>
+                </section>
+
+                <section className="format-section">
+                    <h3 id="playing">Playing the Game</h3>
+                    <p>
+                        At all times, click on cards in your hand or in play to play that card or
+                        trigger its ability. The prompt box in the middle of the board always tells
+                        you what the game is waiting for.
+                    </p>
+
+                    <h4 id="dynasty">Dynasty Phase</h4>
+                    <p>
+                        Click a character in your provinces to play it, and you will be prompted to
+                        choose how much extra fate to place on it. Cards that are eligible to be
+                        played from hand can be clicked on in the same way.
+                    </p>
+                    <Shot
+                        name="dynasty-choose-fate"
+                        alt="Dynasty phase prompt asking how much additional fate to place on a character"
+                        caption="Choosing additional fate when playing a character."
+                    />
+
+                    <h4 id="draw">Draw Phase</h4>
+                    <p>
+                        Follow the prompts on screen to choose your honor bid for cards. You will
+                        then automatically be prompted to take an action by clicking on a card in
+                        hand or in play, or to pass.
+                    </p>
+
+                    <h4 id="conflict">Conflict Phase</h4>
+                    <p>
+                        During the conflict phase, after both players have passed, the first player
+                        has the first opportunity to either declare or pass a conflict. Follow the
+                        on-screen prompt to select a ring and conflict type &mdash; to switch between
+                        military and political, click a selected ring a second time. Then click on
+                        one of your opponent&rsquo;s provinces to attack, and on the characters you want
+                        to attack with. Finally, click &lsquo;Initiate Conflict&rsquo;.
+                    </p>
+                    <Shot
+                        name="conflict-declare"
+                        alt="Declaring a conflict: a selected ring, a targeted province and a declared attacker, with the Initiate Conflict button"
+                        caption="Declaring a military conflict: the ring, the attacked province and the declared attacker are all selected before initiating."
+                    />
+
+                    <h4 id="interrupts">Interrupts, Reactions and Card Piles</h4>
+                    <p>
+                        If one of your cards can interrupt or react to an ability that has been
+                        triggered, the screen will go dark and highlight all the possible cards that
+                        can respond &mdash; some of them might be in your discard pile.
+                    </p>
+                    <Shot
+                        name="interrupt-window"
+                        alt="The board darkened during an interrupt window, with the one card able to respond highlighted"
+                        caption="An interrupt window: everything dims except the cards that can respond."
+                    />
+                    <p>
+                        To see cards in a discard pile, in the removed from game area, or tucked
+                        behind another card, click on the area and a popup window will open. You can
+                        close the window with the &times; button in its top-right corner. You can also
+                        hover your mouse over a card to see a larger image that is easier to read
+                        &mdash; if you have control of a facedown card in play, hovering over it will
+                        show you its other side as well.
                     </p>
                 </section>
 
