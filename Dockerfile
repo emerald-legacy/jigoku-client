@@ -3,6 +3,9 @@ FROM node:26.5-alpine3.23@sha256:2a633e101381371ba148c7c212bf447c00cd267d814b708
 
 WORKDIR /app
 
+# Suppress npm's "new major version available" notice — the node image pins npm
+ENV NPM_CONFIG_UPDATE_NOTIFIER=false
+
 COPY package*.json ./
 
 RUN --mount=type=cache,target=/root/.npm npm ci
