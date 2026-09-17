@@ -25,6 +25,7 @@ export default defineConfig({
                     name: 'client',
                     globals: true,
                     environment: 'jsdom',
+                    pool: 'vmThreads',
                     setupFiles: ['./test/client/setup.ts'],
                     include: ['test/client/**/*.spec.{js,jsx,ts,tsx}']
                 }
