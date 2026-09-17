@@ -81,7 +81,7 @@
     "@types/react-transition-group": "4.4.12",
     "@typescript-eslint/parser": "8.70.0",
     "@vitejs/plugin-react": "6.1.1",
-    "@vitest/coverage-v8": "4.1.11",
+    "@vitest/coverage-v8": "5.0.0",
     "babel-plugin-react-compiler": "1.0.0",
     "emoji-js": "3.9.0",
     "eslint": "10.10.0",
