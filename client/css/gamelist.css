@@ -21,7 +21,7 @@
     border: 1px solid var(--color-primary);
     padding: 8px 10px;
     margin-bottom: 5px;
-    color: #e8eadc;
+    color: var(--color-foreground);
 
     &.skirmish {
         border-color: var(--color-info);
@@ -29,7 +29,7 @@
     }
 
     &.sanctuary {
-        background-color: rgba(62, 146, 56, 0.1);
+        background-color: rgb(var(--jade-deep-rgb) / 0.1);
     }
 
     &.active {
@@ -62,32 +62,32 @@
 }
 
 .game-badge-mode {
-    background: rgba(51, 102, 0, 0.4);
-    color: white;
+    background: rgb(var(--primary-rgb) / 0.4);
+    color: var(--white);
 
     .game-row.skirmish &,
     .game-row.imperial & {
-        background: rgb(180, 150, 40);
+        background: var(--gold-deep);
     }
 
     .game-row.obsidian & {
-        background: rgb(190, 40, 40);
+        background: var(--crimson);
     }
 }
 
 .game-badge-type-beginner {
-    background: rgb(62, 146, 56);
-    color: white;
+    background: var(--jade-deep);
+    color: var(--white);
 }
 
 .game-badge-type-casual {
-    background: rgba(91, 192, 222, 0.3);
-    color: white;
+    background: rgb(var(--info-rgb) / 0.3);
+    color: var(--white);
 }
 
 .game-badge-type-competitive {
     background: rgb(139, 35, 35);
-    color: white;
+    color: var(--white);
 }
 
 .game-badge-lock {
@@ -98,7 +98,7 @@
 .game-row-name {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    var(--white)-space: nowrap;
     font-weight: bold;
 }
 
@@ -125,12 +125,12 @@
 .player-name {
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    var(--white)-space: nowrap;
 }
 
 .game-row-vs {
     flex-shrink: 0;
-    color: #e8eadc;
+    color: var(--color-foreground);
     font-size: 14px;
     padding: 0 4px;
 }
@@ -167,10 +167,10 @@
 .deck-selection {
     padding: 2px 8px;
     border-radius: 3px;
-    background: rgba(51, 102, 0, 0.5);
-    color: #e8eadc;
+    background: rgb(var(--primary-rgb) / 0.5);
+    color: var(--color-foreground);
     font-size: 12px;
-    white-space: nowrap;
+    var(--white)-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 250px;
@@ -204,22 +204,22 @@
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    white-space: nowrap;
+    var(--white)-space: nowrap;
 
     &.valid {
-        background: linear-gradient(180deg, rgb(54, 80, 30), rgba(34, 50, 20, 0.9));
-        color: rgb(150, 220, 90);
-        border: 1px solid rgba(120, 180, 80, 0.4);
+        background: linear-gradient(180deg, var(--moss-light), rgb(var(--moss-rgb) / 0.9));
+        color: var(--jade-bright);
+        border: 1px solid rgb(var(--jade-rgb) / 0.4);
     }
 
     &.casual-play {
         background: var(--color-warning);
-        color: white;
+        color: var(--white);
     }
 
     &.invalid {
         background: var(--color-danger);
-        color: white;
+        color: var(--white);
     }
 }
 
@@ -256,7 +256,7 @@
 }
 
 .player-row-name {
-    white-space: nowrap;
+    var(--white)-space: nowrap;
 }
 
 .game-list-container {
@@ -284,22 +284,22 @@
 .game-stats-tab {
     flex: 1;
     padding: 4px 8px;
-    border: 1px solid rgba(51, 102, 0, 0.4);
+    border: 1px solid rgb(var(--primary-rgb) / 0.4);
     border-radius: 3px;
     background: transparent;
-    color: rgba(232, 234, 220, 0.6);
+    color: rgb(var(--bone-rgb) / 0.6);
     font-size: 12px;
     cursor: pointer;
     transition: background-color 0.15s, color 0.15s;
 
     &:hover {
-        background: rgba(51, 102, 0, 0.2);
-        color: #e8eadc;
+        background: rgb(var(--primary-rgb) / 0.2);
+        color: var(--color-foreground);
     }
 
     &.active {
-        background: rgba(51, 102, 0, 0.4);
-        color: #e8eadc;
+        background: rgb(var(--primary-rgb) / 0.4);
+        color: var(--color-foreground);
         font-weight: 600;
     }
 }
@@ -333,7 +333,7 @@
     transition: background-color 0.15s;
 
     &.expanded {
-        background: rgba(51, 102, 0, 0.15);
+        background: rgb(var(--primary-rgb) / 0.15);
     }
 }
 
@@ -370,7 +370,7 @@
 .game-stats-matchup-vs {
     width: 24px;
     flex-shrink: 0;
-    color: #e8eadc;
+    color: var(--color-foreground);
     font-size: 12px;
     font-weight: 600;
 }
@@ -398,7 +398,7 @@
 
 .game-stats-best {
     padding-top: 8px;
-    border-top: 1px solid rgba(51, 102, 0, 0.4);
+    border-top: 1px solid rgb(var(--primary-rgb) / 0.4);
 }
 
 .game-stats-best-label {

@@ -12,9 +12,9 @@
 }
 
 .menu-pane-source {
-    background: linear-gradient(180deg, rgba(20, 22, 18, 0.9), rgba(12, 14, 10, 0.9));
-    border-left: 1px solid rgba(120, 180, 80, 0.2);
-    border-right: 1px solid rgba(120, 180, 80, 0.2);
+    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.9), rgb(var(--ink-deep-rgb) / 0.9));
+    border-left: 1px solid rgb(var(--jade-rgb) / 0.2);
+    border-right: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-top: none;
     border-bottom: none;
     border-radius: 0;
@@ -22,7 +22,7 @@
     font-style: normal;
     font-weight: 500;
     font-size: 13px;
-    color: rgb(232, 234, 220);
+    color: var(--color-foreground);
     margin: 0 5px;
     padding: 6px 10px 2px 10px;
     text-align: center;
@@ -49,27 +49,27 @@
     font-size: 14px;
     font-weight: 600;
     line-height: 1.4;
-    color: rgb(232, 234, 220);
+    color: var(--color-foreground);
     margin-bottom: 8px;
     padding-bottom: 6px;
-    border-bottom: 1px solid rgba(120, 180, 80, 0.1);
+    border-bottom: 1px solid rgb(var(--jade-rgb) / 0.1);
 }
 
 .menu-pane button {
     width: 100%;
     margin-bottom: 5px;
-    white-space: normal;
+    var(--white)-space: normal;
 }
 
 .phase-indicator {
     margin: 5px;
     margin-bottom: 0;
     padding: 5px 0;
-    border: 1px solid rgba(120, 180, 80, 0.2);
+    border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px 6px 0 0;
-    border-bottom: 1px solid rgba(120, 180, 80, 0.1);
-    background: linear-gradient(180deg, rgba(34, 50, 20, 0.9), rgba(20, 30, 12, 0.7));
-    color: rgb(232, 234, 220);
+    border-bottom: 1px solid rgb(var(--jade-rgb) / 0.1);
+    background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.9), rgb(var(--moss-deep-rgb) / 0.7));
+    color: var(--color-foreground);
     text-align: center;
     text-transform: uppercase;
     width: 200px !important;
@@ -85,5 +85,5 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
 }

@@ -7,19 +7,19 @@
     border: 8px solid transparent;
 
     &.left {
-        border-right-color: black;
+        border-right-color: var(--black);
     }
 
     &.right {
-        border-left-color: black;
+        border-left-color: var(--black);
     }
 
     &.up {
-        border-bottom-color: black;
+        border-bottom-color: var(--black);
     }
 
     &.down {
-        border-top-color: black;
+        border-top-color: var(--black);
     }
 
     &.lg {

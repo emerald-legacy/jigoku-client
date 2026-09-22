@@ -1,0 +1,138 @@
+/* Colour palette — the single source of truth for every colour in the client.
+
+   Each entry is a channel triplet so the same colour can be used at any opacity:
+
+       color: var(--jade);                     opaque
+       border-color: rgb(var(--jade-rgb) / 0.2);   with alpha
+
+   Nine colours marked "literal in @theme" keep their value in tailwind.css instead,
+   because Tailwind generates utility classes (bg-danger, text-warning, …) from them.
+   Only their channels are mirrored here, so alpha still works. Keep the two in sync.
+
+   Alphas follow the ladder 0.05 / 0.1 / 0.2 … 0.9 / 1. */
+
+:root {
+
+    /* Jade — the signature green: rules, borders, focus rings, accents */
+    --jade-rgb: 120 180 80;           /* rules and borders everywhere (111 uses) */
+    --jade-bright-rgb: 150 220 90;    /* hover and active accents */
+    --jade-light-rgb: 120 200 100;    /* lifted backgrounds and highlights */
+    --jade-vivid-rgb: 125 194 66;     /* lobby accents, focus glow */
+    --jade-glow-rgb: 80 160 60;       /* button hover halo */
+    --jade-deep-rgb: 62 146 56;       /* resolved/positive states */
+    --link-rgb: 94 160 38;            /* links — literal in @theme */
+    --tertiary-rgb: 77 153 0;         /* headers — literal in @theme */
+
+    --jade: rgb(var(--jade-rgb));
+    --jade-bright: rgb(var(--jade-bright-rgb));
+    --jade-light: rgb(var(--jade-light-rgb));
+    --jade-vivid: rgb(var(--jade-vivid-rgb));
+    --jade-glow: rgb(var(--jade-glow-rgb));
+    --jade-deep: rgb(var(--jade-deep-rgb));
+
+    /* Moss — the dark greens that carry panel and button surfaces */
+    --moss-light-rgb: 54 80 30;       /* button hover gradient, top stop */
+    --primary-rgb: 51 102 0;          /* primary green — literal in @theme */
+    --moss-rgb: 34 50 20;             /* panel headers, title bars */
+    --moss-deep-rgb: 20 30 12;        /* the dark stop of every green gradient */
+
+    --moss-light: rgb(var(--moss-light-rgb));
+    --moss: rgb(var(--moss-rgb));
+    --moss-deep: rgb(var(--moss-deep-rgb));
+
+    /* Ink — the near-blacks the board and panels are built from */
+    --ink-rgb: 20 22 18;              /* panel surface, top stop */
+    --ink-deep-rgb: 12 14 10;         /* panel surface, bottom stop */
+    --ink-darker-rgb: 10 12 8;        /* inset wells */
+    --ink-darkest-rgb: 8 10 6;        /* deepest recesses */
+
+    --ink: rgb(var(--ink-rgb));
+    --ink-deep: rgb(var(--ink-deep-rgb));
+    --ink-darker: rgb(var(--ink-darker-rgb));
+    --ink-darkest: rgb(var(--ink-darkest-rgb));
+
+    /* Bone — the text ramp, lightest to most muted */
+    --bone-rgb: 232 234 220;          /* primary text — literal in @theme */
+    --sage-rgb: 180 200 150;          /* secondary and meta text (46 uses) */
+    --sage-pale-rgb: 200 210 180;     /* lobby supporting text */
+
+    --sage: rgb(var(--sage-rgb));
+    --sage-pale: rgb(var(--sage-pale-rgb));
+
+    /* Neutrals */
+    --white-rgb: 255 255 255;         /* text on coloured chips, hairlines */
+    --black-rgb: 0 0 0;               /* shadows and scrims (66 uses) */
+    --slate-rgb: 55 55 55;            /* inert controls */
+
+    --white: rgb(var(--white-rgb));
+    --black: rgb(var(--black-rgb));
+    --slate: rgb(var(--slate-rgb));
+
+    /* Reds — danger, destructive actions, the military conflict type */
+    --crimson-deep-rgb: 140 30 30;    /* destructive button base */
+    --crimson-rgb: 190 40 40;         /* destructive button hover */
+    --vermilion-rgb: 212 74 61;       /* alerts, manual-mode marker */
+    --military-rgb: 187 62 62;        /* military ring — literal in @theme */
+    --danger-rgb: 217 83 79;          /* danger — literal in @theme */
+    --blush-rgb: 255 192 203;         /* military contest glow */
+
+    --crimson-deep: rgb(var(--crimson-deep-rgb));
+    --crimson: rgb(var(--crimson-rgb));
+    --vermilion: rgb(var(--vermilion-rgb));
+    --blush: rgb(var(--blush-rgb));
+
+    /* Blues — the political conflict type and informational states */
+    --political-rgb: 48 101 187;      /* political ring — literal in @theme */
+    --sky-rgb: 173 216 230;           /* political contest glow */
+    --info-rgb: 91 192 222;           /* info — literal in @theme */
+
+    --sky: rgb(var(--sky-rgb));
+
+    /* The five elements — rings, their claim flashes and effect animations */
+    --element-fire-rgb: 239 68 68;    /* fire */
+    --element-water-rgb: 59 130 246;  /* water */
+    --element-earth-rgb: 200 169 106; /* earth (ochre) */
+    --element-air-rgb: 220 235 255;   /* air */
+    --element-void-rgb: 139 92 246;   /* void */
+    --element-void-deep-rgb: 109 40 217; /* void, the darker glow stop */
+
+    --element-fire: rgb(var(--element-fire-rgb));
+    --element-water: rgb(var(--element-water-rgb));
+    --element-earth: rgb(var(--element-earth-rgb));
+    --element-air: rgb(var(--element-air-rgb));
+    --element-void: rgb(var(--element-void-rgb));
+    --element-void-deep: rgb(var(--element-void-deep-rgb));
+
+    /* Golds and ambers — patron trim, warnings, the fire flare */
+    --gold-rgb: 212 175 55;           /* patron trim, Lion clan */
+    --gold-deep-rgb: 180 150 40;      /* patron trim, shadowed */
+    --gold-pale-rgb: 220 200 140;     /* seal highlights */
+    --amber-rgb: 245 176 66;          /* first-player marker */
+    --ember-rgb: 251 146 60;          /* the fire ring flare */
+    --bronze-rgb: 180 110 30;         /* skirmish and imperial badges */
+    --warning-rgb: 240 173 78;        /* warning — literal in @theme */
+
+    --gold: rgb(var(--gold-rgb));
+    --gold-deep: rgb(var(--gold-deep-rgb));
+    --gold-pale: rgb(var(--gold-pale-rgb));
+    --amber: rgb(var(--amber-rgb));
+    --ember: rgb(var(--ember-rgb));
+    --bronze: rgb(var(--bronze-rgb));
+
+    /* The seven great clans — canonical identity colours, never substitute */
+    --clan-crab-rgb: 0 28 148;        /* Crab */
+    --clan-crane-rgb: 0 137 222;      /* Crane */
+    --clan-dragon-rgb: 0 164 114;     /* Dragon */
+    --clan-lion-rgb: 203 157 0;       /* Lion */
+    --clan-phoenix-rgb: 193 100 0;    /* Phoenix */
+    --clan-scorpion-rgb: 166 22 0;    /* Scorpion */
+    --clan-unicorn-rgb: 120 0 152;    /* Unicorn */
+
+    --clan-crab: rgb(var(--clan-crab-rgb));
+    --clan-crane: rgb(var(--clan-crane-rgb));
+    --clan-dragon: rgb(var(--clan-dragon-rgb));
+    --clan-lion: rgb(var(--clan-lion-rgb));
+    --clan-phoenix: rgb(var(--clan-phoenix-rgb));
+    --clan-scorpion: rgb(var(--clan-scorpion-rgb));
+    --clan-unicorn: rgb(var(--clan-unicorn-rgb));
+}

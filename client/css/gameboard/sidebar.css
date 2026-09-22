@@ -5,8 +5,8 @@
     bottom: 0;
     min-height: max-content;
     font-size: 14px;
-    background-color: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.4);
+    background-color: rgb(var(--black-rgb) / 0.4);
+    box-shadow: 0 0 10px 5px rgb(var(--black-rgb) / 0.4);
     grid-column-start: 1;
     display: grid;
     grid-template-rows: auto minmax(min-content, 1fr) 18px minmax(min-content, 1fr) auto;

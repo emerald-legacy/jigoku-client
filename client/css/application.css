@@ -10,7 +10,7 @@
     color: #9d9d9d;
 
     &:hover {
-        color: #e8eadc;
+        color: var(--color-foreground);
     }
 }
 
@@ -19,7 +19,7 @@
     display: inline;
     padding: 0;
     line-height: inherit;
-    color: #d4af37;
+    color: var(--gold);
 }
 
 @media (max-width: 1366px) {
@@ -45,8 +45,8 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: linear-gradient(180deg, rgba(34, 50, 20, 0.9), rgba(20, 30, 12, 0.7));
-    color: rgb(232, 234, 220);
+    background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.9), rgb(var(--moss-deep-rgb) / 0.7));
+    color: var(--color-foreground);
     font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
     font-weight: 600;
     font-size: 14px;
@@ -55,8 +55,8 @@
     margin: 5px;
     margin-bottom: 0;
     padding: 5px 0.9rem;
-    border: 1px solid rgba(120, 180, 80, 0.2);
-    border-bottom: 1px solid rgba(120, 180, 80, 0.1);
+    border: 1px solid rgb(var(--jade-rgb) / 0.2);
+    border-bottom: 1px solid rgb(var(--jade-rgb) / 0.1);
     border-radius: 6px 6px 0 0;
     text-transform: uppercase;
     box-sizing: border-box;
@@ -67,11 +67,11 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
 }
 
 .panel-title-icon {
-    color: var(--lobby-jade, #6abf3a);
+    color: var(--color-link);
     flex-shrink: 0;
 }
 
@@ -81,7 +81,7 @@
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: rgba(180, 200, 150, 0.7);
+    color: rgb(var(--sage-rgb) / 0.7);
     margin-left: auto;
 }
 
@@ -96,12 +96,12 @@
 .panel-title .close-button {
     display: inline-flex;
     align-items: center;
-    color: rgba(180, 200, 150, 0.7);
+    color: rgb(var(--sage-rgb) / 0.7);
     cursor: pointer;
     transition: color 0.15s;
 }
 .panel-title .close-button:hover {
-    color: rgb(150, 220, 90);
+    color: var(--jade-bright);
 }
 
 .selected {

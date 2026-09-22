@@ -1,6 +1,9 @@
 /* Self-hosted webfonts (SIL OFL 1.1, see public/fonts/LICENSES/) */
 @import "./css/fonts.css";
 
+/* Palette first: every other stylesheet references its tokens */
+@import "./css/colours.css";
+
 /* Converted from LESS — order matches original site.less import chain */
 @import "./css/icons.css";
 @import "./css/application.css";
@@ -136,25 +139,25 @@
     }
     .btn-primary,
     .btn-default {
-        background: linear-gradient(180deg, rgba(34, 50, 20, 0.9), rgba(20, 30, 12, 0.9));
-        color: rgb(232, 234, 220);
-        border: 1px solid rgba(120, 180, 80, 0.4);
+        background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.9), rgb(var(--moss-deep-rgb) / 0.9));
+        color: var(--color-foreground);
+        border: 1px solid rgb(var(--jade-rgb) / 0.4);
     }
     .btn-primary:not(:disabled):hover,
     .btn-default:not(:disabled):hover {
-        background: linear-gradient(180deg, rgb(54, 80, 30), rgb(34, 50, 20));
-        border-color: rgba(120, 180, 80, 0.6);
-        color: rgb(232, 234, 220);
+        background: linear-gradient(180deg, var(--moss-light), var(--moss));
+        border-color: rgb(var(--jade-rgb) / 0.6);
+        color: var(--color-foreground);
     }
     .btn-danger {
-        background: linear-gradient(180deg, rgba(140, 30, 30, 0.9), rgba(140, 30, 30, 0.5));
-        color: rgb(232, 234, 220);
-        border: 1px solid rgba(187, 62, 62, 0.4);
+        background: linear-gradient(180deg, rgb(var(--crimson-deep-rgb) / 0.9), rgb(var(--crimson-deep-rgb) / 0.5));
+        color: var(--color-foreground);
+        border: 1px solid rgb(var(--military-rgb) / 0.4);
     }
     .btn-danger:not(:disabled):hover {
-        background: linear-gradient(180deg, rgb(190, 40, 40), rgb(140, 30, 30));
-        border-color: rgba(187, 62, 62, 0.6);
-        color: rgb(232, 234, 220);
+        background: linear-gradient(180deg, var(--crimson), var(--crimson-deep));
+        border-color: rgb(var(--military-rgb) / 0.6);
+        color: var(--color-foreground);
     }
     /* Prominent form action: the .btn modifier used for submit/save buttons that carry an
        icon and an uppercase label. Colour still comes from .btn-primary / .btn-danger. */
@@ -166,14 +169,14 @@
         font-size: 0.95rem;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        white-space: nowrap;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+        var(--white)-space: nowrap;
+        box-shadow: 0 2px 10px rgb(var(--black-rgb) / 0.4);
     }
     .btn-primary.btn-action:not(:disabled):hover {
-        box-shadow: 0 0 16px rgba(80, 160, 60, 0.2);
+        box-shadow: 0 0 16px rgb(var(--jade-glow-rgb) / 0.2);
     }
     .btn-danger.btn-action:not(:disabled):hover {
-        box-shadow: 0 0 18px rgba(187, 62, 62, 0.4);
+        box-shadow: 0 0 18px rgb(var(--military-rgb) / 0.4);
     }
     .btn-action:not(:disabled):active {
         transform: translateY(1px);
@@ -309,7 +312,7 @@ img, svg {
 
 hr {
     border: none;
-    border-top: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid rgb(var(--white-rgb) / 0.3);
     margin: 5px 0;
 }
 
@@ -347,7 +350,7 @@ body {
 
 h1 {
     font-size: 24px;
-    color: #e8eadc;
+    color: var(--color-foreground);
 }
 
 h3 {
@@ -368,6 +371,6 @@ a {
     }
 
     &.btn {
-        color: #e8eadc;
+        color: var(--color-foreground);
     }
 }

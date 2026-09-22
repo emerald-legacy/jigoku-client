@@ -73,18 +73,18 @@ svg.ring-svg {
 
     &.contested {
         &.tint-military {
-            -webkit-filter: drop-shadow(0 0 12px pink);
-            filter: drop-shadow(0 0 12px pink);
+            -webkit-filter: drop-shadow(0 0 12px var(--blush));
+            filter: drop-shadow(0 0 12px var(--blush));
         }
 
         &.tint-political {
-            -webkit-filter: drop-shadow(0 0 12px lightblue);
-            filter: drop-shadow(0 0 12px lightblue);
+            -webkit-filter: drop-shadow(0 0 12px var(--sky));
+            filter: drop-shadow(0 0 12px var(--sky));
         }
 
         &.tint-neutral {
-            -webkit-filter: drop-shadow(0 0 12px white);
-            filter: drop-shadow(0 0 12px white);
+            -webkit-filter: drop-shadow(0 0 12px var(--white));
+            filter: drop-shadow(0 0 12px var(--white));
         }
     }
 
@@ -97,7 +97,7 @@ svg.ring-svg {
     margin-right: 5px;
     margin-top: 0px;
     position: relative;
-    color: white;
+    color: var(--white);
     background: transparent;
     border: none;
     outline: none;
@@ -138,18 +138,18 @@ svg.ring-svg {
    so the highlight moves onto the ring image itself (traces the art, not a disc). */
 .ring-patron-image.contested {
     &.tint-military {
-        -webkit-filter: drop-shadow(0 0 12px pink);
-        filter: drop-shadow(0 0 12px pink);
+        -webkit-filter: drop-shadow(0 0 12px var(--blush));
+        filter: drop-shadow(0 0 12px var(--blush));
     }
 
     &.tint-political {
-        -webkit-filter: drop-shadow(0 0 12px lightblue);
-        filter: drop-shadow(0 0 12px lightblue);
+        -webkit-filter: drop-shadow(0 0 12px var(--sky));
+        filter: drop-shadow(0 0 12px var(--sky));
     }
 
     &.tint-neutral {
-        -webkit-filter: drop-shadow(0 0 12px white);
-        filter: drop-shadow(0 0 12px white);
+        -webkit-filter: drop-shadow(0 0 12px var(--white));
+        filter: drop-shadow(0 0 12px var(--white));
     }
 }
 
@@ -183,13 +183,13 @@ svg.ring-svg {
     left: 50%;
     transform: translateX(-50%);
     margin-top: 4px;
-    background: rgba(0, 0, 0, 0.9);
-    color: #e8eadc;
+    background: rgb(var(--black-rgb) / 0.9);
+    color: var(--color-foreground);
     padding: 6px 10px;
     border-radius: 4px;
     font-size: 11px;
     line-height: 1.4;
-    white-space: nowrap;
+    var(--white)-space: nowrap;
     z-index: 1000;
     pointer-events: none;
 }

@@ -2,7 +2,7 @@
     opacity: 0;
     pointer-events: none;
     min-width: 250px;
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgb(var(--black-rgb) / 0.9);
     padding: 1px;
 
     & .stat-container {
@@ -26,7 +26,7 @@
     flex-direction: column;
     padding: 5px;
     margin-right: 10px;
-    border: 1px solid #336600;
+    border: 1px solid var(--color-primary);
     border-radius: 4px;
     min-width: 35px;
     justify-content: center;
@@ -59,7 +59,7 @@
 .stat-specifics {
     font-size: 1.0em;
     flex: 3 1 100%;
-    border: 1px solid #336600;
+    border: 1px solid var(--color-primary);
     border-radius: 4px;
     padding: 4px;
 }
@@ -88,5 +88,5 @@
     font-size: 1.5em;
     line-height: 1;
     margin-bottom: 0;
-    color: rgb(232, 234, 220);
+    color: var(--color-foreground);
 }

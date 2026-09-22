@@ -25,10 +25,10 @@
 
 .popup {
     z-index: var(--layer-card-menu);
-    background: linear-gradient(180deg, rgba(20, 22, 18, 0.9), rgba(12, 14, 10, 0.9));
-    border: 1px solid rgba(120, 180, 80, 0.2);
+    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.9), rgb(var(--ink-deep-rgb) / 0.9));
+    border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 24px rgb(var(--black-rgb) / 0.5);
 
     & a {
         display: inline-block;
@@ -97,10 +97,10 @@
 }
 
 .settings-popup {
-    background: linear-gradient(180deg, rgb(20, 22, 18), rgb(12, 14, 10));
-    border: 1px solid rgba(120, 180, 80, 0.2);
+    background: linear-gradient(180deg, var(--ink), var(--ink-deep));
+    border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 10px 30px rgb(var(--black-rgb) / 0.6);
     position: relative;
 }
 
@@ -118,7 +118,7 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
     pointer-events: none;
 }
 
@@ -130,8 +130,8 @@
     width: 100%;
     flex: 0 0 100%;
     padding: 10px 16px;
-    background: linear-gradient(180deg, rgba(34, 50, 20, 0.9), rgba(20, 30, 12, 0.7));
-    border-bottom: 1px solid rgba(120, 180, 80, 0.2);
+    background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.9), rgb(var(--moss-deep-rgb) / 0.7));
+    border-bottom: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px 6px 0 0;
     box-sizing: border-box;
 }
@@ -152,7 +152,7 @@
     line-height: 1.2;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgb(232, 234, 220);
+    color: var(--color-foreground);
 }
 
 .settings-popup .close {
@@ -165,14 +165,14 @@
     font-size: 20px;
     line-height: 1;
     padding: 0 4px;
-    color: rgba(180, 200, 150, 0.7);
+    color: rgb(var(--sage-rgb) / 0.7);
     cursor: pointer;
     transition: color 0.15s;
     float: none;
 }
 
 .settings-popup .close:hover {
-    color: rgb(150, 220, 90);
+    color: var(--jade-bright);
 }
 
 .modal-title {
@@ -181,7 +181,7 @@
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgb(232, 234, 220);
+    color: var(--color-foreground);
 }
 
 .close {

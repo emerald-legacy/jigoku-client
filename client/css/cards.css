@@ -92,8 +92,8 @@
 .panel.province .card.province-attachment:hover,
 .hand .card:hover {
     box-shadow:
-        0 0 0 3px rgba(220, 200, 140, 0.8),
-        0 0 18px rgba(220, 200, 140, 0.5);
+        0 0 0 3px rgb(var(--gold-pale-rgb) / 0.8),
+        0 0 18px rgb(var(--gold-pale-rgb) / 0.5);
 }
 
 .card-frame {
@@ -207,7 +207,7 @@
         width: var(--card-height);
     }
 
-    /* lighten(#336600, 60%) = HSL(90,100%,80%) ≈ #ccff99, fadeout 10% = alpha 0.9 */
+    /* lighten(var(--color-primary), 60%) = HSL(90,100%,80%) ≈ #ccff99, fadeout 10% = alpha 0.9 */
     &.selectable {
         & .card-image { box-shadow: 0 0 10px 1px rgba(204, 255, 153, 0.9); }
     }
@@ -228,16 +228,16 @@
        not read as the green "you may select this now" highlight. */
     &.playable-out-of-play {
         & .card-image {
-            box-shadow: 0 0 8px 2px rgb(245, 176, 66);
-            outline: 1px solid rgba(245, 176, 66, 0.8);
+            box-shadow: 0 0 8px 2px var(--amber);
+            outline: 1px solid rgb(var(--amber-rgb) / 0.8);
         }
     }
 
     &.selected {
         & .card-image {
             box-shadow:
-                0 0 0 3px var(--lobby-jade-bright, #7dc242),
-                0 0 12px 4px rgba(125, 194, 66, 0.6);
+                0 0 0 3px var(--jade-vivid),
+                0 0 12px 4px rgb(var(--jade-vivid-rgb) / 0.6);
         }
     }
 
@@ -272,10 +272,10 @@
     overflow: hidden;
     container-type: inline-size;
     box-shadow:
-        0 6px 14px -4px rgba(0, 0, 0, 0.7),
-        0 2px 4px rgba(0, 0, 0, 0.5),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        0 6px 14px -4px rgb(var(--black-rgb) / 0.7),
+        0 2px 4px rgb(var(--black-rgb) / 0.5),
+        inset 0 0 0 1px rgb(var(--white-rgb) / 0.1),
+        inset 0 1px 0 rgb(var(--white-rgb) / 0.2);
     transition: transform 0.3s ease-out, left 0.3s ease-out, top 0.3s ease-out, box-shadow 0.18s ease;
 
     &.small {
@@ -383,10 +383,10 @@
 }
 
 .card-order {
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.9);
+    background: rgb(var(--black-rgb) / 0.8);
+    border: 1px solid rgb(var(--black-rgb) / 0.9);
     border-radius: 6px;
-    color: #e8eadc;
+    color: var(--color-foreground);
     font-size: 16px;
     font-weight: bold;
     height: 26px;
@@ -406,7 +406,7 @@
     /* The card image covers this, but a long name would otherwise spill past the card */
     display: block;
     overflow: hidden;
-    white-space: nowrap;
+    var(--white)-space: nowrap;
 }
 
 .card-zoomed {
@@ -502,7 +502,7 @@
     width: 1em;
     height: 1em;
     line-height: 1em;
-    filter: drop-shadow(4px 4px 5px black);
+    filter: drop-shadow(4px 4px 5px var(--black));
     animation: token-place 280ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 
     &.ring-fate {
@@ -525,7 +525,7 @@
     width: 100%;
     float: left;
     text-align: center;
-    color: white;
+    color: var(--white);
     text-shadow: 1px 1px 2px #000;
     z-index: calc(var(--layer-cards) + 3);
     font-size: 0.5em;
@@ -561,7 +561,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    filter: drop-shadow(4px 4px 5px black);
+    filter: drop-shadow(4px 4px 5px var(--black));
 }
 
 .honorstatuscounter {
@@ -572,7 +572,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    filter: drop-shadow(4px 4px 5px black);
+    filter: drop-shadow(4px 4px 5px var(--black));
     animation: token-place 280ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
@@ -590,7 +590,7 @@
 
 .honorcountertext {
     text-align: center;
-    color: white;
+    color: var(--white);
     text-shadow: 1px 1px 2px #000;
     z-index: calc(var(--layer-cards) + 3);
     font-size: 1.2em;
@@ -655,7 +655,7 @@
     right: 0;
     width: 18cqi;
     height: 18cqi;
-    background: rgba(55, 55, 55, 0.9);
+    background: rgb(var(--slate-rgb) / 0.9);
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     pointer-events: none;
     z-index: calc(var(--layer-cards) + 2);
@@ -671,7 +671,7 @@
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
     pointer-events: auto;
     z-index: calc(var(--layer-cards) + 2);
-    filter: drop-shadow(0 0.5cqi 1cqi rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0 0.5cqi 1cqi rgb(var(--black-rgb) / 0.5));
 }
 
 .card-effect-corner::after {
@@ -682,8 +682,8 @@
     font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
     font-size: 6cqi;
     line-height: 1;
-    color: rgb(232, 234, 220);
-    text-shadow: 0 0.3cqi 0.5cqi rgba(0, 0, 0, 0.7);
+    color: var(--color-foreground);
+    text-shadow: 0 0.3cqi 0.5cqi rgb(var(--black-rgb) / 0.7);
     pointer-events: none;
 }
 
@@ -693,7 +693,7 @@
     left: 0;
     width: 18cqi;
     height: 18cqi;
-    background: rgba(55, 55, 55, 0.9);
+    background: rgb(var(--slate-rgb) / 0.9);
     clip-path: polygon(0 0, 0 100%, 100% 100%);
     pointer-events: none;
     z-index: calc(var(--layer-cards) + 2);

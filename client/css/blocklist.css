@@ -1,8 +1,8 @@
 .blocklist-panel {
     position: relative;
     padding: 1.1rem 1.1rem 1.1rem 1.4rem;
-    background: linear-gradient(180deg, rgba(20, 22, 18, 0.6), rgba(10, 12, 8, 0.6));
-    border: 1px solid rgba(120, 180, 80, 0.2);
+    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.6), rgb(var(--ink-darker-rgb) / 0.6));
+    border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
 }
 
@@ -14,7 +14,7 @@
     bottom: 0.6rem;
     width: 2px;
     border-radius: 2px;
-    background: linear-gradient(180deg, transparent, rgba(120, 200, 100, 0.7), transparent);
+    background: linear-gradient(180deg, transparent, rgb(var(--jade-light-rgb) / 0.7), transparent);
 }
 
 .blocklist-intro {
@@ -32,7 +32,7 @@
     flex-wrap: wrap;
     padding-bottom: 1.1rem;
     margin-bottom: 1.1rem;
-    border-bottom: 1px solid rgba(120, 180, 80, 0.1);
+    border-bottom: 1px solid rgb(var(--jade-rgb) / 0.1);
 }
 
 .blocklist-add-field {
@@ -48,16 +48,16 @@
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: rgba(180, 200, 150, 0.7);
+    color: rgb(var(--sage-rgb) / 0.7);
 }
 
 .blocklist-add-input {
     width: 100%;
     padding: 0.45rem 0.6rem;
     border-radius: 4px;
-    border: 1px solid rgba(120, 180, 80, 0.2);
-    background: rgba(10, 12, 8, 0.6);
-    color: rgb(232, 234, 220);
+    border: 1px solid rgb(var(--jade-rgb) / 0.2);
+    background: rgb(var(--ink-darker-rgb) / 0.6);
+    color: var(--color-foreground);
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 0.95rem;
     transition: border-color 0.18s, box-shadow 0.18s;
@@ -65,8 +65,8 @@
 
 .blocklist-add-input:focus {
     outline: none;
-    border-color: rgba(120, 180, 80, 0.6);
-    box-shadow: 0 0 12px rgba(80, 160, 60, 0.2);
+    border-color: rgb(var(--jade-rgb) / 0.6);
+    box-shadow: 0 0 12px rgb(var(--jade-glow-rgb) / 0.2);
 }
 
 .blocklist-section-title {
@@ -78,12 +78,12 @@
     font-size: 0.95rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(180, 200, 150, 0.9);
+    color: rgb(var(--sage-rgb) / 0.9);
     margin-bottom: 0.65rem;
 }
 
 .blocklist-section-title svg {
-    color: var(--color-link, #5ea026);
+    color: var(--color-link, var(--color-link));
 }
 
 .blocklist-count {
@@ -91,7 +91,7 @@
     font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
     font-size: 0.7rem;
     letter-spacing: 0.12em;
-    color: rgba(180, 200, 150, 0.7);
+    color: rgb(var(--sage-rgb) / 0.7);
 }
 
 .blocklist-entries {
@@ -115,13 +115,13 @@
 }
 
 .blocklist-entry:hover {
-    background: rgba(51, 102, 0, 0.1);
-    border-color: rgba(120, 180, 80, 0.15);
+    background: rgb(var(--primary-rgb) / 0.1);
+    border-color: rgb(var(--jade-rgb) / 0.15);
 }
 
 .blocklist-entry-icon {
     flex-shrink: 0;
-    color: rgba(180, 200, 150, 0.7);
+    color: rgb(var(--sage-rgb) / 0.7);
 }
 
 .blocklist-entry-name {
@@ -129,10 +129,10 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    var(--white)-space: nowrap;
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 1rem;
-    color: rgb(232, 234, 220);
+    color: var(--color-foreground);
 }
 
 .blocklist-remove {
@@ -146,20 +146,20 @@
     border-radius: 4px;
     border: 1px solid transparent;
     background: transparent;
-    color: rgba(180, 200, 150, 0.7);
+    color: rgb(var(--sage-rgb) / 0.7);
     cursor: pointer;
     transition: color 0.18s, border-color 0.18s, background 0.18s;
 }
 
 .blocklist-remove:hover,
 .blocklist-remove:focus-visible {
-    color: rgb(217, 83, 79);
-    border-color: rgba(217, 83, 79, 0.5);
-    background: rgba(140, 30, 30, 0.3);
+    color: var(--color-danger);
+    border-color: rgb(var(--danger-rgb) / 0.5);
+    background: rgb(var(--crimson-deep-rgb) / 0.3);
 }
 
 .blocklist-remove:focus-visible {
-    outline: 2px solid rgba(217, 83, 79, 0.5);
+    outline: 2px solid rgb(var(--danger-rgb) / 0.5);
     outline-offset: 1px;
 }
 
@@ -169,7 +169,7 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 2rem 1rem;
-    color: rgba(180, 200, 150, 0.7);
+    color: rgb(var(--sage-rgb) / 0.7);
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 1.05rem;
     letter-spacing: 0.08em;
@@ -186,9 +186,9 @@
     border-radius: 3px;
     background-image: linear-gradient(
         90deg,
-        rgba(120, 180, 80, 0.1) 0%,
-        rgba(120, 180, 80, 0.2) 50%,
-        rgba(120, 180, 80, 0.1) 100%
+        rgb(var(--jade-rgb) / 0.1) 0%,
+        rgb(var(--jade-rgb) / 0.2) 50%,
+        rgb(var(--jade-rgb) / 0.1) 100%
     );
     background-size: 200% 100%;
     animation: blocklist-skeleton-shimmer 1.6s ease-in-out infinite;

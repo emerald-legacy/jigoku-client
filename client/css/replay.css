@@ -11,11 +11,11 @@
     cursor: pointer;
     margin: 40px auto;
     max-width: 600px;
-    color: #e8eadc;
+    color: var(--color-foreground);
 
     &:hover, &.drag-over {
-        border-color: white;
-        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--white);
+        background: rgb(var(--white-rgb) / 0.05);
     }
 }
 
@@ -89,9 +89,9 @@
     transform: translateX(-50%);
     z-index: 10001;
     font-size: 12px;
-    color: #e8eadc;
+    color: var(--color-foreground);
     padding: 0 16px;
-    white-space: nowrap;
+    var(--white)-space: nowrap;
     pointer-events: none;
     line-height: 40px;
     height: 40px;
@@ -113,7 +113,7 @@
         padding: 3px 6px;
 
         &:hover svg {
-            color: #e8eadc;
+            color: var(--color-foreground);
         }
 
         &:disabled {
@@ -135,12 +135,12 @@
     & .btn {
         font-size: 10px;
         padding: 2px 5px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        border: 1px solid rgb(var(--white-rgb) / 0.2);
         border-radius: 3px;
 
         &.active {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.4);
+            background: rgb(var(--white-rgb) / 0.15);
+            border-color: rgb(var(--white-rgb) / 0.4);
         }
     }
 }
@@ -176,7 +176,7 @@
     opacity: 0.75;
     cursor: pointer;
     user-select: none;
-    white-space: nowrap;
+    var(--white)-space: nowrap;
 
     &:hover {
         opacity: 1;
