@@ -36,6 +36,7 @@ s.ring-pane {
 }
 
 .claimed-pool {
+    --claimed-ring-size: 32px;
     box-sizing: border-box;
     width: 100%;
     min-height: 24px;
@@ -48,15 +49,22 @@ s.ring-pane {
     gap: 2px;
 
     & .ring {
-        font-size: 20px;
-        min-height: 20px;
-        max-height: 20px;
-        max-width: 20px;
+        font-size: var(--claimed-ring-size);
+        min-height: var(--claimed-ring-size);
+        max-height: var(--claimed-ring-size);
+        max-width: var(--claimed-ring-size);
+        margin-right: 0;
     }
 
     & svg.ring-svg {
-        width: 20px;
-        height: 20px;
+        width: var(--claimed-ring-size);
+        height: var(--claimed-ring-size);
+    }
+
+    /* The menu is anchored for the far larger centre-bar rings; pull it back
+       to the edge of the claimed ring it belongs to. */
+    & .menu {
+        left: calc(100% + 4px);
     }
 }
 
@@ -226,7 +234,7 @@ svg.ring-svg {
     }
 
     .claimed-pool {
-        font-size: 24pt;
+        --claimed-ring-size: 24px;
     }
 
     .ring-info {
