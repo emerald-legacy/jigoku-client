@@ -212,6 +212,12 @@
         & .card-image { box-shadow: 0 0 10px 1px rgba(204, 255, 153, 0.9); }
     }
 
+    /* Safari leaves the previous card painted behind when a filter-induced compositing layer is
+       created and destroyed, which happens to every card at once whenever a prompt opens or
+       closes. Declaring will-change keeps the layer alive across the toggle so WebKit repaints
+       it instead of stranding the old pixels. */
+    will-change: filter;
+
     &.unselectable {
         filter: brightness(60%);
 
