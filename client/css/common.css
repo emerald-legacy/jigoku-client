@@ -1,6 +1,5 @@
 .card-link {
     cursor: pointer;
-    cursor: hand;
     color: var(--color-link);
 }
 
@@ -192,7 +191,6 @@
 
 .clickable {
     cursor: pointer;
-    cursor: hand;
 }
 
 .no-highlight {

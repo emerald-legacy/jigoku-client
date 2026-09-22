@@ -23,7 +23,7 @@ interface RingProps {
 
 const CLAIM_FLASH_MS = 2500;
 
-function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingEffects, gameMode, ringSet, pendingAnimations, onClaimAnimationEnd }: RingProps) {
+function Ring({ onClick, onMenuItemClick, owner, ring, size, showRingEffects, gameMode, ringSet, pendingAnimations, onClaimAnimationEnd }: RingProps) {
     const [showMenu, setShowMenu] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
 
@@ -103,11 +103,6 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size: propSize, showRingE
         }
         return true;
     };
-
-    let size = propSize;
-    if(ring.claimed) {
-        size = "small";
-    }
 
     let className = `ring icon-element-${ring.element}${size ? ` ${size}` : ""}`;
     let bgClassName = `ring-background tint-${ring.conflictType}${size ? ` ${size}` : ""}`;
