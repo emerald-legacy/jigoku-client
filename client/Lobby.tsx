@@ -83,13 +83,6 @@ export function InnerLobby({ bannerNotice, loadNews, loading, news }: InnerLobby
 
             <div className="lobby-page">
                 <header className="lobby-hero">
-                    <div className="lobby-hero-rings" aria-hidden="true">
-                        <span className="lobby-hero-ring ring-earth" />
-                        <span className="lobby-hero-ring ring-water" />
-                        <span className="lobby-hero-ring ring-fire" />
-                        <span className="lobby-hero-ring ring-air" />
-                        <span className="lobby-hero-ring ring-void" />
-                    </div>
                     <img src={ asset("emerald-legacy-logo.png") } alt="Emerald Legacy" className="lobby-hero-logo" />
                     <p className="lobby-hero-tagline">
                         Play the Legend of the Five Rings LCG and Emerald Legacy in your browser.

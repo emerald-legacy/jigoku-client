@@ -406,7 +406,7 @@
     /* The card image covers this, but a long name would otherwise spill past the card */
     display: block;
     overflow: hidden;
-    var(--white)-space: nowrap;
+    white-space: nowrap;
 }
 
 .card-zoomed {

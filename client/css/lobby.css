@@ -27,35 +27,6 @@
     box-shadow: inset 0 0 80px rgb(var(--black-rgb) / 0.6);
 }
 
-/* faint elemental rings as background ornament */
-.lobby-hero-rings {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5rem;
-    opacity: 0.07;
-    pointer-events: none;
-}
-.lobby-hero-rings .lobby-hero-ring {
-    display: block;
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    border: 2px solid currentColor;
-}
-.lobby-hero-rings .ring-earth { color: var(--element-earth); }
-.lobby-hero-rings .ring-water { color: var(--element-water); }
-.lobby-hero-rings .ring-fire  { color: var(--element-fire); }
-.lobby-hero-rings .ring-air   { color: var(--element-air); }
-.lobby-hero-rings .ring-void  { color: var(--element-void); }
-
-@media (max-width: 900px) {
-    .lobby-hero-rings { gap: 2rem; }
-    .lobby-hero-rings .lobby-hero-ring { width: 90px; height: 90px; }
-}
-
 .lobby-hero-logo {
     position: relative;
     height: 96px;
@@ -222,7 +193,7 @@
     font-size: 1.0625rem;
     line-height: 1.65;
     color: var(--color-foreground);
-    var(--white)-space: pre-line;
+    white-space: pre-line;
     word-break: break-word;
 }
 .news-entry-body + .news-entry-body { margin-top: 0.5rem; }

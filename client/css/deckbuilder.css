@@ -163,7 +163,7 @@
     font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.02em;
-    var(--white)-space: nowrap;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -177,7 +177,7 @@
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    var(--white)-space: nowrap;
+    white-space: nowrap;
 
     &.valid {
         background: linear-gradient(180deg, var(--moss-light), rgb(var(--moss-rgb) / 0.9));
@@ -353,5 +353,5 @@
 }
 
 .deck-stats-reason {
-    var(--white)-space: nowrap;
+    white-space: nowrap;
 }

@@ -129,7 +129,7 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    var(--white)-space: nowrap;
+    white-space: nowrap;
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 1rem;
     color: var(--color-foreground);

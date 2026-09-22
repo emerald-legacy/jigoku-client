@@ -123,7 +123,7 @@
     flex-grow: 0;
     padding-right: 10px;
     line-height: 27px;
-    var(--white)-space: nowrap;
+    white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
 }

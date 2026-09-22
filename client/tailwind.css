@@ -169,7 +169,7 @@
         font-size: 0.95rem;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-        var(--white)-space: nowrap;
+        white-space: nowrap;
         box-shadow: 0 2px 10px rgb(var(--black-rgb) / 0.4);
     }
     .btn-primary.btn-action:not(:disabled):hover {

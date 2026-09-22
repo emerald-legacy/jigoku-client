@@ -272,7 +272,7 @@ ol.htp-legend > li::before {
     font-size: 14px;
     line-height: 1.55;
     color: var(--color-foreground);
-    var(--white)-space: pre-line;
+    white-space: pre-line;
     word-break: break-word;
 }
 
@@ -767,7 +767,7 @@ ol.htp-legend > li::before {
 .errors-players-text {
     overflow: hidden;
     text-overflow: ellipsis;
-    var(--white)-space: nowrap;
+    white-space: nowrap;
 }
 
 .errors-players-empty {
@@ -862,7 +862,7 @@ ol.htp-legend > li::before {
     padding: 0.7rem 0.9rem;
     margin: 0;
     overflow-x: auto;
-    var(--white)-space: pre;
+    white-space: pre;
 }
 
 .errors-detail-json {

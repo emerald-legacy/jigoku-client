@@ -58,7 +58,7 @@
 .menu-pane button {
     width: 100%;
     margin-bottom: 5px;
-    var(--white)-space: normal;
+    white-space: normal;
 }
 
 .phase-indicator {

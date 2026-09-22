@@ -56,7 +56,7 @@
     font-size: 12px;
     line-height: 22px;
     color: rgb(var(--sage-rgb) / 0.9);
-    var(--white)-space: nowrap;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }

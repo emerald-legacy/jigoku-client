@@ -189,7 +189,7 @@ svg.ring-svg {
     border-radius: 4px;
     font-size: 11px;
     line-height: 1.4;
-    var(--white)-space: nowrap;
+    white-space: nowrap;
     z-index: 1000;
     pointer-events: none;
 }
