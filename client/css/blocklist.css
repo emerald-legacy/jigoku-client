@@ -48,7 +48,7 @@
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: rgba(180, 200, 150, 0.4);
+    color: rgba(180, 200, 150, 0.7);
 }
 
 .blocklist-add-input {
@@ -91,7 +91,7 @@
     font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
     font-size: 0.7rem;
     letter-spacing: 0.12em;
-    color: rgba(180, 200, 150, 0.4);
+    color: rgba(180, 200, 150, 0.7);
 }
 
 .blocklist-entries {
@@ -121,7 +121,7 @@
 
 .blocklist-entry-icon {
     flex-shrink: 0;
-    color: rgba(180, 200, 150, 0.5);
+    color: rgba(180, 200, 150, 0.7);
 }
 
 .blocklist-entry-name {
@@ -146,16 +146,16 @@
     border-radius: 4px;
     border: 1px solid transparent;
     background: transparent;
-    color: rgba(180, 200, 150, 0.4);
+    color: rgba(180, 200, 150, 0.7);
     cursor: pointer;
     transition: color 0.18s, border-color 0.18s, background 0.18s;
 }
 
 .blocklist-remove:hover,
 .blocklist-remove:focus-visible {
-    color: rgb(255, 140, 130);
+    color: rgb(217, 83, 79);
     border-color: rgba(217, 83, 79, 0.5);
-    background: rgba(120, 30, 25, 0.3);
+    background: rgba(140, 30, 30, 0.3);
 }
 
 .blocklist-remove:focus-visible {
@@ -169,7 +169,7 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 2rem 1rem;
-    color: rgba(180, 200, 150, 0.4);
+    color: rgba(180, 200, 150, 0.7);
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 1.05rem;
     letter-spacing: 0.08em;

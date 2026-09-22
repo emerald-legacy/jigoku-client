@@ -146,7 +146,38 @@
         border-color: rgba(120, 180, 80, 0.6);
         color: rgb(232, 234, 220);
     }
-    .btn-danger { @apply bg-danger text-white border border-danger hover:bg-danger/80; }
+    .btn-danger {
+        background: linear-gradient(180deg, rgba(140, 30, 30, 0.9), rgba(140, 30, 30, 0.5));
+        color: rgb(232, 234, 220);
+        border: 1px solid rgba(187, 62, 62, 0.4);
+    }
+    .btn-danger:not(:disabled):hover {
+        background: linear-gradient(180deg, rgb(190, 40, 40), rgb(140, 30, 30));
+        border-color: rgba(187, 62, 62, 0.6);
+        color: rgb(232, 234, 220);
+    }
+    /* Prominent form action: the .btn modifier used for submit/save buttons that carry an
+       icon and an uppercase label. Colour still comes from .btn-primary / .btn-danger. */
+    .btn-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+    .btn-primary.btn-action:not(:disabled):hover {
+        box-shadow: 0 0 16px rgba(80, 160, 60, 0.2);
+    }
+    .btn-danger.btn-action:not(:disabled):hover {
+        box-shadow: 0 0 18px rgba(187, 62, 62, 0.4);
+    }
+    .btn-action:not(:disabled):active {
+        transform: translateY(1px);
+    }
     .btn-lg { @apply px-4 py-2 text-base; }
     .btn-group { @apply inline-flex; }
 

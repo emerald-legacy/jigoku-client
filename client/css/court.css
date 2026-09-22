@@ -65,7 +65,7 @@
 }
 
 .court-roll[data-status="spectating"] .court-glyph {
-    color: rgba(180, 200, 150, 0.5);
+    color: rgba(180, 200, 150, 0.7);
 }
 
 .court-name {

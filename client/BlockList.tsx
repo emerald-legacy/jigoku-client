@@ -147,7 +147,7 @@ export function InnerBlockList({
                                 value={ username }
                             />
                         </div>
-                        <button className="user-admin-btn" type="submit" disabled={ !username }>Block</button>
+                        <button className="btn btn-primary btn-action" type="submit" disabled={ !username }>Block</button>
                     </form>
 
                     <div className="blocklist-section-title">
