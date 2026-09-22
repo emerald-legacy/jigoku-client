@@ -110,8 +110,8 @@
     box-shadow:
         0 2px 6px rgb(var(--black-rgb) / 0.6),
         inset 0 0 10px rgb(var(--black-rgb) / 0.3),
-        inset 0 0 2px rgba(255, 220, 200, 0.4);
-    border: 1px solid rgba(255, 210, 180, 0.3);
+        inset 0 0 2px rgb(var(--bone-rgb) / 0.4);
+    border: 1px solid rgb(var(--gold-pale-rgb) / 0.3);
     user-select: none;
     cursor: default;
     pointer-events: none;

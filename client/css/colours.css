@@ -121,13 +121,13 @@
     --bronze: rgb(var(--bronze-rgb));
 
     /* The seven great clans — canonical identity colours, never substitute */
-    --clan-crab-rgb: 0 28 148;        /* Crab */
-    --clan-crane-rgb: 0 137 222;      /* Crane */
-    --clan-dragon-rgb: 0 164 114;     /* Dragon */
-    --clan-lion-rgb: 203 157 0;       /* Lion */
-    --clan-phoenix-rgb: 193 100 0;    /* Phoenix */
-    --clan-scorpion-rgb: 166 22 0;    /* Scorpion */
-    --clan-unicorn-rgb: 120 0 152;    /* Unicorn */
+    --clan-crab-rgb: 41 64 86;    /* Crab */
+    --clan-crane-rgb: 115 160 202; /* Crane */
+    --clan-dragon-rgb: 66 108 68; /* Dragon */
+    --clan-lion-rgb: 195 170 113; /* Lion */
+    --clan-phoenix-rgb: 188 81 10; /* Phoenix */
+    --clan-scorpion-rgb: 116 36 37; /* Scorpion */
+    --clan-unicorn-rgb: 78 46 106; /* Unicorn */
 
     --clan-crab: rgb(var(--clan-crab-rgb));
     --clan-crane: rgb(var(--clan-crane-rgb));

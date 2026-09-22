@@ -667,7 +667,7 @@
     right: 0;
     width: 18cqi;
     height: 18cqi;
-    background: rgb(20, 75, 55);
+    background: rgb(var(--success-rgb) / 0.3);
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
     pointer-events: auto;
     z-index: calc(var(--layer-cards) + 2);

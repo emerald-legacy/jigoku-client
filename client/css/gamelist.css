@@ -25,7 +25,7 @@
 
     &.skirmish {
         border-color: var(--color-info);
-        background-color: rgba(35, 115, 168, 0.1);
+        background-color: rgb(var(--element-water-rgb) / 0.05);
     }
 
     &.sanctuary {

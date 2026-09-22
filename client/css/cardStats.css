@@ -47,7 +47,7 @@
     font-size: 0.8em;
     font-weight: bold;
     margin-bottom: 5px;
-    color: #aaa;
+    color: rgb(var(--white-rgb) / 0.7);
 }
 
 .stat-value {
