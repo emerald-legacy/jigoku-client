@@ -25,14 +25,14 @@
     left: 0.7rem;
     top: 50%;
     transform: translateY(-50%);
-    color: rgba(160, 180, 140, 0.5);
+    color: rgba(180, 200, 150, 0.43);
     pointer-events: none;
 }
 
 .user-admin-input {
     width: 100%;
     padding: 0.55rem 0.75rem 0.55rem 2.1rem;
-    background: rgba(8, 10, 6, 0.85);
+    background: rgba(20, 22, 18, 0.85);
     border: 1px solid rgba(120, 180, 80, 0.22);
     border-radius: 4px;
     color: rgba(232, 234, 220, 0.96);
@@ -43,12 +43,12 @@
 }
 
 .user-admin-input::placeholder {
-    color: rgba(160, 180, 140, 0.4);
+    color: rgba(180, 200, 150, 0.35);
 }
 
 .user-admin-input:focus {
     outline: none;
-    background: rgba(10, 14, 8, 0.95);
+    background: rgba(20, 22, 18, 0.95);
     border-color: rgba(120, 200, 100, 0.6);
     box-shadow: 0 0 0 1px rgba(120, 200, 100, 0.35), 0 0 14px rgba(80, 160, 60, 0.18);
 }
@@ -91,7 +91,7 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 2.5rem 1rem;
-    color: rgba(160, 180, 140, 0.5);
+    color: rgba(180, 200, 150, 0.43);
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 1.05rem;
     letter-spacing: 0.08em;
@@ -163,7 +163,7 @@
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: rgba(160, 180, 140, 0.5);
+    color: rgba(180, 200, 150, 0.43);
 }
 
 .user-admin-meta-val {
@@ -212,7 +212,7 @@
 
 .user-admin-perm-icon {
     flex-shrink: 0;
-    color: rgba(160, 180, 140, 0.55);
+    color: rgba(180, 200, 150, 0.47);
 }
 
 .user-admin-perm.is-on .user-admin-perm-icon {
@@ -258,7 +258,7 @@
     position: absolute;
     inset: 0;
     border-radius: 999px;
-    background: rgba(8, 10, 6, 0.9);
+    background: rgba(20, 22, 18, 0.9);
     border: 1px solid rgba(120, 180, 80, 0.25);
     transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }

@@ -42,7 +42,7 @@
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(160, 180, 140, 0.65);
+    color: rgba(180, 200, 150, 0.56);
     vertical-align: middle;
 }
 
@@ -97,7 +97,7 @@
 .htp-figure figcaption {
     margin-top: 0.4rem;
     font-size: 0.85em;
-    color: rgba(160, 180, 140, 0.75);
+    color: rgba(180, 200, 150, 0.65);
 }
 
 .htp-figure-row {
@@ -198,7 +198,7 @@ ol.htp-legend > li::before {
     font-family: "JetBrains Mono", ui-monospace, monospace;
     font-size: 11px;
     letter-spacing: 0.1em;
-    color: rgba(160, 180, 140, 0.55);
+    color: rgba(180, 200, 150, 0.47);
 }
 
 .news-admin-list-panel {
@@ -282,7 +282,7 @@ ol.htp-legend > li::before {
     font-size: 10px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(160, 180, 140, 0.55);
+    color: rgba(180, 200, 150, 0.47);
 }
 
 .news-admin-empty {
@@ -290,7 +290,7 @@ ol.htp-legend > li::before {
     text-align: center;
     font-family: "Source Serif 4", Georgia, serif;
     font-style: italic;
-    color: rgba(160, 180, 140, 0.6);
+    color: rgba(180, 200, 150, 0.52);
 }
 
 .body, .container, #component {
@@ -506,7 +506,7 @@ ol.htp-legend > li::before {
     text-align: center;
     font-family: "Source Serif 4", Georgia, serif;
     font-style: italic;
-    color: rgba(160, 180, 140, 0.6);
+    color: rgba(180, 200, 150, 0.52);
 }
 
 .errors-filter-bar {
@@ -598,7 +598,7 @@ ol.htp-legend > li::before {
     text-align: center;
     font-family: "Source Serif 4", Georgia, serif;
     font-style: italic;
-    color: rgba(160, 180, 140, 0.6);
+    color: rgba(180, 200, 150, 0.52);
 }
 
 .errors-row {
@@ -771,7 +771,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-players-empty {
-    color: rgba(160, 180, 140, 0.4);
+    color: rgba(180, 200, 150, 0.35);
 }
 
 .errors-col-message {
@@ -807,7 +807,7 @@ ol.htp-legend > li::before {
     height: 30px;
     padding: 0;
     border-radius: 4px;
-    background: rgba(20, 26, 16, 0.5);
+    background: rgba(20, 22, 18, 0.5);
     border: 1px solid rgba(120, 180, 80, 0.22);
     color: rgba(232, 234, 220, 0.78);
     cursor: pointer;
@@ -834,7 +834,7 @@ ol.htp-legend > li::before {
 .errors-row-expanded {
     padding: 0.25rem 1.15rem 1.1rem;
     border-top: 1px dashed rgba(120, 180, 80, 0.18);
-    background: rgba(8, 10, 6, 0.55);
+    background: rgba(20, 22, 18, 0.55);
 }
 
 .errors-detail-section {
@@ -884,7 +884,7 @@ ol.htp-legend > li::before {
 .errors-detail-loading {
     padding: 1rem 0.5rem;
     font-style: italic;
-    color: rgba(160, 180, 140, 0.6);
+    color: rgba(180, 200, 150, 0.52);
 }
 
 .json-tree {
@@ -963,7 +963,7 @@ ol.htp-legend > li::before {
 }
 
 .json-tree-summary {
-    color: rgba(160, 180, 140, 0.55);
+    color: rgba(180, 200, 150, 0.47);
     font-size: 0.72rem;
     font-style: italic;
     padding: 0 0.15rem;

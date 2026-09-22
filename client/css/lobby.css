@@ -90,7 +90,7 @@
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: rgba(160, 180, 140, 0.55);
+    color: rgba(180, 200, 150, 0.47);
     margin-top: 0.65rem;
 }
 
@@ -249,13 +249,13 @@
     text-align: center;
     font-family: var(--lobby-font-body);
     font-style: italic;
-    color: rgba(160, 180, 140, 0.55);
+    color: rgba(180, 200, 150, 0.47);
 }
 .lobby-news-loading {
     text-align: center;
     font-family: var(--lobby-font-body);
     font-style: italic;
-    color: rgba(160, 180, 140, 0.6);
+    color: rgba(180, 200, 150, 0.52);
     padding: 1.5rem 0;
 }
 
