@@ -15,9 +15,9 @@
 }
 
 @keyframes ring-fire-anim {
-    0%   { background: rgba(239, 68, 68, 0.55);   box-shadow: 0 0 18px 8px rgba(251, 146, 60, 0.8);  opacity: 1; }
-    40%  { background: rgba(251, 146, 60, 0.45);  box-shadow: 0 0 28px 12px rgba(239, 68, 68, 0.6);  opacity: 0.85; }
-    100% { background: rgba(239, 68, 68, 0);      box-shadow: 0 0 40px 20px rgba(239, 68, 68, 0);    opacity: 0; }
+    0%   { background: rgba(187, 62, 62, 0.55);   box-shadow: 0 0 18px 8px rgba(251, 146, 60, 0.8);  opacity: 1; }
+    40%  { background: rgba(251, 146, 60, 0.45);  box-shadow: 0 0 28px 12px rgba(187, 62, 62, 0.6);  opacity: 0.85; }
+    100% { background: rgba(187, 62, 62, 0);      box-shadow: 0 0 40px 20px rgba(187, 62, 62, 0);    opacity: 0; }
 }
 
 @keyframes ring-void-anim {

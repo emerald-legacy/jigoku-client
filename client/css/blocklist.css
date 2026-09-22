@@ -65,7 +65,7 @@
 
 .blocklist-add-input:focus {
     outline: none;
-    border-color: rgba(150, 220, 90, 0.6);
+    border-color: rgba(120, 180, 80, 0.6);
     box-shadow: 0 0 12px rgba(80, 160, 60, 0.18);
 }
 
@@ -154,12 +154,12 @@
 .blocklist-remove:hover,
 .blocklist-remove:focus-visible {
     color: rgba(255, 140, 130, 0.95);
-    border-color: rgba(200, 70, 60, 0.45);
+    border-color: rgba(217, 83, 79, 0.45);
     background: rgba(120, 30, 25, 0.25);
 }
 
 .blocklist-remove:focus-visible {
-    outline: 2px solid rgba(200, 70, 60, 0.5);
+    outline: 2px solid rgba(217, 83, 79, 0.5);
     outline-offset: 1px;
 }
 
@@ -187,7 +187,7 @@
     background-image: linear-gradient(
         90deg,
         rgba(120, 180, 80, 0.08) 0%,
-        rgba(150, 220, 90, 0.20) 50%,
+        rgba(120, 180, 80, 0.20) 50%,
         rgba(120, 180, 80, 0.08) 100%
     );
     background-size: 200% 100%;

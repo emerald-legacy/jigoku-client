@@ -10,7 +10,7 @@
 }
 
 .phase-display {
-    color: white;
+    color: #e8eadc;
     font-family: arial;
     font-size: 18pt;
     text-align: center;
@@ -91,7 +91,7 @@
     font-size: 1.6rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
-    color: rgba(240, 240, 220, 0.98);
+    color: rgba(232, 234, 220, 0.98);
 }
 
 .round-indicator--setup .round-indicator-label {
@@ -100,7 +100,7 @@
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(240, 240, 220, 0.98);
+    color: rgba(232, 234, 220, 0.98);
 }
 
 .skill-symbol {

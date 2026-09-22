@@ -10,7 +10,7 @@
 .username {
     font-weight: bold;
     margin-right: 5px;
-    color: white;
+    color: #e8eadc;
 }
 
 .gravatar {
@@ -96,7 +96,7 @@
 .deck-import-hint {
     margin: 0 0 8px 0;
     font-size: 13px;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(232, 234, 220, 0.7);
 }
 
 .deck-import-row {

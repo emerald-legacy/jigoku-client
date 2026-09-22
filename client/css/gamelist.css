@@ -21,7 +21,7 @@
     border: 1px solid var(--color-primary);
     padding: 8px 10px;
     margin-bottom: 5px;
-    color: white;
+    color: #e8eadc;
 
     &.skirmish {
         border-color: var(--color-info);
@@ -130,7 +130,7 @@
 
 .game-row-vs {
     flex-shrink: 0;
-    color: white;
+    color: #e8eadc;
     font-size: 14px;
     padding: 0 4px;
 }
@@ -168,7 +168,7 @@
     padding: 2px 8px;
     border-radius: 3px;
     background: rgba(51, 102, 0, 0.5);
-    color: white;
+    color: #e8eadc;
     font-size: 12px;
     white-space: nowrap;
     overflow: hidden;
@@ -287,19 +287,19 @@
     border: 1px solid rgba(51, 102, 0, 0.4);
     border-radius: 3px;
     background: transparent;
-    color: rgba(255, 255, 255, 0.6);
+    color: rgba(232, 234, 220, 0.6);
     font-size: 12px;
     cursor: pointer;
     transition: background-color 0.15s, color 0.15s;
 
     &:hover {
         background: rgba(51, 102, 0, 0.2);
-        color: white;
+        color: #e8eadc;
     }
 
     &.active {
         background: rgba(51, 102, 0, 0.4);
-        color: white;
+        color: #e8eadc;
         font-weight: 600;
     }
 }
@@ -370,7 +370,7 @@
 .game-stats-matchup-vs {
     width: 24px;
     flex-shrink: 0;
-    color: white;
+    color: #e8eadc;
     font-size: 12px;
     font-weight: 600;
 }

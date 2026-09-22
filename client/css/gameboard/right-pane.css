@@ -65,7 +65,7 @@
     flex: 0 0 auto;
     width: 10px;
     height: 8px;
-    background-image: radial-gradient(rgba(150, 220, 90, 0.7) 1px, transparent 1px);
+    background-image: radial-gradient(rgba(120, 180, 80, 0.7) 1px, transparent 1px);
     background-size: 4px 4px;
 }
 
@@ -94,7 +94,7 @@
     cursor: nesw-resize;
     z-index: 2;
     background:
-        linear-gradient(225deg, transparent 0 50%, rgba(150, 220, 90, 0.7) 50% 60%, transparent 60% 70%, rgba(150, 220, 90, 0.7) 70% 80%, transparent 80%);
+        linear-gradient(225deg, transparent 0 50%, rgba(120, 180, 80, 0.7) 50% 60%, transparent 60% 70%, rgba(120, 180, 80, 0.7) 70% 80%, transparent 80%);
 }
 
 /* === Chat (self-contained card at bottom-right) === */
@@ -181,7 +181,7 @@
 }
 
 .chat-input:focus {
-    border-color: rgba(150, 220, 90, 0.55);
+    border-color: rgba(120, 180, 80, 0.55);
     outline: none;
     background: rgba(20, 22, 18, 0.85);
 }

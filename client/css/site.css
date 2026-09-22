@@ -147,7 +147,7 @@ ol.htp-legend > li::before {
     font-family: "JetBrains Mono", ui-monospace, monospace;
     font-size: 12px;
     font-weight: 700;
-    color: white;
+    color: #e8eadc;
 }
 
 /* === News admin === */
@@ -177,7 +177,7 @@ ol.htp-legend > li::before {
 }
 
 .news-admin-textarea:focus {
-    border-color: rgba(150, 220, 90, 0.55);
+    border-color: rgba(120, 180, 80, 0.55);
     outline: none;
     background: rgba(20, 22, 18, 0.85);
 }
@@ -251,7 +251,7 @@ ol.htp-legend > li::before {
     font-size: 1.25rem;
     font-weight: 700;
     line-height: 1;
-    color: rgba(230, 235, 210, 0.95);
+    color: rgba(232, 234, 220, 0.95);
 }
 
 .news-admin-item-monthyear {
@@ -468,8 +468,8 @@ ol.htp-legend > li::before {
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: rgba(14, 18, 8, 0.96);
-    background: linear-gradient(180deg, rgba(150, 220, 90, 0.95), rgba(110, 180, 60, 0.95));
-    border: 1px solid rgba(150, 220, 90, 0.6);
+    background: linear-gradient(180deg, rgba(120, 180, 80, 0.95), rgba(110, 180, 60, 0.95));
+    border: 1px solid rgba(120, 180, 80, 0.6);
     border-radius: 6px;
     box-shadow: 0 2px 10px rgba(120, 200, 100, 0.25);
     transition: filter 0.15s ease, transform 0.05s ease;
@@ -526,7 +526,7 @@ ol.htp-legend > li::before {
     gap: 0.4rem;
     padding: 0.32rem 0.7rem;
     background: linear-gradient(180deg, rgba(34, 50, 20, 0.55), rgba(20, 30, 12, 0.55));
-    color: rgba(220, 230, 200, 0.85);
+    color: rgba(232, 234, 220, 0.85);
     border: 1px solid rgba(120, 180, 80, 0.22);
     border-radius: 999px;
     font-family: "Source Serif 4", Georgia, serif;
@@ -538,14 +538,14 @@ ol.htp-legend > li::before {
 
 .errors-filter-chip:not(:disabled):hover {
     background: linear-gradient(180deg, rgba(54, 80, 30, 0.85), rgba(34, 50, 20, 0.85));
-    border-color: rgba(150, 220, 90, 0.45);
-    color: rgba(255, 255, 245, 1);
+    border-color: rgba(120, 180, 80, 0.45);
+    color: rgba(232, 234, 220, 1);
 }
 
 .errors-filter-chip.is-active {
     background: linear-gradient(180deg, rgba(77, 153, 0, 0.6), rgba(51, 102, 0, 0.7));
-    border-color: rgba(150, 220, 90, 0.7);
-    color: rgba(255, 255, 245, 1);
+    border-color: rgba(120, 180, 80, 0.7);
+    color: rgba(232, 234, 220, 1);
     box-shadow: 0 0 0 1px rgba(150, 220, 90, 0.15), 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
@@ -560,7 +560,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-filter-chip.is-active .errors-filter-icon {
-    color: rgba(255, 255, 245, 1);
+    color: rgba(232, 234, 220, 1);
 }
 
 .errors-filter-label {
@@ -573,14 +573,14 @@ ol.htp-legend > li::before {
     padding: 0.05rem 0.45rem;
     background: rgba(0, 0, 0, 0.32);
     border-radius: 999px;
-    color: rgba(220, 230, 200, 0.85);
+    color: rgba(232, 234, 220, 0.85);
     letter-spacing: 0.02em;
     font-variant-numeric: tabular-nums;
 }
 
 .errors-filter-chip.is-active .errors-filter-count {
     background: rgba(0, 0, 0, 0.42);
-    color: rgba(255, 255, 245, 1);
+    color: rgba(232, 234, 220, 1);
 }
 
 .errors-list-panel {
@@ -683,7 +683,7 @@ ol.htp-legend > li::before {
 
 .errors-time-date {
     font-size: 0.78rem;
-    color: rgba(230, 235, 210, 0.92);
+    color: rgba(232, 234, 220, 0.92);
     letter-spacing: 0.02em;
 }
 
@@ -717,7 +717,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-kind-tag-server {
-    border-color: rgba(150, 220, 90, 0.55);
+    border-color: rgba(120, 180, 80, 0.55);
     background: linear-gradient(180deg, rgba(77, 153, 0, 0.35), rgba(51, 102, 0, 0.55));
 }
 
@@ -730,13 +730,13 @@ ol.htp-legend > li::before {
 .errors-kind-tag-window {
     border-color: rgba(240, 173, 78, 0.55);
     background: linear-gradient(180deg, rgba(240, 173, 78, 0.22), rgba(180, 110, 30, 0.4));
-    color: rgba(250, 240, 220, 0.96);
+    color: rgba(232, 234, 220, 0.96);
 }
 
 .errors-kind-tag-unhandledRejection {
     border-color: rgba(217, 83, 79, 0.55);
     background: linear-gradient(180deg, rgba(217, 83, 79, 0.22), rgba(140, 30, 30, 0.45));
-    color: rgba(250, 220, 220, 0.96);
+    color: rgba(232, 234, 220, 0.96);
 }
 
 .errors-kind-icon {
@@ -756,7 +756,7 @@ ol.htp-legend > li::before {
     align-items: center;
     gap: 0.4rem;
     font-size: 0.88rem;
-    color: rgba(220, 230, 200, 0.85);
+    color: rgba(232, 234, 220, 0.85);
 }
 
 .errors-players-icon {
@@ -809,21 +809,21 @@ ol.htp-legend > li::before {
     border-radius: 4px;
     background: rgba(20, 26, 16, 0.5);
     border: 1px solid rgba(120, 180, 80, 0.22);
-    color: rgba(220, 230, 200, 0.78);
+    color: rgba(232, 234, 220, 0.78);
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
 }
 
 .errors-action:hover {
     background: linear-gradient(180deg, rgba(54, 80, 30, 0.95), rgba(34, 50, 20, 0.95));
-    border-color: rgba(150, 220, 90, 0.55);
-    color: rgba(255, 255, 245, 1);
+    border-color: rgba(120, 180, 80, 0.55);
+    color: rgba(232, 234, 220, 1);
 }
 
 .errors-action.is-active {
     background: linear-gradient(180deg, rgba(77, 153, 0, 0.55), rgba(51, 102, 0, 0.65));
-    border-color: rgba(150, 220, 90, 0.7);
-    color: rgba(255, 255, 245, 1);
+    border-color: rgba(120, 180, 80, 0.7);
+    color: rgba(232, 234, 220, 1);
 }
 
 .errors-action-resolve:hover {
@@ -854,7 +854,7 @@ ol.htp-legend > li::before {
     font-family: "JetBrains Mono", ui-monospace, monospace;
     font-size: 0.75rem;
     line-height: 1.55;
-    color: rgba(250, 220, 220, 0.88);
+    color: rgba(232, 234, 220, 0.88);
     background: linear-gradient(180deg, rgba(40, 12, 10, 0.55), rgba(20, 8, 8, 0.7));
     border: 1px solid rgba(217, 83, 79, 0.22);
     border-left: 3px solid rgba(217, 83, 79, 0.6);
@@ -891,7 +891,7 @@ ol.htp-legend > li::before {
     font-family: "JetBrains Mono", ui-monospace, monospace;
     font-size: 0.78rem;
     line-height: 1.55;
-    color: rgba(220, 230, 200, 0.92);
+    color: rgba(232, 234, 220, 0.92);
 }
 
 .json-tree-row {
