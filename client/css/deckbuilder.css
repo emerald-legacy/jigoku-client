@@ -181,7 +181,7 @@
 
     &.valid {
         background: linear-gradient(180deg, rgba(54, 80, 30, 0.95), rgba(34, 50, 20, 0.85));
-        color: rgba(180, 240, 110, 0.95);
+        color: rgba(150, 220, 90, 0.95);
         border: 1px solid rgba(120, 180, 80, 0.40);
     }
 

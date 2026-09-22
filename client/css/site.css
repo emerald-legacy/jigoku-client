@@ -357,7 +357,7 @@ ol.htp-legend > li::before {
     font-family: "JetBrains Mono", ui-monospace, monospace;
     font-size: 0.85em;
     font-weight: 600;
-    color: rgba(180, 240, 110, 0.95);
+    color: rgba(150, 220, 90, 0.95);
 }
 
 .rbt-input {

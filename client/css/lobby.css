@@ -52,10 +52,10 @@
     border: 2px solid currentColor;
 }
 .lobby-hero-rings .ring-earth { color: #c8a96a; }
-.lobby-hero-rings .ring-water { color: #5fa3d6; }
-.lobby-hero-rings .ring-fire  { color: #d65a4a; }
-.lobby-hero-rings .ring-air   { color: #e0ddc9; }
-.lobby-hero-rings .ring-void  { color: #8f5fb5; }
+.lobby-hero-rings .ring-water { color: #3b82f6; }
+.lobby-hero-rings .ring-fire  { color: #ef4444; }
+.lobby-hero-rings .ring-air   { color: #dcebff; }
+.lobby-hero-rings .ring-void  { color: #8b5cf6; }
 
 @media (max-width: 900px) {
     .lobby-hero-rings { gap: 2rem; }
@@ -312,7 +312,7 @@
 }
 .lobby-link-row:hover .lobby-link-mon {
     border-color: rgba(125, 194, 66, 0.75);
-    color: rgba(180, 240, 110, 1);
+    color: rgba(150, 220, 90, 1);
     transform: rotate(-3deg);
 }
 
