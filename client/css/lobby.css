@@ -44,7 +44,7 @@
     opacity: 0.07;
     pointer-events: none;
 }
-.lobby-hero-rings .ring {
+.lobby-hero-rings .lobby-hero-ring {
     display: block;
     width: 130px;
     height: 130px;
@@ -59,7 +59,7 @@
 
 @media (max-width: 900px) {
     .lobby-hero-rings { gap: 2rem; }
-    .lobby-hero-rings .ring { width: 90px; height: 90px; }
+    .lobby-hero-rings .lobby-hero-ring { width: 90px; height: 90px; }
 }
 
 .lobby-hero-logo {
