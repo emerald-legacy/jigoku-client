@@ -230,14 +230,14 @@
     color: rgb(var(--vermilion-rgb) / 0.9);
 }
 .chat-control-btn.manual:hover {
-    color: rgb(232, 90, 75);
+    color: var(--vermilion);
 }
 
 .chat-control-alert {
     position: absolute;
     top: -2px;
     right: -2px;
-    color: rgb(220, 80, 70);
+    color: var(--vermilion);
 }
 
 .chat-card-collapsed .chat-control-btn[title="Toggle chat"] {

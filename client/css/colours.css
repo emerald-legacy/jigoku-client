@@ -110,7 +110,8 @@
     --amber-rgb: 245 176 66;          /* first-player marker */
     --ember-rgb: 251 146 60;          /* the fire ring flare */
     --bronze-rgb: 180 110 30;         /* skirmish and imperial badges */
-    --warning-rgb: 240 173 78;        /* warning — literal in @theme */
+    --warning-rgb: 240 173 78;       /* warning — literal in @theme */
+    --success-rgb: 92 184 92;        /* success — literal in @theme */
 
     --gold: rgb(var(--gold-rgb));
     --gold-deep: rgb(var(--gold-deep-rgb));

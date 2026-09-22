@@ -143,7 +143,7 @@ ol.htp-legend > li::before {
     height: 1.75rem;
     border-radius: 50%;
     border: 2px solid var(--crimson);
-    background: rgba(20, 14, 16, 0.9);
+    background: rgb(var(--ink-deep-rgb) / 0.9);
     font-family: "JetBrains Mono", ui-monospace, monospace;
     font-size: 12px;
     font-weight: 700;
@@ -515,7 +515,7 @@ ol.htp-legend > li::before {
     gap: 0.5rem;
     margin: 0 5px 1rem;
     padding: 0.55rem 0.65rem;
-    background: linear-gradient(180deg, rgba(20, 26, 16, 0.6), rgba(10, 14, 8, 0.6));
+    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.6), rgb(var(--ink-deep-rgb) / 0.6));
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
 }
@@ -724,7 +724,7 @@ ol.htp-legend > li::before {
 .errors-kind-tag-react {
     border-color: rgb(var(--info-rgb) / 0.6);
     background: linear-gradient(180deg, rgb(var(--info-rgb) / 0.2), rgb(var(--political-rgb) / 0.4));
-    color: rgb(220, 240, 250);
+    color: var(--element-air);
 }
 
 .errors-kind-tag-window {
@@ -827,7 +827,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-action-resolve:hover {
-    background: linear-gradient(180deg, rgba(92, 184, 92, 0.7), rgba(50, 120, 50, 0.9));
+    background: linear-gradient(180deg, rgb(var(--success-rgb) / 0.7), rgba(50, 120, 50, 0.9));
     border-color: rgba(140, 220, 140, 0.7);
 }
 
@@ -855,7 +855,7 @@ ol.htp-legend > li::before {
     font-size: 0.75rem;
     line-height: 1.55;
     color: rgb(var(--bone-rgb) / 0.9);
-    background: linear-gradient(180deg, rgba(40, 12, 10, 0.6), rgba(20, 8, 8, 0.7));
+    background: linear-gradient(180deg, rgba(40, 12, 10, 0.6), rgb(var(--ink-darkest-rgb) / 0.7));
     border: 1px solid rgb(var(--danger-rgb) / 0.2);
     border-left: 3px solid rgb(var(--danger-rgb) / 0.6);
     border-radius: 4px;
@@ -866,7 +866,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-detail-json {
-    background: linear-gradient(180deg, rgba(14, 18, 12, 0.7), rgb(var(--ink-darkest-rgb) / 0.9));
+    background: linear-gradient(180deg, rgb(var(--ink-deep-rgb) / 0.7), rgb(var(--ink-darkest-rgb) / 0.9));
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 4px;
     padding: 0.55rem 0.7rem;
@@ -980,7 +980,7 @@ ol.htp-legend > li::before {
 }
 
 .json-tree-number {
-    color: rgb(120, 200, 240);
+    color: var(--color-info);
 }
 
 .json-tree-boolean {

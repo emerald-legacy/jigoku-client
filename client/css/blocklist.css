@@ -20,7 +20,7 @@
 .blocklist-intro {
     max-width: 60ch;
     margin-bottom: 1.1rem;
-    color: rgba(200, 210, 185, 0.8);
+    color: rgb(var(--sage-pale-rgb) / 0.8);
     font-size: 0.88rem;
     line-height: 1.55;
 }

@@ -86,7 +86,7 @@
 }
 
 .game-badge-type-competitive {
-    background: rgb(139, 35, 35);
+    background: var(--crimson-deep);
     color: var(--white);
 }
 
