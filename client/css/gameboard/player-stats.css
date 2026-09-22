@@ -85,7 +85,7 @@
 .btn-stat:hover {
     background-color: transparent;
     border-color: transparent;
-    color: rgba(150, 220, 90, 1);
+    color: rgb(150, 220, 90);
 }
 
 .btn-stat:focus {

@@ -207,9 +207,9 @@
     white-space: nowrap;
 
     &.valid {
-        background: linear-gradient(180deg, rgba(54, 80, 30, 0.95), rgba(34, 50, 20, 0.85));
-        color: rgba(150, 220, 90, 0.95);
-        border: 1px solid rgba(120, 180, 80, 0.40);
+        background: linear-gradient(180deg, rgb(54, 80, 30), rgba(34, 50, 20, 0.9));
+        color: rgb(150, 220, 90);
+        border: 1px solid rgba(120, 180, 80, 0.4);
     }
 
     &.casual-play {

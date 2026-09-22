@@ -78,7 +78,7 @@
 .token-swatch,
 .ring-swatch {
     appearance: none;
-    background: rgba(255, 255, 255, 0.025);
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid transparent;
     border-radius: 8px;
     padding: 0.5rem 0.35rem 0.4rem;
@@ -95,7 +95,7 @@
 .token-swatch:hover:not(.locked),
 .ring-swatch:hover:not(.locked) {
     transform: translateY(-2px);
-    background: rgba(120, 180, 80, 0.08);
+    background: rgba(120, 180, 80, 0.1);
     border-color: var(--color-header-border);
 }
 
@@ -165,7 +165,7 @@
     gap: 0.4rem;
     padding: 0.45rem 0.55rem;
     border-radius: 6px;
-    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.06), transparent 70%);
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.05), transparent 70%);
 }
 
 .token-img {
@@ -190,7 +190,7 @@
 
 .promo-swatch {
     appearance: none;
-    background: rgba(255, 255, 255, 0.025);
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid transparent;
     border-radius: 8px;
     padding: 0.5rem;
@@ -205,7 +205,7 @@
 
 .promo-swatch:hover:not(.locked) {
     transform: translateY(-2px);
-    background: rgba(120, 180, 80, 0.08);
+    background: rgba(120, 180, 80, 0.1);
     border-color: var(--color-header-border);
 }
 

@@ -2,7 +2,7 @@
     position: relative;
     padding: 1.1rem 1.1rem 1.1rem 1.4rem;
     background: linear-gradient(180deg, rgba(20, 22, 18, 0.6), rgba(10, 12, 8, 0.6));
-    border: 1px solid rgba(120, 180, 80, 0.16);
+    border: 1px solid rgba(120, 180, 80, 0.2);
     border-radius: 6px;
 }
 
@@ -20,7 +20,7 @@
 .blocklist-intro {
     max-width: 60ch;
     margin-bottom: 1.1rem;
-    color: rgba(200, 210, 185, 0.75);
+    color: rgba(200, 210, 185, 0.8);
     font-size: 0.88rem;
     line-height: 1.55;
 }
@@ -32,7 +32,7 @@
     flex-wrap: wrap;
     padding-bottom: 1.1rem;
     margin-bottom: 1.1rem;
-    border-bottom: 1px solid rgba(120, 180, 80, 0.12);
+    border-bottom: 1px solid rgba(120, 180, 80, 0.1);
 }
 
 .blocklist-add-field {
@@ -48,16 +48,16 @@
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: rgba(180, 200, 150, 0.43);
+    color: rgba(180, 200, 150, 0.4);
 }
 
 .blocklist-add-input {
     width: 100%;
     padding: 0.45rem 0.6rem;
     border-radius: 4px;
-    border: 1px solid rgba(120, 180, 80, 0.22);
+    border: 1px solid rgba(120, 180, 80, 0.2);
     background: rgba(10, 12, 8, 0.6);
-    color: rgba(232, 234, 220, 0.96);
+    color: rgb(232, 234, 220);
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 0.95rem;
     transition: border-color 0.18s, box-shadow 0.18s;
@@ -66,7 +66,7 @@
 .blocklist-add-input:focus {
     outline: none;
     border-color: rgba(120, 180, 80, 0.6);
-    box-shadow: 0 0 12px rgba(80, 160, 60, 0.18);
+    box-shadow: 0 0 12px rgba(80, 160, 60, 0.2);
 }
 
 .blocklist-section-title {
@@ -78,7 +78,7 @@
     font-size: 0.95rem;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(180, 200, 150, 0.85);
+    color: rgba(180, 200, 150, 0.9);
     margin-bottom: 0.65rem;
 }
 
@@ -91,7 +91,7 @@
     font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
     font-size: 0.7rem;
     letter-spacing: 0.12em;
-    color: rgba(180, 200, 150, 0.43);
+    color: rgba(180, 200, 150, 0.4);
 }
 
 .blocklist-entries {
@@ -121,7 +121,7 @@
 
 .blocklist-entry-icon {
     flex-shrink: 0;
-    color: rgba(180, 200, 150, 0.47);
+    color: rgba(180, 200, 150, 0.5);
 }
 
 .blocklist-entry-name {
@@ -132,7 +132,7 @@
     white-space: nowrap;
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 1rem;
-    color: rgba(232, 234, 220, 0.96);
+    color: rgb(232, 234, 220);
 }
 
 .blocklist-remove {
@@ -146,16 +146,16 @@
     border-radius: 4px;
     border: 1px solid transparent;
     background: transparent;
-    color: rgba(180, 200, 150, 0.43);
+    color: rgba(180, 200, 150, 0.4);
     cursor: pointer;
     transition: color 0.18s, border-color 0.18s, background 0.18s;
 }
 
 .blocklist-remove:hover,
 .blocklist-remove:focus-visible {
-    color: rgba(255, 140, 130, 0.95);
-    border-color: rgba(217, 83, 79, 0.45);
-    background: rgba(120, 30, 25, 0.25);
+    color: rgb(255, 140, 130);
+    border-color: rgba(217, 83, 79, 0.5);
+    background: rgba(120, 30, 25, 0.3);
 }
 
 .blocklist-remove:focus-visible {
@@ -169,7 +169,7 @@
     justify-content: center;
     gap: 0.5rem;
     padding: 2rem 1rem;
-    color: rgba(180, 200, 150, 0.43);
+    color: rgba(180, 200, 150, 0.4);
     font-family: "Cormorant Garamond", Georgia, serif;
     font-size: 1.05rem;
     letter-spacing: 0.08em;
@@ -186,9 +186,9 @@
     border-radius: 3px;
     background-image: linear-gradient(
         90deg,
-        rgba(120, 180, 80, 0.08) 0%,
-        rgba(120, 180, 80, 0.20) 50%,
-        rgba(120, 180, 80, 0.08) 100%
+        rgba(120, 180, 80, 0.1) 0%,
+        rgba(120, 180, 80, 0.2) 50%,
+        rgba(120, 180, 80, 0.1) 100%
     );
     background-size: 200% 100%;
     animation: blocklist-skeleton-shimmer 1.6s ease-in-out infinite;

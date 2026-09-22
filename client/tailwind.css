@@ -65,20 +65,20 @@
     --color-success: #5cb85c;
     --color-warning: #f0ad4e;
     --color-danger: #d9534f;
-    --color-navbar-bg: rgba(34, 34, 34, 0.75);
+    --color-navbar-bg: rgba(34, 34, 34, 0.8);
     --color-header-bg: rgba(77, 153, 0, 0.9);
-    --color-header-border: rgba(120, 180, 80, 0.35);
+    --color-header-border: rgba(120, 180, 80, 0.4);
     --color-military-icon: #ca9c81;
     --color-military-text: #743e3e;
     --color-military-ring: #BB3e3e;
     --color-political-icon: #b2bccd;
     --color-political-text: #41658a;
     --color-political-ring: #3065BB;
-    --color-dupe: rgba(0, 128, 0, 0.85);
-    --color-power: rgba(0, 0, 128, 0.85);
-    --color-strength: rgba(128, 0, 0, 0.85);
-    --color-venom: rgba(29, 145, 163, 0.85);
-    --color-table-bg-accent: rgba(51, 102, 0, 0.45);
+    --color-dupe: rgba(0, 128, 0, 0.9);
+    --color-power: rgba(0, 0, 128, 0.9);
+    --color-strength: rgba(128, 0, 0, 0.9);
+    --color-venom: rgba(29, 145, 163, 0.9);
+    --color-table-bg-accent: rgba(51, 102, 0, 0.5);
 }
 
 :root {
@@ -136,15 +136,15 @@
     }
     .btn-primary,
     .btn-default {
-        background: linear-gradient(180deg, rgba(34, 50, 20, 0.9), rgba(20, 30, 12, 0.85));
-        color: rgba(232, 234, 220, 0.96);
-        border: 1px solid rgba(120, 180, 80, 0.35);
+        background: linear-gradient(180deg, rgba(34, 50, 20, 0.9), rgba(20, 30, 12, 0.9));
+        color: rgb(232, 234, 220);
+        border: 1px solid rgba(120, 180, 80, 0.4);
     }
     .btn-primary:not(:disabled):hover,
     .btn-default:not(:disabled):hover {
-        background: linear-gradient(180deg, rgba(54, 80, 30, 1), rgba(34, 50, 20, 0.95));
-        border-color: rgba(120, 180, 80, 0.55);
-        color: rgba(232, 234, 220, 1);
+        background: linear-gradient(180deg, rgb(54, 80, 30), rgb(34, 50, 20));
+        border-color: rgba(120, 180, 80, 0.6);
+        color: rgb(232, 234, 220);
     }
     .btn-danger { @apply bg-danger text-white border border-danger hover:bg-danger/80; }
     .btn-lg { @apply px-4 py-2 text-base; }

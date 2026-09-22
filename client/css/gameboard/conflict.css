@@ -65,10 +65,10 @@
     min-height: 3rem;
     margin: 0.4rem 0.6rem 0.4rem 0.4rem;
     padding: 0.35rem 0.5rem;
-    border: 1px solid rgba(120, 180, 80, 0.35);
+    border: 1px solid rgba(120, 180, 80, 0.4);
     border-radius: 6px;
-    background: linear-gradient(180deg, rgba(34, 50, 20, 0.85), rgba(20, 30, 12, 0.85));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 2px 6px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(180deg, rgba(34, 50, 20, 0.9), rgba(20, 30, 12, 0.9));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 2px 6px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -91,7 +91,7 @@
     font-size: 1.6rem;
     font-weight: 600;
     font-variant-numeric: tabular-nums;
-    color: rgba(232, 234, 220, 0.98);
+    color: rgb(232, 234, 220);
 }
 
 .round-indicator--setup .round-indicator-label {
@@ -100,7 +100,7 @@
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(232, 234, 220, 0.98);
+    color: rgb(232, 234, 220);
 }
 
 .skill-symbol {

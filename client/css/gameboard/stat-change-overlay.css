@@ -18,8 +18,8 @@
 }
 
 .stat-change-card {
-    background: rgba(15, 15, 25, 0.93);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(15, 15, 25, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 12px 24px;
     text-align: center;

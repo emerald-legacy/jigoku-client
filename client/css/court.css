@@ -13,7 +13,7 @@
     font-family: var(--lobby-font-glyph);
     font-size: 64px;
     line-height: 1;
-    color: rgba(120, 180, 80, 0.07);
+    color: rgba(120, 180, 80, 0.05);
     pointer-events: none;
     user-select: none;
 }
@@ -65,7 +65,7 @@
 }
 
 .court-roll[data-status="spectating"] .court-glyph {
-    color: rgba(180, 200, 150, 0.52);
+    color: rgba(180, 200, 150, 0.5);
 }
 
 .court-name {

@@ -6,7 +6,7 @@
     z-index: 40;
     color: var(--lobby-bone);
     font-family: var(--lobby-font-body);
-    background: rgba(20, 26, 14, 0.85);
+    background: rgba(20, 26, 14, 0.9);
     border-right: 1px solid var(--lobby-rule);
     transition: width 200ms ease;
     box-sizing: border-box;
@@ -27,7 +27,7 @@
     }
 
     .samurai-expanded {
-        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
     }
 
     .samurai-desktop-only {

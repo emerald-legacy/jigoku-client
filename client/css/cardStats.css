@@ -2,7 +2,7 @@
     opacity: 0;
     pointer-events: none;
     min-width: 250px;
-    background-color: rgba(0, 0, 0, 0.85);
+    background-color: rgba(0, 0, 0, 0.9);
     padding: 1px;
 
     & .stat-container {
@@ -88,5 +88,5 @@
     font-size: 1.5em;
     line-height: 1;
     margin-bottom: 0;
-    color: rgba(232, 234, 220, 0.95);
+    color: rgb(232, 234, 220);
 }

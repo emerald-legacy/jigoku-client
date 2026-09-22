@@ -25,8 +25,8 @@
 
 .popup {
     z-index: var(--layer-card-menu);
-    background: linear-gradient(180deg, rgba(20, 22, 18, 0.92), rgba(12, 14, 10, 0.92));
-    border: 1px solid rgba(120, 180, 80, 0.20);
+    background: linear-gradient(180deg, rgba(20, 22, 18, 0.9), rgba(12, 14, 10, 0.9));
+    border: 1px solid rgba(120, 180, 80, 0.2);
     border-radius: 6px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 
@@ -97,10 +97,10 @@
 }
 
 .settings-popup {
-    background: linear-gradient(180deg, rgba(20, 22, 18, 0.96), rgba(12, 14, 10, 0.96));
-    border: 1px solid rgba(120, 180, 80, 0.20);
+    background: linear-gradient(180deg, rgb(20, 22, 18), rgb(12, 14, 10));
+    border: 1px solid rgba(120, 180, 80, 0.2);
     border-radius: 6px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     position: relative;
 }
 
@@ -118,7 +118,7 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.55), transparent);
+    background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.6), transparent);
     pointer-events: none;
 }
 
@@ -130,8 +130,8 @@
     width: 100%;
     flex: 0 0 100%;
     padding: 10px 16px;
-    background: linear-gradient(180deg, rgba(34, 50, 20, 0.85), rgba(20, 30, 12, 0.7));
-    border-bottom: 1px solid rgba(120, 180, 80, 0.18);
+    background: linear-gradient(180deg, rgba(34, 50, 20, 0.9), rgba(20, 30, 12, 0.7));
+    border-bottom: 1px solid rgba(120, 180, 80, 0.2);
     border-radius: 6px 6px 0 0;
     box-sizing: border-box;
 }
@@ -152,7 +152,7 @@
     line-height: 1.2;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(232, 234, 220, 0.95);
+    color: rgb(232, 234, 220);
 }
 
 .settings-popup .close {
@@ -165,14 +165,14 @@
     font-size: 20px;
     line-height: 1;
     padding: 0 4px;
-    color: rgba(180, 200, 150, 0.55);
+    color: rgba(180, 200, 150, 0.6);
     cursor: pointer;
     transition: color 0.15s;
     float: none;
 }
 
 .settings-popup .close:hover {
-    color: rgba(150, 220, 90, 1);
+    color: rgb(150, 220, 90);
 }
 
 .modal-title {
@@ -181,7 +181,7 @@
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(232, 234, 220, 0.95);
+    color: rgb(232, 234, 220);
 }
 
 .close {
