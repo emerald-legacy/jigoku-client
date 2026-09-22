@@ -43,13 +43,15 @@
     pointer-events: none;
 }
 
+/* Sized off the card, not em: the overlay now lives inside .ring-panel, whose
+   40pt font-size blew a 2em symbol up to cover the whole attachment. */
 .ring-attachments__ring-symbol {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    height: 2em;
-    width: 2em;
+    height: calc(var(--card-width) * 0.45);
+    width: calc(var(--card-width) * 0.45);
     z-index: 100;
 }
 
