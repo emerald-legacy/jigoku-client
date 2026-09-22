@@ -97,11 +97,8 @@
     /* Layout */
     --chat-width: 410px;
     --center-bar-height: 90px;
-    --center-bar-sm-height: 50px;
     --sidebar-width: 125px;
-    --sidebar-sm-width: 100px;
     --scrollbar-width: 20px;
-    --screen-lg-min: 1200px;
 
     /* Attachment offsets */
     --attachment-offset: 13px;
@@ -109,7 +106,6 @@
     --attachment-offset-lg: 18.2px;
     --attachment-offset-xl: 26px;
     --attachment-offset-xxl: 32.5px;
-    --province-attachment-offset: 13px;
 
     /* Ring dimensions */
     --ring-height: 1em;
@@ -118,8 +114,6 @@
     /* Z-index layers */
     --layer-cards: 45;
     --layer-pile-header: 55;
-    --layer-card-collection: 100;
-    --layer-prompt: 110;
     --layer-card-menu: 120;
     --layer-chat: 800;
     --layer-popups: 1031;
@@ -150,7 +144,6 @@
         color: rgba(255, 255, 245, 1);
     }
     .btn-danger { @apply bg-danger text-white border border-danger hover:bg-danger/80; }
-    .btn-success { @apply bg-success text-white border border-success hover:bg-success/80; }
     .btn-lg { @apply px-4 py-2 text-base; }
     .btn-group { @apply inline-flex; }
 
@@ -179,8 +172,6 @@
 
     /* Tables */
     .table { @apply w-full border-collapse; }
-    .table-striped tr:nth-child(even) { @apply bg-primary/[0.45]; }
-
     /* Modals */
     .modal { @apply fixed inset-0 z-50 overflow-y-auto; }
     .modal.fade { @apply opacity-0 transition-opacity duration-150; }
@@ -228,16 +219,9 @@
     /* Utility classes */
     .small { @apply text-sm; }
     .text-muted { @apply text-gray-500; }
-    .text-right { @apply text-right; }
     .pull-right { @apply float-right; }
-    .hidden-xs { @apply hidden sm:inline-block; }
-
     /* Column grid */
-    .col-xs-1 { @apply w-1/12 px-[15px]; }
     .col-xs-2 { @apply w-2/12 px-[15px]; }
-    .col-xs-3 { @apply w-3/12 px-[15px]; }
-    .col-xs-4 { @apply w-4/12 px-[15px]; }
-    .col-xs-7 { @apply w-7/12 px-[15px]; }
     .col-xs-8 { @apply w-8/12 px-[15px]; }
     .col-xs-12 { @apply w-full px-[15px]; }
 
@@ -252,34 +236,15 @@
     .col-sm-9 { @apply sm:w-9/12 px-[15px]; }
     .col-sm-10 { @apply sm:w-10/12 px-[15px]; }
     .col-sm-12 { @apply sm:w-full px-[15px]; }
-
-    .col-md-3 { @apply md:w-3/12 px-[15px]; }
     .col-md-6 { @apply md:w-6/12 px-[15px]; }
-    .col-md-7 { @apply md:w-7/12 px-[15px]; }
-
-    .col-lg-2 { @apply lg:w-2/12 px-[15px]; }
-    .col-lg-8 { @apply lg:w-8/12 px-[15px]; }
-    .col-lg-9 { @apply lg:w-9/12 px-[15px]; }
-
     /* Column offsets */
-    .col-sm-offset-1 { @apply sm:ml-[8.333333%]; }
     .col-sm-offset-2 { @apply sm:ml-[16.666667%]; }
     .col-sm-offset-3 { @apply sm:ml-[25%]; }
     .col-sm-offset-4 { @apply sm:ml-[33.333333%]; }
-    .col-sm-offset-10 { @apply sm:ml-[83.333333%]; }
-
     /* Form horizontal */
     .form-horizontal .form-group { @apply ml-0 mr-0 flex flex-wrap items-center mb-3; }
     .form-horizontal .form-group .form-group { @apply mb-0 contents; }
     .form-horizontal .control-label { @apply text-right; }
-
-    /* Caret (dropdown arrow) */
-    .caret {
-        @apply inline-block w-0 h-0 align-middle ml-0.5;
-        border-top: 4px solid;
-        border-right: 4px solid transparent;
-        border-left: 4px solid transparent;
-    }
 
     /* Dropdown */
     .dropdown { @apply relative; }
@@ -289,7 +254,6 @@
     }
     .dropdown-menu li { @apply block; }
     .dropdown-menu li a { @apply block w-full px-3 py-1 text-white no-underline hover:bg-gray-700 rounded leading-normal; }
-    .dropdown-item { @apply block px-3 py-1 text-white no-underline hover:bg-gray-700 rounded cursor-pointer; }
     .dropdown.open .dropdown-menu { @apply block; }
 
     /* Typeahead: override hidden dropdown-menu inside rbt container */
@@ -324,7 +288,7 @@ p {
     margin: 0 0 10px;
 }
 
-.about-container, .panel-body {
+.about-container {
     & ul, & ol {
         list-style: revert;
         margin: revert;

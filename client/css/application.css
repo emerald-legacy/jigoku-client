@@ -104,40 +104,6 @@
     color: rgba(150, 220, 90, 1);
 }
 
-.main-header {
-    background-color: rgba(51, 102, 0, 0.5);
-    height: 100%;
-    vertical-align: center;
-    margin-left: 5px;
-    margin-right: 5px;
-    padding-top: 1px;
-    padding-bottom: 2px;
-    border-radius: 4px;
-}
-
-.military-container {
-    color: var(--color-military-text);
-    font-weight: bolder;
-
-    & .icon-military {
-        float: left;
-    }
-}
-
-.political-container {
-    color: var(--color-political-text);
-
-    & .icon-political {
-        float: left;
-    }
-}
-
-.news-container {
-    max-height: 100px;
-    min-height: 100px;
-    overflow-y: auto;
-}
-
 .selected {
     box-shadow: 0 0 1px 4px var(--color-secondary);
 }

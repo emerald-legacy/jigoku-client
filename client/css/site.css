@@ -488,53 +488,11 @@ ol.htp-legend > li::before {
     cursor: default;
 }
 
-.discord-grid {
-    display: flex;
-    flex-direction: row;
-}
-
-.discord-grid-cell {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 0px;
-    padding: 0px 10px;
-    border-left: 1px solid rgba(255, 255, 255, .3);
-    border-right: 1px solid rgba(255, 255, 255, .3);
-}
-
-.discord-label {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
-    column-gap: 5px;
-}
-
-.discord-server-icon {
-    margin-top: 5px;
-    height: 24px;
-    width: 24px;
-    border-radius: 50%;
-}
-
-.emerald-legacy-panel {
-    display: flex;
-    flex-direction: column;
-}
-
 .emerald-legacy-logo {
     align-self: center;
     margin-top: 20px;
     height: 83px;
     width: 320px;
-}
-
-.lobby-version {
-    color: white;
-    font-size: 0.75em;
-    padding: 0;
-    margin: -5px 0 5px;
-    display: block;
-    text-align: center;
 }
 
 .errors-admin {

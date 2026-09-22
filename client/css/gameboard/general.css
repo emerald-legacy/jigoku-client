@@ -54,65 +54,10 @@
     cursor: var(--select-cursor, crosshair), default;
 }
 
-.prompt-area {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-}
-
-.player-info {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.deck-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.player-info.our-side .deck-info {
-    justify-content: flex-end;
-}
-
-.deck-type {
-    display: flex;
-    flex-direction: row;
-    height: 100px;
-}
-
 .middle {
     display: flex;
     flex-direction: row;
     flex: 1;
-}
-
-.additional-cards {
-    & .popup {
-        position: absolute;
-        bottom: 75px;
-        right: 0;
-
-        & .inner {
-            min-width: calc(var(--card-height) * 2 + 2 * 5px);
-            min-height: calc(var(--card-width) * 2 + 2 * 5px);
-
-            & .card-wrapper {
-                margin: 5px 5px 0 0;
-            }
-        }
-
-        & .arrow {
-            bottom: -30px;
-            right: 20px;
-        }
-    }
-}
-
-.middle-right {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
 }
 
 .prompt-control-targeting {

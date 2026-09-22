@@ -21,10 +21,6 @@
     }
 }
 
-.right-pane {
-    margin-top: -20px;
-}
-
 .decklist {
     height: 200px;
     display: flex;
@@ -264,21 +260,8 @@
     margin-left: 10px;
 }
 
-.banner-list {
-    margin-bottom: 10px;
-}
-
 .deck-summary {
     padding-top: 10px;
-}
-
-.deck-card-image {
-    width: 100%;
-}
-
-.deck-card {
-    padding-left: 0px;
-    padding-right: 0px;
 }
 
 .info-row {
@@ -286,11 +269,6 @@
     margin-right: 0px;
     justify-content: space-between;
     gap: 5px;
-}
-
-.deck-status-button {
-    margin-top: 10px;
-    margin-bottom: 10px;
 }
 
 .deck-list-container {

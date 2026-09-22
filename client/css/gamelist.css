@@ -164,17 +164,6 @@
     padding-left: 5px;
 }
 
-.deck-link {
-    cursor: pointer;
-    cursor: hand;
-    color: var(--color-primary);
-    margin-left: 10px;
-}
-
-.deck-link:hover {
-    color: var(--color-info);
-}
-
 .deck-selection {
     padding: 2px 8px;
     border-radius: 3px;
@@ -276,26 +265,6 @@
     bottom: 0px;
     left: 15px;
     right: 15px;
-}
-
-.node-1 {
-    background-color: rgba(240, 173, 78, 0.2);
-}
-
-.node-2 {
-    background-color: rgba(217, 83, 79, 0.2);
-}
-
-.node-3 {
-    background-color: rgba(91, 192, 222, 0.2);
-}
-
-.dev-node-1 {
-    background-color: rgba(240, 173, 78, 0.2);
-}
-
-.dev-node-2 {
-    background-color: rgba(217, 83, 79, 0.2);
 }
 
 .game-stats {

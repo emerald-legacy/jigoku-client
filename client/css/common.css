@@ -23,11 +23,6 @@
     vertical-align: middle;
 }
 
-.deck-popup {
-    color: #1E1E1E;
-    background-color: #999999;
-}
-
 .deck-select-modal {
     position: relative;
     background: linear-gradient(180deg, rgba(20, 22, 18, 0.96), rgba(12, 14, 10, 0.96));
@@ -187,16 +182,8 @@
     border-color: var(--color-info);
 }
 
-.bootstrap-typeahead-input-main {
-    background: white !important;
-}
-
 .ignore-mouse-events {
     pointer-events: none;
-}
-
-.shadow {
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .icon-danger {

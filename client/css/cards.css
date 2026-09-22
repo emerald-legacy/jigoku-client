@@ -96,39 +96,6 @@
         0 0 18px rgba(220, 200, 140, 0.45);
 }
 
-/* Generated from .generate-wrappers(10, 0) */
-.wrapper-0 { --wi: 0; }
-.wrapper-1 { --wi: 1; }
-.wrapper-2 { --wi: 2; }
-.wrapper-3 { --wi: 3; }
-.wrapper-4 { --wi: 4; }
-.wrapper-5 { --wi: 5; }
-.wrapper-6 { --wi: 6; }
-.wrapper-7 { --wi: 7; }
-.wrapper-8 { --wi: 8; }
-.wrapper-9 { --wi: 9; }
-.wrapper-10 { --wi: 10; }
-
-[class^="wrapper-"], [class*=" wrapper-"] {
-    margin-left: calc(var(--attachment-offset) * var(--wi, 0));
-
-    &.small {
-        margin-left: calc(var(--attachment-offset-sm) * var(--wi, 0));
-    }
-
-    &.large {
-        margin-left: calc(var(--attachment-offset-lg) * var(--wi, 0));
-    }
-
-    &.x-large {
-        margin-left: calc(var(--attachment-offset-xl) * var(--wi, 0));
-    }
-
-    &.xxl {
-        margin-left: calc(var(--attachment-offset-xxl) * var(--wi, 0));
-    }
-}
-
 .card-frame {
     border-radius: 6px;
     position: relative;
@@ -442,27 +409,6 @@
     white-space: nowrap;
 }
 
-.custom-card:hover .card-name {
-    background: rgba(0, 0, 0, 0.8);
-    position: absolute;
-    z-index: var(--layer-card-menu);
-    overflow: visible;
-}
-
-.card-large {
-    width: 220px;
-    height: 307px;
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-
-.card-large-horizontal {
-    width: 307px;
-    height: 220px;
-    position: relative;
-}
-
 .card-zoomed {
     width: 100%;
     height: 100%;
@@ -494,70 +440,6 @@
 
     &.xxl {
         margin-top: calc(-1 * var(--card-xxl-height));
-    }
-}
-
-/* Generated from .generate-attachments(10, 1) */
-.attachment-1 { --ai: 1; }
-.attachment-2 { --ai: 2; }
-.attachment-3 { --ai: 3; }
-.attachment-4 { --ai: 4; }
-.attachment-5 { --ai: 5; }
-.attachment-6 { --ai: 6; }
-.attachment-7 { --ai: 7; }
-.attachment-8 { --ai: 8; }
-.attachment-9 { --ai: 9; }
-.attachment-10 { --ai: 10; }
-
-.attachment-1, .attachment-2, .attachment-3, .attachment-4, .attachment-5,
-.attachment-6, .attachment-7, .attachment-8, .attachment-9, .attachment-10 {
-    margin-left: calc(-1 * var(--attachment-offset) * var(--ai));
-    z-index: calc(var(--layer-cards) - var(--ai));
-
-    &.small {
-        margin-left: calc(-1 * var(--attachment-offset-sm) * var(--ai));
-    }
-
-    &.large {
-        margin-left: calc(-1 * var(--attachment-offset-lg) * var(--ai));
-    }
-
-    &.x-large {
-        margin-left: calc(-1 * var(--attachment-offset-xl) * var(--ai));
-    }
-
-    &.xxl {
-        margin-left: calc(-1 * var(--attachment-offset-xxl) * var(--ai));
-    }
-}
-
-/* Horizontal attachment variants */
-.attachment-1.horizontal, .attachment-2.horizontal, .attachment-3.horizontal,
-.attachment-4.horizontal, .attachment-5.horizontal, .attachment-6.horizontal,
-.attachment-7.horizontal, .attachment-8.horizontal, .attachment-9.horizontal,
-.attachment-10.horizontal {
-    margin-left: calc(-1 * var(--attachment-offset) * var(--ai));
-    margin-top: calc(-1 * var(--card-height) - var(--attachment-offset));
-    z-index: calc(var(--layer-cards) - var(--ai));
-
-    &.small {
-        margin-left: calc(-1 * var(--attachment-offset-sm) * var(--ai));
-        margin-top: calc(-1 * var(--card-sm-height) - var(--attachment-offset-sm));
-    }
-
-    &.large {
-        margin-left: calc(-1 * var(--attachment-offset-lg) * var(--ai));
-        margin-top: calc(-1 * var(--card-lg-height) - var(--attachment-offset-lg));
-    }
-
-    &.x-large {
-        margin-left: calc(-1 * var(--attachment-offset-xl) * var(--ai));
-        margin-top: calc(-1 * var(--card-xl-height) - var(--attachment-offset-xl));
-    }
-
-    &.xxl {
-        margin-left: calc(-1 * var(--attachment-offset-xxl) * var(--ai));
-        margin-top: calc(-1 * var(--card-xxl-height) - var(--attachment-offset-xxl));
     }
 }
 
@@ -726,14 +608,6 @@
     }
 }
 
-.strength {
-    background-color: var(--color-strength);
-}
-
-.stand {
-    background-color: rgba(128, 128, 128, 0.85);
-}
-
 .province-attachment {
     margin-top: calc(var(--attachment-offset) - var(--card-height));
 
@@ -753,13 +627,6 @@
         margin-top: calc(var(--attachment-offset-xxl) - var(--card-xxl-height));
     }
 }
-
-/* Generated from .generate-province-attachment(5, 1) */
-.province-attachment-1 { z-index: calc(var(--layer-cards) - 1); }
-.province-attachment-2 { z-index: calc(var(--layer-cards) - 2); }
-.province-attachment-3 { z-index: calc(var(--layer-cards) - 3); }
-.province-attachment-4 { z-index: calc(var(--layer-cards) - 4); }
-.province-attachment-5 { z-index: calc(var(--layer-cards) - 5); }
 
 .underneath {
     margin-left: 0;
@@ -782,7 +649,6 @@
         margin-top: calc(-1 * (var(--card-xxl-height) + var(--card-xxl-height) / 2));
     }
 }
-
 
 .ability-used-corner {
     position: absolute;
