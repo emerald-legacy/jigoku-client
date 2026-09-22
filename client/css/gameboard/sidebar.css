@@ -40,6 +40,13 @@
     display: contents;
 }
 
+/* A claimed ring's menu is far wider than the sidebar, so the pane has to stop
+   clipping while one is open -- same trade-off as .center-bar:has(.menu). */
+.sidebar-pane:has(.menu) {
+    overflow: visible;
+    z-index: var(--layer-popups);
+}
+
 .sidebar-pane.their-side > .claimed-pool { margin-bottom: auto; }
 .sidebar-pane.our-side > .player-stats { margin-bottom: auto; }
 
