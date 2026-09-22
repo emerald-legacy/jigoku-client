@@ -7,7 +7,6 @@
     justify-content: center;
     align-items: center;
     min-width: 25%;
-    font-size: 40pt;
     border: none;
 }
 
@@ -23,13 +22,12 @@
 }
 
 .ring-prompt {
-    font-size: 40pt;
-    min-height: var(--ring-height);
-    min-width: var(--ring-width);
+    min-height: var(--ring-size);
+    min-width: var(--ring-size);
 }
 
 .claimed-pool {
-    --claimed-ring-size: 32px;
+    --ring-size: 32px;
     box-sizing: border-box;
     width: 100%;
     min-height: 24px;
@@ -42,16 +40,7 @@
     gap: 2px;
 
     & .ring {
-        font-size: var(--claimed-ring-size);
-        min-height: var(--claimed-ring-size);
-        max-height: var(--claimed-ring-size);
-        max-width: var(--claimed-ring-size);
         margin-right: 0;
-    }
-
-    & svg.ring-svg {
-        width: var(--claimed-ring-size);
-        height: var(--claimed-ring-size);
     }
 
     /* The menu is anchored for the far larger centre-bar rings; pull it back
@@ -77,8 +66,8 @@ circle.ring-background {
 svg.ring-svg {
     top: 0px;
     position: absolute;
-    height: var(--ring-height);
-    width: var(--ring-width);
+    height: var(--ring-size);
+    width: var(--ring-size);
     background: transparent;
     border: none;
 
@@ -113,9 +102,12 @@ svg.ring-svg {
     border: none;
     outline: none;
     box-shadow: none;
-    min-height: var(--ring-height);
-    max-height: var(--ring-height);
-    max-width: var(--ring-width);
+    /* The glyph is an icon-font character, so the size has to be a font-size -- but it
+       belongs here, on the ring, not on the container where descendants would inherit it. */
+    font-size: var(--ring-size);
+    min-height: var(--ring-size);
+    max-height: var(--ring-size);
+    max-width: var(--ring-size);
 
     &.unselectable {
         filter: brightness(60%);
@@ -214,11 +206,15 @@ svg.ring-svg {
 
 @media (max-width: 1360px) {
     .ring-panel {
+        --ring-size: 32px;
         padding: 0 5px;
-        font-size: 24pt;
+    }
+
+    .ring-prompt {
+        --ring-size: 32px;
     }
 
     .claimed-pool {
-        --claimed-ring-size: 24px;
+        --ring-size: 24px;
     }
 }

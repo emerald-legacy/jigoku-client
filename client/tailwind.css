@@ -107,9 +107,12 @@
     --attachment-offset-xl: 26px;
     --attachment-offset-xxl: 32.5px;
 
-    /* Ring dimensions */
-    --ring-height: 1em;
-    --ring-width: 1em;
+    /* Base ring size: drives the icon-font glyph, the tinted disc under it and the box.
+       This is the size used on the board and in targeting prompts; .claimed-pool and the
+       1360px breakpoint override it. It is set here rather than on .ring so that a
+       container can override it -- a declaration on .ring itself would win over one
+       inherited from its container and defeat the whole point. */
+    --ring-size: 53px;
 
     /* Z-index layers */
     --layer-cards: 45;
