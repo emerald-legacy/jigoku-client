@@ -49,8 +49,8 @@
 .user-admin-input:focus {
     outline: none;
     background: var(--ink);
-    border-color: rgb(var(--jade-light-rgb) / 0.6);
-    box-shadow: 0 0 0 1px rgb(var(--jade-light-rgb) / 0.4), 0 0 14px rgb(var(--jade-glow-rgb) / 0.2);
+    border-color: rgb(var(--jade-rgb) / 0.6);
+    box-shadow: 0 0 0 1px rgb(var(--jade-rgb) / 0.4), 0 0 14px rgb(var(--jade-glow-rgb) / 0.2);
 }
 
 /* ---- States ---- */
@@ -94,7 +94,7 @@
     bottom: 0.6rem;
     width: 2px;
     border-radius: 2px;
-    background: linear-gradient(180deg, transparent, rgb(var(--jade-light-rgb) / 0.7), transparent);
+    background: linear-gradient(180deg, transparent, rgb(var(--jade-rgb) / 0.7), transparent);
 }
 
 .user-admin-identity {
@@ -159,7 +159,7 @@
 }
 
 .user-admin-perms-title svg {
-    color: var(--color-link, var(--color-link));
+    color: var(--color-tertiary);
 }
 
 .user-admin-perm {
@@ -187,7 +187,7 @@
 }
 
 .user-admin-perm.is-on .user-admin-perm-icon {
-    color: var(--color-tertiary, var(--color-tertiary));
+    color: var(--color-tertiary);
 }
 
 .user-admin-perm-info {
@@ -248,7 +248,7 @@
 .user-admin-toggle input:checked ~ .user-admin-toggle-track {
     background: linear-gradient(180deg, rgb(var(--tertiary-rgb) / 0.9), rgb(var(--primary-rgb) / 0.9));
     border-color: rgb(var(--jade-rgb) / 0.7);
-    box-shadow: 0 0 12px rgb(var(--jade-glow-rgb) / 0.4), inset 0 0 4px rgb(var(--jade-light-rgb) / 0.3);
+    box-shadow: 0 0 12px rgb(var(--jade-glow-rgb) / 0.4), inset 0 0 4px rgb(var(--jade-rgb) / 0.3);
 }
 
 .user-admin-toggle input:checked ~ .user-admin-toggle-track .user-admin-toggle-knob {
@@ -257,7 +257,7 @@
 }
 
 .user-admin-toggle input:focus-visible ~ .user-admin-toggle-track {
-    box-shadow: 0 0 0 2px rgb(var(--jade-light-rgb) / 0.5);
+    box-shadow: 0 0 0 2px rgb(var(--jade-rgb) / 0.5);
 }
 
 /* ---- Actions / seal ---- */

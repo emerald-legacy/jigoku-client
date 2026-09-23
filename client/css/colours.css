@@ -15,17 +15,12 @@
 
     /* Jade — the signature green: rules, borders, focus rings, accents */
     --jade-rgb: 120 180 80;           /* rules and borders everywhere (111 uses) */
-    --jade-bright-rgb: 150 220 90;    /* hover and active accents */
-    --jade-light-rgb: 120 200 100;    /* lifted backgrounds and highlights */
-    --jade-vivid-rgb: 125 194 66;     /* lobby accents, focus glow */
+    --jade-vivid-rgb: 125 194 66;     /* hover and active accents, selection */
     --jade-glow-rgb: 80 160 60;       /* button hover halo */
     --jade-deep-rgb: 62 146 56;       /* resolved/positive states */
-    --link-rgb: 94 160 38;            /* links — literal in @theme */
-    --tertiary-rgb: 77 153 0;         /* headers — literal in @theme */
+    --tertiary-rgb: 94 160 38;        /* links, active and selected states — literal in @theme */
 
     --jade: rgb(var(--jade-rgb));
-    --jade-bright: rgb(var(--jade-bright-rgb));
-    --jade-light: rgb(var(--jade-light-rgb));
     --jade-vivid: rgb(var(--jade-vivid-rgb));
     --jade-glow: rgb(var(--jade-glow-rgb));
     --jade-deep: rgb(var(--jade-deep-rgb));
@@ -44,12 +39,10 @@
     --ink-rgb: 20 22 18;              /* panel surface, top stop */
     --ink-deep-rgb: 12 14 10;         /* panel surface, bottom stop */
     --ink-darker-rgb: 10 12 8;        /* inset wells */
-    --ink-darkest-rgb: 8 10 6;        /* deepest recesses */
 
     --ink: rgb(var(--ink-rgb));
     --ink-deep: rgb(var(--ink-deep-rgb));
     --ink-darker: rgb(var(--ink-darker-rgb));
-    --ink-darkest: rgb(var(--ink-darkest-rgb));
 
     /* Bone — the text ramp, lightest to most muted */
     --bone-rgb: 232 234 220;          /* primary text — literal in @theme */

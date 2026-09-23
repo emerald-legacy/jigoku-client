@@ -64,7 +64,7 @@
     transform: translateX(-50%);
     width: 80px;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
 }
 
 /* === How To Play === */
@@ -384,7 +384,7 @@ ol.htp-legend > li::before {
     color: rgb(var(--sage-pale-rgb) / 0.8);
 }
 .btn-transparent:hover {
-    color: var(--jade-bright);
+    color: var(--jade-vivid);
     background: transparent;
 }
 
@@ -397,7 +397,7 @@ ol.htp-legend > li::before {
     gap: 0.75rem;
     margin: 10px 5px 0;
     padding: 14px 16px;
-    background: linear-gradient(180deg, rgb(var(--moss-deep-rgb) / 0.9), var(--ink-darkest));
+    background: linear-gradient(180deg, rgb(var(--moss-deep-rgb) / 0.9), var(--ink-deep));
     border: 1px solid rgb(var(--jade-rgb) / 0.3);
     border-radius: 6px 6px 0 0;
     box-shadow: 0 -8px 24px rgb(var(--black-rgb) / 0.5);
@@ -456,7 +456,7 @@ ol.htp-legend > li::before {
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
 }
 
 .profile-save {
@@ -468,10 +468,10 @@ ol.htp-legend > li::before {
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink);
-    background: linear-gradient(180deg, var(--jade), var(--jade-light));
+    background: var(--jade);
     border: 1px solid rgb(var(--jade-rgb) / 0.6);
     border-radius: 6px;
-    box-shadow: 0 2px 10px rgb(var(--jade-light-rgb) / 0.3);
+    box-shadow: 0 2px 10px rgb(var(--jade-rgb) / 0.3);
     transition: filter 0.15s ease, transform 0.05s ease;
 }
 
@@ -546,7 +546,7 @@ ol.htp-legend > li::before {
     background: linear-gradient(180deg, rgb(var(--tertiary-rgb) / 0.6), rgb(var(--primary-rgb) / 0.7));
     border-color: rgb(var(--jade-rgb) / 0.7);
     color: var(--color-foreground);
-    box-shadow: 0 0 0 1px rgb(var(--jade-bright-rgb) / 0.15), 0 4px 14px rgb(var(--black-rgb) / 0.4);
+    box-shadow: 0 0 0 1px rgb(var(--jade-vivid-rgb) / 0.15), 0 4px 14px rgb(var(--black-rgb) / 0.4);
 }
 
 .errors-filter-chip.is-empty:disabled {
@@ -555,7 +555,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-filter-icon {
-    color: rgb(var(--jade-bright-rgb) / 0.9);
+    color: rgb(var(--jade-vivid-rgb) / 0.9);
     flex-shrink: 0;
 }
 
@@ -760,7 +760,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-players-icon {
-    color: rgb(var(--jade-bright-rgb) / 0.7);
+    color: rgb(var(--jade-vivid-rgb) / 0.7);
     flex-shrink: 0;
 }
 
@@ -828,7 +828,7 @@ ol.htp-legend > li::before {
 
 .errors-action-resolve:hover {
     background: linear-gradient(180deg, rgb(var(--success-rgb) / 0.7), rgb(var(--jade-deep-rgb) / 0.7));
-    border-color: rgb(var(--jade-light-rgb) / 0.7);
+    border-color: rgb(var(--jade-rgb) / 0.7);
 }
 
 .errors-row-expanded {
@@ -855,7 +855,7 @@ ol.htp-legend > li::before {
     font-size: 0.75rem;
     line-height: 1.55;
     color: rgb(var(--bone-rgb) / 0.9);
-    background: linear-gradient(180deg, rgb(var(--crimson-rgb) / 0.1), rgb(var(--ink-darkest-rgb) / 0.7));
+    background: linear-gradient(180deg, rgb(var(--crimson-rgb) / 0.1), rgb(var(--ink-deep-rgb) / 0.7));
     border: 1px solid rgb(var(--danger-rgb) / 0.2);
     border-left: 3px solid rgb(var(--danger-rgb) / 0.6);
     border-radius: 4px;
@@ -866,7 +866,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-detail-json {
-    background: linear-gradient(180deg, rgb(var(--ink-deep-rgb) / 0.7), rgb(var(--ink-darkest-rgb) / 0.9));
+    background: rgb(var(--ink-deep-rgb) / 0.8);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 4px;
     padding: 0.55rem 0.7rem;
@@ -920,7 +920,7 @@ ol.htp-legend > li::before {
 }
 
 .json-tree-caret {
-    color: rgb(var(--jade-bright-rgb) / 0.7);
+    color: rgb(var(--jade-vivid-rgb) / 0.7);
     transition: transform 0.15s ease;
     flex-shrink: 0;
     margin-right: 0.1rem;
@@ -948,7 +948,7 @@ ol.htp-legend > li::before {
 }
 
 .json-tree-key {
-    color: rgb(var(--jade-bright-rgb) / 0.9);
+    color: rgb(var(--jade-vivid-rgb) / 0.9);
     font-weight: 500;
 }
 
@@ -984,7 +984,7 @@ ol.htp-legend > li::before {
 }
 
 .json-tree-boolean {
-    color: rgb(var(--jade-bright-rgb) / 0.9);
+    color: rgb(var(--jade-vivid-rgb) / 0.9);
     font-weight: 500;
 }
 

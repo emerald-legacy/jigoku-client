@@ -208,7 +208,7 @@
 
     &.valid {
         background: linear-gradient(180deg, var(--moss-light), rgb(var(--moss-rgb) / 0.9));
-        color: var(--jade-bright);
+        color: var(--jade-vivid);
         border: 1px solid rgb(var(--jade-rgb) / 0.4);
     }
 

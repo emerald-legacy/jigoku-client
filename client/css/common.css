@@ -1,6 +1,6 @@
 .card-link {
     cursor: pointer;
-    color: var(--color-link);
+    color: var(--color-tertiary);
 }
 
 .card-link:hover {
@@ -37,7 +37,7 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
     pointer-events: none;
 }
 
@@ -70,7 +70,7 @@
     transition: color 0.15s;
 
     &:hover {
-        color: var(--jade-bright);
+        color: var(--jade-vivid);
     }
 }
 
@@ -132,7 +132,7 @@
 }
 
 .panel-darker {
-    background: linear-gradient(180deg, rgb(var(--ink-deep-rgb) / 0.9), rgb(var(--ink-darkest-rgb) / 0.9));
+    background: rgb(var(--ink-deep-rgb) / 0.9);
 }
 
 .absolute-panel {

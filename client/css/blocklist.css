@@ -14,7 +14,7 @@
     bottom: 0.6rem;
     width: 2px;
     border-radius: 2px;
-    background: linear-gradient(180deg, transparent, rgb(var(--jade-light-rgb) / 0.7), transparent);
+    background: linear-gradient(180deg, transparent, rgb(var(--jade-rgb) / 0.7), transparent);
 }
 
 .blocklist-intro {
@@ -83,7 +83,7 @@
 }
 
 .blocklist-section-title svg {
-    color: var(--color-link, var(--color-link));
+    color: var(--color-tertiary);
 }
 
 .blocklist-count {

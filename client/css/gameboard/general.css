@@ -118,7 +118,7 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
     pointer-events: none;
 }
 
@@ -172,7 +172,7 @@
 }
 
 .settings-popup .close:hover {
-    color: var(--jade-bright);
+    color: var(--jade-vivid);
 }
 
 .modal-title {

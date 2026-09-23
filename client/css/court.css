@@ -56,7 +56,7 @@
 }
 
 .court-glyph {
-    color: var(--color-link);
+    color: var(--color-tertiary);
     font-family: var(--font-glyph);
     font-size: 11px;
     width: 1em;
@@ -95,7 +95,7 @@
     font-family: var(--font-display);
     font-size: 14px;
     letter-spacing: 0.03em;
-    color: var(--color-link);
+    color: var(--color-tertiary);
 }
 
 .court-group-count {

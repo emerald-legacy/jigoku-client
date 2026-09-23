@@ -67,11 +67,11 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
 }
 
 .panel-title-icon {
-    color: var(--color-link);
+    color: var(--color-tertiary);
     flex-shrink: 0;
 }
 
@@ -101,7 +101,7 @@
     transition: color 0.15s;
 }
 .panel-title .close-button:hover {
-    color: var(--jade-bright);
+    color: var(--jade-vivid);
 }
 
 .selected {

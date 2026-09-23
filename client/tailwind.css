@@ -49,7 +49,7 @@
 @import "./css/blocklist.css";
 
 @import "tailwindcss";
-@source "../client/**/*.{jsx,js}";
+@source "../client/**/*.{ts,tsx,js,jsx}";
 
 @theme {
     --font-display: "Cormorant Garamond", serif;
@@ -59,10 +59,8 @@
     --font-ui: system-ui, sans-serif;
     --default-font-family: var(--font-body);
     --color-primary: #336600;
-    --color-primary-dark: #2b5500;
     --color-secondary: #1a3300;
-    --color-tertiary: #4d9900;
-    --color-link: #5ea026;
+    --color-tertiary: #5ea026;
     --color-background: #0E0B10;
     --color-foreground: rgb(232, 234, 220);
     --color-info: #5bc0de;
@@ -70,18 +68,11 @@
     --color-warning: #f0ad4e;
     --color-danger: #d9534f;
     --color-navbar-bg: rgba(34, 34, 34, 0.8);
-    --color-header-bg: rgba(77, 153, 0, 0.9);
     --color-header-border: rgba(120, 180, 80, 0.4);
     --color-military-icon: #ca9c81;
-    --color-military-text: #743e3e;
     --color-military-ring: #BB3e3e;
     --color-political-icon: #b2bccd;
-    --color-political-text: #41658a;
     --color-political-ring: #3065BB;
-    --color-dupe: rgba(0, 128, 0, 0.9);
-    --color-power: rgba(0, 0, 128, 0.9);
-    --color-strength: rgba(128, 0, 0, 0.9);
-    --color-venom: rgba(29, 145, 163, 0.9);
     --color-table-bg-accent: rgba(51, 102, 0, 0.5);
 }
 
@@ -363,7 +354,7 @@ h4 {
 }
 
 a {
-    color: var(--color-link);
+    color: var(--color-tertiary);
     text-decoration: none;
 
     &:hover {
