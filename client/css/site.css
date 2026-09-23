@@ -143,7 +143,7 @@ ol.htp-legend > li::before {
     height: 1.75rem;
     border-radius: 50%;
     border: 2px solid var(--crimson);
-    background: rgb(var(--ink-deep-rgb) / 0.9);
+    background: rgb(var(--ink-rgb) / 0.9);
     font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 700;
@@ -169,7 +169,7 @@ ol.htp-legend > li::before {
     font-size: 15px;
     line-height: 1.55;
     color: var(--color-foreground);
-    background: rgb(var(--ink-deep-rgb) / 0.6);
+    background: rgb(var(--ink-rgb) / 0.6);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 4px;
     box-shadow: inset 0 0 0 1px rgb(var(--black-rgb) / 0.2);
@@ -179,7 +179,7 @@ ol.htp-legend > li::before {
 .news-admin-textarea:focus {
     border-color: rgb(var(--jade-rgb) / 0.6);
     outline: none;
-    background: rgb(var(--ink-deep-rgb) / 0.9);
+    background: rgb(var(--ink-rgb) / 0.9);
 }
 
 .news-admin-textarea::placeholder {
@@ -397,7 +397,7 @@ ol.htp-legend > li::before {
     gap: 0.75rem;
     margin: 10px 5px 0;
     padding: 14px 16px;
-    background: linear-gradient(180deg, rgb(var(--moss-deep-rgb) / 0.9), var(--ink-deep));
+    background: linear-gradient(180deg, rgb(var(--moss-deep-rgb) / 0.9), var(--ink));
     border: 1px solid rgb(var(--jade-rgb) / 0.3);
     border-radius: 6px 6px 0 0;
     box-shadow: 0 -8px 24px rgb(var(--black-rgb) / 0.5);
@@ -467,7 +467,7 @@ ol.htp-legend > li::before {
     font-size: 16px;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--ink-deep);
+    color: var(--ink);
     background: var(--jade);
     border: 1px solid rgb(var(--jade-rgb) / 0.6);
     border-radius: 6px;
@@ -515,7 +515,7 @@ ol.htp-legend > li::before {
     gap: 0.5rem;
     margin: 0 5px 1rem;
     padding: 0.55rem 0.65rem;
-    background: rgb(var(--ink-deep-rgb) / 0.6);
+    background: rgb(var(--ink-rgb) / 0.6);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
 }
@@ -807,7 +807,7 @@ ol.htp-legend > li::before {
     height: 30px;
     padding: 0;
     border-radius: 4px;
-    background: rgb(var(--ink-deep-rgb) / 0.5);
+    background: rgb(var(--ink-rgb) / 0.5);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     color: rgb(var(--bone-rgb) / 0.8);
     cursor: pointer;
@@ -834,7 +834,7 @@ ol.htp-legend > li::before {
 .errors-row-expanded {
     padding: 0.25rem 1.15rem 1.1rem;
     border-top: 1px dashed rgb(var(--jade-rgb) / 0.2);
-    background: rgb(var(--ink-deep-rgb) / 0.6);
+    background: rgb(var(--ink-rgb) / 0.6);
 }
 
 .errors-detail-section {
@@ -855,7 +855,7 @@ ol.htp-legend > li::before {
     font-size: 0.75rem;
     line-height: 1.55;
     color: rgb(var(--bone-rgb) / 0.9);
-    background: linear-gradient(180deg, rgb(var(--crimson-rgb) / 0.1), rgb(var(--ink-deep-rgb) / 0.7));
+    background: linear-gradient(180deg, rgb(var(--crimson-rgb) / 0.1), rgb(var(--ink-rgb) / 0.7));
     border: 1px solid rgb(var(--danger-rgb) / 0.2);
     border-left: 3px solid rgb(var(--danger-rgb) / 0.6);
     border-radius: 4px;
@@ -866,7 +866,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-detail-json {
-    background: rgb(var(--ink-deep-rgb) / 0.8);
+    background: rgb(var(--ink-rgb) / 0.8);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 4px;
     padding: 0.55rem 0.7rem;

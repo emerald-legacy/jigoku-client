@@ -262,7 +262,7 @@
     justify-content: center;
     border: 1px solid rgb(var(--jade-rgb) / 0.3);
     border-radius: 50%;
-    background: radial-gradient(circle, rgb(var(--moss-rgb) / 0.6), rgb(var(--ink-deep-rgb) / 0.6));
+    background: radial-gradient(circle, rgb(var(--moss-rgb) / 0.6), rgb(var(--ink-rgb) / 0.6));
     font-family: var(--font-glyph);
     font-size: 1rem;
     color: rgb(var(--jade-vivid-rgb) / 0.9);

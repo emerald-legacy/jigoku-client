@@ -12,7 +12,7 @@
 }
 
 .menu-pane-source {
-    background: rgb(var(--ink-deep-rgb) / 0.9);
+    background: rgb(var(--ink-rgb) / 0.9);
     border-left: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-right: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-top: none;

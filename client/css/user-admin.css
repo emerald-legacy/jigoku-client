@@ -32,7 +32,7 @@
 .user-admin-input {
     width: 100%;
     padding: 0.55rem 0.75rem 0.55rem 2.1rem;
-    background: rgb(var(--ink-deep-rgb) / 0.9);
+    background: rgb(var(--ink-rgb) / 0.9);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 4px;
     color: var(--color-foreground);
@@ -48,7 +48,7 @@
 
 .user-admin-input:focus {
     outline: none;
-    background: var(--ink-deep);
+    background: var(--ink);
     border-color: rgb(var(--jade-rgb) / 0.6);
     box-shadow: 0 0 0 1px rgb(var(--jade-rgb) / 0.4), 0 0 14px rgb(var(--jade-glow-rgb) / 0.2);
 }
@@ -79,7 +79,7 @@
     position: relative;
     margin-top: 0.9rem;
     padding: 1.1rem 1.1rem 1.1rem 1.4rem;
-    background: linear-gradient(180deg, rgb(var(--ink-deep-rgb) / 0.6), rgb(var(--ink-darker-rgb) / 0.6));
+    background: rgb(var(--ink-rgb) / 0.6);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
     animation: user-admin-rise 0.4s ease both;
@@ -229,7 +229,7 @@
     position: absolute;
     inset: 0;
     border-radius: 999px;
-    background: rgb(var(--ink-deep-rgb) / 0.9);
+    background: rgb(var(--ink-rgb) / 0.9);
     border: 1px solid rgb(var(--jade-rgb) / 0.3);
     transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
 }

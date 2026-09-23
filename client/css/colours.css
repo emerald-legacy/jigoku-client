@@ -36,11 +36,9 @@
     --moss-deep: rgb(var(--moss-deep-rgb));
 
     /* Ink — the near-blacks the board and panels are built from */
-    --ink-deep-rgb: 12 14 10;         /* panel surface, bottom stop */
-    --ink-darker-rgb: 10 12 8;        /* inset wells */
+    --ink-rgb: 12 14 10;              /* panel surfaces and wells */
 
-    --ink-deep: rgb(var(--ink-deep-rgb));
-    --ink-darker: rgb(var(--ink-darker-rgb));
+    --ink: rgb(var(--ink-rgb));
 
     /* Bone — the text ramp, lightest to most muted */
     --bone-rgb: 232 234 220;          /* primary text — literal in @theme */
