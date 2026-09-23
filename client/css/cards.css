@@ -92,41 +92,8 @@
 .panel.province .card.province-attachment:hover,
 .hand .card:hover {
     box-shadow:
-        0 0 0 3px rgba(220, 200, 140, 0.78),
-        0 0 18px rgba(220, 200, 140, 0.45);
-}
-
-/* Generated from .generate-wrappers(10, 0) */
-.wrapper-0 { --wi: 0; }
-.wrapper-1 { --wi: 1; }
-.wrapper-2 { --wi: 2; }
-.wrapper-3 { --wi: 3; }
-.wrapper-4 { --wi: 4; }
-.wrapper-5 { --wi: 5; }
-.wrapper-6 { --wi: 6; }
-.wrapper-7 { --wi: 7; }
-.wrapper-8 { --wi: 8; }
-.wrapper-9 { --wi: 9; }
-.wrapper-10 { --wi: 10; }
-
-[class^="wrapper-"], [class*=" wrapper-"] {
-    margin-left: calc(var(--attachment-offset) * var(--wi, 0));
-
-    &.small {
-        margin-left: calc(var(--attachment-offset-sm) * var(--wi, 0));
-    }
-
-    &.large {
-        margin-left: calc(var(--attachment-offset-lg) * var(--wi, 0));
-    }
-
-    &.x-large {
-        margin-left: calc(var(--attachment-offset-xl) * var(--wi, 0));
-    }
-
-    &.xxl {
-        margin-left: calc(var(--attachment-offset-xxl) * var(--wi, 0));
-    }
+        0 0 0 3px rgb(var(--gold-pale-rgb) / 0.8),
+        0 0 18px rgb(var(--gold-pale-rgb) / 0.5);
 }
 
 .card-frame {
@@ -240,10 +207,16 @@
         width: var(--card-height);
     }
 
-    /* lighten(#336600, 60%) = HSL(90,100%,80%) ≈ #ccff99, fadeout 10% = alpha 0.9 */
+    /* lighten(var(--color-primary), 60%) = HSL(90,100%,80%) ≈ #ccff99, fadeout 10% = alpha 0.9 */
     &.selectable {
         & .card-image { box-shadow: 0 0 10px 1px rgba(204, 255, 153, 0.9); }
     }
+
+    /* Safari leaves the previous card painted behind when a filter-induced compositing layer is
+       created and destroyed, which happens to every card at once whenever a prompt opens or
+       closes. Declaring will-change keeps the layer alive across the toggle so WebKit repaints
+       it instead of stranding the old pixels. */
+    will-change: filter;
 
     &.unselectable {
         filter: brightness(60%);
@@ -261,16 +234,16 @@
        not read as the green "you may select this now" highlight. */
     &.playable-out-of-play {
         & .card-image {
-            box-shadow: 0 0 8px 2px rgba(245, 176, 66, 0.95);
-            outline: 1px solid rgba(245, 176, 66, 0.8);
+            box-shadow: 0 0 8px 2px var(--amber);
+            outline: 1px solid rgb(var(--amber-rgb) / 0.8);
         }
     }
 
     &.selected {
         & .card-image {
             box-shadow:
-                0 0 0 3px var(--lobby-jade-bright, #7dc242),
-                0 0 12px 4px rgba(125, 194, 66, 0.55);
+                0 0 0 3px var(--jade-vivid),
+                0 0 12px 4px rgb(var(--jade-vivid-rgb) / 0.6);
         }
     }
 
@@ -305,10 +278,10 @@
     overflow: hidden;
     container-type: inline-size;
     box-shadow:
-        0 6px 14px -4px rgba(0, 0, 0, 0.65),
-        0 2px 4px rgba(0, 0, 0, 0.45),
-        inset 0 0 0 1px rgba(255, 255, 255, 0.10),
-        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+        0 6px 14px -4px rgb(var(--black-rgb) / 0.7),
+        0 2px 4px rgb(var(--black-rgb) / 0.5),
+        inset 0 0 0 1px rgb(var(--white-rgb) / 0.1),
+        inset 0 1px 0 rgb(var(--white-rgb) / 0.2);
     transition: transform 0.3s ease-out, left 0.3s ease-out, top 0.3s ease-out, box-shadow 0.18s ease;
 
     &.small {
@@ -416,10 +389,10 @@
 }
 
 .card-order {
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.9);
+    background: rgb(var(--black-rgb) / 0.8);
+    border: 1px solid rgb(var(--black-rgb) / 0.9);
     border-radius: 6px;
-    color: white;
+    color: var(--color-foreground);
     font-size: 16px;
     font-weight: bold;
     height: 26px;
@@ -440,27 +413,6 @@
     display: block;
     overflow: hidden;
     white-space: nowrap;
-}
-
-.custom-card:hover .card-name {
-    background: rgba(0, 0, 0, 0.8);
-    position: absolute;
-    z-index: var(--layer-card-menu);
-    overflow: visible;
-}
-
-.card-large {
-    width: 220px;
-    height: 307px;
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-
-.card-large-horizontal {
-    width: 307px;
-    height: 220px;
-    position: relative;
 }
 
 .card-zoomed {
@@ -494,70 +446,6 @@
 
     &.xxl {
         margin-top: calc(-1 * var(--card-xxl-height));
-    }
-}
-
-/* Generated from .generate-attachments(10, 1) */
-.attachment-1 { --ai: 1; }
-.attachment-2 { --ai: 2; }
-.attachment-3 { --ai: 3; }
-.attachment-4 { --ai: 4; }
-.attachment-5 { --ai: 5; }
-.attachment-6 { --ai: 6; }
-.attachment-7 { --ai: 7; }
-.attachment-8 { --ai: 8; }
-.attachment-9 { --ai: 9; }
-.attachment-10 { --ai: 10; }
-
-.attachment-1, .attachment-2, .attachment-3, .attachment-4, .attachment-5,
-.attachment-6, .attachment-7, .attachment-8, .attachment-9, .attachment-10 {
-    margin-left: calc(-1 * var(--attachment-offset) * var(--ai));
-    z-index: calc(var(--layer-cards) - var(--ai));
-
-    &.small {
-        margin-left: calc(-1 * var(--attachment-offset-sm) * var(--ai));
-    }
-
-    &.large {
-        margin-left: calc(-1 * var(--attachment-offset-lg) * var(--ai));
-    }
-
-    &.x-large {
-        margin-left: calc(-1 * var(--attachment-offset-xl) * var(--ai));
-    }
-
-    &.xxl {
-        margin-left: calc(-1 * var(--attachment-offset-xxl) * var(--ai));
-    }
-}
-
-/* Horizontal attachment variants */
-.attachment-1.horizontal, .attachment-2.horizontal, .attachment-3.horizontal,
-.attachment-4.horizontal, .attachment-5.horizontal, .attachment-6.horizontal,
-.attachment-7.horizontal, .attachment-8.horizontal, .attachment-9.horizontal,
-.attachment-10.horizontal {
-    margin-left: calc(-1 * var(--attachment-offset) * var(--ai));
-    margin-top: calc(-1 * var(--card-height) - var(--attachment-offset));
-    z-index: calc(var(--layer-cards) - var(--ai));
-
-    &.small {
-        margin-left: calc(-1 * var(--attachment-offset-sm) * var(--ai));
-        margin-top: calc(-1 * var(--card-sm-height) - var(--attachment-offset-sm));
-    }
-
-    &.large {
-        margin-left: calc(-1 * var(--attachment-offset-lg) * var(--ai));
-        margin-top: calc(-1 * var(--card-lg-height) - var(--attachment-offset-lg));
-    }
-
-    &.x-large {
-        margin-left: calc(-1 * var(--attachment-offset-xl) * var(--ai));
-        margin-top: calc(-1 * var(--card-xl-height) - var(--attachment-offset-xl));
-    }
-
-    &.xxl {
-        margin-left: calc(-1 * var(--attachment-offset-xxl) * var(--ai));
-        margin-top: calc(-1 * var(--card-xxl-height) - var(--attachment-offset-xxl));
     }
 }
 
@@ -620,7 +508,7 @@
     width: 1em;
     height: 1em;
     line-height: 1em;
-    filter: drop-shadow(4px 4px 5px black);
+    filter: drop-shadow(4px 4px 5px var(--black));
     animation: token-place 280ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 
     &.ring-fate {
@@ -643,8 +531,8 @@
     width: 100%;
     float: left;
     text-align: center;
-    color: white;
-    text-shadow: 1px 1px 2px #000;
+    color: var(--white);
+    text-shadow: 1px 1px 2px var(--black);
     z-index: calc(var(--layer-cards) + 3);
     font-size: 0.5em;
 }
@@ -679,7 +567,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    filter: drop-shadow(4px 4px 5px black);
+    filter: drop-shadow(4px 4px 5px var(--black));
 }
 
 .honorstatuscounter {
@@ -690,7 +578,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    filter: drop-shadow(4px 4px 5px black);
+    filter: drop-shadow(4px 4px 5px var(--black));
     animation: token-place 280ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
@@ -707,10 +595,9 @@
 }
 
 .honorcountertext {
-    width: 100%;
     text-align: center;
-    color: white;
-    text-shadow: 1px 1px 2px #000;
+    color: var(--white);
+    text-shadow: 1px 1px 2px var(--black);
     z-index: calc(var(--layer-cards) + 3);
     font-size: 1.2em;
     position: absolute;
@@ -724,14 +611,6 @@
     & .honorcountertext {
         font-size: 3em;
     }
-}
-
-.strength {
-    background-color: var(--color-strength);
-}
-
-.stand {
-    background-color: rgba(128, 128, 128, 0.85);
 }
 
 .province-attachment {
@@ -753,13 +632,6 @@
         margin-top: calc(var(--attachment-offset-xxl) - var(--card-xxl-height));
     }
 }
-
-/* Generated from .generate-province-attachment(5, 1) */
-.province-attachment-1 { z-index: calc(var(--layer-cards) - 1); }
-.province-attachment-2 { z-index: calc(var(--layer-cards) - 2); }
-.province-attachment-3 { z-index: calc(var(--layer-cards) - 3); }
-.province-attachment-4 { z-index: calc(var(--layer-cards) - 4); }
-.province-attachment-5 { z-index: calc(var(--layer-cards) - 5); }
 
 .underneath {
     margin-left: 0;
@@ -783,14 +655,13 @@
     }
 }
 
-
 .ability-used-corner {
     position: absolute;
     top: 0;
     right: 0;
     width: 18cqi;
     height: 18cqi;
-    background: rgba(55, 55, 55, 0.9);
+    background: rgb(var(--slate-rgb) / 0.9);
     clip-path: polygon(0 0, 100% 0, 100% 100%);
     pointer-events: none;
     z-index: calc(var(--layer-cards) + 2);
@@ -802,11 +673,11 @@
     right: 0;
     width: 18cqi;
     height: 18cqi;
-    background: rgba(20, 75, 55, 0.95);
+    background: rgb(var(--success-rgb) / 0.3);
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
     pointer-events: auto;
     z-index: calc(var(--layer-cards) + 2);
-    filter: drop-shadow(0 0.5cqi 1cqi rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0 0.5cqi 1cqi rgb(var(--black-rgb) / 0.5));
 }
 
 .card-effect-corner::after {
@@ -817,8 +688,8 @@
     font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
     font-size: 6cqi;
     line-height: 1;
-    color: rgba(255, 255, 255, 0.95);
-    text-shadow: 0 0.3cqi 0.5cqi rgba(0, 0, 0, 0.7);
+    color: var(--color-foreground);
+    text-shadow: 0 0.3cqi 0.5cqi rgb(var(--black-rgb) / 0.7);
     pointer-events: none;
 }
 
@@ -828,7 +699,7 @@
     left: 0;
     width: 18cqi;
     height: 18cqi;
-    background: rgba(55, 55, 55, 0.9);
+    background: rgb(var(--slate-rgb) / 0.9);
     clip-path: polygon(0 0, 0 100%, 100% 100%);
     pointer-events: none;
     z-index: calc(var(--layer-cards) + 2);

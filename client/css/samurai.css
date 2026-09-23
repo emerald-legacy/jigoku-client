@@ -4,10 +4,10 @@
     bottom: 0;
     left: 0;
     z-index: 40;
-    color: var(--lobby-bone);
+    color: var(--color-foreground);
     font-family: var(--lobby-font-body);
-    background: rgba(20, 26, 14, 0.85);
-    border-right: 1px solid var(--lobby-rule);
+    background: rgb(var(--moss-deep-rgb) / 0.9);
+    border-right: 1px solid rgb(var(--jade-rgb) / 0.2);
     transition: width 200ms ease;
     box-sizing: border-box;
     overflow: hidden;
@@ -27,7 +27,7 @@
     }
 
     .samurai-expanded {
-        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.45);
+        box-shadow: 0 0 0 9999px rgb(var(--black-rgb) / 0.5);
     }
 
     .samurai-desktop-only {
@@ -45,13 +45,13 @@
     appearance: none;
     background: transparent;
     border: none;
-    color: var(--lobby-bone);
+    color: var(--color-foreground);
     padding: 12px;
     cursor: pointer;
 }
 
 .samurai-burger:hover {
-    color: var(--lobby-jade-bright);
+    color: var(--jade-vivid);
 }
 
 .samurai-panel {
@@ -66,20 +66,20 @@
     align-items: baseline;
     gap: 0.5rem;
     padding: 0 14px 10px;
-    border-bottom: 1px solid var(--lobby-rule);
+    border-bottom: 1px solid rgb(var(--jade-rgb) / 0.2);
 }
 
 .samurai-title {
     font-family: var(--lobby-font-display);
     font-size: 1.15rem;
-    color: var(--lobby-jade);
+    color: var(--color-link);
     letter-spacing: 0.04em;
 }
 
 .samurai-total {
     font-family: var(--lobby-font-mono);
     font-size: 0.85rem;
-    color: var(--lobby-bone-soft);
+    color: rgb(var(--sage-pale-rgb) / 0.8);
     margin-left: auto;
     margin-right: 4px;
 }
@@ -88,7 +88,7 @@
     appearance: none;
     background: transparent;
     border: none;
-    color: var(--lobby-bone-soft);
+    color: rgb(var(--sage-pale-rgb) / 0.8);
     cursor: pointer;
     padding: 2px;
     display: inline-flex;
@@ -96,7 +96,7 @@
 }
 
 .samurai-close:hover {
-    color: var(--lobby-jade-bright);
+    color: var(--jade-vivid);
 }
 
 .samurai-groups {
@@ -106,7 +106,7 @@
 }
 
 .samurai-group + .samurai-group {
-    border-top: 1px solid var(--lobby-rule-soft);
+    border-top: 1px solid rgb(var(--jade-rgb) / 0.1);
     margin-top: 6px;
     padding-top: 6px;
 }
@@ -121,14 +121,14 @@
 .samurai-group-label {
     font-family: var(--lobby-font-display);
     font-size: 0.92rem;
-    color: var(--lobby-jade);
+    color: var(--color-link);
     letter-spacing: 0.03em;
 }
 
 .samurai-group-count {
     font-family: var(--lobby-font-mono);
     font-size: 0.75rem;
-    color: var(--lobby-bone-soft);
+    color: rgb(var(--sage-pale-rgb) / 0.8);
 }
 
 .samurai-group-list {
@@ -146,11 +146,11 @@
 }
 
 .samurai-row:hover {
-    background-color: var(--lobby-rule-soft);
+    background-color: rgb(var(--jade-rgb) / 0.1);
 }
 
 .samurai-glyph {
-    color: var(--lobby-jade);
+    color: var(--color-link);
     font-family: var(--lobby-font-glyph);
     font-size: 0.85rem;
     width: 1em;
@@ -159,12 +159,12 @@
 }
 
 .samurai-name {
-    color: var(--lobby-bone);
+    color: var(--color-foreground);
     font-size: 0.9rem;
 }
 
 .samurai-name--patron {
-    color: #d4af37;
+    color: var(--gold);
 }
 
 .samurai-rail {
@@ -178,8 +178,8 @@
 .samurai-rail-toggle {
     appearance: none;
     background: transparent;
-    border: 1px solid var(--lobby-rule);
-    color: var(--lobby-bone-soft);
+    border: 1px solid rgb(var(--jade-rgb) / 0.2);
+    color: rgb(var(--sage-pale-rgb) / 0.8);
     border-radius: 999px;
     width: 28px;
     height: 28px;
@@ -191,8 +191,8 @@
 }
 
 .samurai-rail-toggle:hover {
-    color: var(--lobby-jade-bright);
-    border-color: var(--lobby-jade);
+    color: var(--jade-vivid);
+    border-color: var(--color-link);
 }
 
 .samurai-rail-counts {
@@ -213,5 +213,5 @@
     gap: 1px;
     font-family: var(--lobby-font-mono);
     font-size: 0.7rem;
-    color: var(--lobby-bone-soft);
+    color: rgb(var(--sage-pale-rgb) / 0.8);
 }

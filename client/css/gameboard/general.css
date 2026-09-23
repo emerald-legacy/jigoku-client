@@ -25,10 +25,10 @@
 
 .popup {
     z-index: var(--layer-card-menu);
-    background: linear-gradient(180deg, rgba(20, 22, 18, 0.92), rgba(12, 14, 10, 0.92));
-    border: 1px solid rgba(120, 180, 80, 0.20);
+    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.9), rgb(var(--ink-deep-rgb) / 0.9));
+    border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 24px rgb(var(--black-rgb) / 0.5);
 
     & a {
         display: inline-block;
@@ -54,65 +54,10 @@
     cursor: var(--select-cursor, crosshair), default;
 }
 
-.prompt-area {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-}
-
-.player-info {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-.deck-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.player-info.our-side .deck-info {
-    justify-content: flex-end;
-}
-
-.deck-type {
-    display: flex;
-    flex-direction: row;
-    height: 100px;
-}
-
 .middle {
     display: flex;
     flex-direction: row;
     flex: 1;
-}
-
-.additional-cards {
-    & .popup {
-        position: absolute;
-        bottom: 75px;
-        right: 0;
-
-        & .inner {
-            min-width: calc(var(--card-height) * 2 + 2 * 5px);
-            min-height: calc(var(--card-width) * 2 + 2 * 5px);
-
-            & .card-wrapper {
-                margin: 5px 5px 0 0;
-            }
-        }
-
-        & .arrow {
-            bottom: -30px;
-            right: 20px;
-        }
-    }
-}
-
-.middle-right {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
 }
 
 .prompt-control-targeting {
@@ -152,10 +97,10 @@
 }
 
 .settings-popup {
-    background: linear-gradient(180deg, rgba(20, 22, 18, 0.96), rgba(12, 14, 10, 0.96));
-    border: 1px solid rgba(120, 180, 80, 0.20);
+    background: linear-gradient(180deg, var(--ink), var(--ink-deep));
+    border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+    box-shadow: 0 10px 30px rgb(var(--black-rgb) / 0.6);
     position: relative;
 }
 
@@ -173,7 +118,7 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(120, 200, 100, 0.55), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
     pointer-events: none;
 }
 
@@ -185,8 +130,8 @@
     width: 100%;
     flex: 0 0 100%;
     padding: 10px 16px;
-    background: linear-gradient(180deg, rgba(34, 50, 20, 0.85), rgba(20, 30, 12, 0.7));
-    border-bottom: 1px solid rgba(120, 180, 80, 0.18);
+    background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.9), rgb(var(--moss-deep-rgb) / 0.7));
+    border-bottom: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px 6px 0 0;
     box-sizing: border-box;
 }
@@ -207,7 +152,7 @@
     line-height: 1.2;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(230, 235, 210, 0.95);
+    color: var(--color-foreground);
 }
 
 .settings-popup .close {
@@ -220,14 +165,14 @@
     font-size: 20px;
     line-height: 1;
     padding: 0 4px;
-    color: rgba(180, 200, 150, 0.55);
+    color: rgb(var(--sage-rgb) / 0.7);
     cursor: pointer;
     transition: color 0.15s;
     float: none;
 }
 
 .settings-popup .close:hover {
-    color: rgba(150, 220, 90, 1);
+    color: var(--jade-bright);
 }
 
 .modal-title {
@@ -236,7 +181,7 @@
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(230, 235, 210, 0.95);
+    color: var(--color-foreground);
 }
 
 .close {

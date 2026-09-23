@@ -5,8 +5,8 @@
     bottom: 0;
     min-height: max-content;
     font-size: 14px;
-    background-color: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.4);
+    background-color: rgb(var(--black-rgb) / 0.4);
+    box-shadow: 0 0 10px 5px rgb(var(--black-rgb) / 0.4);
     grid-column-start: 1;
     display: grid;
     grid-template-rows: auto minmax(min-content, 1fr) 18px minmax(min-content, 1fr) auto;
@@ -38,6 +38,13 @@
 
 .sidebar-pane > .sidebar-pane {
     display: contents;
+}
+
+/* A claimed ring's menu is far wider than the sidebar, so the pane has to stop
+   clipping while one is open -- same trade-off as .center-bar:has(.menu). */
+.sidebar-pane:has(.menu) {
+    overflow: visible;
+    z-index: var(--layer-popups);
 }
 
 .sidebar-pane.their-side > .claimed-pool { margin-bottom: auto; }

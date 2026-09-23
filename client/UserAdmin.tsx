@@ -132,7 +132,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
                 }) }
 
                 <div className="user-admin-actions">
-                    <button type="button" className="user-admin-save" onClick={ onSaveClick }>
+                    <button type="button" className="btn btn-danger btn-action" onClick={ onSaveClick }>
                         <Stamp size={ 15 } aria-hidden="true" />
                         Seal &amp; Save
                     </button>
@@ -168,7 +168,7 @@ export function InnerUserAdmin({ apiError, apiStatus, clearUserStatus, currentUs
                             aria-label="Username"
                         />
                     </div>
-                    <button type="submit" className="user-admin-btn">
+                    <button type="submit" className="btn btn-primary btn-action">
                         <Search size={ 14 } aria-hidden="true" />
                         Find
                     </button>

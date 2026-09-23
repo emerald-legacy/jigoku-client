@@ -399,6 +399,11 @@ function Card(props: CardProps) {
             frameClassName += " card-pile-frame";
         }
 
+        // Keys the <img> below. Without it React keeps the same element when a slot's card
+        // changes and only swaps src, so the previously decoded image stays on screen until the
+        // new one decodes -- briefly showing the wrong card.
+        const cardImageSrc = !isFacedown() ? getCardImagePath() : getCardBackUrl(cardBack);
+
         return (
             <div
                 className={ frameClassName }
@@ -430,7 +435,7 @@ function Card(props: CardProps) {
                         <span className="card-name">{ card.name }</span>
                     </div>
                     <div className={ imageClass }>
-                        <img className="card-image-src" src={ !isFacedown() ? getCardImagePath() : getCardBackUrl(cardBack) } onError={ showPromo && !isFacedown() ? handleImageError : undefined } />
+                        <img key={ cardImageSrc } className="card-image-src" src={ cardImageSrc } onError={ showPromo && !isFacedown() ? handleImageError : undefined } />
                         { card.abilityLimits && <AbilityUsedMarker abilityLimits={ card.abilityLimits } isAttachment={ card.type === "attachment" } /> }
                         { !hideEffectMarkers && card.effectMarkers && card.effectMarkers.length > 0 && (
                             <div

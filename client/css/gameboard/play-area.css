@@ -184,22 +184,6 @@
     justify-content: center;
 }
 
-.squishable-card-panel {
-    display: flex;
-    justify-content: flex-start;
-    margin: 0px 5px;
-    min-height: 0;
-    padding: 0px;
-
-    & .card-wrapper {
-        margin: 0 5px 0 0;
-    }
-}
-
-.squishable-card-panel.squish .card-wrapper {
-    position: absolute;
-}
-
 .province-row {
     display: flex;
     flex-direction: row;

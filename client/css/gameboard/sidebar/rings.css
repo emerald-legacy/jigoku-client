@@ -1,10 +1,3 @@
-s.ring-pane {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-}
-
 .ring-panel {
     padding: 0;
     display: flex;
@@ -14,7 +7,6 @@ s.ring-pane {
     justify-content: center;
     align-items: center;
     min-width: 25%;
-    font-size: 40pt;
     border: none;
 }
 
@@ -30,12 +22,12 @@ s.ring-pane {
 }
 
 .ring-prompt {
-    font-size: 40pt;
-    min-height: var(--ring-height);
-    min-width: var(--ring-width);
+    min-height: var(--ring-size);
+    min-width: var(--ring-size);
 }
 
 .claimed-pool {
+    --ring-size: 32px;
     box-sizing: border-box;
     width: 100%;
     min-height: 24px;
@@ -48,15 +40,13 @@ s.ring-pane {
     gap: 2px;
 
     & .ring {
-        font-size: 20px;
-        min-height: 20px;
-        max-height: 20px;
-        max-width: 20px;
+        margin-right: 0;
     }
 
-    & svg.ring-svg {
-        width: 20px;
-        height: 20px;
+    /* The menu is anchored for the far larger centre-bar rings; pull it back
+       to the edge of the claimed ring it belongs to. */
+    & .menu {
+        left: calc(100% + 4px);
     }
 }
 
@@ -76,25 +66,25 @@ circle.ring-background {
 svg.ring-svg {
     top: 0px;
     position: absolute;
-    height: var(--ring-height);
-    width: var(--ring-width);
+    height: var(--ring-size);
+    width: var(--ring-size);
     background: transparent;
     border: none;
 
     &.contested {
         &.tint-military {
-            -webkit-filter: drop-shadow(0 0 12px pink);
-            filter: drop-shadow(0 0 12px pink);
+            -webkit-filter: drop-shadow(0 0 12px var(--blush));
+            filter: drop-shadow(0 0 12px var(--blush));
         }
 
         &.tint-political {
-            -webkit-filter: drop-shadow(0 0 12px lightblue);
-            filter: drop-shadow(0 0 12px lightblue);
+            -webkit-filter: drop-shadow(0 0 12px var(--sky));
+            filter: drop-shadow(0 0 12px var(--sky));
         }
 
         &.tint-neutral {
-            -webkit-filter: drop-shadow(0 0 12px white);
-            filter: drop-shadow(0 0 12px white);
+            -webkit-filter: drop-shadow(0 0 12px var(--white));
+            filter: drop-shadow(0 0 12px var(--white));
         }
     }
 
@@ -103,26 +93,21 @@ svg.ring-svg {
     }
 }
 
-.ring-info {
-    flex: 1;
-    font-size: 12px;
-    margin-left: 5px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 .ring {
     margin-right: 5px;
     margin-top: 0px;
     position: relative;
-    color: white;
+    color: var(--white);
     background: transparent;
     border: none;
     outline: none;
     box-shadow: none;
-    min-height: var(--ring-height);
-    max-height: var(--ring-height);
-    max-width: var(--ring-width);
+    /* The glyph is an icon-font character, so the size has to be a font-size -- but it
+       belongs here, on the ring, not on the container where descendants would inherit it. */
+    font-size: var(--ring-size);
+    min-height: var(--ring-size);
+    max-height: var(--ring-size);
+    max-width: var(--ring-size);
 
     &.unselectable {
         filter: brightness(60%);
@@ -153,18 +138,18 @@ svg.ring-svg {
    so the highlight moves onto the ring image itself (traces the art, not a disc). */
 .ring-patron-image.contested {
     &.tint-military {
-        -webkit-filter: drop-shadow(0 0 12px pink);
-        filter: drop-shadow(0 0 12px pink);
+        -webkit-filter: drop-shadow(0 0 12px var(--blush));
+        filter: drop-shadow(0 0 12px var(--blush));
     }
 
     &.tint-political {
-        -webkit-filter: drop-shadow(0 0 12px lightblue);
-        filter: drop-shadow(0 0 12px lightblue);
+        -webkit-filter: drop-shadow(0 0 12px var(--sky));
+        filter: drop-shadow(0 0 12px var(--sky));
     }
 
     &.tint-neutral {
-        -webkit-filter: drop-shadow(0 0 12px white);
-        filter: drop-shadow(0 0 12px white);
+        -webkit-filter: drop-shadow(0 0 12px var(--white));
+        filter: drop-shadow(0 0 12px var(--white));
     }
 }
 
@@ -198,8 +183,8 @@ svg.ring-svg {
     left: 50%;
     transform: translateX(-50%);
     margin-top: 4px;
-    background: rgba(0, 0, 0, 0.9);
-    color: #fff;
+    background: rgb(var(--black-rgb) / 0.9);
+    color: var(--color-foreground);
     padding: 6px 10px;
     border-radius: 4px;
     font-size: 11px;
@@ -221,15 +206,15 @@ svg.ring-svg {
 
 @media (max-width: 1360px) {
     .ring-panel {
+        --ring-size: 32px;
         padding: 0 5px;
-        font-size: 24pt;
+    }
+
+    .ring-prompt {
+        --ring-size: 32px;
     }
 
     .claimed-pool {
-        font-size: 24pt;
-    }
-
-    .ring-info {
-        font-size: 10px;
+        --ring-size: 24px;
     }
 }

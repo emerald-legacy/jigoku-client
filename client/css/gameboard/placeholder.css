@@ -1,16 +1,16 @@
 div.placeholder {
-    background-color: rgba(0, 0, 0, 0.0);
+    background-color: rgb(var(--black-rgb) / 0);
     border-color: transparent;
     box-shadow: none;
 }
 
 div.placeholder .panel-header {
-    background: rgba(0, 0, 0, 0.0);
+    background: rgb(var(--black-rgb) / 0);
     padding: 0px;
 }
 
 .placeholder {
-    background-color: rgba(0, 0, 0, 0.0);
+    background-color: rgb(var(--black-rgb) / 0);
     border-color: transparent;
     box-shadow: none;
     padding: 0;

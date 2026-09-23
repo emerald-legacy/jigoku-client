@@ -1,10 +1,7 @@
 @font-face {
     font-family: 'fiveringsdb';
-    src: url('/fonts/fiveringsdb.eot?yn5wqh');
-    src: url('/fonts/fiveringsdb.eot?yn5wqh#iefix') format('embedded-opentype'),
-        url('/fonts/fiveringsdb.ttf?yn5wqh') format('truetype'),
-        url('/fonts/fiveringsdb.woff?yn5wqh') format('woff'),
-        url('/fonts/fiveringsdb.svg?yn5wqh#fiveringsdb') format('svg');
+    src: url('/fonts/fiveringsdb.woff?yn5wqh') format('woff'),
+        url('/fonts/fiveringsdb.ttf?yn5wqh') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
@@ -105,7 +102,7 @@
 
     &:before {
         content: "\e907";
-        color: #001c94;
+        color: var(--clan-crab);
     }
 }
 
@@ -115,7 +112,7 @@
 
     &:before {
         content: "\e908";
-        color: #0089de;
+        color: var(--clan-crane);
     }
 }
 
@@ -125,7 +122,7 @@
 
     &:before {
         content: "\e909";
-        color: #00a472;
+        color: var(--clan-dragon);
     }
 }
 
@@ -135,7 +132,7 @@
 
     &:before {
         content: "\e90a";
-        color: #cb9d00;
+        color: var(--clan-lion);
     }
 }
 
@@ -145,7 +142,7 @@
 
     &:before {
         content: "\e90b";
-        color: #c16400;
+        color: var(--clan-phoenix);
     }
 }
 
@@ -155,7 +152,7 @@
 
     &:before {
         content: "\e90c";
-        color: #a61600;
+        color: var(--clan-scorpion);
     }
 }
 
@@ -165,7 +162,7 @@
 
     &:before {
         content: "\e90d";
-        color: #780098;
+        color: var(--clan-unicorn);
     }
 }
 

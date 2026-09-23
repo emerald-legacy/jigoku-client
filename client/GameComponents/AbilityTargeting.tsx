@@ -56,7 +56,7 @@ function AbilityTargeting({ onMouseOut, onMouseOver, source, targets }: AbilityT
         return (
             <div className="ring-prompt">
                 <div className="ring no-highlight">
-                    <div className={ `ring icon-element-${r.element} large` } />
+                    <div className={ `ring icon-element-${r.element}` } />
                 </div>
             </div>
         );
