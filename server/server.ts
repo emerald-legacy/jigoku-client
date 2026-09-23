@@ -43,6 +43,20 @@ const authLimiter = rateLimit({
     message: { success: false, message: "Too many authentication attempts, please try again later" }
 });
 
+// Login is the one auth route that answers 401 when it refuses, so only failed
+// attempts need to count -- signing in correctly should never use up the budget.
+// register and password-reset answer 200 even when they refuse, so skipping
+// successful requests there would switch their limit off entirely; they keep
+// authLimiter above.
+const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    skipSuccessfulRequests: true,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { success: false, message: "Too many authentication attempts, please try again later" }
+});
+
 class Server {
     isDeveloping: boolean;
     app: express.Express;
@@ -176,7 +190,7 @@ class Server {
 
         // Apply rate limiting to API routes
         app.use("/api/", apiLimiter);
-        app.use("/api/account/login", authLimiter);
+        app.use("/api/account/login", loginLimiter);
         app.use("/api/account/register", authLimiter);
         app.use("/api/account/password-reset", authLimiter);
 
