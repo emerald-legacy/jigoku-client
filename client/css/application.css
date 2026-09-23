@@ -104,8 +104,9 @@
     color: var(--jade-vivid);
 }
 
-.selected {
-    box-shadow: 0 0 1px 4px var(--color-secondary);
+.card-settings .card.selected,
+.bg-swatch img.selected {
+    box-shadow: 0 0 0 3px var(--jade-vivid), 0 0 12px 4px rgb(var(--jade-vivid-rgb) / 0.6);
 }
 
 .bg-label {
