@@ -1,12 +1,5 @@
 /* === Lobby (start page) redesign === */
 
-:root {
-    --lobby-font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
-    --lobby-font-body: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
-    --lobby-font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
-    --lobby-font-glyph: "Shippori Mincho B1", "Noto Serif JP", "Hiragino Mincho Pro", "MS Mincho", serif;
-}
-
 .lobby-page {
     width: 100%;
     padding: 0.25rem 0 2.5rem;
@@ -38,7 +31,7 @@
 
 .lobby-hero-tagline {
     position: relative;
-    font-family: var(--lobby-font-display);
+    font-family: var(--font-display);
     font-style: italic;
     font-weight: 500;
     font-size: 1.15rem;
@@ -51,7 +44,7 @@
 
 .lobby-hero-meta {
     position: relative;
-    font-family: var(--lobby-font-mono);
+    font-family: var(--font-mono);
     font-size: 0.68rem;
     text-transform: uppercase;
     letter-spacing: 0.18em;
@@ -73,7 +66,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: var(--lobby-font-glyph);
+    font-family: var(--font-glyph);
     font-size: 1.45rem;
     font-weight: 700;
     line-height: 1;
@@ -171,7 +164,7 @@
     border: 1px solid rgb(var(--jade-rgb) / 0.3);
     border-radius: 3px;
     background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.5), rgb(var(--moss-deep-rgb) / 0.3));
-    font-family: var(--lobby-font-mono);
+    font-family: var(--font-mono);
 }
 .news-entry-day {
     font-size: 1.45rem;
@@ -189,7 +182,7 @@
 }
 
 .news-entry-body {
-    font-family: var(--lobby-font-body);
+    font-family: var(--font-body);
     font-size: 1.0625rem;
     line-height: 1.65;
     color: var(--color-foreground);
@@ -212,13 +205,13 @@
 .news-empty {
     padding: 2.25rem 1rem;
     text-align: center;
-    font-family: var(--lobby-font-body);
+    font-family: var(--font-body);
     font-style: italic;
     color: rgb(var(--sage-rgb) / 0.7);
 }
 .lobby-news-loading {
     text-align: center;
-    font-family: var(--lobby-font-body);
+    font-family: var(--font-body);
     font-style: italic;
     color: rgb(var(--sage-rgb) / 0.7);
     padding: 1.5rem 0;
@@ -226,7 +219,7 @@
 
 /* ---------- First Steps card ---------- */
 .lobby-start-body {
-    font-family: var(--lobby-font-body);
+    font-family: var(--font-body);
     font-size: 16px;
     line-height: 1.55;
     color: var(--color-foreground);
@@ -270,7 +263,7 @@
     border: 1px solid rgb(var(--jade-rgb) / 0.3);
     border-radius: 50%;
     background: radial-gradient(circle, rgb(var(--moss-rgb) / 0.6), rgb(var(--ink-deep-rgb) / 0.6));
-    font-family: var(--lobby-font-glyph);
+    font-family: var(--font-glyph);
     font-size: 1rem;
     color: rgb(var(--jade-vivid-rgb) / 0.9);
     transition: border-color 0.15s, color 0.15s, transform 0.15s;
@@ -288,7 +281,7 @@
     min-width: 0;
 }
 .lobby-link-title {
-    font-family: var(--lobby-font-body);
+    font-family: var(--font-body);
     font-weight: 600;
     font-size: 16px;
     letter-spacing: 0.01em;
@@ -303,7 +296,7 @@
     flex-shrink: 0;
 }
 .lobby-link-blurb {
-    font-family: var(--lobby-font-body);
+    font-family: var(--font-body);
     font-size: 0.9rem;
     color: rgb(var(--sage-pale-rgb) / 0.8);
     line-height: 1.45;

@@ -10,7 +10,7 @@
     position: absolute;
     right: 8px;
     bottom: 0;
-    font-family: var(--lobby-font-glyph);
+    font-family: var(--font-glyph);
     font-size: 64px;
     line-height: 1;
     color: rgb(var(--jade-rgb) / 0.05);
@@ -57,7 +57,7 @@
 
 .court-glyph {
     color: var(--color-link);
-    font-family: var(--lobby-font-glyph);
+    font-family: var(--font-glyph);
     font-size: 11px;
     width: 1em;
     text-align: center;
@@ -92,14 +92,14 @@
 }
 
 .court-group-label {
-    font-family: var(--lobby-font-display);
+    font-family: var(--font-display);
     font-size: 14px;
     letter-spacing: 0.03em;
     color: var(--color-link);
 }
 
 .court-group-count {
-    font-family: var(--lobby-font-mono);
+    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
     font-size: 12px;
     color: rgb(var(--sage-pale-rgb) / 0.8);
@@ -113,7 +113,7 @@
 
 .court-empty strong {
     display: block;
-    font-family: var(--lobby-font-display);
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: 15px;
     letter-spacing: 0.03em;

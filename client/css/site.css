@@ -15,7 +15,7 @@
     margin-left: 0.55rem;
     padding: 2px 8px;
     border-radius: 3px;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -37,7 +37,7 @@
 .format-meta {
     display: inline-block;
     margin-left: 0.55rem;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.08em;
@@ -144,7 +144,7 @@ ol.htp-legend > li::before {
     border-radius: 50%;
     border: 2px solid var(--crimson);
     background: rgb(var(--ink-deep-rgb) / 0.9);
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 700;
     color: var(--color-foreground);
@@ -165,7 +165,7 @@ ol.htp-legend > li::before {
     min-height: 140px;
     resize: vertical;
     padding: 10px 12px;
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: var(--font-body);
     font-size: 15px;
     line-height: 1.55;
     color: var(--color-foreground);
@@ -195,7 +195,7 @@ ol.htp-legend > li::before {
 }
 
 .news-admin-hint {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 11px;
     letter-spacing: 0.1em;
     color: rgb(var(--sage-rgb) / 0.7);
@@ -244,7 +244,7 @@ ol.htp-legend > li::before {
     border: 1px solid rgb(var(--jade-rgb) / 0.3);
     border-radius: 3px;
     background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.5), rgb(var(--moss-deep-rgb) / 0.3));
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
 }
 
 .news-admin-item-day {
@@ -268,7 +268,7 @@ ol.htp-legend > li::before {
 }
 
 .news-admin-item-text {
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: var(--font-body);
     font-size: 14px;
     line-height: 1.55;
     color: var(--color-foreground);
@@ -278,7 +278,7 @@ ol.htp-legend > li::before {
 
 .news-admin-item-poster {
     margin-top: 4px;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 10px;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -288,7 +288,7 @@ ol.htp-legend > li::before {
 .news-admin-empty {
     padding: 1.5rem;
     text-align: center;
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: var(--font-body);
     font-style: italic;
     color: rgb(var(--sage-rgb) / 0.7);
 }
@@ -354,10 +354,10 @@ ol.htp-legend > li::before {
     background: rgb(var(--moss-rgb) / 0.6);
     border: 1px solid rgb(var(--jade-rgb) / 0.3);
     border-radius: 3px;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.85em;
     font-weight: 600;
-    color: var(--jade-bright);
+    color: var(--jade-vivid);
 }
 
 .rbt-input {
@@ -462,7 +462,7 @@ ol.htp-legend > li::before {
 .profile-save {
     min-width: 180px;
     padding: 10px 28px;
-    font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: 16px;
     letter-spacing: 0.12em;
@@ -498,13 +498,13 @@ ol.htp-legend > li::before {
 .errors-admin {
     width: 100%;
     padding: 0.25rem 0 2.5rem;
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: var(--font-body);
 }
 
 .errors-route-loading {
     padding: 2rem 1rem;
     text-align: center;
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: var(--font-body);
     font-style: italic;
     color: rgb(var(--sage-rgb) / 0.7);
 }
@@ -529,7 +529,7 @@ ol.htp-legend > li::before {
     color: rgb(var(--bone-rgb) / 0.9);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 999px;
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: var(--font-body);
     font-size: 0.82rem;
     letter-spacing: 0.04em;
     cursor: pointer;
@@ -568,7 +568,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-filter-count {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.7rem;
     padding: 0.05rem 0.45rem;
     background: rgb(var(--black-rgb) / 0.3);
@@ -596,7 +596,7 @@ ol.htp-legend > li::before {
 .errors-list-empty {
     padding: 1.5rem;
     text-align: center;
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: var(--font-body);
     font-style: italic;
     color: rgb(var(--sage-rgb) / 0.7);
 }
@@ -641,7 +641,7 @@ ol.htp-legend > li::before {
 .errors-row-head .errors-col {
     padding-top: 0.55rem;
     padding-bottom: 0.55rem;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.66rem;
     font-weight: 600;
     letter-spacing: 0.18em;
@@ -677,7 +677,7 @@ ol.htp-legend > li::before {
     display: flex;
     flex-direction: column;
     gap: 0.15rem;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
 }
 
@@ -706,7 +706,7 @@ ol.htp-legend > li::before {
     gap: 0.35rem;
     padding: 0.18rem 0.55rem;
     border-radius: 3px;
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-size: 0.85rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -745,7 +745,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-kind-count {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.72rem;
     color: rgb(var(--sage-rgb) / 0.8);
     letter-spacing: 0.05em;
@@ -780,7 +780,7 @@ ol.htp-legend > li::before {
 
 .errors-message-text {
     display: block;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.8rem;
     line-height: 1.45;
     color: rgb(var(--bone-rgb) / 0.9);
@@ -842,7 +842,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-detail-label {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.62rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
@@ -851,7 +851,7 @@ ol.htp-legend > li::before {
 }
 
 .errors-detail-stack {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.75rem;
     line-height: 1.55;
     color: rgb(var(--bone-rgb) / 0.9);
@@ -888,7 +888,7 @@ ol.htp-legend > li::before {
 }
 
 .json-tree {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: var(--font-mono);
     font-size: 0.78rem;
     line-height: 1.55;
     color: rgb(var(--bone-rgb) / 0.9);

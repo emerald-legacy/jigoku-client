@@ -47,7 +47,7 @@
     gap: 0.5rem;
     background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.9), rgb(var(--moss-deep-rgb) / 0.7));
     color: var(--color-foreground);
-    font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: 14px;
     line-height: 1.2;
@@ -76,7 +76,7 @@
 }
 
 .panel-title-meta {
-    font-family: var(--lobby-font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-family: var(--font-mono);
     font-size: 0.62rem;
     font-weight: 500;
     text-transform: uppercase;

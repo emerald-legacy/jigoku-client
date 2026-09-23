@@ -5,7 +5,7 @@
     left: 0;
     z-index: 40;
     color: var(--color-foreground);
-    font-family: var(--lobby-font-body);
+    font-family: var(--font-body);
     background: rgb(var(--moss-deep-rgb) / 0.9);
     border-right: 1px solid rgb(var(--jade-rgb) / 0.2);
     transition: width 200ms ease;
@@ -70,14 +70,14 @@
 }
 
 .samurai-title {
-    font-family: var(--lobby-font-display);
+    font-family: var(--font-display);
     font-size: 1.15rem;
-    color: var(--color-link);
+    color: var(--color-tertiary);
     letter-spacing: 0.04em;
 }
 
 .samurai-total {
-    font-family: var(--lobby-font-mono);
+    font-family: var(--font-mono);
     font-size: 0.85rem;
     color: rgb(var(--sage-pale-rgb) / 0.8);
     margin-left: auto;
@@ -119,14 +119,14 @@
 }
 
 .samurai-group-label {
-    font-family: var(--lobby-font-display);
+    font-family: var(--font-display);
     font-size: 0.92rem;
-    color: var(--color-link);
+    color: var(--color-tertiary);
     letter-spacing: 0.03em;
 }
 
 .samurai-group-count {
-    font-family: var(--lobby-font-mono);
+    font-family: var(--font-mono);
     font-size: 0.75rem;
     color: rgb(var(--sage-pale-rgb) / 0.8);
 }
@@ -151,7 +151,7 @@
 
 .samurai-glyph {
     color: var(--color-link);
-    font-family: var(--lobby-font-glyph);
+    font-family: var(--font-glyph);
     font-size: 0.85rem;
     width: 1em;
     display: inline-block;
@@ -211,7 +211,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1px;
-    font-family: var(--lobby-font-mono);
+    font-family: var(--font-mono);
     font-size: 0.7rem;
     color: rgb(var(--sage-pale-rgb) / 0.8);
 }

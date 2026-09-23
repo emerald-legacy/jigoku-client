@@ -36,7 +36,7 @@
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 4px;
     color: var(--color-foreground);
-    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-family: var(--font-mono);
     font-size: 0.85rem;
     letter-spacing: 0.04em;
     transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
@@ -63,7 +63,7 @@
     gap: 0.5rem;
     padding: 2.5rem 1rem;
     color: rgb(var(--sage-rgb) / 0.7);
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-size: 1.05rem;
     letter-spacing: 0.08em;
     font-style: italic;
@@ -108,7 +108,7 @@
 }
 
 .user-admin-name {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: 1.7rem;
     line-height: 1;
@@ -130,7 +130,7 @@
 }
 
 .user-admin-meta-key {
-    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-family: var(--font-mono);
     font-size: 0.6rem;
     text-transform: uppercase;
     letter-spacing: 0.18em;
@@ -138,7 +138,7 @@
 }
 
 .user-admin-meta-val {
-    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
+    font-family: var(--font-mono);
     font-size: 0.78rem;
     color: rgb(var(--sage-pale-rgb) / 0.9);
 }
@@ -149,7 +149,7 @@
     display: flex;
     align-items: center;
     gap: 0.45rem;
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: 0.95rem;
     letter-spacing: 0.16em;

@@ -11,7 +11,7 @@
     text-transform: uppercase;
     width: 480px;
     position: relative;
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: 14px;
     letter-spacing: 0.14em;

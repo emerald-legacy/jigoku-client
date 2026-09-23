@@ -52,11 +52,12 @@
 @source "../client/**/*.{jsx,js}";
 
 @theme {
-    --font-sans: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
-    --font-serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
-    --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
-    --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
-    --font-fallback-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-display: "Cormorant Garamond", serif;
+    --font-body: "Source Serif 4", serif;
+    --font-mono: "JetBrains Mono", monospace;
+    --font-glyph: "Shippori Mincho B1", serif;
+    --font-ui: system-ui, sans-serif;
+    --default-font-family: var(--font-body);
     --color-primary: #336600;
     --color-primary-dark: #2b5500;
     --color-secondary: #1a3300;
@@ -130,7 +131,7 @@
     /* Buttons */
     .btn {
         @apply px-3 py-1.5 rounded cursor-pointer inline-block text-center disabled:opacity-50 disabled:cursor-not-allowed;
-        font-family: "Cormorant Garamond", Georgia, serif;
+        font-family: var(--font-display);
         font-weight: 600;
         font-size: 15px;
         letter-spacing: 0.02em;

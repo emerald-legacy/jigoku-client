@@ -18,7 +18,7 @@
     border-top: none;
     border-bottom: none;
     border-radius: 0;
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-style: normal;
     font-weight: 500;
     font-size: 13px;
@@ -45,7 +45,7 @@
 }
 
 .menu-pane-title {
-    font-family: "Source Serif 4", Georgia, serif;
+    font-family: var(--font-body);
     font-size: 14px;
     font-weight: 600;
     line-height: 1.4;
@@ -74,7 +74,7 @@
     text-transform: uppercase;
     width: 200px !important;
     position: relative;
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-weight: 600;
     font-size: 14px;
     letter-spacing: 0.14em;
