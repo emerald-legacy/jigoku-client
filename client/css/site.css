@@ -17,7 +17,7 @@
     border-radius: 3px;
     font-family: var(--font-mono);
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--white);
@@ -356,7 +356,7 @@ ol.htp-legend > li::before {
     border-radius: 3px;
     font-family: var(--font-mono);
     font-size: 0.85em;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--jade-vivid);
 }
 
@@ -643,7 +643,7 @@ ol.htp-legend > li::before {
     padding-bottom: 0.55rem;
     font-family: var(--font-mono);
     font-size: 0.66rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: rgb(var(--sage-rgb) / 0.7);
