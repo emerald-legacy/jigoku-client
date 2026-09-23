@@ -43,6 +43,7 @@ jobs:
             ghcr.io/${{ github.repository }}:${{ github.sha }}
           build-args: |
             BUILD_VERSION=${{ steps.version.outputs.BUILD_VERSION }}
+            CI=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

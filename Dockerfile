@@ -14,9 +14,14 @@ COPY . .
 
 ARG BUILD_VERSION=LOCAL
 ENV BUILD_VERSION=$BUILD_VERSION
+# Set by the deploy workflow; empty for local builds
+ARG CI
+ENV CI=$CI
 
-# Build server (tsc) and client bundle (vite), then remove dev dependencies
-RUN mkdir -p server/logs public/img/cards && npm run build:all && npm prune --omit=dev
+# Build server (tsc) and client bundle (vite), then remove dev dependencies.
+# CI images don't ship the sourcemaps: nothing uses them and express.static would serve them.
+RUN mkdir -p server/logs public/img/cards && npm run build:all && npm prune --omit=dev \
+    && if [ -n "$CI" ]; then find public -name '*.map' -delete; fi
 
 # Production stage
 FROM node:26.8-alpine3.23@sha256:871eb674ad6e692c91330a8959f1ce2f80ba3f445cdc54e306869d2ea265e42d
