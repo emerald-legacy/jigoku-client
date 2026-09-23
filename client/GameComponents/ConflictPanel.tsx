@@ -22,9 +22,9 @@ export default function ConflictPanel({ conflict, otherPlayer }: { conflict: Con
     return (
         <div>
             <div className="conflict-panel">
-                <div className="phase-display conflict-count-top">{ otherPlayerSkill }</div>
+                <div className="phase-display">{ otherPlayerSkill }</div>
                 <div className="phase-display conflict-separator">vs</div>
-                <div className="phase-display conflict-count-bottom">{ thisPlayerSkill }</div>
+                <div className="phase-display">{ thisPlayerSkill }</div>
             </div>
             <div className="conflict-panel">
                 <div className="phase-display">
