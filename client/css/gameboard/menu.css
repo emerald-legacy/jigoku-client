@@ -21,7 +21,7 @@
     font-family: var(--font-display);
     font-style: normal;
     font-weight: 500;
-    font-size: 13px;
+    font-size: var(--text-ui);
     color: var(--color-foreground);
     margin: 0 5px;
     padding: 6px 10px 2px 10px;
@@ -46,7 +46,7 @@
 
 .menu-pane-title {
     font-family: var(--font-body);
-    font-size: 14px;
+    font-size: var(--text-body);
     font-weight: 600;
     line-height: 1.4;
     color: var(--color-foreground);
@@ -76,7 +76,7 @@
     position: relative;
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 14px;
+    font-size: var(--text-body);
     letter-spacing: 0.14em;
 }
 

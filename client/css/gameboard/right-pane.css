@@ -53,7 +53,7 @@
 .card-zoom-grip .card-name {
     flex: 1 1 auto;
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: var(--text-small);
     line-height: 22px;
     color: rgb(var(--sage-rgb) / 0.9);
     white-space: nowrap;
@@ -149,7 +149,7 @@
     overflow-y: auto;
     padding: 8px 10px;
     font-family: var(--font-ui);
-    font-size: 13px;
+    font-size: var(--text-ui);
     line-height: 1.5;
     color: var(--color-foreground);
     scrollbar-color: rgb(var(--jade-rgb) / 0.4) rgb(var(--black-rgb) / 0.3);
@@ -176,7 +176,7 @@
     border-radius: 3px;
     padding: 4px 8px;
     font-family: var(--font-ui);
-    font-size: 13px;
+    font-size: var(--text-ui);
     box-shadow: none;
 }
 
@@ -214,7 +214,7 @@
     align-items: center;
     gap: 5px;
     font-family: var(--font-body);
-    font-size: 12px;
+    font-size: var(--text-small);
     transition: color 0.15s;
 }
 

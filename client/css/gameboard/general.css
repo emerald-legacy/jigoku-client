@@ -148,7 +148,7 @@
     text-align: center;
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 1rem;
+    font-size: var(--text-lead);
     line-height: 1.2;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -162,7 +162,7 @@
     transform: translateY(-50%);
     background: none;
     border: none;
-    font-size: 20px;
+    font-size: var(--text-heading);
     line-height: 1;
     padding: 0 4px;
     color: rgb(var(--sage-rgb) / 0.7);

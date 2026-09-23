@@ -25,13 +25,13 @@
 }
 
 .replay-upload-text {
-    font-size: 16px;
+    font-size: var(--text-lead);
     opacity: 0.8;
     margin-bottom: 5px;
 }
 
 .replay-upload-hint {
-    font-size: 12px;
+    font-size: var(--text-small);
     opacity: 0.5;
 }
 
@@ -88,7 +88,7 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 10001;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: var(--color-foreground);
     padding: 0 16px;
     white-space: nowrap;
@@ -133,7 +133,7 @@
     margin-left: 6px;
 
     & .btn {
-        font-size: 10px;
+        font-size: var(--text-micro);
         padding: 2px 5px;
         border: 1px solid rgb(var(--white-rgb) / 0.2);
         border-radius: 3px;
@@ -146,7 +146,7 @@
 }
 
 .replay-progress {
-    font-size: 11px;
+    font-size: var(--text-caption);
     opacity: 0.6;
     margin-left: 6px;
 }
@@ -159,7 +159,7 @@
     padding: 2px 0;
 
     & .btn {
-        font-size: 11px;
+        font-size: var(--text-caption);
 
         & svg {
             color: inherit;
@@ -172,7 +172,7 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 11px;
+    font-size: var(--text-caption);
     opacity: 0.75;
     cursor: pointer;
     user-select: none;

@@ -21,7 +21,7 @@
     max-width: 60ch;
     margin-bottom: 1.1rem;
     color: rgb(var(--sage-pale-rgb) / 0.8);
-    font-size: 0.88rem;
+    font-size: var(--text-body);
     line-height: 1.55;
 }
 
@@ -45,7 +45,7 @@
 
 .blocklist-add-label {
     font-family: var(--font-mono);
-    font-size: 0.6rem;
+    font-size: var(--text-micro);
     text-transform: uppercase;
     letter-spacing: 0.18em;
     color: rgb(var(--sage-rgb) / 0.7);
@@ -59,7 +59,7 @@
     background: rgb(var(--ink-rgb) / 0.6);
     color: var(--color-foreground);
     font-family: var(--font-display);
-    font-size: 0.95rem;
+    font-size: var(--text-lead);
     transition: border-color 0.18s, box-shadow 0.18s;
 }
 
@@ -75,7 +75,7 @@
     gap: 0.45rem;
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: var(--text-lead);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: rgb(var(--sage-rgb) / 0.9);
@@ -89,7 +89,7 @@
 .blocklist-count {
     margin-left: auto;
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: var(--text-caption);
     letter-spacing: 0.12em;
     color: rgb(var(--sage-rgb) / 0.7);
 }
@@ -131,7 +131,7 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: var(--text-lead);
     color: var(--color-foreground);
 }
 
@@ -171,7 +171,7 @@
     padding: 2rem 1rem;
     color: rgb(var(--sage-rgb) / 0.7);
     font-family: var(--font-display);
-    font-size: 1.05rem;
+    font-size: var(--text-lead);
     letter-spacing: 0.08em;
     font-style: italic;
 }

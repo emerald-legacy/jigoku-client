@@ -66,7 +66,7 @@
     color: var(--color-foreground);
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 13px;
+    font-size: var(--text-ui);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     margin: 5px 5px 0 0;
@@ -149,7 +149,7 @@
 
 .deck-clan-separator {
     color: rgb(var(--bone-rgb) / 0.4);
-    font-size: 14px;
+    font-size: var(--text-body);
     font-weight: 300;
     padding: 0 1px;
 }
@@ -160,7 +160,7 @@
     padding: 2px 4px;
     color: var(--color-foreground);
     font-family: var(--font-display);
-    font-size: 15px;
+    font-size: var(--text-lead);
     font-weight: 600;
     letter-spacing: 0.02em;
     white-space: nowrap;
@@ -173,7 +173,7 @@
     padding: 2px 9px;
     border-radius: 3px;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: var(--text-micro);
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -199,7 +199,7 @@
     text-align: center;
     color: rgb(var(--bone-rgb) / 0.5);
     font-family: var(--font-display);
-    font-size: 16px;
+    font-size: var(--text-lead);
     letter-spacing: 0.02em;
 }
 
@@ -335,7 +335,7 @@
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    font-size: 13px;
+    font-size: var(--text-ui);
 }
 
 .deck-stats-clan-icon {
@@ -348,7 +348,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 4px 12px;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: rgb(var(--bone-rgb) / 0.7);
 }
 

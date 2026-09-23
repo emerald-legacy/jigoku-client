@@ -173,7 +173,7 @@ svg.ring-svg {
     color: var(--color-foreground);
     padding: 6px 10px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: var(--text-caption);
     line-height: 1.4;
     white-space: nowrap;
     z-index: 1000;

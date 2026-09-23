@@ -4,7 +4,7 @@
     top: 0;
     bottom: 0;
     min-height: max-content;
-    font-size: 14px;
+    font-size: var(--text-body);
     background-color: rgb(var(--black-rgb) / 0.4);
     box-shadow: 0 0 10px 5px rgb(var(--black-rgb) / 0.4);
     grid-column-start: 1;

@@ -16,7 +16,7 @@
     padding: 2px 8px;
     border-radius: 3px;
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: var(--text-caption);
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -38,7 +38,7 @@
     display: inline-block;
     margin-left: 0.55rem;
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: var(--text-caption);
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -145,7 +145,7 @@ ol.htp-legend > li::before {
     border: 2px solid var(--crimson);
     background: rgb(var(--ink-rgb) / 0.9);
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: var(--text-small);
     font-weight: 700;
     color: var(--color-foreground);
 }
@@ -166,7 +166,7 @@ ol.htp-legend > li::before {
     resize: vertical;
     padding: 10px 12px;
     font-family: var(--font-body);
-    font-size: 15px;
+    font-size: var(--text-lead);
     line-height: 1.55;
     color: var(--color-foreground);
     background: rgb(var(--ink-rgb) / 0.6);
@@ -196,7 +196,7 @@ ol.htp-legend > li::before {
 
 .news-admin-hint {
     font-family: var(--font-mono);
-    font-size: 11px;
+    font-size: var(--text-caption);
     letter-spacing: 0.1em;
     color: rgb(var(--sage-rgb) / 0.7);
 }
@@ -248,7 +248,7 @@ ol.htp-legend > li::before {
 }
 
 .news-admin-item-day {
-    font-size: 1.25rem;
+    font-size: var(--text-heading);
     font-weight: 700;
     line-height: 1;
     color: var(--color-foreground);
@@ -258,7 +258,7 @@ ol.htp-legend > li::before {
     display: flex;
     gap: 0.25rem;
     margin-top: 0.3rem;
-    font-size: 0.55rem;
+    font-size: var(--text-micro);
     letter-spacing: 0.14em;
     color: rgb(var(--sage-rgb) / 0.8);
 }
@@ -269,7 +269,7 @@ ol.htp-legend > li::before {
 
 .news-admin-item-text {
     font-family: var(--font-body);
-    font-size: 14px;
+    font-size: var(--text-body);
     line-height: 1.55;
     color: var(--color-foreground);
     white-space: pre-line;
@@ -279,7 +279,7 @@ ol.htp-legend > li::before {
 .news-admin-item-poster {
     margin-top: 4px;
     font-family: var(--font-mono);
-    font-size: 10px;
+    font-size: var(--text-micro);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: rgb(var(--sage-rgb) / 0.7);
@@ -380,7 +380,7 @@ ol.htp-legend > li::before {
     text-transform: none;
     letter-spacing: normal;
     font-weight: 500;
-    font-size: 13px;
+    font-size: var(--text-ui);
     color: rgb(var(--sage-pale-rgb) / 0.8);
 }
 .btn-transparent:hover {
@@ -406,7 +406,7 @@ ol.htp-legend > li::before {
 
 .panel-help {
     margin: 0 0 0.85rem;
-    font-size: 12px;
+    font-size: var(--text-small);
     line-height: 1.5;
     color: rgb(var(--sage-pale-rgb) / 0.6);
 }
@@ -464,7 +464,7 @@ ol.htp-legend > li::before {
     padding: 10px 28px;
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 16px;
+    font-size: var(--text-lead);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--ink);
@@ -530,7 +530,7 @@ ol.htp-legend > li::before {
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 999px;
     font-family: var(--font-body);
-    font-size: 0.82rem;
+    font-size: var(--text-ui);
     letter-spacing: 0.04em;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
@@ -569,7 +569,7 @@ ol.htp-legend > li::before {
 
 .errors-filter-count {
     font-family: var(--font-mono);
-    font-size: 0.7rem;
+    font-size: var(--text-caption);
     padding: 0.05rem 0.45rem;
     background: rgb(var(--black-rgb) / 0.3);
     border-radius: 999px;
@@ -642,7 +642,7 @@ ol.htp-legend > li::before {
     padding-top: 0.55rem;
     padding-bottom: 0.55rem;
     font-family: var(--font-mono);
-    font-size: 0.66rem;
+    font-size: var(--text-caption);
     font-weight: 700;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -682,13 +682,13 @@ ol.htp-legend > li::before {
 }
 
 .errors-time-date {
-    font-size: 0.78rem;
+    font-size: var(--text-small);
     color: rgb(var(--bone-rgb) / 0.9);
     letter-spacing: 0.02em;
 }
 
 .errors-time-clock {
-    font-size: 0.72rem;
+    font-size: var(--text-small);
     color: rgb(var(--sage-rgb) / 0.7);
     letter-spacing: 0.04em;
 }
@@ -707,7 +707,7 @@ ol.htp-legend > li::before {
     padding: 0.18rem 0.55rem;
     border-radius: 3px;
     font-family: var(--font-display);
-    font-size: 0.85rem;
+    font-size: var(--text-body);
     font-weight: 600;
     letter-spacing: 0.05em;
     text-transform: uppercase;
@@ -746,7 +746,7 @@ ol.htp-legend > li::before {
 
 .errors-kind-count {
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: var(--text-small);
     color: rgb(var(--sage-rgb) / 0.8);
     letter-spacing: 0.05em;
 }
@@ -755,7 +755,7 @@ ol.htp-legend > li::before {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.88rem;
+    font-size: var(--text-body);
     color: rgb(var(--bone-rgb) / 0.9);
 }
 
@@ -781,7 +781,7 @@ ol.htp-legend > li::before {
 .errors-message-text {
     display: block;
     font-family: var(--font-mono);
-    font-size: 0.8rem;
+    font-size: var(--text-ui);
     line-height: 1.45;
     color: rgb(var(--bone-rgb) / 0.9);
     overflow: hidden;
@@ -843,7 +843,7 @@ ol.htp-legend > li::before {
 
 .errors-detail-label {
     font-family: var(--font-mono);
-    font-size: 0.62rem;
+    font-size: var(--text-micro);
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: rgb(var(--sage-rgb) / 0.7);
@@ -852,7 +852,7 @@ ol.htp-legend > li::before {
 
 .errors-detail-stack {
     font-family: var(--font-mono);
-    font-size: 0.75rem;
+    font-size: var(--text-small);
     line-height: 1.55;
     color: rgb(var(--bone-rgb) / 0.9);
     background: linear-gradient(180deg, rgb(var(--crimson-rgb) / 0.1), rgb(var(--ink-rgb) / 0.7));
@@ -889,7 +889,7 @@ ol.htp-legend > li::before {
 
 .json-tree {
     font-family: var(--font-mono);
-    font-size: 0.78rem;
+    font-size: var(--text-small);
     line-height: 1.55;
     color: rgb(var(--bone-rgb) / 0.9);
 }
@@ -964,7 +964,7 @@ ol.htp-legend > li::before {
 
 .json-tree-summary {
     color: rgb(var(--sage-rgb) / 0.7);
-    font-size: 0.72rem;
+    font-size: var(--text-small);
     font-style: italic;
     padding: 0 0.15rem;
 }
