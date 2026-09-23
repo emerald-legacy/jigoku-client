@@ -252,11 +252,11 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
                 <li key={ spectator.name }>{ spectator.name }</li>
             ));
 
-            const spectatorPopup = (
-                <ul className="spectators-popup absolute-panel">
+            const spectatorPopup = spectators.length > 0 ? (
+                <ul className="dropdown-menu spectators-popup">
                     { spectators }
                 </ul>
-            );
+            ) : null;
 
             menuOptions.unshift({ text: `Spectators: ${currentGame.spectators.length}`, popup: spectatorPopup });
             setContextMenu(menuOptions);
