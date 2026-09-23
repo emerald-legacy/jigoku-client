@@ -53,12 +53,13 @@
 
 .game-badge {
     flex-shrink: 0;
+    font-family: var(--font-mono);
     font-size: var(--text-caption);
-    font-weight: 600;
-    padding: 1px 6px;
+    font-weight: 700;
+    padding: 2px 8px;
     border-radius: 3px;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.08em;
 }
 
 .game-badge-mode {
@@ -92,7 +93,7 @@
 
 .game-badge-lock {
     padding: 0;
-    font-size: var(--text-ui);
+    font-size: var(--text-small);
 }
 
 .game-row-name {
@@ -142,7 +143,7 @@
 .game-row-empty {
     opacity: 0.5;
     font-style: italic;
-    font-size: var(--text-ui);
+    font-size: var(--text-small);
 }
 
 .game-row-buttons {
@@ -158,10 +159,6 @@
     width: 1.2em;
     filter: invert(90%);
     flex-shrink: 0;
-}
-
-.game-node {
-    padding-left: 5px;
 }
 
 .deck-selection {
@@ -200,7 +197,7 @@
     padding: 2px 9px;
     border-radius: 3px;
     font-family: var(--font-mono);
-    font-size: var(--text-micro);
+    font-size: var(--text-caption);
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -341,7 +338,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: var(--text-ui);
+    font-size: var(--text-small);
 
     &.clickable {
         cursor: pointer;
@@ -353,7 +350,7 @@
 }
 
 .game-stats-expand {
-    font-size: var(--text-micro);
+    font-size: var(--text-caption);
     opacity: 0.5;
     margin-left: 2px;
 }

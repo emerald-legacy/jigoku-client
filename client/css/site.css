@@ -248,7 +248,7 @@ ol.htp-legend > li::before {
 }
 
 .news-admin-item-day {
-    font-size: var(--text-heading);
+    font-size: var(--text-h1);
     font-weight: 700;
     line-height: 1;
     color: var(--color-foreground);
@@ -258,7 +258,7 @@ ol.htp-legend > li::before {
     display: flex;
     gap: 0.25rem;
     margin-top: 0.3rem;
-    font-size: var(--text-micro);
+    font-size: var(--text-caption);
     letter-spacing: 0.14em;
     color: rgb(var(--sage-rgb) / 0.8);
 }
@@ -279,7 +279,7 @@ ol.htp-legend > li::before {
 .news-admin-item-poster {
     margin-top: 4px;
     font-family: var(--font-mono);
-    font-size: var(--text-micro);
+    font-size: var(--text-caption);
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: rgb(var(--sage-rgb) / 0.7);
@@ -380,7 +380,7 @@ ol.htp-legend > li::before {
     text-transform: none;
     letter-spacing: normal;
     font-weight: 500;
-    font-size: var(--text-ui);
+    font-size: var(--text-small);
     color: rgb(var(--sage-pale-rgb) / 0.8);
 }
 .btn-transparent:hover {
@@ -530,7 +530,7 @@ ol.htp-legend > li::before {
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 999px;
     font-family: var(--font-body);
-    font-size: var(--text-ui);
+    font-size: var(--text-small);
     letter-spacing: 0.04em;
     cursor: pointer;
     transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
@@ -781,7 +781,7 @@ ol.htp-legend > li::before {
 .errors-message-text {
     display: block;
     font-family: var(--font-mono);
-    font-size: var(--text-ui);
+    font-size: var(--text-small);
     line-height: 1.45;
     color: rgb(var(--bone-rgb) / 0.9);
     overflow: hidden;
@@ -843,7 +843,7 @@ ol.htp-legend > li::before {
 
 .errors-detail-label {
     font-family: var(--font-mono);
-    font-size: var(--text-micro);
+    font-size: var(--text-caption);
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: rgb(var(--sage-rgb) / 0.7);

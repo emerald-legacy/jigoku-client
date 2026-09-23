@@ -149,7 +149,7 @@
     overflow-y: auto;
     padding: 8px 10px;
     font-family: var(--font-ui);
-    font-size: var(--text-ui);
+    font-size: var(--text-body);
     line-height: 1.5;
     color: var(--color-foreground);
     scrollbar-color: rgb(var(--jade-rgb) / 0.4) rgb(var(--black-rgb) / 0.3);
@@ -176,7 +176,7 @@
     border-radius: 3px;
     padding: 4px 8px;
     font-family: var(--font-ui);
-    font-size: var(--text-ui);
+    font-size: var(--text-body);
     box-shadow: none;
 }
 

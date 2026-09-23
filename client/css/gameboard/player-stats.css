@@ -48,7 +48,7 @@
 
 .btn-stat {
     padding: 0;
-    font-size: var(--text-title);
+    font-size: var(--text-lead);
     line-height: 18px;
     height: 22px;
     width: 22px;
@@ -82,10 +82,6 @@
     .first-player-indicator {
         width: 36px;
         height: 44px;
-    }
-
-    .player-stats {
-        font-size: var(--text-ui);
     }
 }
 

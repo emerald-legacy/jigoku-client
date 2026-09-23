@@ -58,20 +58,15 @@
     --font-glyph: "Shippori Mincho B1", serif;
     --font-ui: system-ui, sans-serif;
     --default-font-family: var(--font-body);
-    --text-micro: 0.625rem;
     --text-caption: 0.6875rem;
     --text-small: 0.75rem;
-    --text-ui: 0.8125rem;
     --text-body: 0.875rem;
     --text-body--line-height: calc(1.25 / 0.875);
     --text-lead: 1rem;
     --text-lead--line-height: calc(1.5 / 1);
-    --text-title: 1.125rem;
-    --text-title--line-height: calc(1.75 / 1.125);
     --text-heading: 1.25rem;
     --text-h1: 1.5rem;
     --text-h1--line-height: calc(2 / 1.5);
-    --text-display: 1.75rem;
     --text-hero: 4rem;
     --color-primary: #336600;
     --color-tertiary: #5ea026;
@@ -211,8 +206,6 @@
     .alert-info { @apply border-info/30 bg-info/10 text-info; }
     .alert-success { @apply border-success/30 bg-success/10 text-success; }
 
-    /* Tables */
-    .table { @apply w-full border-collapse; }
     /* Modals */
     .modal { @apply fixed inset-0 z-50 overflow-y-auto; }
     .modal.fade { @apply opacity-0 transition-opacity duration-150; }
@@ -225,10 +218,16 @@
     .modal-header { @apply flex flex-row-reverse items-center p-4 border-b border-gray-600; }
     .modal-header .modal-title { @apply flex-1 text-center; }
     .modal-body { @apply p-4; }
-    .modal-title { @apply text-title font-bold; }
+    .modal-title { @apply text-lead font-bold; }
 
     /* Close button (Bootstrap .close) */
-    .close { @apply bg-transparent border-0 cursor-pointer text-white text-h1 leading-none p-0; }
+    .close {
+        @apply bg-transparent border-0 cursor-pointer text-h1 leading-none py-0 px-1;
+        color: rgb(var(--sage-rgb) / 0.7);
+        transition: color 0.15s;
+
+        &:hover { color: var(--jade-vivid); }
+    }
 
     /* Navbar */
     .navbar { @apply fixed top-0 inset-x-0; height: 40px; z-index: 10000; }
@@ -357,8 +356,12 @@ h1 {
     color: var(--color-foreground);
 }
 
+h2 {
+    font-size: var(--text-heading);
+}
+
 h3 {
-    font-size: var(--text-title);
+    font-size: var(--text-lead);
 }
 
 h4 {

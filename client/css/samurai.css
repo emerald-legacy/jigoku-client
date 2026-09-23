@@ -71,7 +71,7 @@
 
 .samurai-title {
     font-family: var(--font-display);
-    font-size: var(--text-title);
+    font-size: var(--text-heading);
     color: var(--color-tertiary);
     letter-spacing: 0.04em;
 }

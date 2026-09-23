@@ -10,10 +10,6 @@
         border-right-color: var(--black);
     }
 
-    &.right {
-        border-left-color: var(--black);
-    }
-
     &.up {
         border-bottom-color: var(--black);
     }
