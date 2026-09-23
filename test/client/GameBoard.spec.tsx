@@ -12,10 +12,6 @@ vi.mock("../../client/GameComponents/PlayerStatsBox.tsx", () => ({
     default: () => <div data-testid="player-stats-box">PlayerStatsBox</div>
 }));
 
-vi.mock("../../client/GameComponents/PlayerStatsRow.tsx", () => ({
-    default: () => <div data-testid="player-stats-row">PlayerStatsRow</div>
-}));
-
 vi.mock("../../client/GameComponents/PlayerHand.tsx", () => ({
     default: ({ cards }) => <div data-testid="player-hand">{ cards?.length || 0 } cards in hand</div>
 }));
