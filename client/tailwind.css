@@ -189,10 +189,11 @@
 
     /* Forms */
     .form-group { @apply mb-4 flex flex-wrap items-center; }
-    .form-control { @apply w-full h-[34px] px-3 py-1.5 bg-white text-black border border-gray-300 rounded text-sm shadow-inner transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary; }
-    .control-label { @apply mb-0 font-bold text-sm text-right pr-2; }
-    .help-block { @apply mt-1 text-sm text-danger; }
-    .checkbox { @apply flex items-center gap-1 text-sm py-0.5; }
+    .form-control { @apply w-full h-[34px] px-3 py-1.5 bg-white text-black border border-gray-300 rounded text-body shadow-inner transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary; }
+    textarea.form-control { height: auto; }
+    .control-label { @apply mb-0 font-bold text-body text-right pr-2; }
+    .help-block { @apply mt-1 text-body text-danger; }
+    .checkbox { @apply flex items-center gap-1 text-body py-0.5; }
     .checkbox label { @apply flex items-center gap-1.5 cursor-pointer; }
     .checkbox input[type="checkbox"] { @apply mt-0; }
     .radio-inline { @apply inline-flex items-center gap-1 mr-4 cursor-pointer text-body; }
