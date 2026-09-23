@@ -267,7 +267,7 @@ export function InnerPendingGame({
                 <div className="modal-content deck-select-modal">
                     <div className="deck-select-header">
                         <span className="deck-select-title">Select Deck</span>
-                        <button type="button" className="deck-select-close" aria-label="Close" onClick={ () => setShowModal(false) }>&times;</button>
+                        <button type="button" className="close" aria-label="Close" onClick={ () => setShowModal(false) }>&times;</button>
                     </div>
                     <div className="modal-body">
                         <div className="deck-select-list">

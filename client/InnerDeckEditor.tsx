@@ -415,7 +415,7 @@ export default function InnerDeckEditor({
                 <div className="modal-content deck-select-modal">
                     <div className="deck-select-header">
                         <span className="deck-select-title">Import from EmeraldDB</span>
-                        <button type="button" className="deck-select-close" aria-label="Close" onClick={ () => setShowModal(false) }>&times;</button>
+                        <button type="button" className="close" aria-label="Close" onClick={ () => setShowModal(false) }>&times;</button>
                     </div>
                     <div className="deck-import-body">
                         <p className="deck-import-hint">Paste the permalink URL from EmeraldDB:</p>
