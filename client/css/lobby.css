@@ -149,7 +149,7 @@
 
 .news-entry {
     display: grid;
-    grid-template-columns: 64px 1fr;
+    grid-template-columns: 80px 1fr;
     gap: 1.1rem;
     align-items: start;
 }
