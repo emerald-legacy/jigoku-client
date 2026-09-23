@@ -1,7 +1,6 @@
 @font-face {
     font-family: 'fiveringsdb';
-    src: url('/fonts/fiveringsdb.woff?yn5wqh') format('woff'),
-        url('/fonts/fiveringsdb.ttf?yn5wqh') format('truetype');
+    src: url('/fonts/fiveringsdb.woff2') format('woff2');
     font-weight: normal;
     font-style: normal;
 }
