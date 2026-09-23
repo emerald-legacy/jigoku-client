@@ -66,13 +66,10 @@
     --color-success: #5cb85c;
     --color-warning: #f0ad4e;
     --color-danger: #d9534f;
-    --color-navbar-bg: rgba(34, 34, 34, 0.8);
-    --color-header-border: rgba(120, 180, 80, 0.4);
     --color-military-icon: #ca9c81;
     --color-military-ring: #BB3e3e;
     --color-political-icon: #b2bccd;
     --color-political-ring: #3065BB;
-    --color-table-bg-accent: rgba(51, 102, 0, 0.5);
 }
 
 :root {
@@ -219,7 +216,7 @@
 
     /* Navbar */
     .navbar { @apply fixed top-0 inset-x-0; height: 40px; z-index: 10000; }
-    .navbar-inverse { @apply bg-navbar-bg text-white; }
+    .navbar-inverse { @apply text-white; background: rgb(var(--ink-rgb) / 0.8); }
     .no-highlight { user-select: none; }
 
     /* Navbar links and items */

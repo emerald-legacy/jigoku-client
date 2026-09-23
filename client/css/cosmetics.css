@@ -13,7 +13,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
-    border-bottom: 1px solid var(--color-header-border);
+    border-bottom: 1px solid rgb(var(--jade-rgb) / 0.4);
     margin-bottom: 0.85rem;
 }
 
@@ -96,14 +96,14 @@
 .ring-swatch:hover:not(.locked) {
     transform: translateY(-2px);
     background: rgb(var(--jade-rgb) / 0.1);
-    border-color: var(--color-header-border);
+    border-color: rgb(var(--jade-rgb) / 0.4);
 }
 
 .dial-swatch.selected,
 .token-swatch.selected,
 .ring-swatch.selected {
     border-color: var(--color-tertiary);
-    background: var(--color-table-bg-accent);
+    background: rgb(var(--primary-rgb) / 0.5);
     box-shadow: 0 0 0 1px var(--color-tertiary), 0 0 12px -2px rgb(var(--tertiary-rgb) / 0.6);
 }
 
@@ -206,12 +206,12 @@
 .promo-swatch:hover:not(.locked) {
     transform: translateY(-2px);
     background: rgb(var(--jade-rgb) / 0.1);
-    border-color: var(--color-header-border);
+    border-color: rgb(var(--jade-rgb) / 0.4);
 }
 
 .promo-swatch.selected {
     border-color: var(--color-tertiary);
-    background: var(--color-table-bg-accent);
+    background: rgb(var(--primary-rgb) / 0.5);
     box-shadow: 0 0 0 1px var(--color-tertiary), 0 0 12px -2px rgb(var(--tertiary-rgb) / 0.6);
 }
 

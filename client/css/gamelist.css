@@ -236,7 +236,7 @@
 }
 
 .deck-status-errors {
-    border-top: 1px solid var(--color-header-border);
+    border-top: 1px solid rgb(var(--jade-rgb) / 0.4);
     font-size: 14px;
     margin-top: 1em;
     padding-top: 1em;
