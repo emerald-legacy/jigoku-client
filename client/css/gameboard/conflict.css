@@ -11,16 +11,15 @@
 
 .phase-display {
     color: var(--color-foreground);
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     font-size: var(--text-h1);
-    font-weight: 600;
     font-variant-numeric: tabular-nums;
     text-align: center;
 }
 
 .conflict-separator {
     text-align: center;
-    font-size: var(--text-caption);
+    font-size: var(--text-lead);
 }
 
 .center-bar {
