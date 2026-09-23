@@ -10,8 +10,8 @@
     position: absolute;
     right: 8px;
     bottom: 0;
-    font-family: var(--lobby-font-glyph);
-    font-size: 64px;
+    font-family: var(--font-glyph);
+    font-size: var(--text-hero);
     line-height: 1;
     color: rgb(var(--jade-rgb) / 0.05);
     pointer-events: none;
@@ -28,7 +28,7 @@
 
 .court-count,
 .court-count-label {
-    font-size: 13px;
+    font-size: var(--text-ui);
     color: rgb(var(--sage-pale-rgb) / 0.8);
 }
 
@@ -56,9 +56,9 @@
 }
 
 .court-glyph {
-    color: var(--color-link);
-    font-family: var(--lobby-font-glyph);
-    font-size: 11px;
+    color: var(--color-tertiary);
+    font-family: var(--font-glyph);
+    font-size: var(--text-caption);
     width: 1em;
     text-align: center;
     flex-shrink: 0;
@@ -69,7 +69,7 @@
 }
 
 .court-name {
-    font-size: 13px;
+    font-size: var(--text-ui);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -92,30 +92,30 @@
 }
 
 .court-group-label {
-    font-family: var(--lobby-font-display);
-    font-size: 14px;
+    font-family: var(--font-display);
+    font-size: var(--text-body);
     letter-spacing: 0.03em;
-    color: var(--color-link);
+    color: var(--color-tertiary);
 }
 
 .court-group-count {
-    font-family: var(--lobby-font-mono);
+    font-family: var(--font-mono);
     font-variant-numeric: tabular-nums;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: rgb(var(--sage-pale-rgb) / 0.8);
 }
 
 .court-empty {
-    font-size: 13px;
+    font-size: var(--text-ui);
     color: rgb(var(--sage-pale-rgb) / 0.8);
     padding: 2px 0;
 }
 
 .court-empty strong {
     display: block;
-    font-family: var(--lobby-font-display);
+    font-family: var(--font-display);
     font-weight: 600;
-    font-size: 15px;
+    font-size: var(--text-lead);
     letter-spacing: 0.03em;
     color: var(--color-foreground);
 }

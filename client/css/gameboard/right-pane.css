@@ -17,7 +17,7 @@
         display: inline-flex;
         flex-direction: column;
         padding: 5px;
-        background: linear-gradient(180deg, var(--ink), var(--ink-deep));
+        background: var(--ink);
         border: 1px solid rgb(var(--jade-rgb) / 0.3);
         border-radius: 7px;
         box-shadow: 0 10px 30px rgb(var(--black-rgb) / 0.6);
@@ -26,7 +26,7 @@
 
     /* Empty (no card hovered): keep grip grabbable, dim the frame, drop the shadow. */
     & .card-zoom-frame.is-empty {
-        background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.6), rgb(var(--ink-deep-rgb) / 0.6));
+        background: rgb(var(--ink-rgb) / 0.6);
         border-color: rgb(var(--jade-rgb) / 0.2);
         box-shadow: none;
     }
@@ -52,8 +52,8 @@
 
 .card-zoom-grip .card-name {
     flex: 1 1 auto;
-    font-family: "Source Serif 4", Georgia, serif;
-    font-size: 12px;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
     line-height: 22px;
     color: rgb(var(--sage-rgb) / 0.9);
     white-space: nowrap;
@@ -108,7 +108,7 @@
     min-height: 200px;
     display: flex;
     flex-direction: column;
-    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.9), rgb(var(--ink-deep-rgb) / 0.9));
+    background: rgb(var(--ink-rgb) / 0.9);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
     box-shadow: 0 8px 24px rgb(var(--black-rgb) / 0.5);
@@ -122,7 +122,7 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
     pointer-events: none;
 }
 
@@ -148,8 +148,8 @@
     min-height: 0;
     overflow-y: auto;
     padding: 8px 10px;
-    font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
-    font-size: 13px;
+    font-family: var(--font-ui);
+    font-size: var(--text-ui);
     line-height: 1.5;
     color: var(--color-foreground);
     scrollbar-color: rgb(var(--jade-rgb) / 0.4) rgb(var(--black-rgb) / 0.3);
@@ -175,8 +175,8 @@
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 3px;
     padding: 4px 8px;
-    font-family: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
-    font-size: 13px;
+    font-family: var(--font-ui);
+    font-size: var(--text-ui);
     box-shadow: none;
 }
 
@@ -213,8 +213,8 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    font-family: "Source Serif 4", Georgia, serif;
-    font-size: 12px;
+    font-family: var(--font-body);
+    font-size: var(--text-small);
     transition: color 0.15s;
 }
 
@@ -223,7 +223,7 @@
 }
 
 .chat-control-btn:hover {
-    color: var(--jade-bright);
+    color: var(--jade-vivid);
 }
 
 .chat-control-btn.manual {
@@ -241,5 +241,5 @@
 }
 
 .chat-card-collapsed .chat-control-btn[title="Toggle chat"] {
-    color: rgb(var(--jade-bright-rgb) / 0.9);
+    color: rgb(var(--jade-vivid-rgb) / 0.9);
 }

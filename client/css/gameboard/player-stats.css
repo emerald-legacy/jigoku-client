@@ -7,13 +7,6 @@
     &.our-side {
         flex-direction: column;
     }
-
-    &.panel {
-        margin: 0;
-        border-radius: 0;
-        padding: 10px 0 10px 5px;
-        position: initial;
-    }
 }
 
 .stats-row {
@@ -51,31 +44,11 @@
     grid-row-start: 1;
     grid-column-start: 1;
     grid-column-end: 4;
-
-    & .player-stats {
-        margin: 0;
-        border-radius: 0;
-        padding: 10px 0 10px 5px;
-        position: static;
-        align-items: center;
-        flex-direction: row;
-    }
-
-    & .state {
-        flex-grow: 0;
-    }
-
-    &.our-side {
-        & .player-stats {
-            flex-direction: row;
-        }
-        grid-row-start: 3;
-    }
 }
 
 .btn-stat {
     padding: 0;
-    font-size: 14pt;
+    font-size: var(--text-title);
     line-height: 18px;
     height: 22px;
     width: 22px;
@@ -85,7 +58,7 @@
 .btn-stat:hover {
     background-color: transparent;
     border-color: transparent;
-    color: var(--jade-bright);
+    color: var(--jade-vivid);
 }
 
 .btn-stat:focus {
@@ -112,20 +85,8 @@
     }
 
     .player-stats {
-        font-size: 10pt;
-
-        &.panel { padding: 2px 0 2px 5px; }
+        font-size: var(--text-ui);
     }
-}
-
-.player-avatar {
-    display: block;
-    flex-grow: 0;
-    padding-right: 10px;
-    line-height: 27px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
 }
 
 .stat-image {

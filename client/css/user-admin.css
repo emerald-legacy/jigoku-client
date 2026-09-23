@@ -36,8 +36,8 @@
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 4px;
     color: var(--color-foreground);
-    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
-    font-size: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-body);
     letter-spacing: 0.04em;
     transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
 }
@@ -49,8 +49,8 @@
 .user-admin-input:focus {
     outline: none;
     background: var(--ink);
-    border-color: rgb(var(--jade-light-rgb) / 0.6);
-    box-shadow: 0 0 0 1px rgb(var(--jade-light-rgb) / 0.4), 0 0 14px rgb(var(--jade-glow-rgb) / 0.2);
+    border-color: rgb(var(--jade-rgb) / 0.6);
+    box-shadow: 0 0 0 1px rgb(var(--jade-rgb) / 0.4), 0 0 14px rgb(var(--jade-glow-rgb) / 0.2);
 }
 
 /* ---- States ---- */
@@ -63,8 +63,8 @@
     gap: 0.5rem;
     padding: 2.5rem 1rem;
     color: rgb(var(--sage-rgb) / 0.7);
-    font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: 1.05rem;
+    font-family: var(--font-display);
+    font-size: var(--text-lead);
     letter-spacing: 0.08em;
     font-style: italic;
 }
@@ -79,7 +79,7 @@
     position: relative;
     margin-top: 0.9rem;
     padding: 1.1rem 1.1rem 1.1rem 1.4rem;
-    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.6), rgb(var(--ink-darker-rgb) / 0.6));
+    background: rgb(var(--ink-rgb) / 0.6);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
     animation: user-admin-rise 0.4s ease both;
@@ -94,7 +94,7 @@
     bottom: 0.6rem;
     width: 2px;
     border-radius: 2px;
-    background: linear-gradient(180deg, transparent, rgb(var(--jade-light-rgb) / 0.7), transparent);
+    background: linear-gradient(180deg, transparent, rgb(var(--jade-rgb) / 0.7), transparent);
 }
 
 .user-admin-identity {
@@ -108,9 +108,9 @@
 }
 
 .user-admin-name {
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-weight: 600;
-    font-size: 1.7rem;
+    font-size: var(--text-display);
     line-height: 1;
     letter-spacing: 0.01em;
     color: var(--color-foreground);
@@ -130,16 +130,16 @@
 }
 
 .user-admin-meta-key {
-    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
-    font-size: 0.6rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
     text-transform: uppercase;
     letter-spacing: 0.18em;
     color: rgb(var(--sage-rgb) / 0.7);
 }
 
 .user-admin-meta-val {
-    font-family: var(--font-mono, "JetBrains Mono", ui-monospace, monospace);
-    font-size: 0.78rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-small);
     color: rgb(var(--sage-pale-rgb) / 0.9);
 }
 
@@ -149,9 +149,9 @@
     display: flex;
     align-items: center;
     gap: 0.45rem;
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: var(--text-lead);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: rgb(var(--sage-rgb) / 0.9);
@@ -159,7 +159,7 @@
 }
 
 .user-admin-perms-title svg {
-    color: var(--color-link, var(--color-link));
+    color: var(--color-tertiary);
 }
 
 .user-admin-perm {
@@ -187,7 +187,7 @@
 }
 
 .user-admin-perm.is-on .user-admin-perm-icon {
-    color: var(--color-tertiary, var(--color-tertiary));
+    color: var(--color-tertiary);
 }
 
 .user-admin-perm-info {
@@ -196,12 +196,12 @@
 }
 
 .user-admin-perm-label {
-    font-size: 0.92rem;
+    font-size: var(--text-body);
     color: var(--color-foreground);
 }
 
 .user-admin-perm-desc {
-    font-size: 0.72rem;
+    font-size: var(--text-small);
     color: rgb(var(--sage-rgb) / 0.6);
     margin-top: 0.05rem;
 }
@@ -248,7 +248,7 @@
 .user-admin-toggle input:checked ~ .user-admin-toggle-track {
     background: linear-gradient(180deg, rgb(var(--tertiary-rgb) / 0.9), rgb(var(--primary-rgb) / 0.9));
     border-color: rgb(var(--jade-rgb) / 0.7);
-    box-shadow: 0 0 12px rgb(var(--jade-glow-rgb) / 0.4), inset 0 0 4px rgb(var(--jade-light-rgb) / 0.3);
+    box-shadow: 0 0 12px rgb(var(--jade-glow-rgb) / 0.4), inset 0 0 4px rgb(var(--jade-rgb) / 0.3);
 }
 
 .user-admin-toggle input:checked ~ .user-admin-toggle-track .user-admin-toggle-knob {
@@ -257,7 +257,7 @@
 }
 
 .user-admin-toggle input:focus-visible ~ .user-admin-toggle-track {
-    box-shadow: 0 0 0 2px rgb(var(--jade-light-rgb) / 0.5);
+    box-shadow: 0 0 0 2px rgb(var(--jade-rgb) / 0.5);
 }
 
 /* ---- Actions / seal ---- */

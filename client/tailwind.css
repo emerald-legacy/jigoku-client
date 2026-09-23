@@ -49,39 +49,42 @@
 @import "./css/blocklist.css";
 
 @import "tailwindcss";
-@source "../client/**/*.{jsx,js}";
+@source "../client/**/*.{ts,tsx,js,jsx}";
 
 @theme {
-    --font-sans: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
-    --font-serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
-    --font-display: "Cormorant Garamond", Georgia, "Times New Roman", serif;
-    --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, Menlo, monospace;
-    --font-fallback-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-display: "Cormorant Garamond", serif;
+    --font-body: "Source Serif 4", serif;
+    --font-mono: "JetBrains Mono", monospace;
+    --font-glyph: "Shippori Mincho B1", serif;
+    --font-ui: system-ui, sans-serif;
+    --default-font-family: var(--font-body);
+    --text-micro: 0.625rem;
+    --text-caption: 0.6875rem;
+    --text-small: 0.75rem;
+    --text-ui: 0.8125rem;
+    --text-body: 0.875rem;
+    --text-body--line-height: calc(1.25 / 0.875);
+    --text-lead: 1rem;
+    --text-lead--line-height: calc(1.5 / 1);
+    --text-title: 1.125rem;
+    --text-title--line-height: calc(1.75 / 1.125);
+    --text-heading: 1.25rem;
+    --text-h1: 1.5rem;
+    --text-h1--line-height: calc(2 / 1.5);
+    --text-display: 1.75rem;
+    --text-hero: 4rem;
     --color-primary: #336600;
-    --color-primary-dark: #2b5500;
-    --color-secondary: #1a3300;
-    --color-tertiary: #4d9900;
-    --color-link: #5ea026;
+    --color-tertiary: #5ea026;
     --color-background: #0E0B10;
     --color-foreground: rgb(232, 234, 220);
     --color-info: #5bc0de;
     --color-success: #5cb85c;
     --color-warning: #f0ad4e;
     --color-danger: #d9534f;
-    --color-navbar-bg: rgba(34, 34, 34, 0.8);
-    --color-header-bg: rgba(77, 153, 0, 0.9);
-    --color-header-border: rgba(120, 180, 80, 0.4);
     --color-military-icon: #ca9c81;
-    --color-military-text: #743e3e;
     --color-military-ring: #BB3e3e;
     --color-political-icon: #b2bccd;
-    --color-political-text: #41658a;
     --color-political-ring: #3065BB;
-    --color-dupe: rgba(0, 128, 0, 0.9);
-    --color-power: rgba(0, 0, 128, 0.9);
-    --color-strength: rgba(128, 0, 0, 0.9);
-    --color-venom: rgba(29, 145, 163, 0.9);
-    --color-table-bg-accent: rgba(51, 102, 0, 0.5);
 }
 
 :root {
@@ -130,9 +133,9 @@
     /* Buttons */
     .btn {
         @apply px-3 py-1.5 rounded cursor-pointer inline-block text-center disabled:opacity-50 disabled:cursor-not-allowed;
-        font-family: "Cormorant Garamond", Georgia, serif;
+        font-family: var(--font-display);
         font-weight: 600;
-        font-size: 15px;
+        font-size: var(--text-lead);
         letter-spacing: 0.02em;
         font-variant-numeric: tabular-nums lining-nums;
         transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
@@ -166,7 +169,7 @@
         align-items: center;
         gap: 0.4rem;
         padding: 0.5rem 1rem;
-        font-size: 0.95rem;
+        font-size: var(--text-lead);
         letter-spacing: 0.14em;
         text-transform: uppercase;
         white-space: nowrap;
@@ -181,18 +184,19 @@
     .btn-action:not(:disabled):active {
         transform: translateY(1px);
     }
-    .btn-lg { @apply px-4 py-2 text-base; }
+    .btn-lg { @apply px-4 py-2 text-lead; }
     .btn-group { @apply inline-flex; }
 
     /* Forms */
     .form-group { @apply mb-4 flex flex-wrap items-center; }
-    .form-control { @apply w-full h-[34px] px-3 py-1.5 bg-white text-black border border-gray-300 rounded text-sm shadow-inner transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary; }
-    .control-label { @apply mb-0 font-bold text-sm text-right pr-2; }
-    .help-block { @apply mt-1 text-sm text-danger; }
-    .checkbox { @apply flex items-center gap-1 text-sm py-0.5; }
+    .form-control { @apply w-full h-[34px] px-3 py-1.5 bg-white text-black border border-gray-300 rounded text-body shadow-inner transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary; }
+    textarea.form-control { height: auto; }
+    .control-label { @apply mb-0 font-bold text-body text-right pr-2; }
+    .help-block { @apply mt-1 text-body text-danger; }
+    .checkbox { @apply flex items-center gap-1 text-body py-0.5; }
     .checkbox label { @apply flex items-center gap-1.5 cursor-pointer; }
     .checkbox input[type="checkbox"] { @apply mt-0; }
-    .radio-inline { @apply inline-flex items-center gap-1 mr-4 cursor-pointer text-sm; }
+    .radio-inline { @apply inline-flex items-center gap-1 mr-4 cursor-pointer text-body; }
     .radio-inline input[type="radio"] { @apply mt-0; }
 
     /* Progress bars */
@@ -221,21 +225,21 @@
     .modal-header { @apply flex flex-row-reverse items-center p-4 border-b border-gray-600; }
     .modal-header .modal-title { @apply flex-1 text-center; }
     .modal-body { @apply p-4; }
-    .modal-title { @apply text-lg font-bold; }
+    .modal-title { @apply text-title font-bold; }
 
     /* Close button (Bootstrap .close) */
-    .close { @apply bg-transparent border-0 cursor-pointer text-white text-2xl leading-none p-0; }
+    .close { @apply bg-transparent border-0 cursor-pointer text-white text-h1 leading-none p-0; }
 
     /* Navbar */
     .navbar { @apply fixed top-0 inset-x-0; height: 40px; z-index: 10000; }
-    .navbar-inverse { @apply bg-navbar-bg text-white; }
+    .navbar-inverse { @apply text-white; background: rgb(var(--ink-rgb) / 0.8); }
     .no-highlight { user-select: none; }
 
     /* Navbar links and items */
     .navbar li { @apply flex items-center; }
-    .navbar li a { @apply block px-2 text-sm text-gray-400 no-underline rounded transition-colors hover:text-white hover:bg-white/10; line-height: 40px; }
+    .navbar li a { @apply block px-2 text-body text-gray-400 no-underline rounded transition-colors hover:text-white hover:bg-white/10; line-height: 40px; }
     .navbar li.active > a { @apply text-white bg-white/15; }
-    .navbar li span { @apply block px-2 text-sm text-gray-400; line-height: 40px; }
+    .navbar li span { @apply block px-2 text-body text-gray-400; line-height: 40px; }
 
     /* Gravatar avatar */
     .gravatar { @apply inline-block align-middle mr-1.5 rounded-sm; }
@@ -254,7 +258,7 @@
     .full-height { @apply h-full; }
 
     /* Utility classes */
-    .small { @apply text-sm; }
+    .small { @apply text-body; }
     .text-muted { @apply text-gray-500; }
     .pull-right { @apply float-right; }
     /* Column grid */
@@ -349,20 +353,20 @@ body {
 }
 
 h1 {
-    font-size: 24px;
+    font-size: var(--text-h1);
     color: var(--color-foreground);
 }
 
 h3 {
-    font-size: 18px;
+    font-size: var(--text-title);
 }
 
 h4 {
-    font-size: 14px;
+    font-size: var(--text-body);
 }
 
 a {
-    color: var(--color-link);
+    color: var(--color-tertiary);
     text-decoration: none;
 
     &:hover {

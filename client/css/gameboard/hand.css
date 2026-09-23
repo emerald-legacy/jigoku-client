@@ -11,9 +11,9 @@
     text-transform: uppercase;
     width: 480px;
     position: relative;
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-weight: 600;
-    font-size: 14px;
+    font-size: var(--text-body);
     letter-spacing: 0.14em;
     transition: width 0.35s ease-out;
 
@@ -22,7 +22,7 @@
         position: absolute;
         inset: 0 0 auto 0;
         height: 1px;
-        background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
+        background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
     }
 
     &.small {

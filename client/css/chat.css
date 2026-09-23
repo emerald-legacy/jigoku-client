@@ -7,7 +7,7 @@
     left: 0;
     right: 4px;
     margin: 0;
-    font-size: 12px;
+    font-size: var(--text-small);
 
     & hr {
         border-top-color: rgb(var(--white-rgb) / 0.8);

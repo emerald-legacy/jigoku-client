@@ -131,8 +131,8 @@ export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: I
 
     return (
         <nav className="navbar navbar-inverse no-highlight">
-            <div className="max-w-[1170px] mx-auto px-4 flex items-center flex-wrap text-sm">
-                <Link to="/" className="text-gray-400 font-bold text-sm py-2 leading-tight mr-2">{ title }</Link>
+            <div className="max-w-[1170px] mx-auto px-4 flex items-center flex-wrap text-body">
+                <Link to="/" className="text-gray-400 font-bold text-body py-2 leading-tight mr-2">{ title }</Link>
                 <button className="md:hidden p-2 text-gray-400 ml-auto"
                     type="button"
                     aria-expanded={ !navbarCollapsed }

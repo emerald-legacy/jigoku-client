@@ -393,7 +393,7 @@
     border: 1px solid rgb(var(--black-rgb) / 0.9);
     border-radius: 6px;
     color: var(--color-foreground);
-    font-size: 16px;
+    font-size: var(--text-lead);
     font-weight: bold;
     height: 26px;
     left: 50%;
@@ -407,7 +407,7 @@
 }
 
 .card-name {
-    font-size: 10px;
+    font-size: var(--text-micro);
     line-height: 14px;
     /* The card image covers this, but a long name would otherwise spill past the card */
     display: block;
@@ -540,7 +540,7 @@
 @media(max-width: 1279px) {
     .fatecounter {
         &.ring-fate {
-            font-size: 15px;
+            font-size: var(--text-lead);
         }
     }
 }
@@ -685,7 +685,7 @@
     position: absolute;
     bottom: 6%;
     right: 6%;
-    font-family: "Noto Serif JP", "Hiragino Mincho ProN", "Yu Mincho", "MS Mincho", serif;
+    font-family: var(--font-glyph);
     font-size: 6cqi;
     line-height: 1;
     color: var(--color-foreground);

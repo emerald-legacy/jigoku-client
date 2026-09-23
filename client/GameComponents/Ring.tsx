@@ -105,13 +105,8 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size, showRingEffects, ga
     };
 
     let className = `ring icon-element-${ring.element}${size ? ` ${size}` : ""}`;
-    let bgClassName = `ring-background tint-${ring.conflictType}${size ? ` ${size}` : ""}`;
+    const bgClassName = `ring-background tint-${ring.conflictType}${size ? ` ${size}` : ""}`;
     let svgClassName = `ring-svg tint-${ring.conflictType}${size ? ` ${size}` : ""}${ring.selected || ring.contested ? " contested" : ""}`;
-    if(ring.unselectable) {
-        className += " unselectable";
-        bgClassName += " unselectable";
-    }
-
     let visible = true;
     if(
         (owner && (!ring.claimed || owner !== ring.claimedBy)) ||
@@ -138,20 +133,22 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size, showRingEffects, ga
             onMouseEnter={ () => setIsHovered(true) }
             onMouseLeave={ () => setIsHovered(false) }
         >
-            <svg className={ svgClassName }>
-                { ringImageSrc ? null : <circle cx="50%" cy="50%" r="50%" className={ bgClassName } /> }
-            </svg>
-            { ringImageSrc ? (
-                <img
-                    className={ `ring-patron-image tint-${ring.conflictType}${ring.selected || ring.contested ? " contested" : ""}` }
-                    src={ ringImageSrc }
-                    alt={ ring.element }
-                />
-            ) : null }
-            <div className={ ringImageSrc ? `${className} ring-glyph-hidden` : className } />
-            { shouldShowCounters() && visible ? (
-                <CardCounters counters={ getCountersForRing() } />
-            ) : null }
+            <div className="ring-visual">
+                <svg className={ svgClassName }>
+                    { ringImageSrc ? null : <circle cx="50%" cy="50%" r="50%" className={ bgClassName } /> }
+                </svg>
+                { ringImageSrc ? (
+                    <img
+                        className={ `ring-patron-image tint-${ring.conflictType}${ring.selected || ring.contested ? " contested" : ""}` }
+                        src={ ringImageSrc }
+                        alt={ ring.element }
+                    />
+                ) : null }
+                <div className={ ringImageSrc ? `${className} ring-glyph-hidden` : className } />
+                { shouldShowCounters() && visible ? (
+                    <CardCounters counters={ getCountersForRing() } />
+                ) : null }
+            </div>
             { shouldShowMenu() ? (
                 <CardMenu menu={ ring.menu } onMenuItemClick={ handleMenuItemClick } />
             ) : null }

@@ -47,9 +47,9 @@
     gap: 0.5rem;
     background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.9), rgb(var(--moss-deep-rgb) / 0.7));
     color: var(--color-foreground);
-    font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    font-family: var(--font-display);
     font-weight: 600;
-    font-size: 14px;
+    font-size: var(--text-body);
     line-height: 1.2;
     letter-spacing: 0.14em;
     margin: 5px;
@@ -67,17 +67,17 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
 }
 
 .panel-title-icon {
-    color: var(--color-link);
+    color: var(--color-tertiary);
     flex-shrink: 0;
 }
 
 .panel-title-meta {
-    font-family: var(--lobby-font-mono, "JetBrains Mono", ui-monospace, monospace);
-    font-size: 0.62rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.18em;
@@ -101,11 +101,12 @@
     transition: color 0.15s;
 }
 .panel-title .close-button:hover {
-    color: var(--jade-bright);
+    color: var(--jade-vivid);
 }
 
-.selected {
-    box-shadow: 0 0 1px 4px var(--color-secondary);
+.card-settings .card.selected,
+.bg-swatch img.selected {
+    box-shadow: 0 0 0 3px var(--jade-vivid), 0 0 12px 4px rgb(var(--jade-vivid-rgb) / 0.6);
 }
 
 .bg-label {

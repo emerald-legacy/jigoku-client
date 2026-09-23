@@ -57,10 +57,6 @@ circle.ring-background {
     cy: 50%;
     r: 50%;
     border: none;
-
-    &.unselectable {
-        filter: brightness(60%);
-    }
 }
 
 svg.ring-svg {
@@ -109,14 +105,16 @@ svg.ring-svg {
     max-height: var(--ring-size);
     max-width: var(--ring-size);
 
-    &.unselectable {
-        filter: brightness(60%);
-    }
-
     &.hidden {
         display: none;
         margin-right: 0px;
     }
+}
+
+/* A filter dims every descendant, so it sits on the ring's visuals rather than on .ring,
+   keeping the tooltip and menu at full brightness. */
+.ring.unselectable > .ring-visual {
+    filter: brightness(60%);
 }
 
 /* Patron ring imagery: keep the glyph div for layout/sizing but hide it, overlay the image. */
@@ -155,25 +153,13 @@ svg.ring-svg {
 
 .tint-military {
     fill: var(--color-military-ring);
-
-    &.unselectable {
-        fill: darkred;
-    }
 }
 
 .tint-political {
     fill: var(--color-political-ring);
 
-    &.unselectable {
-        fill: darkblue;
-    }
-
     & .tint-neutral {
         fill: darkgrey;
-
-        &.unselectable {
-            fill: darkslategrey;
-        }
     }
 }
 
@@ -187,7 +173,7 @@ svg.ring-svg {
     color: var(--color-foreground);
     padding: 6px 10px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: var(--text-caption);
     line-height: 1.4;
     white-space: nowrap;
     z-index: 1000;

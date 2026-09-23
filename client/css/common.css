@@ -1,6 +1,6 @@
 .card-link {
     cursor: pointer;
-    color: var(--color-link);
+    color: var(--color-tertiary);
 }
 
 .card-link:hover {
@@ -24,7 +24,7 @@
 
 .deck-select-modal {
     position: relative;
-    background: linear-gradient(180deg, var(--ink), var(--ink-deep));
+    background: var(--ink);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
     color: var(--color-foreground);
@@ -37,7 +37,7 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
     pointer-events: none;
 }
 
@@ -51,8 +51,8 @@
 }
 
 .deck-select-title {
-    font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: 1rem;
+    font-family: var(--font-display);
+    font-size: var(--text-lead);
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -63,14 +63,14 @@
     background: none;
     border: none;
     color: rgb(var(--sage-rgb) / 0.7);
-    font-size: 20px;
+    font-size: var(--text-heading);
     line-height: 1;
     padding: 0 4px;
     cursor: pointer;
     transition: color 0.15s;
 
     &:hover {
-        color: var(--jade-bright);
+        color: var(--jade-vivid);
     }
 }
 
@@ -95,7 +95,7 @@
 
 .deck-import-hint {
     margin: 0 0 8px 0;
-    font-size: 13px;
+    font-size: var(--text-ui);
     color: rgb(var(--bone-rgb) / 0.7);
 }
 
@@ -119,9 +119,9 @@
 
 .panel {
     position: relative;
-    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.9), rgb(var(--ink-deep-rgb) / 0.9));
+    background: rgb(var(--ink-rgb) / 0.9);
     color: var(--color-foreground);
-    font-size: 14px;
+    font-size: var(--text-body);
     margin: 0 5px 5px 5px;
     padding: 12px 14px;
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
@@ -132,14 +132,14 @@
 }
 
 .panel-darker {
-    background: linear-gradient(180deg, rgb(var(--ink-deep-rgb) / 0.9), rgb(var(--ink-darkest-rgb) / 0.9));
+    background: rgb(var(--ink-rgb) / 0.9);
 }
 
 .absolute-panel {
     background-color: rgb(var(--black-rgb) / 0.9);
     margin: 5px;
     padding: 5px 10px;
-    border: 1px solid var(--color-header-border);
+    border: 1px solid rgb(var(--jade-rgb) / 0.4);
     overflow: visible;
 }
 
@@ -148,7 +148,7 @@
     top: 0;
     left: 0;
     z-index: var(--layer-pile-header);
-    font-size: 10px;
+    font-size: var(--text-micro);
     line-height: 14px;
     background: rgb(var(--black-rgb) / 0.6);
     text-shadow: 1px 1px 2px var(--black);
@@ -164,7 +164,7 @@
     width: 200px;
     left: 58px;
     top: -5px;
-    font-size: 12px;
+    font-size: var(--text-small);
     line-height: 16px;
     z-index: var(--layer-card-menu);
 }

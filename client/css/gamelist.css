@@ -53,7 +53,7 @@
 
 .game-badge {
     flex-shrink: 0;
-    font-size: 11px;
+    font-size: var(--text-caption);
     font-weight: 600;
     padding: 1px 6px;
     border-radius: 3px;
@@ -92,7 +92,7 @@
 
 .game-badge-lock {
     padding: 0;
-    font-size: 13px;
+    font-size: var(--text-ui);
 }
 
 .game-row-name {
@@ -131,7 +131,7 @@
 .game-row-vs {
     flex-shrink: 0;
     color: var(--color-foreground);
-    font-size: 14px;
+    font-size: var(--text-body);
     padding: 0 4px;
 }
 
@@ -142,7 +142,7 @@
 .game-row-empty {
     opacity: 0.5;
     font-style: italic;
-    font-size: 13px;
+    font-size: var(--text-ui);
 }
 
 .game-row-buttons {
@@ -169,7 +169,7 @@
     border-radius: 3px;
     background: rgb(var(--primary-rgb) / 0.5);
     color: var(--color-foreground);
-    font-size: 12px;
+    font-size: var(--text-small);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -199,8 +199,8 @@
 .deck-status {
     padding: 2px 9px;
     border-radius: 3px;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
-    font-size: 10px;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -208,7 +208,7 @@
 
     &.valid {
         background: linear-gradient(180deg, var(--moss-light), rgb(var(--moss-rgb) / 0.9));
-        color: var(--jade-bright);
+        color: var(--jade-vivid);
         border: 1px solid rgb(var(--jade-rgb) / 0.4);
     }
 
@@ -224,7 +224,7 @@
 }
 
 .deck-status-summary {
-    font-size: 12px;
+    font-size: var(--text-small);
 
     & .valid {
         color: var(--color-success);
@@ -236,8 +236,8 @@
 }
 
 .deck-status-errors {
-    border-top: 1px solid var(--color-header-border);
-    font-size: 14px;
+    border-top: 1px solid rgb(var(--jade-rgb) / 0.4);
+    font-size: var(--text-body);
     margin-top: 1em;
     padding-top: 1em;
 }
@@ -288,7 +288,7 @@
     border-radius: 3px;
     background: transparent;
     color: rgb(var(--bone-rgb) / 0.6);
-    font-size: 12px;
+    font-size: var(--text-small);
     cursor: pointer;
     transition: background-color 0.15s, color 0.15s;
 
@@ -305,19 +305,19 @@
 }
 
 .game-stats-empty {
-    font-size: 14px;
+    font-size: var(--text-body);
     opacity: 0.6;
     padding: 8px 0;
 }
 
 .game-stats-period {
     font-weight: 400;
-    font-size: 12px;
+    font-size: var(--text-small);
     opacity: 0.7;
 }
 
 .game-stats-total {
-    font-size: 14px;
+    font-size: var(--text-body);
     margin-bottom: 10px;
 }
 
@@ -341,7 +341,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 13px;
+    font-size: var(--text-ui);
 
     &.clickable {
         cursor: pointer;
@@ -353,7 +353,7 @@
 }
 
 .game-stats-expand {
-    font-size: 9px;
+    font-size: var(--text-micro);
     opacity: 0.5;
     margin-left: 2px;
 }
@@ -364,14 +364,14 @@
     align-items: center;
     gap: 4px 16px;
     padding: 4px 0 6px 0;
-    font-size: 12px;
+    font-size: var(--text-small);
 }
 
 .game-stats-matchup-vs {
     width: 24px;
     flex-shrink: 0;
     color: var(--color-foreground);
-    font-size: 12px;
+    font-size: var(--text-small);
     font-weight: 600;
 }
 
@@ -402,7 +402,7 @@
 }
 
 .game-stats-best-label {
-    font-size: 14px;
+    font-size: var(--text-body);
     font-weight: 700;
     margin-bottom: 6px;
 }
@@ -417,7 +417,7 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 14px;
+    font-size: var(--text-body);
 }
 
 .game-stats-best-name {

@@ -52,7 +52,7 @@
 
 .card-group {
     position: relative;
-    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.7), rgb(var(--ink-deep-rgb) / 0.7));
+    background: rgb(var(--ink-rgb) / 0.7);
     margin: 5px 5px 5px 0;
     padding: 10px;
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
@@ -64,9 +64,9 @@
     position: relative;
     background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.9), rgb(var(--moss-deep-rgb) / 0.7));
     color: var(--color-foreground);
-    font-family: "Cormorant Garamond", Georgia, serif;
+    font-family: var(--font-display);
     font-weight: 600;
-    font-size: 13px;
+    font-size: var(--text-ui);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     margin: 5px 5px 0 0;
@@ -83,7 +83,7 @@
     position: absolute;
     inset: 0 0 auto 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgb(var(--jade-light-rgb) / 0.6), transparent);
+    background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
 }
 
 .cards {
@@ -109,7 +109,7 @@
 .deck-row {
     border-radius: 4px;
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
-    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.7), rgb(var(--ink-deep-rgb) / 0.7));
+    background: rgb(var(--ink-rgb) / 0.7);
     padding: 8px 10px;
     margin-bottom: 5px;
     display: flex;
@@ -127,7 +127,7 @@
 .deck-row.active {
     border-color: rgb(var(--jade-rgb) / 0.5);
     background: linear-gradient(180deg, rgb(var(--moss-rgb) / 0.5), rgb(var(--moss-deep-rgb) / 0.4));
-    box-shadow: inset 3px 0 0 rgb(var(--jade-bright-rgb) / 0.7);
+    box-shadow: inset 3px 0 0 rgb(var(--jade-vivid-rgb) / 0.7);
 }
 
 .deck-row-checkbox {
@@ -149,7 +149,7 @@
 
 .deck-clan-separator {
     color: rgb(var(--bone-rgb) / 0.4);
-    font-size: 14px;
+    font-size: var(--text-body);
     font-weight: 300;
     padding: 0 1px;
 }
@@ -159,8 +159,8 @@
     min-width: 0;
     padding: 2px 4px;
     color: var(--color-foreground);
-    font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: 15px;
+    font-family: var(--font-display);
+    font-size: var(--text-lead);
     font-weight: 600;
     letter-spacing: 0.02em;
     white-space: nowrap;
@@ -172,8 +172,8 @@
     flex-shrink: 0;
     padding: 2px 9px;
     border-radius: 3px;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
-    font-size: 10px;
+    font-family: var(--font-mono);
+    font-size: var(--text-micro);
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
@@ -181,7 +181,7 @@
 
     &.valid {
         background: linear-gradient(180deg, var(--moss-light), rgb(var(--moss-rgb) / 0.9));
-        color: var(--jade-bright);
+        color: var(--jade-vivid);
         border: 1px solid rgb(var(--jade-rgb) / 0.4);
     }
 
@@ -198,8 +198,8 @@
     padding: 40px 20px;
     text-align: center;
     color: rgb(var(--bone-rgb) / 0.5);
-    font-family: "Cormorant Garamond", Georgia, serif;
-    font-size: 16px;
+    font-family: var(--font-display);
+    font-size: var(--text-lead);
     letter-spacing: 0.02em;
 }
 
@@ -284,7 +284,7 @@
     height: auto !important;
     padding-right: 10px;
     filter:
-        drop-shadow(0 0 18px rgb(var(--jade-bright-rgb) / 0.2))
+        drop-shadow(0 0 18px rgb(var(--jade-vivid-rgb) / 0.2))
         drop-shadow(0 6px 10px rgb(var(--black-rgb) / 0.6))
         drop-shadow(0 2px 3px rgb(var(--black-rgb) / 0.5));
     transition: filter 0.3s ease-out, transform 0.3s ease-out;
@@ -301,7 +301,7 @@
 .deck-mon:hover,
 .deck-alliance-mon:hover {
     filter:
-        drop-shadow(0 0 26px rgb(var(--jade-bright-rgb) / 0.3))
+        drop-shadow(0 0 26px rgb(var(--jade-vivid-rgb) / 0.3))
         drop-shadow(0 10px 16px rgb(var(--black-rgb) / 0.6))
         drop-shadow(0 2px 3px rgb(var(--black-rgb) / 0.5));
     transform: translateY(-2px) scale(1.03);
@@ -312,7 +312,7 @@
 }
 
 .deck-stats {
-    border: 1px solid var(--color-header-border);
+    border: 1px solid rgb(var(--jade-rgb) / 0.4);
     border-radius: 4px;
     padding: 8px 12px;
     margin: 10px 0;
@@ -335,7 +335,7 @@
     display: inline-flex;
     align-items: center;
     gap: 3px;
-    font-size: 13px;
+    font-size: var(--text-ui);
 }
 
 .deck-stats-clan-icon {
@@ -348,7 +348,7 @@
     display: flex;
     flex-wrap: wrap;
     gap: 4px 12px;
-    font-size: 12px;
+    font-size: var(--text-small);
     color: rgb(var(--bone-rgb) / 0.7);
 }
 

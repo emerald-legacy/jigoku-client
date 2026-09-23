@@ -28,7 +28,7 @@
 }
 
 .stat-change-name {
-    font-size: 0.8rem;
+    font-size: var(--text-ui);
     color: rgb(var(--bone-rgb) / 0.6);
     margin-bottom: 4px;
     text-transform: uppercase;
@@ -36,7 +36,7 @@
 }
 
 .stat-change-amount {
-    font-size: 1.6rem;
+    font-size: var(--text-h1);
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -44,7 +44,7 @@
     gap: 8px;
 }
 
-.stat-change-amount.gain { color: var(--jade-bright); }
+.stat-change-amount.gain { color: var(--jade-vivid); }
 .stat-change-amount.lose { color: var(--element-fire); }
 
 .stat-change-icon {
