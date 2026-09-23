@@ -28,7 +28,7 @@
 
 .court-count,
 .court-count-label {
-    font-size: var(--text-ui);
+    font-size: var(--text-small);
     color: rgb(var(--sage-pale-rgb) / 0.8);
 }
 
@@ -69,7 +69,7 @@
 }
 
 .court-name {
-    font-size: var(--text-ui);
+    font-size: var(--text-body);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -106,7 +106,7 @@
 }
 
 .court-empty {
-    font-size: var(--text-ui);
+    font-size: var(--text-small);
     color: rgb(var(--sage-pale-rgb) / 0.8);
     padding: 2px 0;
 }

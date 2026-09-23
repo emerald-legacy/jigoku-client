@@ -53,7 +53,7 @@
 
 .cosmetic-lock-hint {
     color: var(--color-warning);
-    font-size: var(--text-ui);
+    font-size: var(--text-small);
     margin: -0.4rem 0 0.75rem;
     opacity: 0.85;
 }

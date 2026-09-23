@@ -11,16 +11,15 @@
 
 .phase-display {
     color: var(--color-foreground);
-    font-family: var(--font-display);
+    font-family: var(--font-body);
     font-size: var(--text-h1);
-    font-weight: 600;
     font-variant-numeric: tabular-nums;
     text-align: center;
 }
 
 .conflict-separator {
     text-align: center;
-    font-size: var(--text-caption);
+    font-size: var(--text-lead);
 }
 
 .center-bar {
@@ -73,7 +72,7 @@
 
 .round-indicator-label {
     font-family: var(--font-mono);
-    font-size: var(--text-micro);
+    font-size: var(--text-caption);
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: rgb(var(--sage-rgb) / 0.7);
@@ -90,7 +89,7 @@
 
 .round-indicator--setup .round-indicator-label {
     font-family: var(--font-display);
-    font-size: var(--text-title);
+    font-size: var(--text-heading);
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;

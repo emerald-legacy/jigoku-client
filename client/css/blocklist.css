@@ -45,7 +45,7 @@
 
 .blocklist-add-label {
     font-family: var(--font-mono);
-    font-size: var(--text-micro);
+    font-size: var(--text-caption);
     text-transform: uppercase;
     letter-spacing: 0.18em;
     color: rgb(var(--sage-rgb) / 0.7);

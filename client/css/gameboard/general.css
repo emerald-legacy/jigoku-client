@@ -160,19 +160,6 @@
     right: 10px;
     top: 50%;
     transform: translateY(-50%);
-    background: none;
-    border: none;
-    font-size: var(--text-heading);
-    line-height: 1;
-    padding: 0 4px;
-    color: rgb(var(--sage-rgb) / 0.7);
-    cursor: pointer;
-    transition: color 0.15s;
-    float: none;
-}
-
-.settings-popup .close:hover {
-    color: var(--jade-vivid);
 }
 
 .modal-title {

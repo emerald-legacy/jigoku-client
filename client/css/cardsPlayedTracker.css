@@ -11,5 +11,7 @@
 }
 
 .cards-played-tracker__count {
-    font-size: 1.5em;
+    font-family: var(--font-body);
+    font-size: var(--text-h1);
+    font-variant-numeric: tabular-nums;
 }

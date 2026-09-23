@@ -28,7 +28,7 @@
 }
 
 .stat-change-name {
-    font-size: var(--text-ui);
+    font-size: var(--text-small);
     color: rgb(var(--bone-rgb) / 0.6);
     margin-bottom: 4px;
     text-transform: uppercase;

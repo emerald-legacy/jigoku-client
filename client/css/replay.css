@@ -133,7 +133,7 @@
     margin-left: 6px;
 
     & .btn {
-        font-size: var(--text-micro);
+        font-size: var(--text-caption);
         padding: 2px 5px;
         border: 1px solid rgb(var(--white-rgb) / 0.2);
         border-radius: 3px;

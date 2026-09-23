@@ -34,7 +34,7 @@
     font-family: var(--font-display);
     font-style: italic;
     font-weight: 500;
-    font-size: var(--text-title);
+    font-size: var(--text-heading);
     color: rgb(var(--bone-rgb) / 0.9);
     margin: 1rem auto 0;
     max-width: 580px;
@@ -149,7 +149,7 @@
 
 .news-entry {
     display: grid;
-    grid-template-columns: 64px 1fr;
+    grid-template-columns: 80px 1fr;
     gap: 1.1rem;
     align-items: start;
 }
@@ -176,7 +176,7 @@
     display: flex;
     gap: 0.35rem;
     margin-top: 0.35rem;
-    font-size: var(--text-micro);
+    font-size: var(--text-caption);
     letter-spacing: 0.14em;
     color: rgb(var(--sage-rgb) / 0.8);
 }

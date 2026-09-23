@@ -407,7 +407,7 @@
 }
 
 .card-name {
-    font-size: var(--text-micro);
+    font-size: var(--text-caption);
     line-height: 14px;
     /* The card image covers this, but a long name would otherwise spill past the card */
     display: block;
@@ -447,10 +447,6 @@
     &.xxl {
         margin-top: calc(-1 * var(--card-xxl-height));
     }
-}
-
-.card-type-faction.horizontal {
-    margin: 10px 0 0 -10px;
 }
 
 .counters {

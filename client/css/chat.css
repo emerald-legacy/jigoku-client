@@ -1,42 +1,7 @@
-.messages {
-    flex: 1;
-    overflow: auto;
-    position: absolute;
-    top: 0;
-    bottom: 42px;
-    left: 0;
-    right: 4px;
-    margin: 0;
-    font-size: var(--text-small);
-
-    & hr {
-        border-top-color: rgb(var(--white-rgb) / 0.8);
-    }
-}
-
 .message {
     margin-bottom: 4px;
     margin-top: 2px;
     word-wrap: break-word;
-}
-
-.chat {
-    width: var(--chat-width);
-    position: absolute;
-    top: 317px;
-    bottom: 0px;
-}
-
-.chat > form {
-    position: absolute;
-    bottom: 5px;
-    left: 0;
-    right: 4px;
-}
-
-.chat > form input {
-    width: 100%;
-    color: var(--black);
 }
 
 .message-list {
@@ -55,14 +20,4 @@
     margin-left: 5px;
     margin-right: 5px;
     margin-top: 0;
-}
-
-@media (max-width: 1366px) {
-    .chat {
-        & > form {
-            & > input {
-                margin: 0;
-            }
-        }
-    }
 }
