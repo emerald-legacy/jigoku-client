@@ -2,7 +2,7 @@
     opacity: 0;
     pointer-events: none;
     min-width: 300px;
-    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.9), rgb(var(--ink-deep-rgb) / 0.9));
+    background: rgb(var(--ink-deep-rgb) / 0.9);
     padding: 10px;
     position: relative;
     margin-right: -300px;

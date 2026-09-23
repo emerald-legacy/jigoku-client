@@ -36,11 +36,9 @@
     --moss-deep: rgb(var(--moss-deep-rgb));
 
     /* Ink — the near-blacks the board and panels are built from */
-    --ink-rgb: 20 22 18;              /* panel surface, top stop */
     --ink-deep-rgb: 12 14 10;         /* panel surface, bottom stop */
     --ink-darker-rgb: 10 12 8;        /* inset wells */
 
-    --ink: rgb(var(--ink-rgb));
     --ink-deep: rgb(var(--ink-deep-rgb));
     --ink-darker: rgb(var(--ink-darker-rgb));
 

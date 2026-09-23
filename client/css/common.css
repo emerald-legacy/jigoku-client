@@ -24,7 +24,7 @@
 
 .deck-select-modal {
     position: relative;
-    background: linear-gradient(180deg, var(--ink), var(--ink-deep));
+    background: var(--ink-deep);
     border: 1px solid rgb(var(--jade-rgb) / 0.2);
     border-radius: 6px;
     color: var(--color-foreground);
@@ -119,7 +119,7 @@
 
 .panel {
     position: relative;
-    background: linear-gradient(180deg, rgb(var(--ink-rgb) / 0.9), rgb(var(--ink-deep-rgb) / 0.9));
+    background: rgb(var(--ink-deep-rgb) / 0.9);
     color: var(--color-foreground);
     font-size: 14px;
     margin: 0 5px 5px 5px;
