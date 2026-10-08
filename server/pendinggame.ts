@@ -1,4 +1,4 @@
-import { v1 as uuidv1 } from "uuid";
+import { randomUUID } from "crypto";
 import bcrypt from "bcrypt";
 
 import logger from "./log.js";
@@ -65,7 +65,7 @@ class PendingGame {
         this.owner = owner;
         this.players = {};
         this.spectators = {};
-        this.id = uuidv1();
+        this.id = randomUUID();
         this.name = details.name;
         this.allowSpectators = details.spectators ?? true;
         this.spectatorSquelch = details.spectatorSquelch;
