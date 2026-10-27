@@ -1,5 +1,5 @@
 # Build stage
-FROM node:26.12-alpine3.23@sha256:2ae3a23c9c5d2129398f4844c7c43400c061faf6973852f0fa837323bff9a5a8 AS builder
+FROM node:26.12-alpine3.23@sha256:bc2b334006f15c7167bbeb2f08f28c2df883f7594a0470e04454ebe7560cfe68 AS builder
 
 WORKDIR /app
 
@@ -24,7 +24,7 @@ RUN mkdir -p server/logs public/img/cards && npm run build:all && npm prune --om
     && if [ -n "$CI" ]; then find public -name '*.map' -delete; fi
 
 # Production stage
-FROM node:26.12-alpine3.23@sha256:2ae3a23c9c5d2129398f4844c7c43400c061faf6973852f0fa837323bff9a5a8
+FROM node:26.12-alpine3.23@sha256:bc2b334006f15c7167bbeb2f08f28c2df883f7594a0470e04454ebe7560cfe68
 
 
 WORKDIR /app
