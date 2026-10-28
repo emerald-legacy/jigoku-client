@@ -10,7 +10,7 @@ import type { GameSocket } from "./socket";
 import type { RootState, PendingGameInfo } from "./types/redux";
 import type { GameState, OnlineUser } from "./types/game";
 import type { User } from "./types/user";
-import type { HiddenInfo } from "./gameStateRecorder";
+import type { HiddenInfoChange } from "./gameStateRecorder";
 
 interface HandoffServer {
     protocol?: string;
@@ -258,7 +258,7 @@ export default function Application() {
                 gameActions.receiveGameState(game, liveUsername);
             });
 
-            gameSocket.on("hiddeninfo", (data: HiddenInfo[]) => {
+            gameSocket.on("hiddeninfo", (data: HiddenInfoChange[]) => {
                 setHiddenInfo(data);
             });
 

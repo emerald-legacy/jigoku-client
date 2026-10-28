@@ -1,6 +1,10 @@
 import { gzipSync, gunzipSync, strToU8, strFromU8 } from "fflate";
 import { getRecording, getHiddenInfo } from "../gameStateRecorder";
+import type { HiddenInfo, HiddenInfoChange } from "../gameStateRecorder";
 import type { GameState, MessageFragment } from "../types/game";
+
+// 2: replay states; 3: hidden info, one entry per received state; 4: hidden info as changes, paired by stateSeq
+const HIDDEN_INFO_CHANGES_VERSION = 4;
 
 const iconsConflict = ["military", "political"];
 const iconsElement = ["air", "earth", "fire", "water", "void"];
@@ -88,7 +92,7 @@ export function buildGameLog(currentGame: GameState, downloadedBy?: string) {
 
     let version = 1;
     if(replayData.length > 0) {
-        version = hiddenInfo.length > 0 ? 3 : 2;
+        version = hiddenInfo.length > 0 ? HIDDEN_INFO_CHANGES_VERSION : 2;
     }
 
     return {
@@ -135,6 +139,21 @@ export function downloadGameLog(currentGame: GameState, downloadedBy?: string): 
     URL.revokeObjectURL(url);
 }
 
+/** The change in effect at state `seq`: the last one recorded at or before it. */
+function hiddenInfoAt(changes: HiddenInfoChange[], seq: number | undefined): HiddenInfo | undefined {
+    if(seq === undefined) {
+        return undefined;
+    }
+    let found: HiddenInfo | undefined;
+    for(const change of changes) {
+        if(change.seq > seq) {
+            break;
+        }
+        found = change.info;
+    }
+    return found;
+}
+
 export function parseGameLog(arrayBuffer: ArrayBuffer) {
     let json: string;
     try {
@@ -165,7 +184,9 @@ export function parseGameLog(arrayBuffer: ArrayBuffer) {
             delete state.messages;
             delete state.newMessages;
 
-            if(log.hiddenInfo && log.hiddenInfo[i]) {
+            if(log.hiddenInfo && log.version >= HIDDEN_INFO_CHANGES_VERSION) {
+                entry.hiddenInfo = hiddenInfoAt(log.hiddenInfo, state.stateSeq);
+            } else if(log.hiddenInfo && log.hiddenInfo[i]) {
                 entry.hiddenInfo = log.hiddenInfo[i];
             }
         }

@@ -294,6 +294,8 @@ export interface GameState {
     spectators: Spectator[];
     messages: GameMessage[];
     newMessages?: GameMessage[];
+    /** Number of this state update, shared with the hidden-info log's entries. */
+    stateSeq?: number;
     winner?: string;
     finishedAt?: string;
     rings?: Record<string, Ring>;
