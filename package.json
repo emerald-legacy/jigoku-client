@@ -54,7 +54,7 @@
     "jsonwebtoken": "9.0.3",
     "lucide-react": "1.59.0",
     "mongodb": "7.7.0",
-    "nodemailer": "10.1.2",
+    "nodemailer": "10.1.4",
     "passport": "0.7.0",
     "passport-local": "1.0.0",
     "pug": "3.0.4",
