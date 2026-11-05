@@ -6,7 +6,7 @@ import type { Db } from "mongodb";
 
 import Socket from "./socket.js";
 import logger from "./log.js";
-import PendingGame from "./pendinggame.js";
+import PendingGame, { type PendingGamePlayer } from "./pendinggame.js";
 import GameRouter from "./gamerouter.js";
 import DeckService from "./services/DeckService.js";
 import CardService, { type CardRecord } from "./services/CardService.js";
@@ -328,16 +328,23 @@ class Lobby {
         }
 
         return Object.values(this.games).filter(game => {
+            if(this.canRejoin(game, user.username)) {
+                return true;
+            }
             let userBlockedByOwner = game.isUserBlocked(user);
             let userHasBlockedPlayer = Object.values(game.players).some(player => user.blockList && user.blockList.includes(player.name.toLowerCase()));
             return !userBlockedByOwner && !userHasBlockedPlayer;
         });
     }
 
-    mapGamesToGameSummaries(games: PendingGame[] | Record<string, PendingGame>) {
+    canRejoin(game: PendingGame, username: string): boolean {
+        return game.started && !!game.node && !!game.players[username]?.left;
+    }
+
+    mapGamesToGameSummaries(games: PendingGame[] | Record<string, PendingGame>, username?: string) {
         const gamesArray: PendingGame[] = Array.isArray(games) ? games : Object.values(games);
         return gamesArray
-            .map(game => game.getSummary())
+            .map(game => ({ ...game.getSummary(), canRejoin: username !== undefined && this.canRejoin(game, username) }))
             .sort((a, b) => new Date(b.createdAt as string | number | Date).getTime() - new Date(a.createdAt as string | number | Date).getTime())
             .sort((a, b) => (a.started === b.started) ? 0 : a.started ? 1 : -1);
     }
@@ -358,7 +365,7 @@ class Lobby {
         sockets.forEach(socket => {
             if(socket) {
                 let filteredGames = this.filterGameListWithBlockList(socket.user as LobbyUser | undefined);
-                let gameSummaries = this.mapGamesToGameSummaries(filteredGames);
+                let gameSummaries = this.mapGamesToGameSummaries(filteredGames, socket.user?.username);
                 socket.send("games", gameSummaries);
             }
         });
@@ -665,6 +672,11 @@ class Lobby {
             return;
         }
 
+        if(this.canRejoin(game, socket.user.username)) {
+            this.rejoinGame(socket, game, game.players[socket.user.username]);
+            return;
+        }
+
         game.watch(socket.id, socket.user as { username: string; emailHash?: string }, password, (err, message) => {
             if(err) {
                 socket.send("passworderror", message);
@@ -683,6 +695,16 @@ class Lobby {
 
             this.broadcastUserList();
         });
+    }
+
+    rejoinGame(socket: Socket, game: PendingGame, player: PendingGamePlayer) {
+        player.left = false;
+        socket.joinChannel(game.id);
+        this.router.addSpectator(game, { username: player.name, emailHash: player.emailHash });
+        socket.send("handoff", { address: game.node?.address, port: game.node?.port, protocol: game.node?.protocol, name: game.node?.identity, gameId: game.id });
+
+        this.broadcastGameList();
+        this.broadcastUserList();
     }
 
     onLeaveGame(socket: Socket) {
