@@ -1,6 +1,6 @@
 import React from "react";
 import type { ReactNode, ErrorInfo } from "react";
-import axios from "axios";
+import { http } from "../http";
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -54,7 +54,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
         console.error("React Error Boundary caught an error:", error, info);
 
-        axios.post("/api/admin/game-errors/client", {
+        http.post("/api/admin/game-errors/client", {
             errorMessage: error.message,
             errorStack: error.stack,
             componentStack: info.componentStack,

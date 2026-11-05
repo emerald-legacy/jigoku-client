@@ -1,4 +1,4 @@
-import axios from "axios";
+import { http } from "./http";
 import { useEffect, useState } from "react";
 
 // Client-side cache of "is this username a patron?" so the board/lobby can render
@@ -24,7 +24,7 @@ export function fetchPatronStatus(username?: string | null): Promise<boolean> {
     if(existing) {
         return existing;
     }
-    const request = axios.get(`/api/user/${encodeURIComponent(username)}/patron`)
+    const request = http.get<{ isPatron?: boolean }>(`/api/user/${encodeURIComponent(username)}/patron`)
         .then(response => {
             const patron = !!response.data?.isPatron;
             cache.set(username, patron);

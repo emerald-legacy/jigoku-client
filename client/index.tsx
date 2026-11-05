@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
-import axios from "axios";
+import { http } from "./http";
 import configureStore from "./configureStore";
 import { login } from "./actions";
 import Application from "./Application";
@@ -16,7 +16,7 @@ function reportClientError(payload: {
     errorStack?: string;
     kind: "window" | "unhandledRejection";
 }) {
-    axios.post("/api/admin/game-errors/client", {
+    http.post("/api/admin/game-errors/client", {
         ...payload,
         url: window.location.href,
         userAgent: navigator.userAgent

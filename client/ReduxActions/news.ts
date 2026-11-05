@@ -1,4 +1,4 @@
-import axios from "axios";
+import { http } from "../http";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { NewsItem, RootState } from "../types/redux";
 import { apiCall } from "./apiCall";
@@ -11,11 +11,11 @@ interface LoadNewsOptions {
 export const loadNews = createAsyncThunk(
     "news/load",
     (options: LoadNewsOptions | undefined, { rejectWithValue }) => {
-        const params: Record<string, unknown> = {};
+        const params: Record<string, number> = {};
         if(options && options.limit) {
             params.limit = options.limit;
         }
-        return apiCall<{ success: boolean; news: NewsItem[] }>(() => axios.get("/api/news/", { params }), rejectWithValue);
+        return apiCall<{ success: boolean; news: NewsItem[] }>(() => http.get("/api/news/", { params }), rejectWithValue);
     },
     {
         condition: (options, { getState }) => {
@@ -27,6 +27,6 @@ export const loadNews = createAsyncThunk(
 
 export const addNews = createAsyncThunk(
     "news/add",
-    (newsText: string, { rejectWithValue }) => apiCall(() => axios.post("/api/news", { text: newsText }), rejectWithValue),
+    (newsText: string, { rejectWithValue }) => apiCall(() => http.post("/api/news", { text: newsText }), rejectWithValue),
     { condition: (_, { getState }) => !!(getState() as RootState).news.news }
 );

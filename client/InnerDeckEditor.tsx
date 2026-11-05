@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import { http } from "./http";
 
 import Input from "./FormComponents/Input";
 import Select, { type SelectOption } from "./FormComponents/Select";
@@ -328,7 +328,7 @@ export default function InnerDeckEditor({
         const emeraldUrl = importUrl.replace("/decks", "/api/decklists");
 
         try {
-            const response = await axios.get<EmeraldDbDeckResponse>(emeraldUrl);
+            const response = await http.get<EmeraldDbDeckResponse>(emeraldUrl);
             const deckResponse = response.data;
 
             if(!deckResponse) {

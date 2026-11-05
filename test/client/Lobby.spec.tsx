@@ -39,7 +39,7 @@ describe("<InnerLobby />", () => {
         (baseProps.loadNews as any).mockReset();
     });
 
-    it("dispatches loadServerVersion exactly once on mount (replaces the legacy fetch /api/server-version that bypassed the axios interceptor)", () => {
+    it("dispatches loadServerVersion exactly once on mount (replaces the legacy fetch /api/server-version that bypassed the HTTP error handler)", () => {
         renderWithRouter(<InnerLobby { ...baseProps } />);
         expect(loadServerVersionSpy).toHaveBeenCalledOnce();
         expect(dispatchSpy).toHaveBeenCalledWith({ __thunk: "loadServerVersion" });

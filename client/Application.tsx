@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import axios from "axios";
+import { onHttpErrorStatus } from "./http";
 import { bindActionCreators, type ActionCreatorsMapObject } from "@reduxjs/toolkit";
 import { shallowEqual } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -120,19 +120,13 @@ export default function Application() {
         initialActions.loadFactions();
         initialActions.loadFormats();
 
-        const axiosInterceptor = axios.interceptors.response.use(
-            response => response,
-            error => {
-                if(error.response) {
-                    if(error.response.status === 401) {
-                        navigateRef.current("/login");
-                    } else if(error.response.status === 403) {
-                        navigateRef.current("/unauth");
-                    }
-                }
-                return Promise.reject(error);
+        const removeHttpErrorHandler = onHttpErrorStatus(status => {
+            if(status === 401) {
+                navigateRef.current("/login");
+            } else if(status === 403) {
+                navigateRef.current("/unauth");
             }
-        );
+        });
 
         const socket = io(window.location.origin, {
             reconnection: true,
@@ -276,7 +270,7 @@ export default function Application() {
             socket.removeAllListeners();
             socket.disconnect();
             setLobbySocket(null);
-            axios.interceptors.response.eject(axiosInterceptor);
+            removeHttpErrorHandler();
         };
 
     }, []);

@@ -12,7 +12,6 @@ import db from "../db.js";
 import UserService from "../services/UserService.js";
 import * as Settings from "../settings.js";
 import { wrapAsync } from "../util.js";
-import axios from "axios";
 
 function hashPassword(password: string, rounds: number): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -268,9 +267,13 @@ export function init(server) {
             const captchaParams = new URLSearchParams();
             captchaParams.append("secret", captchaSecret);
             captchaParams.append("response", req.body.captcha);
-            const captchaResponse = await axios.post("https://www.google.com/recaptcha/api/siteverify", captchaParams);
+            const captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", { method: "POST", body: captchaParams });
+            if(!captchaResponse.ok) {
+                throw new Error(`reCAPTCHA siteverify returned ${captchaResponse.status}`);
+            }
+            const captchaResult: { success?: boolean } = await captchaResponse.json();
 
-            if(!captchaResponse.data.success) {
+            if(!captchaResult.success) {
                 return res.send({ success: false, message: "Please complete the captcha correctly" });
             }
 

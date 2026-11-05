@@ -1,4 +1,4 @@
-import axios from "axios";
+import { http } from "../http";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { Deck, DeckCard, DeckStatus } from "../types/deck";
 import type { RootState } from "../types/redux";
@@ -18,7 +18,7 @@ export const loadDecks = createAsyncThunk(
     "cards/loadDecks",
     async (format: string | null = null, { rejectWithValue }) => {
         const url = format ? `/api/decks?format=${format}` : "/api/decks";
-        const data = await apiCall<{ decks?: Deck[] }>(() => axios.get(url), rejectWithValue);
+        const data = await apiCall<{ decks?: Deck[] }>(() => http.get(url), rejectWithValue);
 
         if(data && data.decks && data.decks.length > 0) {
             const validationPromises = data.decks.map(async (deck: Deck) => {
@@ -51,7 +51,7 @@ export const loadDecks = createAsyncThunk(
 export const loadDeck = createAsyncThunk(
     "cards/loadDeck",
     async (deckId: string, { rejectWithValue }) => {
-        const data = await apiCall<{ deck: Deck }>(() => axios.get(`/api/decks/${deckId}`), rejectWithValue);
+        const data = await apiCall<{ deck: Deck }>(() => http.get(`/api/decks/${deckId}`), rejectWithValue);
 
         if(data && data.deck) {
             const gameMode = data.deck.format && data.deck.format.value ? data.deck.format.value : "stronghold";
@@ -78,12 +78,12 @@ export const loadDeck = createAsyncThunk(
 
 export const deleteDeck = createAsyncThunk(
     "cards/deleteDeck",
-    (deck: Deck, { rejectWithValue }) => apiCall<{ deckId: string }>(() => axios.delete(`/api/decks/${deck._id}`), rejectWithValue)
+    (deck: Deck, { rejectWithValue }) => apiCall<{ deckId: string }>(() => http.delete(`/api/decks/${deck._id}`), rejectWithValue)
 );
 
 export const deleteDecks = createAsyncThunk(
     "cards/deleteDecks",
-    (deckIds: string[], { rejectWithValue }) => apiCall<{ deckIds: string[] }>(() => axios.post("/api/decks/delete-batch", { deckIds }), rejectWithValue)
+    (deckIds: string[], { rejectWithValue }) => apiCall<{ deckIds: string[] }>(() => http.post("/api/decks/delete-batch", { deckIds }), rejectWithValue)
 );
 
 export const saveDeck = createAsyncThunk(
@@ -102,7 +102,7 @@ export const saveDeck = createAsyncThunk(
         });
         const url = `/api/decks/${deck._id || ""}`;
         const method: "put" | "post" = deck._id ? "put" : "post";
-        return apiCall(() => axios[method](url, { data: str }), rejectWithValue);
+        return apiCall(() => http[method](url, { data: str }), rejectWithValue);
     }
 );
 
@@ -120,7 +120,7 @@ export function loadDecksWithLazyValidation() {
         }
 
         try {
-            const response = await axios.get<{ decks: Deck[] }>("/api/decks");
+            const response = await http.get<{ decks: Deck[] }>("/api/decks");
             dispatch(receiveDecksUnvalidated(response.data.decks));
 
             if(response.data.decks && response.data.decks.length > 0) {

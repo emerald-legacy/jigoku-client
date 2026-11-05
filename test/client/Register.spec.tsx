@@ -25,14 +25,13 @@ vi.mock("../../client/SiteComponents/AlertPanel.tsx", () => ({
     default: ({ type, message }) => <div data-testid="alert-panel" data-type={ type }>{ message }</div>
 }));
 
-// Mock axios
-vi.mock("axios", () => ({
-    default: {
+vi.mock("../../client/http", () => ({
+    http: {
         post: vi.fn(() => Promise.resolve({ data: {} }))
     }
 }));
 
-import axios from "axios";
+import { http } from "../../client/http";
 
 describe("the <Register /> component", () => {
     let registerSpy;
@@ -47,8 +46,8 @@ describe("the <Register /> component", () => {
         // Reset mocks
         vi.clearAllMocks();
 
-        // Default mock implementation for axios.post (username check)
-        axios.post.mockImplementation(() => Promise.resolve({ data: {} }));
+        // Default mock implementation for http.post (username check)
+        http.post.mockImplementation(() => Promise.resolve({ data: {} }));
     });
 
     describe("when initially rendered", () => {
@@ -355,7 +354,7 @@ describe("the <Register /> component", () => {
             });
         });
 
-        it("should not call axios when validation fails", async () => {
+        it("should not call the register endpoint when validation fails", async () => {
             render(
                 <Register
                     register={ registerSpy }
@@ -367,9 +366,9 @@ describe("the <Register /> component", () => {
             const submitButton = screen.getByRole("button", { name: "Register" });
             fireEvent.click(submitButton);
 
-            // axios.post is called for username validation on blur, but not for registration
+            // http.post is called for username validation on blur, but not for registration
             // Since we didn't blur any fields, it shouldn't be called
-            expect(axios.post).not.toHaveBeenCalledWith("/api/account/register", expect.anything());
+            expect(http.post).not.toHaveBeenCalledWith("/api/account/register", expect.anything());
         });
     });
 });
