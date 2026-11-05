@@ -182,6 +182,10 @@ export default function Application() {
             stateRef.current.boundActions.receivePasswordError(message);
         });
 
+        socket.on("nogameserver", () => {
+            toast.error("No game server is available right now. Please try again in a moment.");
+        });
+
         socket.on("handoff", (server: HandoffServer) => {
             clearRecording();
             let url = `${server.protocol || "https"}://${server.address}`;

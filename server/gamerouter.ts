@@ -112,7 +112,9 @@ class GameRouter extends EventEmitter {
 
             ws.on("close", () => {
                 logger.info(`Game node disconnected: ${identity}`);
-                this.connections.delete(identity);
+                if(this.connections.get(identity) === ws) {
+                    this.connections.delete(identity);
+                }
             });
 
             ws.on("error", (err) => {
@@ -131,11 +133,14 @@ class GameRouter extends EventEmitter {
         }
         logger.info(`starting game on node ${node.identity}`);
 
+        if(!this.sendCommand(node.identity, "STARTGAME", { ...game, owner: game.owner.username })) {
+            return;
+        }
+
         this.gameService.create(game.getSaveState() as GameRecord);
 
         node.numGames++;
 
-        this.sendCommand(node.identity, "STARTGAME", { ...game, owner: game.owner.username });
         return node;
     }
 
@@ -158,7 +163,7 @@ class GameRouter extends EventEmitter {
         var returnedWorker: GameWorker | undefined = undefined;
 
         workerList.forEach(worker => {
-            if(worker.numGames >= worker.maxGames || worker.disabled) {
+            if(worker.numGames >= worker.maxGames || worker.disabled || !this.isConnected(worker.identity)) {
                 return;
             }
 
@@ -168,6 +173,10 @@ class GameRouter extends EventEmitter {
         });
 
         return returnedWorker;
+    }
+
+    isConnected(identity: string): boolean {
+        return this.connections.get(identity)?.readyState === WebSocket.OPEN;
     }
 
     getNodeStatus() {
@@ -367,21 +376,24 @@ class GameRouter extends EventEmitter {
     }
 
     // Internal methods
-    sendCommand<C extends OutboundCommand>(identity: string, command: C, arg?: OutboundArg<C>) {
+    sendCommand<C extends OutboundCommand>(identity: string, command: C, arg?: OutboundArg<C>): boolean {
         const logLevel = (command === "PING") ? "debug" : "info";
         logger[logLevel](`sending ${command} to ${identity}`);
 
         const ws = this.connections.get(identity);
-        if(!ws || ws.readyState !== 1) {
+        if(!ws || ws.readyState !== WebSocket.OPEN) {
             logger.error(`Cannot send ${command} to ${identity}: not connected`);
-            return;
+            return false;
         }
 
         try {
             ws.send(JSON.stringify({ command: command, arg: arg }));
         } catch(err) {
             logger.error(`Error sending command: ${err}`);
+            return false;
         }
+
+        return true;
     }
 
     checkTimeouts() {

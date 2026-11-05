@@ -10,6 +10,11 @@ const loadFormatsSpy = vi.fn();
 const receiveGameStateSpy = vi.fn();
 const socketConnectedSpy = vi.fn();
 const receiveBannerNoticeSpy = vi.fn();
+const toastErrorSpy = vi.hoisted(() => vi.fn());
+
+vi.mock("sonner", () => ({
+    toast: { error: toastErrorSpy, success: vi.fn(), info: vi.fn() }
+}));
 
 vi.mock("../../client/actions", () => ({
     loadCards: () => () => loadCardsSpy(),
@@ -117,6 +122,7 @@ describe("<Application />", () => {
         receiveGameStateSpy.mockReset();
         socketConnectedSpy.mockReset();
         receiveBannerNoticeSpy.mockReset();
+        toastErrorSpy.mockReset();
         setLobbySocketSpy.mockReset();
         setGameSocketSpy.mockReset();
         httpErrorHandlers.clear();
@@ -187,5 +193,11 @@ describe("<Application />", () => {
         renderApp();
         fakeSocket.handlers.banner("downtime tonight");
         expect(receiveBannerNoticeSpy).toHaveBeenCalledExactlyOnceWith("downtime tonight");
+    });
+
+    it("shows a toast when the lobby has no game server for the game", () => {
+        renderApp();
+        fakeSocket.handlers.nogameserver();
+        expect(toastErrorSpy).toHaveBeenCalledExactlyOnceWith("No game server is available right now. Please try again in a moment.");
     });
 });

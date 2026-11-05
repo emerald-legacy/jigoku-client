@@ -15,12 +15,29 @@ vi.mock("../../server/db.js", () => ({
     default: { getDb: vi.fn(() => null) }
 }));
 
+vi.mock("config", () => ({
+    default: { has: () => true, get: () => "node-secret" }
+}));
+
+const fakeServers: EventEmitter[] = [];
+
+vi.mock("ws", () => ({
+    WebSocket: { OPEN: 1 },
+    WebSocketServer: class extends EventEmitter {
+        constructor() {
+            super();
+            fakeServers.push(this);
+        }
+    }
+}));
+
 import GameRouter from "../../server/gamerouter.js";
 import logger from "../../server/log.js";
 
 type RouterCtx = EventEmitter & {
     workers: Record<string, ReturnType<typeof makeWorker>>;
     connections: Map<string, FakeWs>;
+    isConnected: (identity: string) => boolean;
     sendCommand: ReturnType<typeof vi.fn>;
     updateDeckStats: ReturnType<typeof vi.fn>;
     gameService: { create: ReturnType<typeof vi.fn>; update: ReturnType<typeof vi.fn> };
@@ -72,10 +89,11 @@ function makeWs(open = true, sendImpl?: (data: string) => void): FakeWs {
 }
 
 function makeRouterCtx(overrides: Partial<RouterCtx> = {}): RouterCtx {
+    const workers = overrides.workers ?? {};
     const ctx = Object.assign(new EventEmitter(), {
-        workers: {},
-        connections: new Map(),
-        sendCommand: vi.fn(),
+        workers,
+        connections: new Map(Object.keys(workers).map(identity => [identity, makeWs(true)])),
+        sendCommand: vi.fn(() => true),
         updateDeckStats: vi.fn(),
         gameService: { create: vi.fn(), update: vi.fn() },
         gameStatsService: { invalidateCache: vi.fn() },
@@ -83,6 +101,7 @@ function makeRouterCtx(overrides: Partial<RouterCtx> = {}): RouterCtx {
         gameErrorService: { addError: vi.fn().mockResolvedValue(undefined) },
         ...overrides
     }) as RouterCtx;
+    ctx.isConnected = (identity: string) => call<boolean>("isConnected", ctx, identity);
     vi.spyOn(ctx, "emit");
     return ctx;
 }
@@ -141,6 +160,19 @@ describe("GameRouter.getNextAvailableGameNode", () => {
         });
         expect(call<{ identity: string }>("getNextAvailableGameNode", ctx).identity).toBe("node-1");
     });
+
+    it("skips workers whose connection is closed or missing", () => {
+        const ctx = makeRouterCtx({
+            workers: {
+                "node-1": makeWorker({ identity: "node-1", numGames: 5 }),
+                "node-2": makeWorker({ identity: "node-2", numGames: 0 }),
+                "node-3": makeWorker({ identity: "node-3", numGames: 1 })
+            }
+        });
+        ctx.connections.set("node-2", makeWs(false));
+        ctx.connections.delete("node-3");
+        expect(call<{ identity: string }>("getNextAvailableGameNode", ctx).identity).toBe("node-1");
+    });
 });
 
 describe("GameRouter.getNodeStatus", () => {
@@ -191,20 +223,20 @@ describe("GameRouter.sendCommand", () => {
     it("sends JSON over the matching connection when ws is open", () => {
         const ws = makeWs(true);
         const ctx = makeRouterCtx({ connections: new Map([["node-1", ws]]), sendCommand: undefined as unknown as RouterCtx["sendCommand"] });
-        call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" });
+        expect(call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" })).toBe(true);
         expect(ws.send).toHaveBeenCalledWith(JSON.stringify({ command: "CLOSEGAME", arg: { gameId: "g1" } }));
     });
 
     it("logs and skips when no ws is registered for identity", () => {
         const ctx = makeRouterCtx({ sendCommand: undefined as unknown as RouterCtx["sendCommand"] });
-        call("sendCommand", ctx, "missing", "CLOSEGAME", { gameId: "g1" });
+        expect(call("sendCommand", ctx, "missing", "CLOSEGAME", { gameId: "g1" })).toBe(false);
         expect(logger.error).toHaveBeenCalledWith("Cannot send CLOSEGAME to missing: not connected");
     });
 
     it("logs and skips when ws is not in OPEN state", () => {
         const ws = makeWs(false);
         const ctx = makeRouterCtx({ connections: new Map([["node-1", ws]]), sendCommand: undefined as unknown as RouterCtx["sendCommand"] });
-        call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" });
+        expect(call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" })).toBe(false);
         expect(ws.send).not.toHaveBeenCalled();
         expect(logger.error).toHaveBeenCalledWith("Cannot send CLOSEGAME to node-1: not connected");
     });
@@ -221,7 +253,7 @@ describe("GameRouter.sendCommand", () => {
     it("catches and logs ws.send errors", () => {
         const ws = makeWs(true, () => { throw new Error("kaboom"); });
         const ctx = makeRouterCtx({ connections: new Map([["node-1", ws]]), sendCommand: undefined as unknown as RouterCtx["sendCommand"] });
-        call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" });
+        expect(call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" })).toBe(false);
         expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("Error sending command"));
     });
 });
@@ -248,6 +280,40 @@ describe("GameRouter.startGame", () => {
         expect(worker.numGames).toBe(3);
         expect(ctx.gameService.create).toHaveBeenCalledWith(saveState);
         expect(ctx.sendCommand).toHaveBeenCalledWith("node-1", "STARTGAME", { ...game, owner: "owner1" });
+    });
+
+    it("returns undefined without a save state or a game count when STARTGAME can't be sent", () => {
+        const worker = makeWorker({ identity: "node-1", numGames: 2 });
+        const ctx = Object.assign(makeRouterCtx({ workers: { "node-1": worker }, sendCommand: vi.fn(() => false) }), {
+            getNextAvailableGameNode: vi.fn(() => worker)
+        });
+        const game = { id: "g1", owner: { username: "owner1" }, getSaveState: () => ({ gameId: "g1", players: [] }) };
+
+        expect(call("startGame", ctx, game)).toBeUndefined();
+        expect(worker.numGames).toBe(2);
+        expect(ctx.gameService.create).not.toHaveBeenCalled();
+    });
+});
+
+describe("GameRouter.init", () => {
+    function connect(ws: EventEmitter) {
+        fakeServers[fakeServers.length - 1].emit("connection", ws, { url: "/?identity=node-1&secret=node-secret" });
+    }
+
+    it("a late close of a node's old socket keeps its new connection", () => {
+        const ctx = makeRouterCtx();
+        call("init", ctx, "ws://lobby:6100");
+        const oldWs = Object.assign(new EventEmitter(), { readyState: 1 });
+        const newWs = Object.assign(new EventEmitter(), { readyState: 1 });
+
+        connect(oldWs);
+        connect(newWs);
+        oldWs.emit("close");
+
+        expect(ctx.connections.get("node-1")).toBe(newWs);
+
+        newWs.emit("close");
+        expect(ctx.connections.has("node-1")).toBe(false);
     });
 });
 

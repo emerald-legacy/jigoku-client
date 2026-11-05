@@ -638,6 +638,7 @@ class Lobby {
 
         var gameNode = this.router.startGame(game);
         if(!gameNode) {
+            this.io.to(game.id).emit("nogameserver");
             return;
         }
 

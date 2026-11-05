@@ -485,3 +485,35 @@ describe("Lobby.onNodeReconnected", () => {
         expect(ctx.broadcastGameList).toHaveBeenCalled();
     });
 });
+
+type StartGameCtx = {
+    games: Record<string, PendingGame>;
+    router: { startGame: ReturnType<typeof vi.fn> };
+    io: { to: ReturnType<typeof vi.fn> };
+    broadcastGameList: ReturnType<typeof vi.fn>;
+};
+
+const onStartGame = (Lobby as unknown as { prototype: {
+    onStartGame: (this: StartGameCtx, socket: { user: { username: string } }, gameId: string) => void;
+} }).prototype.onStartGame;
+
+describe("Lobby.onStartGame", () => {
+    it("tells the players when no game server takes the game", () => {
+        const game = new PendingGame({ username: "alice" }, { name: "Game" });
+        game.players.alice = { id: "a", name: "alice", owner: true, deck: {} };
+        const emit = vi.fn();
+        const ctx: StartGameCtx = {
+            games: { [game.id]: game },
+            router: { startGame: vi.fn(() => undefined) },
+            io: { to: vi.fn(() => ({ emit })) },
+            broadcastGameList: vi.fn()
+        };
+
+        onStartGame.call(ctx, { user: { username: "alice" } }, game.id);
+
+        expect(ctx.io.to).toHaveBeenCalledWith(game.id);
+        expect(emit).toHaveBeenCalledExactlyOnceWith("nogameserver");
+        expect(game.started).toBe(false);
+        expect(ctx.broadcastGameList).not.toHaveBeenCalled();
+    });
+});
