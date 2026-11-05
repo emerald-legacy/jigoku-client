@@ -451,10 +451,83 @@ type NodeReconnectedCtx = {
 };
 
 const onNodeReconnected = (Lobby as unknown as { prototype: {
-    onNodeReconnected: (this: NodeReconnectedCtx, nodeName: string, games: Record<string, unknown>) => void;
+    onNodeReconnected: (this: NodeReconnectedCtx, nodeName: string, games: unknown[]) => void;
 } }).prototype.onNodeReconnected;
 
+function nodeGame(overrides: Record<string, unknown> = {}) {
+    return {
+        id: "g1",
+        name: "Game",
+        owner: "alice",
+        players: { bob: { id: "b", name: "bob", faction: "crab", owner: false, deck: {} } },
+        spectators: [],
+        allowSpectators: true,
+        manualMode: false,
+        started: true,
+        createdAt: "2026-11-05T09:59:00Z",
+        startedAt: "2026-11-05T10:00:00Z",
+        gameType: "casual",
+        gameMode: "emerald",
+        ...overrides
+    };
+}
+
 describe("Lobby.onNodeReconnected", () => {
+    it("rebuilds an unknown game with its game mode and spectators", () => {
+        const ctx: NodeReconnectedCtx = {
+            games: {},
+            router: { workers: { "node-1": { identity: "node-1" } } },
+            broadcastGameList: vi.fn()
+        };
+
+        onNodeReconnected.call(ctx, "node-1", [nodeGame({ gameMode: "skirmish", spectators: [{ id: "c", name: "carol" }] })]);
+
+        const game = ctx.games.g1;
+        expect(game.gameMode).toBe("skirmish");
+        expect(game.skirmishMode).toBe(true);
+        expect(game.spectators.carol).toEqual({ id: "c", name: "carol" });
+    });
+
+    it("keeps the lobby's record of a known game and only refreshes its node", () => {
+        const known = new PendingGame({ username: "alice" }, { name: "Game", gameMode: "emerald", spectatorSquelch: true });
+        known.id = "g1";
+        known.started = true;
+        known.players.alice = { id: "a", name: "alice", owner: true, user: { username: "alice" } };
+        known.players.bob = { id: "b", name: "bob", user: { username: "bob" } };
+        known.node = { identity: "node-1" };
+        const ctx: NodeReconnectedCtx = {
+            games: { g1: known },
+            router: { workers: { "node-1": { identity: "node-1" } } },
+            broadcastGameList: vi.fn()
+        };
+
+        onNodeReconnected.call(ctx, "node-1", [nodeGame({ gameMode: undefined })]);
+
+        expect(ctx.games.g1).toBe(known);
+        expect(known.node).toBe(ctx.router.workers["node-1"]);
+        expect(known.gameMode).toBe("emerald");
+        expect(known.spectatorSquelch).toBe(true);
+        expect(known.players.alice.user).toEqual({ username: "alice" });
+    });
+
+    it("removes the node's games that it no longer runs", () => {
+        const gone = new PendingGame({ username: "alice" }, { name: "Gone" });
+        gone.id = "g2";
+        gone.node = { identity: "node-1" };
+        const otherNode = new PendingGame({ username: "dave" }, { name: "Elsewhere" });
+        otherNode.id = "g3";
+        otherNode.node = { identity: "node-2" };
+        const ctx: NodeReconnectedCtx = {
+            games: { g2: gone, g3: otherNode },
+            router: { workers: { "node-1": { identity: "node-1" } } },
+            broadcastGameList: vi.fn()
+        };
+
+        onNodeReconnected.call(ctx, "node-1", [nodeGame()]);
+
+        expect(Object.keys(ctx.games).sort()).toEqual(["g1", "g3"]);
+    });
+
     it("keeps a game whose owner has left (the node no longer lists the owner as a player)", () => {
         const ctx: NodeReconnectedCtx = {
             games: {},
@@ -462,19 +535,7 @@ describe("Lobby.onNodeReconnected", () => {
             broadcastGameList: vi.fn()
         };
 
-        onNodeReconnected.call(ctx, "node-1", {
-            0: {
-                id: "g1",
-                name: "Game",
-                owner: "alice",
-                players: { bob: { id: "b", name: "bob", faction: "crab" } },
-                spectators: {},
-                allowSpectators: true,
-                started: true,
-                startedAt: "2026-11-05T10:00:00Z",
-                gameType: "casual"
-            }
-        });
+        onNodeReconnected.call(ctx, "node-1", [nodeGame()]);
 
         const game = ctx.games.g1;
         expect(game).toBeDefined();

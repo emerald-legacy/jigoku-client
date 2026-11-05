@@ -20,7 +20,7 @@ export interface GameRecord {
     winner?: string;
     winReason?: string;
     roundNumber?: number;
-    initialFirstPlayer?: string;
+    initialFirstPlayer?: string | null;
 }
 
 class GameService {

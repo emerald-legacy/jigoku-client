@@ -12,6 +12,8 @@ import DeckStatsService from "./services/DeckStatsService.js";
 import GameErrorService from "./services/GameErrorService.js";
 import type PendingGame from "./pendinggame.js";
 import {
+    PROTOCOL_VERSION,
+    isInboundCommand,
     parseInbound,
     type InboundMessage,
     type LobbyUser,
@@ -43,12 +45,6 @@ export interface RouterGame {
     node?: { identity: string; address?: string; port?: number; protocol?: string } | null;
     getSaveState?: () => GameRecord;
 }
-
-type GameWinGame = GameRecord & {
-    winner?: string;
-    winReason?: string;
-    gameId?: string;
-};
 
 class GameRouter extends EventEmitter {
     workers: Record<string, GameWorker>;
@@ -240,7 +236,12 @@ class GameRouter extends EventEmitter {
 
         const message: InboundMessage | null = parseInbound(parsed);
         if(!message) {
-            logger.error(`Unrecognised message from ${identityStr}: ${JSON.stringify(parsed)}`);
+            const command = typeof parsed === "object" && parsed !== null && "command" in parsed ? parsed.command : undefined;
+            if(isInboundCommand(command)) {
+                logger.error(`Invalid ${command} payload from ${identityStr}`);
+            } else {
+                logger.error(`Unrecognised message from ${identityStr}: ${JSON.stringify(parsed)}`);
+            }
             return;
         }
 
@@ -266,25 +267,29 @@ class GameRouter extends EventEmitter {
                 const arg = message.arg;
                 this.workers[identityStr] = {
                     identity: identityStr,
-                    maxGames: arg.maxGames || 20,
+                    maxGames: arg.maxGames,
                     numGames: 0,
-                    address: arg.address ?? "",
-                    port: arg.port ?? 0,
-                    protocol: arg.protocol ?? "ws",
-                    version: arg.version || "unknown"
+                    address: arg.address,
+                    port: arg.port,
+                    protocol: arg.protocol,
+                    version: arg.version
                 };
                 worker = this.workers[identityStr];
+                if(arg.protocolVersion !== PROTOCOL_VERSION) {
+                    logger.error(`Game node ${identityStr} speaks protocol ${arg.protocolVersion}, lobby ${PROTOCOL_VERSION}: no games are routed to it`);
+                    worker.disabled = true;
+                }
 
                 this.emit("onNodeReconnected", identityStr, arg.games);
 
-                worker.numGames = (arg.games ?? []).length;
+                worker.numGames = arg.games.length;
 
                 break;
             }
             case "GAMEWIN": {
                 logger.info(`received GAMEWIN from ${identityStr}`);
-                const game = message.arg?.game as GameWinGame | undefined;
-                if(!game || !game.gameId || !Array.isArray(game.players) || !game.players.some((p: { name: string }) => p.name === game.winner)) {
+                const game = message.arg.game;
+                if(!game.players.some(player => player.name === game.winner)) {
                     logger.error(`Invalid GAMEWIN payload from ${identityStr}: ${JSON.stringify(game)}`);
                     break;
                 }
@@ -301,13 +306,13 @@ class GameRouter extends EventEmitter {
                     logger.error(`Got close game for non existent worker ${identity}`);
                 }
 
-                this.emit("onGameClosed", message.arg?.game);
+                this.emit("onGameClosed", message.arg.game);
 
                 break;
             case "PLAYERLEFT":
                 logger.info(`received PLAYERLEFT from ${identityStr}`);
-                if(!message.arg.spectator && message.arg.game) {
-                    this.gameService.update(message.arg.game as GameRecord);
+                if(!message.arg.spectator) {
+                    this.gameService.update(message.arg.game);
                 }
 
                 this.emit("onPlayerLeft", message.arg.gameId, message.arg.player);
@@ -316,10 +321,6 @@ class GameRouter extends EventEmitter {
             case "GAMEERROR": {
                 logger.info(`received GAMEERROR from ${identityStr}`);
                 const arg = message.arg;
-                if(!arg || !arg.gameId || !arg.errorMessage || !arg.timestamp || !Array.isArray(arg.players)) {
-                    logger.error(`Invalid GAMEERROR payload from ${identityStr}`);
-                    break;
-                }
                 this.gameErrorService.addError({
                     gameId: arg.gameId,
                     gameName: arg.gameName,

@@ -369,6 +369,48 @@ describe("GameRouter.onMessage", () => {
         return { toString: () => JSON.stringify(obj) };
     }
 
+    function saveState(overrides: Record<string, unknown> = {}) {
+        return {
+            gameId: "g1",
+            winner: "alice",
+            winReason: "honor",
+            roundNumber: 3,
+            initialFirstPlayer: null,
+            players: [
+                { name: "alice", faction: "Crab Clan", honor: 25, lostProvinces: 0, deckId: "d1" },
+                { name: "bob", faction: "Crane Clan", honor: 4, lostProvinces: 2 }
+            ],
+            ...overrides
+        };
+    }
+
+    function summary(id: string) {
+        return {
+            id,
+            name: "Game",
+            owner: "alice",
+            allowSpectators: true,
+            manualMode: false,
+            started: true,
+            createdAt: "2026-11-05T10:00:00Z",
+            players: { alice: { id: "a", name: "alice", owner: true, deck: {}, faction: "crab" } },
+            spectators: [{ id: "c", name: "carol" }]
+        };
+    }
+
+    function hello(overrides: Record<string, unknown> = {}) {
+        return {
+            maxGames: 5,
+            address: "host",
+            port: 9500,
+            protocol: "ws",
+            version: "v2",
+            protocolVersion: 1,
+            games: [summary("g1"), summary("g2")],
+            ...overrides
+        };
+    }
+
     it("logs and returns when JSON is malformed", () => {
         const ctx = makeRouterCtx();
         call("onMessage", ctx, "node-1", { toString: () => "{not-json" });
@@ -414,14 +456,7 @@ describe("GameRouter.onMessage", () => {
 
     it("HELLO registers the worker, emits onWorkerStarted + onNodeReconnected, and seeds numGames from arg.games length", () => {
         const ctx = makeRouterCtx();
-        const arg = {
-            maxGames: 5,
-            address: "host",
-            port: 9500,
-            protocol: "ws",
-            version: "v2",
-            games: [{ id: "g1" }, { id: "g2" }]
-        };
+        const arg = hello();
         call("onMessage", ctx, "node-1", encode({ command: "HELLO", arg }));
         expect(ctx.emit).toHaveBeenCalledWith("onWorkerStarted", "node-1");
         expect(ctx.emit).toHaveBeenCalledWith("onNodeReconnected", "node-1", arg.games);
@@ -434,25 +469,44 @@ describe("GameRouter.onMessage", () => {
             version: "v2",
             numGames: 2
         });
+        expect(ctx.workers["node-1"].disabled).toBeUndefined();
     });
 
-    it("HELLO defaults missing fields (maxGames=20, address='', port=0, protocol='ws', version='unknown')", () => {
+    it("HELLO with a different protocolVersion registers the node disabled", () => {
         const ctx = makeRouterCtx();
-        call("onMessage", ctx, "node-1", encode({ command: "HELLO", arg: {} }));
-        expect(ctx.workers["node-1"]).toMatchObject({
-            maxGames: 20,
-            address: "",
-            port: 0,
-            protocol: "ws",
-            version: "unknown",
-            numGames: 0
-        });
+        call("onMessage", ctx, "node-1", encode({ command: "HELLO", arg: hello({ protocolVersion: 2 }) }));
+        expect(ctx.workers["node-1"].disabled).toBe(true);
+        expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("speaks protocol 2"));
+    });
+
+    it("HELLO with a malformed payload is rejected", () => {
+        const invalid = [
+            {},
+            hello({ protocolVersion: undefined }),
+            hello({ port: "9500" }),
+            hello({ games: [{ ...summary("g1"), players: { alice: { name: "alice" } } }] }),
+            hello({ games: [{ ...summary("g1"), spectators: {} }] })
+        ];
+        for(const arg of invalid) {
+            const ctx = makeRouterCtx();
+            call("onMessage", ctx, "node-1", encode({ command: "HELLO", arg }));
+            expect(ctx.workers["node-1"]).toBeUndefined();
+            expect(ctx.emit).not.toHaveBeenCalled();
+            expect(logger.error).toHaveBeenLastCalledWith("Invalid HELLO payload from node-1");
+        }
+    });
+
+    it("HELLO accepts a node's game without the optional fields", () => {
+        const ctx = makeRouterCtx();
+        const game = { ...summary("g1"), gameType: "casual", gameMode: "emerald", startedAt: "2026-11-05T10:01:00Z" };
+        call("onMessage", ctx, "node-1", encode({ command: "HELLO", arg: hello({ games: [game, summary("g2")] }) }));
+        expect(ctx.workers["node-1"].numGames).toBe(2);
     });
 
     it("GAMEWIN with valid payload updates gameService, invalidates stats cache, and calls updateDeckStats", () => {
         const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
-        const game = { gameId: "g1", winner: "alice", players: [{ name: "alice" }, { name: "bob" }] };
-        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game } }));
+        const game = saveState();
+        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game, winner: "alice", reason: "honor" } }));
         expect(ctx.gameService.update).toHaveBeenCalledWith(game);
         expect(ctx.gameStatsService.invalidateCache).toHaveBeenCalledTimes(1);
         expect(ctx.updateDeckStats).toHaveBeenCalledWith(game);
@@ -460,17 +514,26 @@ describe("GameRouter.onMessage", () => {
 
     it("GAMEWIN with missing gameId logs error and does not update", () => {
         const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
-        const game = { winner: "alice", players: [{ name: "alice" }] };
-        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game } }));
+        const game = saveState({ gameId: undefined });
+        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game, winner: "alice", reason: "honor" } }));
         expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("Invalid GAMEWIN payload"));
         expect(ctx.gameService.update).not.toHaveBeenCalled();
     });
 
     it("GAMEWIN where winner is not in players list logs error and does not update", () => {
         const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
-        const game = { gameId: "g1", winner: "ghost", players: [{ name: "alice" }, { name: "bob" }] };
-        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game } }));
+        const game = saveState({ winner: "ghost" });
+        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game, winner: "ghost", reason: "honor" } }));
         expect(logger.error).toHaveBeenCalled();
+        expect(ctx.gameService.update).not.toHaveBeenCalled();
+    });
+
+    it("GAMEWIN with a malformed player or no winner field is rejected", () => {
+        const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
+        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game: saveState({ players: [{ name: "alice" }] }), winner: "alice", reason: "honor" } }));
+        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game: saveState() } }));
+        expect(logger.error).toHaveBeenCalledTimes(2);
+        expect(logger.error).toHaveBeenCalledWith("Invalid GAMEWIN payload from node-1");
         expect(ctx.gameService.update).not.toHaveBeenCalled();
     });
 
@@ -491,7 +554,7 @@ describe("GameRouter.onMessage", () => {
 
     it("PLAYERLEFT non-spectator updates gameService and emits onPlayerLeft", () => {
         const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
-        const game = { gameId: "g1" };
+        const game = saveState({ winner: undefined, winReason: undefined });
         call("onMessage", ctx, "node-1", encode({ command: "PLAYERLEFT", arg: { gameId: "g1", game, player: "alice", spectator: false } }));
         expect(ctx.gameService.update).toHaveBeenCalledWith(game);
         expect(ctx.emit).toHaveBeenCalledWith("onPlayerLeft", "g1", "alice");
@@ -499,9 +562,24 @@ describe("GameRouter.onMessage", () => {
 
     it("PLAYERLEFT spectator does not update gameService", () => {
         const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
-        call("onMessage", ctx, "node-1", encode({ command: "PLAYERLEFT", arg: { gameId: "g1", game: { gameId: "g1" }, player: "alice", spectator: true } }));
+        call("onMessage", ctx, "node-1", encode({ command: "PLAYERLEFT", arg: { gameId: "g1", game: saveState(), player: "alice", spectator: true } }));
         expect(ctx.gameService.update).not.toHaveBeenCalled();
         expect(ctx.emit).toHaveBeenCalledWith("onPlayerLeft", "g1", "alice");
+    });
+
+    it("PLAYERLEFT without a valid save state is rejected", () => {
+        const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
+        call("onMessage", ctx, "node-1", encode({ command: "PLAYERLEFT", arg: { gameId: "g1", game: { gameId: "g1" }, player: "alice", spectator: false } }));
+        expect(logger.error).toHaveBeenCalledWith("Invalid PLAYERLEFT payload from node-1");
+        expect(ctx.gameService.update).not.toHaveBeenCalled();
+        expect(ctx.emit).not.toHaveBeenCalled();
+    });
+
+    it("GAMECLOSED without a game id is rejected", () => {
+        const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1", numGames: 3 }) } });
+        call("onMessage", ctx, "node-1", encode({ command: "GAMECLOSED", arg: {} }));
+        expect(logger.error).toHaveBeenCalledWith("Invalid GAMECLOSED payload from node-1");
+        expect(ctx.workers["node-1"].numGames).toBe(3);
     });
 
     it("GAMEERROR with valid arg persists via gameErrorService.addError", () => {

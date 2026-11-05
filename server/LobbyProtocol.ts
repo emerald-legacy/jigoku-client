@@ -88,7 +88,7 @@ export interface GameSaveState {
     players: PlayerSaveState[];
     winner?: string;
     winReason?: string;
-    gameMode: string;
+    gameMode?: string;
     finishedAt?: Date | string;
     roundNumber: number;
     initialFirstPlayer?: string | null;
@@ -99,7 +99,6 @@ export interface PlayerSummary {
     emailHash?: string;
     faction?: string;
     id: string;
-    lobbyId?: string;
     left?: boolean;
     name: string;
     owner: boolean;
@@ -108,7 +107,7 @@ export interface PlayerSummary {
 export interface GameSummary {
     allowSpectators: boolean;
     createdAt: Date | string;
-    gameType: string;
+    gameType?: string;
     id: string;
     manualMode: boolean;
     name: string;
@@ -116,8 +115,8 @@ export interface GameSummary {
     players: Record<string, PlayerSummary>;
     started: boolean;
     startedAt?: Date | string;
-    gameMode: string;
-    spectators: Array<{ id: string; lobbyId?: string; name: string }>;
+    gameMode?: string;
+    spectators: Array<{ id: string; name: string }>;
     password?: string;
 }
 
@@ -129,7 +128,7 @@ export interface HelloPayload {
     port: number;
     protocol: string;
     version: string;
-    protocolVersion?: number;
+    protocolVersion: number;
     games: GameSummary[];
 }
 
@@ -143,14 +142,31 @@ export interface GameErrorPayload {
     debugData: unknown;
 }
 
+export interface GameClosedPayload {
+    game: string;
+}
+
+export interface GameWinPayload {
+    game: GameSaveState;
+    winner: string;
+    reason: string;
+}
+
+export interface PlayerLeftPayload {
+    gameId: string;
+    game: GameSaveState;
+    player: string;
+    spectator: boolean;
+}
+
 export type InboundMessage =
     | { command: "HELLO"; arg: HelloPayload }
-    | { command: "HEARTBEAT"; arg?: unknown }
-    | { command: "PONG"; arg?: unknown }
+    | { command: "HEARTBEAT" }
+    | { command: "PONG" }
     | { command: "GAMEERROR"; arg: GameErrorPayload }
-    | { command: "GAMECLOSED"; arg: { game?: string } }
-    | { command: "GAMEWIN"; arg: { game: GameSaveState } }
-    | { command: "PLAYERLEFT"; arg: { gameId: string; game: GameSaveState; player: string; spectator: boolean } };
+    | { command: "GAMECLOSED"; arg: GameClosedPayload }
+    | { command: "GAMEWIN"; arg: GameWinPayload }
+    | { command: "PLAYERLEFT"; arg: PlayerLeftPayload };
 
 export type InboundCommand = InboundMessage["command"];
 
@@ -181,24 +197,106 @@ export type OutboundMessage =
 
 export type OutboundCommand = OutboundMessage["command"];
 
-// Narrow `unknown` parsed JSON into a known InboundMessage. Returns null if not recognised.
+// ----- Inbound validation -----
+
+const INBOUND_COMMANDS: readonly string[] = ["HELLO", "HEARTBEAT", "PONG", "GAMEERROR", "GAMECLOSED", "GAMEWIN", "PLAYERLEFT"];
+
+export function isInboundCommand(command: unknown): command is InboundCommand {
+    return typeof command === "string" && INBOUND_COMMANDS.includes(command);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isOptionalString(value: unknown): value is string | undefined {
+    return value === undefined || typeof value === "string";
+}
+
+function isDate(value: unknown): value is Date | string {
+    return typeof value === "string" || value instanceof Date;
+}
+
+function isOptionalDate(value: unknown): value is Date | string | undefined {
+    return value === undefined || isDate(value);
+}
+
+function isPlayerSaveState(value: unknown): value is PlayerSaveState {
+    return isRecord(value) && typeof value.name === "string" && typeof value.faction === "string" &&
+        typeof value.honor === "number" && typeof value.lostProvinces === "number" && isOptionalString(value.deckId);
+}
+
+function isGameSaveState(value: unknown): value is GameSaveState {
+    return isRecord(value) && typeof value.gameId === "string" && Array.isArray(value.players) && value.players.every(isPlayerSaveState) &&
+        typeof value.roundNumber === "number" && isOptionalString(value.winner) && isOptionalString(value.winReason) &&
+        isOptionalString(value.gameMode) && isOptionalDate(value.startedAt) && isOptionalDate(value.finishedAt) &&
+        (value.initialFirstPlayer === null || isOptionalString(value.initialFirstPlayer));
+}
+
+function isPlayerSummary(value: unknown): value is PlayerSummary {
+    return isRecord(value) && typeof value.id === "string" && typeof value.name === "string" && typeof value.owner === "boolean" &&
+        isRecord(value.deck) && isOptionalString(value.emailHash) && isOptionalString(value.faction);
+}
+
+function isSpectatorSummary(value: unknown): value is { id: string; name: string } {
+    return isRecord(value) && typeof value.id === "string" && typeof value.name === "string";
+}
+
+export function isGameSummary(value: unknown): value is GameSummary {
+    return isRecord(value) && typeof value.id === "string" && typeof value.name === "string" && typeof value.owner === "string" &&
+        typeof value.allowSpectators === "boolean" && typeof value.manualMode === "boolean" && typeof value.started === "boolean" &&
+        isDate(value.createdAt) && isOptionalDate(value.startedAt) && isOptionalString(value.gameType) &&
+        isOptionalString(value.gameMode) && isOptionalString(value.password) &&
+        isRecord(value.players) && Object.values(value.players).every(isPlayerSummary) &&
+        Array.isArray(value.spectators) && value.spectators.every(isSpectatorSummary);
+}
+
+function isHelloPayload(value: unknown): value is HelloPayload {
+    return isRecord(value) && typeof value.maxGames === "number" && typeof value.address === "string" &&
+        typeof value.port === "number" && typeof value.protocol === "string" && typeof value.version === "string" &&
+        typeof value.protocolVersion === "number" && Array.isArray(value.games) && value.games.every(isGameSummary);
+}
+
+function isGameErrorPayload(value: unknown): value is GameErrorPayload {
+    return isRecord(value) && typeof value.gameId === "string" && typeof value.gameName === "string" &&
+        Array.isArray(value.players) && value.players.every(player => typeof player === "string") &&
+        typeof value.errorMessage === "string" && isOptionalString(value.errorStack) && typeof value.timestamp === "string";
+}
+
+function isGameClosedPayload(value: unknown): value is GameClosedPayload {
+    return isRecord(value) && typeof value.game === "string";
+}
+
+function isGameWinPayload(value: unknown): value is GameWinPayload {
+    return isRecord(value) && isGameSaveState(value.game) && typeof value.winner === "string" && typeof value.reason === "string";
+}
+
+function isPlayerLeftPayload(value: unknown): value is PlayerLeftPayload {
+    return isRecord(value) && typeof value.gameId === "string" && isGameSaveState(value.game) &&
+        typeof value.player === "string" && typeof value.spectator === "boolean";
+}
+
+// Returns null for an unknown command or a payload that doesn't match its command.
 export function parseInbound(raw: unknown): InboundMessage | null {
-    if(!raw || typeof raw !== "object") {
+    if(!isRecord(raw)) {
         return null;
     }
-    const obj = raw as { command?: unknown; arg?: unknown };
-    if(typeof obj.command !== "string") {
-        return null;
-    }
-    switch(obj.command) {
-        case "HELLO":
+    const arg = raw.arg;
+    switch(raw.command) {
         case "HEARTBEAT":
+            return { command: "HEARTBEAT" };
         case "PONG":
+            return { command: "PONG" };
+        case "HELLO":
+            return isHelloPayload(arg) ? { command: "HELLO", arg } : null;
         case "GAMEERROR":
+            return isGameErrorPayload(arg) ? { command: "GAMEERROR", arg } : null;
         case "GAMECLOSED":
+            return isGameClosedPayload(arg) ? { command: "GAMECLOSED", arg } : null;
         case "GAMEWIN":
+            return isGameWinPayload(arg) ? { command: "GAMEWIN", arg } : null;
         case "PLAYERLEFT":
-            return { command: obj.command, arg: obj.arg } as InboundMessage;
+            return isPlayerLeftPayload(arg) ? { command: "PLAYERLEFT", arg } : null;
         default:
             return null;
     }

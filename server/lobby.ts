@@ -14,6 +14,7 @@ import UserService from "./services/UserService.js";
 import validateDeck from "../client/deck-validator.js";
 import * as Settings from "./settings.js";
 import GetShadowlandsSummonables from "./shadowLandsHelper.js";
+import type { GameSummary } from "./LobbyProtocol.js";
 
 const ONE_MINUTE = 60 * 1000;
 const FIVE_MINUTES = 5 * ONE_MINUTE;
@@ -867,25 +868,25 @@ class Lobby {
         this.router.sendCommand(nodeName, "CARDDATA", { titleCardData: this.titleCardData, shortCardData });
     }
 
-    onNodeReconnected(nodeName: string, games: Record<string, NodeReconnectedGame>) {
-        for(let game of Object.values(games)) {
-            if(!game || !game.owner || !game.players) {
+    onNodeReconnected(nodeName: string, games: GameSummary[]) {
+        const node = this.router.workers[nodeName];
+
+        for(const game of games) {
+            const knownGame = this.games[game.id];
+            if(knownGame) {
+                knownGame.node = node;
                 continue;
             }
 
-            let syncGame = new PendingGame({ username: game.owner }, { spectators: game.allowSpectators, name: game.name });
+            const syncGame = new PendingGame({ username: game.owner }, { spectators: game.allowSpectators, name: game.name, gameMode: game.gameMode });
             syncGame.id = game.id;
-            syncGame.node = this.router.workers[nodeName];
-            syncGame.createdAt = new Date(game.startedAt);
+            syncGame.node = node;
+            syncGame.createdAt = new Date(game.startedAt ?? game.createdAt);
             syncGame.started = game.started;
             syncGame.gameType = game.gameType;
             syncGame.password = game.password;
 
-            for(let player of Object.values(game.players)) {
-                if(!player) {
-                    continue;
-                }
-
+            for(const player of Object.values(game.players)) {
                 syncGame.players[player.name] = {
                     id: player.id,
                     name: player.name,
@@ -895,56 +896,23 @@ class Lobby {
                 };
             }
 
-            for(let player of Object.values(game.spectators || {})) {
-                if(!player) {
-                    continue;
-                }
-
-                syncGame.spectators[player.name] = {
-                    id: player.id,
-                    name: player.name,
-                    emailHash: player.emailHash
+            for(const spectator of game.spectators) {
+                syncGame.spectators[spectator.name] = {
+                    id: spectator.id,
+                    name: spectator.name
                 };
             }
             this.games[syncGame.id] = syncGame;
         }
 
-        for(let game of Object.values(this.games)) {
-            if(!game) {
-                continue;
-            }
-
-            if(game.node && game.node.identity === nodeName && Object.values(games).find(nodeGame => {
-                return nodeGame && game && nodeGame.id === game.id;
-            })) {
-                this.games[game.id] = game;
-            } else if(game.node && game.node.identity === nodeName) {
+        for(const game of Object.values(this.games)) {
+            if(game.node?.identity === nodeName && !games.some(nodeGame => nodeGame.id === game.id)) {
                 delete this.games[game.id];
             }
         }
 
         this.broadcastGameList();
     }
-}
-
-interface NodeReconnectedPlayer {
-    id: string;
-    name: string;
-    emailHash?: string;
-    faction?: string;
-}
-
-interface NodeReconnectedGame {
-    id: string;
-    owner: string;
-    players: Record<string, NodeReconnectedPlayer>;
-    spectators?: Record<string, NodeReconnectedPlayer>;
-    allowSpectators?: boolean;
-    name: string;
-    startedAt: string | number | Date;
-    started: boolean;
-    gameType?: string;
-    password?: string;
 }
 
 export default Lobby;
