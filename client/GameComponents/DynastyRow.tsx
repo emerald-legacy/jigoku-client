@@ -1,10 +1,8 @@
 import React from "react";
 
-import type { AdditionalPile } from "./AdditionalCardPile";
-
 import CardPile from "./CardPile";
 import Province from "./Province";
-import type { Card, MenuItem, Player } from "../types/game";
+import type { AdditionalPile, Card, MenuItem, Player } from "../types/game";
 
 interface DynastyRowProps {
     additionalPiles?: Record<string, AdditionalPile>;

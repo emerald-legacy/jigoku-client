@@ -17,6 +17,7 @@ interface CardPileProps {
     cards?: CardType[];
     className?: string;
     closeOnClick?: boolean;
+    disableDrag?: boolean;
     disableMenu?: boolean;
     disableMouseOver?: boolean;
     hiddenTopCard?: boolean;
@@ -44,6 +45,7 @@ function CardPile({
     cards,
     className: propsClassName,
     closeOnClick,
+    disableDrag,
     disableMenu,
     disableMouseOver,
     hiddenTopCard,
@@ -182,6 +184,7 @@ function CardPile({
                     onTouchMove={ onTouchMove }
                     onClick={ () => handleCardClick(card) }
                     onDragDrop={ onDragDrop }
+                    draggable={ !disableDrag }
                     orientation={ orientation === "bowed" ? "vertical" : orientation }
                     size={ size }
                 />
@@ -311,6 +314,7 @@ function CardPile({
                     onClick={ onTopCardClick }
                     onMenuItemClick={ onMenuItemClick }
                     onDragDrop={ onDragDrop }
+                    draggable={ !disableDrag }
                     orientation={ cardOrientation }
                     size={ size }
                 />

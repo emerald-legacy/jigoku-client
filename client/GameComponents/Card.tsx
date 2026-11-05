@@ -22,6 +22,7 @@ interface CardProps {
     className?: string;
     declaring?: boolean;
     disableMouseOver?: boolean;
+    draggable?: boolean;
     id?: string;
     isMe?: boolean;
     onClick?: (card: CardType) => void;
@@ -52,6 +53,7 @@ function Card(props: CardProps) {
         className,
         declaring,
         disableMouseOver,
+        draggable = true,
         id,
         isMe,
         onClick,
@@ -212,7 +214,7 @@ function Card(props: CardProps) {
 
         return (
             <CardPile
-                source="none"
+                source={ cardPile[0].location }
                 title={ `${card.name}` }
                 className="underneath"
                 cards={ cardPile }
@@ -239,7 +241,7 @@ function Card(props: CardProps) {
 
         return (
             <CardPile
-                source="none"
+                source={ underneathCards[0].location }
                 title={ "Underneath" }
                 className="beside"
                 cards={ underneathCards }
@@ -408,9 +410,9 @@ function Card(props: CardProps) {
             <div
                 className={ frameClassName }
                 ref={ cardRef }
-                onTouchMove={ (ev: React.TouchEvent<HTMLDivElement>) => onTouchMove(ev) }
-                onTouchEnd={ (ev: React.TouchEvent<HTMLDivElement>) => onTouchEnd(ev) }
-                onTouchStart={ (ev: React.TouchEvent<HTMLDivElement>) => onTouchStart(ev) }
+                onTouchMove={ draggable ? (ev: React.TouchEvent<HTMLDivElement>) => onTouchMove(ev) : undefined }
+                onTouchEnd={ draggable ? (ev: React.TouchEvent<HTMLDivElement>) => onTouchEnd(ev) : undefined }
+                onTouchStart={ draggable ? (ev: React.TouchEvent<HTMLDivElement>) => onTouchStart(ev) : undefined }
             >
                 { getCardOrder() }
                 <div
@@ -420,7 +422,7 @@ function Card(props: CardProps) {
                     onMouseOver={ disableMouseOver ? null : () => handleMouseOver(card) }
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
                     onClick={ (ev: React.MouseEvent) => handleClick(ev, card) }
-                    onDragStart={ (ev: React.DragEvent<HTMLElement>) => startCardDrag(ev, card, source) }
+                    onDragStart={ (ev: React.DragEvent<HTMLElement>) => draggable ? startCardDrag(ev, card, source) : ev.preventDefault() }
                     onAnimationEnd={ (ev: React.AnimationEvent<HTMLDivElement>) => {
                         if(ev.animationName === "card-enter-play" && card.uuid) {
                             seenEnterPlayAnimations.add(card.uuid);
@@ -429,7 +431,7 @@ function Card(props: CardProps) {
                             onAnimationEnd(card.uuid);
                         }
                     } }
-                    draggable
+                    draggable={ draggable }
                 >
                     <div>
                         <span className="card-name">{ card.name }</span>

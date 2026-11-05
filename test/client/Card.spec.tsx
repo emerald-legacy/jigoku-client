@@ -15,7 +15,7 @@ vi.mock("../../client/GameComponents/CardCounters.tsx", () => ({
 }));
 
 vi.mock("../../client/GameComponents/CardPile.tsx", () => ({
-    default: ({ title }) => <div data-testid="card-pile">{ title }</div>
+    default: ({ title, source }) => <div data-testid="card-pile" data-source={ source }>{ title }</div>
 }));
 
 const patronState = vi.hoisted(() => ({ promoOwners: {} as Record<string, boolean> }));
@@ -376,6 +376,41 @@ describe("the <Card /> component", () => {
             render(<Card card={ noControllerCard } player={ patronPlayer } source="play area" />);
             const cardImage = document.querySelector(".card-image-src");
             expect(cardImage.src).toContain("/assets/promo-card.abc123.webp");
+        });
+    });
+
+    describe("cards underneath", () => {
+        it("drags a card from under the stronghold from its location", () => {
+            const under = { uuid: "u-1", name: "Imperial Storehouse", location: "underneath stronghold" };
+            render(<Card card={ { ...card, childCards: [under] } } source="stronghold province" />);
+            expect(screen.getByTestId("card-pile").dataset.source).toBe("underneath stronghold");
+        });
+
+        it("drags a card from under a host card from its location", () => {
+            const under = { uuid: "u-2", name: "Let Go", location: "underneath" };
+            const player = { name: "P", cardPiles: { [card.uuid]: [under] } };
+            render(<Card card={ card } player={ player } source="play area" />);
+            expect(screen.getByTestId("card-pile").dataset.source).toBe("underneath");
+        });
+    });
+
+    describe("dragging", () => {
+        it("starts a drag with the card and its source", () => {
+            render(<Card card={ card } source="hand" />);
+            const setData = vi.fn();
+            const element = document.querySelector(".card");
+            expect(element.getAttribute("draggable")).toBe("true");
+            fireEvent.dragStart(element, { dataTransfer: { setData } });
+            expect(setData).toHaveBeenCalledWith("Text", JSON.stringify({ card, source: "hand" }));
+        });
+
+        it("does not drag a card that is not draggable", () => {
+            render(<Card card={ card } source="role card" draggable={ false } />);
+            const setData = vi.fn();
+            const element = document.querySelector(".card");
+            expect(element.getAttribute("draggable")).toBe("false");
+            fireEvent.dragStart(element, { dataTransfer: { setData } });
+            expect(setData).not.toHaveBeenCalled();
         });
     });
 });
