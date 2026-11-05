@@ -1,30 +1,28 @@
 #!/bin/sh
 set -e
 
-# Wait for MongoDB to be ready
+# Wait for MongoDB, then count the cards (one Node start for both)
 echo "Waiting for MongoDB..."
-until node -e "
-const { MongoClient } = require('mongodb');
-const url = process.env.DB_PATH || 'mongodb://mongodb:27017/jigoku';
-const client = new MongoClient(url);
-client.connect()
-  .then(() => client.db().collection('cards').countDocuments())
-  .then(() => { console.log('MongoDB ready'); client.close(); process.exit(0); })
-  .catch(() => { client.close(); process.exit(1); });
-" 2>/dev/null; do
-  sleep 2
-done
-
-# Check if cards have been fetched
 CARD_COUNT=$(node -e "
 const { MongoClient } = require('mongodb');
 const url = process.env.DB_PATH || 'mongodb://mongodb:27017/jigoku';
-const client = new MongoClient(url);
-client.connect()
-  .then(() => client.db().collection('cards').countDocuments())
-  .then(count => { console.log(count); client.close(); })
-  .catch(() => { console.log(0); client.close(); });
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+(async () => {
+  for(;;) {
+    const client = new MongoClient(url);
+    try {
+      await client.connect();
+      console.log(await client.db().collection('cards').countDocuments());
+      await client.close();
+      return;
+    } catch {
+      await client.close().catch(() => {});
+      await wait(2000);
+    }
+  }
+})();
 " 2>/dev/null || echo "0")
+echo "MongoDB ready"
 
 if [ "$CARD_COUNT" = "0" ]; then
   echo "No cards found in database. Fetching card data..."
