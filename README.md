@@ -49,7 +49,7 @@ The lobby server is configured via `config/default.json5`. Create a `config/loca
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `dbPath` | `mongodb://127.0.0.1:27017/jigoku` | MongoDB connection string |
-| `lobbyWsUrl` | `ws://127.0.0.1:6000` | WebSocket URL the lobby listens on for game node connections |
+| `lobbyWsUrl` | `ws://127.0.0.1:6100` | WebSocket URL the lobby listens on for game node connections |
 | `secret` | — | Session secret |
 | `lobby.port` | `4000` | HTTP port for the lobby server |
 | `cspConnectSources` | `[]` | Additional CSP connect-src hosts for game nodes |

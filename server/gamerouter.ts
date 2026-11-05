@@ -75,7 +75,7 @@ class GameRouter extends EventEmitter {
 
     init(listenUrl: string) {
         const parsed = new URL(listenUrl);
-        const port = parseInt(parsed.port, 10) || 6000;
+        const port = parseInt(parsed.port, 10) || 6100;
 
         this.wss = new WebSocketServer({ port });
         logger.info(`GameRouter listening on ws://0.0.0.0:${port}`);
