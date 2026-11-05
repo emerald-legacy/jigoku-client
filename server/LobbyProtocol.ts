@@ -111,7 +111,6 @@ export interface GameSummary {
     gameType: string;
     id: string;
     manualMode: boolean;
-    messages: unknown[];
     name: string;
     owner: string;
     players: Record<string, PlayerSummary>;

@@ -872,19 +872,6 @@ class Lobby {
                 continue;
             }
 
-            let owner: NodeReconnectedPlayer | undefined = undefined;
-            for(let player of Object.values(game.players)) {
-                if(player.name === game.owner) {
-                    owner = player;
-                    break;
-                }
-            }
-
-            if(!owner) {
-                logger.error(`Got a game where the owner wasn't a player: ${game.owner}`);
-                continue;
-            }
-
             let syncGame = new PendingGame({ username: game.owner }, { spectators: game.allowSpectators, name: game.name });
             syncGame.id = game.id;
             syncGame.node = this.router.workers[nodeName];

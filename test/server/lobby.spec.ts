@@ -443,3 +443,45 @@ describe("PendingGame block list gates", () => {
         expect(game.players.bob).toBeDefined();
     });
 });
+
+type NodeReconnectedCtx = {
+    games: Record<string, PendingGame>;
+    router: { workers: Record<string, { identity: string }> };
+    broadcastGameList: () => void;
+};
+
+const onNodeReconnected = (Lobby as unknown as { prototype: {
+    onNodeReconnected: (this: NodeReconnectedCtx, nodeName: string, games: Record<string, unknown>) => void;
+} }).prototype.onNodeReconnected;
+
+describe("Lobby.onNodeReconnected", () => {
+    it("keeps a game whose owner has left (the node no longer lists the owner as a player)", () => {
+        const ctx: NodeReconnectedCtx = {
+            games: {},
+            router: { workers: { "node-1": { identity: "node-1" } } },
+            broadcastGameList: vi.fn()
+        };
+
+        onNodeReconnected.call(ctx, "node-1", {
+            0: {
+                id: "g1",
+                name: "Game",
+                owner: "alice",
+                players: { bob: { id: "b", name: "bob", faction: "crab" } },
+                spectators: {},
+                allowSpectators: true,
+                started: true,
+                startedAt: "2026-11-05T10:00:00Z",
+                gameType: "casual"
+            }
+        });
+
+        const game = ctx.games.g1;
+        expect(game).toBeDefined();
+        expect(game.node).toBe(ctx.router.workers["node-1"]);
+        expect(game.started).toBe(true);
+        expect(Object.keys(game.players)).toEqual(["bob"]);
+        expect(game.players.bob.owner).toBe(false);
+        expect(ctx.broadcastGameList).toHaveBeenCalled();
+    });
+});
