@@ -213,7 +213,7 @@ export function InnerDecks({
     }
 
     return (
-        <div className="full-height">
+        <div className="full-height decks-page">
             { successPanel }
             { limitWarning }
             <div className="row h-full">

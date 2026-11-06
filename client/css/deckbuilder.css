@@ -318,7 +318,9 @@
     transform: translateY(-2px) scale(1.03);
 }
 
-/* Deck editor buttons are as tall as its fields (34px) instead of the taller default button */
+/* Buttons on the deck pages (overview and editor) are as tall as the editor's fields (34px)
+   instead of the taller default button */
+.decks-page .btn,
 .deck-editor .btn {
     height: 34px;
     padding: 0 12px;
