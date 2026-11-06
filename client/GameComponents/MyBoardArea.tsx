@@ -38,7 +38,7 @@ export default function MyBoardArea(props: MyBoardAreaProps) {
     } = props;
     const isSkirmish = !!skirmishMode || gameMode === GameModes.Skirmish;
     return (
-        <div className={ `player-board our-side${cardSize ? ` ${cardSize}` : ""}` } onDragOver={ onDragOver } onDrop={ onDropToPlayArea }>
+        <div className={ `player-board our-side${cardSize ? ` ${cardSize}` : ""}` } onDragOver={ onDragOver } onDrop={ onDropToPlayArea } data-drop-target="play area">
             <StrongholdRow
                 isMe={ !spectating }
                 spectating={ spectating }

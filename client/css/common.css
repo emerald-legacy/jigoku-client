@@ -176,3 +176,75 @@
     -khtml-user-select: none;
     user-select: none;
 }
+
+/* iOS zooms the page in when a text field under 16px gets focus, so touch screens get 16px fields. */
+@media (pointer: coarse) {
+    input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+    textarea,
+    select {
+        font-size: var(--text-lead);
+    }
+}
+
+/* Toasts (sonner, dark theme): the site's ink surface and jade border, the type as a coloured left edge.
+   ".body" outranks sonner's own rules, which it injects into the page after this stylesheet. */
+.body [data-sonner-toaster][data-sonner-theme="dark"] {
+    --normal-bg: var(--ink);
+    --normal-border: rgb(var(--jade-rgb) / 0.2);
+    --normal-text: var(--color-foreground);
+}
+
+.body [data-sonner-toast][data-styled="true"] {
+    font-family: var(--font-body);
+    box-shadow: 0 8px 24px rgb(var(--black-rgb) / 0.5);
+}
+
+.body [data-sonner-toast][data-type="error"] {
+    border-left: 3px solid var(--color-danger);
+}
+
+.body [data-sonner-toast][data-type="success"] {
+    border-left: 3px solid var(--color-success);
+}
+
+.body [data-sonner-toast][data-type="warning"] {
+    border-left: 3px solid var(--color-warning);
+}
+
+.body [data-sonner-toast][data-type="info"] {
+    border-left: 3px solid var(--color-info);
+}
+
+/* One visible keyboard focus ring for everything you can press: buttons, links and the clickable rows and tiles
+   that act as buttons or radios. Only for keyboard focus (focus-visible), so mouse clicks don't draw it.
+   Text fields keep their own jade focus style. */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[role="radio"]:focus-visible {
+    outline: 2px solid var(--jade-vivid);
+    outline-offset: 2px;
+}
+
+/* Quiet status lines: empty lists, loading and waiting messages */
+.status-text {
+    margin: 0;
+    padding: 1.5rem 0;
+    text-align: center;
+    font-family: var(--font-body);
+    font-style: italic;
+    color: rgb(var(--sage-rgb) / 0.8);
+}
+
+/* Buttons under an error message, and the not-found / no-access pages */
+.error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.error-page {
+    padding: 1.5rem;
+    text-align: center;
+}

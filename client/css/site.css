@@ -30,6 +30,7 @@
 .format-badge-imperial,
 .format-badge-skirmish {
     background: var(--gold-deep);
+    color: var(--ink);
 }
 .format-badge-obsidian {
     background: var(--crimson);
@@ -67,11 +68,37 @@
     background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
 }
 
+/* === Help pages (How To Play, About, Formats) ===
+   Body text at lead size with room between lines, and headings in the display face so they stand out from the text. */
+.help-page {
+    font-size: var(--text-lead);
+    line-height: 1.6;
+}
+
+.help-page :is(h2, h3, h4) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.help-page h2 {
+    font-size: var(--text-h1);
+}
+
+.help-page h3 {
+    font-size: var(--text-heading);
+    margin-top: 1.25rem;
+}
+
+.help-page h4 {
+    font-size: var(--text-lead);
+}
+
 /* === How To Play === */
 
 .full-height.htp-page {
     height: auto;
-    min-height: calc(100vh - 88px);
+    min-height: calc(100dvh - 88px);
     padding-bottom: 2rem;
 }
 
@@ -308,12 +335,12 @@ ol.htp-legend > li::before {
 }
 
 .full-height {
-    height: calc(100vh - 88px);
+    height: calc(100dvh - 88px);
 }
 
 .bg {
     padding-top: 40px;
-    min-height: 100vh;
+    min-height: 100dvh;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -324,7 +351,7 @@ ol.htp-legend > li::before {
    via backgroundImageByValue() (Application.tsx) so it resolves to the Vite
    content-hashed asset URL; CSS url() can't be hashed here under Tailwind v4. */
 .bg-board {
-    min-height: 100vh;
+    min-height: 100dvh;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -409,6 +436,16 @@ ol.htp-legend > li::before {
     font-size: var(--text-small);
     line-height: 1.5;
     color: rgb(var(--sage-pale-rgb) / 0.6);
+}
+
+.window-timer-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    & .form-control {
+        width: 4rem;
+    }
 }
 
 .timer-toggles {

@@ -375,7 +375,7 @@ export default function Application() {
         <div className={ backgroundClass }>
             <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" numGames={ games.length } />
             <div className="container">
-                <ErrorBoundary navigate={ navigate } errorPath={ location.pathname } message={ "We're sorry - something's gone wrong." }>
+                <ErrorBoundary navigate={ navigate } errorPath={ location.pathname } message={ "Something went wrong and this page can't be shown." }>
                     <React.Suspense fallback={ null }>
                         <AppRoutes permissions={ permissions } />
                     </React.Suspense>

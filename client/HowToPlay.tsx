@@ -26,7 +26,7 @@ function HowToPlay() {
     return (
         <div className="col-xs-12 full-height relative htp-page">
             <div className="panel-title text-center">How To Play on Jigoku Online</div>
-            <div className="panel about-container">
+            <div className="panel about-container help-page">
                 <p>
                     This guide is aimed at players familiar with the Legend of the Five Rings:
                     The Card Game who want to start playing online using the Jigoku Online

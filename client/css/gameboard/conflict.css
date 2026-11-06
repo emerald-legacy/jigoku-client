@@ -22,6 +22,34 @@
     font-size: var(--text-lead);
 }
 
+/* The attacker's skill is underlined; the side that would lose is dimmed */
+.conflict-attacker {
+    text-decoration: underline;
+    text-decoration-color: var(--amber);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+
+.conflict-losing {
+    opacity: 0.55;
+}
+
+/* The defending province's current strength, tinted when it would break */
+.conflict-province {
+    align-items: center;
+}
+
+.conflict-province-label {
+    font-size: var(--text-caption);
+    color: rgb(var(--sage-rgb) / 0.9);
+}
+
+.conflict-province.breaking .phase-display,
+.conflict-province.breaking .conflict-province-label {
+    color: var(--color-military-ring);
+    text-shadow: 0 0 8px rgb(var(--military-rgb) / 0.6);
+}
+
 .center-bar {
     position: relative;
     grid-row-start: 3;
@@ -75,7 +103,7 @@
     font-size: var(--text-caption);
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: rgb(var(--sage-rgb) / 0.7);
+    color: var(--sage);
 }
 
 .round-indicator-number {

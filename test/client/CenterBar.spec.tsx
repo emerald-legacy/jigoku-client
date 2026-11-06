@@ -125,6 +125,59 @@ describe("the <CenterBar /> component", () => {
         });
     });
 
+    describe("conflict panel province and outcome", () => {
+        const province = (stat: string, inConflict: boolean) => ({ uuid: `p-${stat}`, isProvince: true, inConflict, strengthSummary: { stat, modifiers: [] } });
+
+        beforeEach(() => {
+            baseProps.currentGame.conflict = {
+                attackingPlayerId: "me-id",
+                defendingPlayerId: "opp-id",
+                attackerSkill: 6,
+                defenderSkill: 2,
+                attackerWins: true,
+                breaking: false,
+                type: "military",
+                elements: ["fire"]
+            };
+            baseProps.otherPlayer.provinces = { one: [province("5", true)], two: [province("3", false)], three: [], four: [] };
+        });
+
+        it("shows the strength of the defender's province in the conflict", () => {
+            const { container } = render(<CenterBar { ...baseProps } />);
+            const row = container.querySelector(".conflict-province")!;
+            expect(row.querySelector(".phase-display")!.textContent).toBe("5");
+            expect(row.className).not.toContain("breaking");
+        });
+
+        it("marks the province when it would break", () => {
+            baseProps.currentGame.conflict.breaking = true;
+            const { container } = render(<CenterBar { ...baseProps } />);
+            expect(container.querySelector(".conflict-province")!.className).toContain("breaking");
+        });
+
+        it("reads the province from this player when the opponent attacks", () => {
+            baseProps.currentGame.conflict.attackingPlayerId = "opp-id";
+            baseProps.currentGame.conflict.defendingPlayerId = "me-id";
+            baseProps.thisPlayer.provinces = { one: [], two: [], three: [province("4", true)], four: [] };
+            const { container } = render(<CenterBar { ...baseProps } />);
+            expect(container.querySelector(".conflict-province .phase-display")!.textContent).toBe("4");
+        });
+
+        it("underlines the attacker's skill and dims the side that would lose", () => {
+            const { container } = render(<CenterBar { ...baseProps } />);
+            const [other, , mine] = Array.from(container.querySelectorAll(".conflict-panel")[0].children);
+            expect(mine.className).toContain("conflict-attacker");
+            expect(mine.className).not.toContain("conflict-losing");
+            expect(other.className).toContain("conflict-losing");
+        });
+
+        it("dims nobody in an unopposed conflict", () => {
+            baseProps.currentGame.conflict.unopposed = true;
+            const { container } = render(<CenterBar { ...baseProps } />);
+            expect(container.querySelector(".conflict-losing")).toBeNull();
+        });
+    });
+
     describe("cards-played tracker", () => {
         it("does not render when no conflict is active", () => {
             const { container } = render(<CenterBar { ...baseProps } />);
@@ -140,6 +193,15 @@ describe("the <CenterBar /> component", () => {
             expect(counts).toHaveLength(2);
             expect(counts[0].textContent).toBe("2");
             expect(counts[1].textContent).toBe("4");
+        });
+
+        it("labels the counts so they aren't read as hand size", () => {
+            baseProps.currentGame.conflict = { attackingPlayerId: "me-id", type: "military", elements: [] };
+            const { container } = render(<CenterBar { ...baseProps } />);
+            const rows = container.querySelectorAll(".cards-played-tracker");
+            expect(rows[0].getAttribute("title")).toBe("Cards your opponent played this conflict");
+            expect(rows[1].getAttribute("title")).toBe("Cards you played this conflict");
+            expect(container.querySelector(".stat-image.undefined")).toBeNull();
         });
     });
 

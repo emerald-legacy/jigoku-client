@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import DeckStatus from "./DeckStatus";
 import DeckStats from "./DeckStats";
@@ -6,6 +6,7 @@ import { getCardImageUrl, preferredPackId, type CardWithVersions } from "./cardI
 import { asset } from "./assetUrl";
 import { useAppSelector } from "./hooks";
 import { usePatronStatus } from "./patronStatus";
+import { useHoverOrTap } from "./useHoverOrTap";
 import type { Card } from "./types/game";
 import type { Deck, DeckCard } from "./types/deck";
 
@@ -20,19 +21,9 @@ interface DeckSummaryProps {
 }
 
 function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
-    const [cardToShow, setCardToShow] = useState<Card | undefined>(undefined);
-    const [packIdToShow, setPackIdToShow] = useState<string | undefined>(undefined);
-
-    const onCardMouseOver = (event: React.MouseEvent, id: string, packId?: string) => {
-        const cardToDisplay = Object.values(cards || {}).find((card: Card) => id === card.id);
-        setCardToShow(cardToDisplay);
-        setPackIdToShow(packId);
-    };
-
-    const onCardMouseOut = () => {
-        setCardToShow(undefined);
-        setPackIdToShow(undefined);
-    };
+    const preview = useHoverOrTap<{ id: string; packId?: string }>();
+    const cardToShow = preview.shown && Object.values(cards || {}).find((card: Card) => card.id === preview.shown?.id);
+    const packIdToShow = preview.shown?.packId;
 
     const formatValue = deck?.format?.value || "";
 
@@ -93,13 +84,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
                 cardElements.push(
                     <div key={ cardKey }>
                         <span>{ `${card.count}x ` }</span>
-                        <span
-                            className="card-link"
-                            onMouseOver={ (event) =>
-                                onCardMouseOver(event, card.card.id, card.pack_id)
-                            }
-                            onMouseOut={ onCardMouseOut }
-                        >
+                        <span className="card-link" { ...preview.triggerProps(cardKey, { id: card.card.id, packId: card.pack_id }) }>
                             { card.card.name }
                         </span>
                     </div>
@@ -143,6 +128,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
                 <img
                     className="hover-image"
                     src={ getCardImagePath(cardToShow, packIdToShow) }
+                    alt={ cardToShow.name }
                 />
             ) : null }
             <div className="decklist">
@@ -151,6 +137,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
                         <img
                             className="deck-mon img-responsive"
                             src={ asset(`mons/${deck.faction.value}.png`) }
+                            alt=""
                         />
                     ) : null }
                 </div>
@@ -197,6 +184,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
                         <img
                             className="deck-alliance-mon img-responsive"
                             src={ asset(`mons/${deck.alliance.value}.png`) }
+                            alt=""
                         />
                     ) : null }
                 </div>

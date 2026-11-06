@@ -25,6 +25,8 @@ import PlayAreaRow from "./GameComponents/PlayAreaRow";
 import StatChangeOverlay from "./GameComponents/StatChangeOverlay";
 import CenterBar from "./GameComponents/CenterBar";
 import PlayerSidebar from "./GameComponents/PlayerSidebar";
+import { CardDragContext } from "./GameComponents/CardDragContext";
+import { useBoundedPosition, useViewportSize } from "./GameComponents/useBoundedPosition";
 import type { AppDispatch } from "./hooks";
 
 type ActionFn = (...args: unknown[]) => unknown;
@@ -91,7 +93,8 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     const zoomCard = (props.zoomCard ?? boundActions.zoomCard) as ActionFn;
     const clearZoom = (props.clearZoom ?? boundActions.clearZoom) as ActionFn;
 
-    const [showChat, setShowChat] = useState(true);
+    // Below 1280px the board needs the room, so the chat starts collapsed there (the chat button opens it).
+    const [showChat, setShowChat] = useState(() => window.innerWidth >= 1280);
     const [showChatAlert, setShowChatAlert] = useState(false);
     const [showConflictDeck, setShowConflictDeck] = useState(false);
     const [showDynastyDeck, setShowDynastyDeck] = useState(false);
@@ -100,6 +103,12 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     const draggableRef = useRef<HTMLDivElement>(null);
     const opponentDraggableRef = useRef<HTMLDivElement>(null);
     const prevPlayerMsgCountRef = useRef(0);
+
+    // The floating hands stay on screen: their bounds follow the window size, and a resize or rotation moves them back inside.
+    const viewport = useViewportSize();
+    const handBounds = { left: 0, top: 0, right: viewport.width - 490, bottom: viewport.height - 160 };
+    const playerHandPosition = useBoundedPosition(() => ({ x: (window.innerWidth / 2) - 240, y: window.innerHeight / 2 }), handBounds);
+    const opponentHandPosition = useBoundedPosition(() => ({ x: (window.innerWidth / 2) - 240, y: 50 }), handBounds);
 
     const groupCardsInPlayForMe = useMemo(() => makeCardsInPlayGrouper(), []);
     const groupCardsInPlayForOther = useMemo(() => makeCardsInPlayGrouper(), []);
@@ -368,18 +377,8 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         if(spectating) {
             return null;
         }
-        const defaultPosition = {
-            x: (window.innerWidth / 2) - 240,
-            y: (window.innerHeight / 2)
-        };
-        const handBounds = {
-            left: 0,
-            right: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 490,
-            top: 0,
-            bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 160
-        };
         return (
-            <Draggable handle=".grip" nodeRef={ draggableRef } bounds={ handBounds } defaultPosition={ defaultPosition }>
+            <Draggable handle=".grip" nodeRef={ draggableRef } { ...playerHandPosition }>
                 <div ref={ draggableRef } className="player-home-row-container">
                     <PlayerHand
                         cards={ thisPlayer.cardPiles.hand }
@@ -406,18 +405,8 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         if(!hasRevealedCards) {
             return null;
         }
-        const defaultPosition = {
-            x: (window.innerWidth / 2) - 240,
-            y: 50
-        };
-        const handBounds = {
-            left: 0,
-            right: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 490,
-            top: 0,
-            bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 160
-        };
         return (
-            <Draggable handle=".grip" nodeRef={ opponentDraggableRef } bounds={ handBounds } defaultPosition={ defaultPosition }>
+            <Draggable handle=".grip" nodeRef={ opponentDraggableRef } { ...opponentHandPosition }>
                 <div ref={ opponentDraggableRef } className="player-home-row-container opponent-hand-container">
                     <PlayerHand
                         cards={ otherPlayer.cardPiles.hand }
@@ -437,136 +426,139 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     };
 
     return (
-        <div className="game-board">
-            <GameSettingsModal
-                show={ showSettingsModal }
-                thisPlayer={ thisPlayer }
-                onClose={ () => setShowSettingsModal(false) }
-                onPromptedActionWindowToggle={ onPromptedActionWindowToggle }
-                onTimerSettingToggle={ onTimerSettingToggle }
-                onOptionSettingToggle={ onOptionSettingToggle }
-            />
-            <StatChangeOverlay
-                key={ (pendingAnimations || [])
-                    .filter(a => a.type === "honor" || a.type === "fate")
-                    .map(a => `${a.type}:${a.playerName}:${a.amount}`)
-                    .join(",") }
-                animations={ pendingAnimations || [] }
-                onDismiss={ () => {
-                    for(const a of pendingAnimations || []) {
-                        if(a.type === "honor" || a.type === "fate") {
-                            dispatch(clearAnimation(a.playerName));
-                        }
-                    }
-                } }
-            />
-            <div className="inset-pane">
-                <ActivePlayerPrompt
-                    title={ thisPlayer.menuTitle }
-                    buttons={ thisPlayer.buttons }
-                    cards={ cards }
-                    controls={ thisPlayer.controls }
-                    promptTitle={ thisPlayer.promptTitle }
-                    onButtonClick={ onCommand }
-                    onMouseOver={ onMouseOver }
-                    onMouseOut={ onMouseOut }
-                    user={ user }
-                    onTimerExpired={ onTimerExpired }
-                    phase={ thisPlayer.phase }
-                />
-            </div>
-            { renderPlayerHand() }
-            { renderOpponentHand() }
-            <div className={ `main-window ${user.settings.cardSize}` }>
-                <PlayerSidebar
+        // The server only moves dropped cards in manual mode, so cards are draggable only then, and never for spectators.
+        <CardDragContext value={ manualMode && !spectating }>
+            <div className="game-board">
+                <GameSettingsModal
+                    show={ showSettingsModal }
                     thisPlayer={ thisPlayer }
-                    otherPlayer={ otherPlayer }
-                    cardSize={ user.settings.cardSize }
-                    showRingEffects={ !!thisPlayer?.optionSettings?.showRingEffects }
-                    gameMode={ currentGame.gameMode }
-                    rings={ currentGame.rings }
-                    spectating={ spectating }
-                    manualMode={ manualMode }
-                    boundActions={ boundActions }
-                    onRingClick={ onRingClick }
-                    onRingMenuItemClick={ onRingMenuItemClick }
-                    pendingAnimations={ pendingAnimations }
-                    onAnimationEnd={ (name: string) => dispatch(clearAnimation(name)) }
-                    onRingAnimationEnd={ (element: string, name: string) => dispatch(clearRingAnimation({ element, playerName: name })) }
+                    onClose={ () => setShowSettingsModal(false) }
+                    onPromptedActionWindowToggle={ onPromptedActionWindowToggle }
+                    onTimerSettingToggle={ onTimerSettingToggle }
+                    onOptionSettingToggle={ onOptionSettingToggle }
                 />
-                <div className={ `play-area${user.settings.cardSize ? ` ${user.settings.cardSize}` : ""}` }>
-                    <OpponentBoardArea
-                        otherPlayer={ otherPlayer }
-                        otherPlayerCards={ otherPlayerCards }
-                        cardSize={ user.settings.cardSize }
-                        gameMode={ currentGame.gameMode }
-                        skirmishMode={ currentGame.skirmishMode }
-                        onCardClick={ onCardClick }
+                <StatChangeOverlay
+                    key={ (pendingAnimations || [])
+                        .filter(a => a.type === "honor" || a.type === "fate")
+                        .map(a => `${a.type}:${a.playerName}:${a.amount}`)
+                        .join(",") }
+                    animations={ pendingAnimations || [] }
+                    onDismiss={ () => {
+                        for(const a of pendingAnimations || []) {
+                            if(a.type === "honor" || a.type === "fate") {
+                                dispatch(clearAnimation(a.playerName));
+                            }
+                        }
+                    } }
+                />
+                <div className="inset-pane">
+                    <ActivePlayerPrompt
+                        title={ thisPlayer.menuTitle }
+                        buttons={ thisPlayer.buttons }
+                        cards={ cards }
+                        controls={ thisPlayer.controls }
+                        promptTitle={ thisPlayer.promptTitle }
+                        onButtonClick={ onCommand }
                         onMouseOver={ onMouseOver }
                         onMouseOut={ onMouseOut }
-                        onMenuItemClick={ onMenuItemClick }
+                        user={ user }
+                        onTimerExpired={ onTimerExpired }
+                        phase={ thisPlayer.phase }
                     />
-                    <CenterBar
-                        currentGame={ currentGame }
+                </div>
+                { renderPlayerHand() }
+                { renderOpponentHand() }
+                <div className={ `main-window ${user.settings.cardSize}` }>
+                    <PlayerSidebar
                         thisPlayer={ thisPlayer }
                         otherPlayer={ otherPlayer }
                         cardSize={ user.settings.cardSize }
                         showRingEffects={ !!thisPlayer?.optionSettings?.showRingEffects }
-                        onRingClick={ onRingClick }
-                        onRingMenuItemClick={ onRingMenuItemClick }
-                        onCardClick={ onCardClick }
-                        onDragDrop={ onDragDrop }
-                        onMenuItemClick={ onMenuItemClick }
-                        onMouseOver={ onMouseOver }
-                        onMouseOut={ onMouseOut }
-                    />
-                    <MyBoardArea
-                        thisPlayer={ thisPlayer }
-                        thisPlayerCards={ thisPlayerCards }
-                        cardSize={ user.settings.cardSize }
+                        gameMode={ currentGame.gameMode }
+                        rings={ currentGame.rings }
                         spectating={ spectating }
                         manualMode={ manualMode }
-                        gameMode={ currentGame.gameMode }
-                        skirmishMode={ currentGame.skirmishMode }
-                        showConflictDeck={ showConflictDeck }
-                        showDynastyDeck={ showDynastyDeck }
-                        onCardClick={ onCardClick }
-                        onMouseOver={ onMouseOver }
-                        onMouseOut={ onMouseOut }
-                        onMenuItemClick={ onMenuItemClick }
-                        onDragDrop={ onDragDrop }
-                        onConflictClick={ onConflictClick }
-                        onDynastyClick={ onDynastyClick }
-                        onConflictShuffleClick={ onConflictShuffleClick }
-                        onDynastyShuffleClick={ onDynastyShuffleClick }
-                        onDragOver={ onDragOver }
-                        onDropToPlayArea={ event => onDragDropEvent(event, "play area") }
+                        boundActions={ boundActions }
+                        onRingClick={ onRingClick }
+                        onRingMenuItemClick={ onRingMenuItemClick }
+                        pendingAnimations={ pendingAnimations }
+                        onAnimationEnd={ (name: string) => dispatch(clearAnimation(name)) }
+                        onRingAnimationEnd={ (element: string, name: string) => dispatch(clearRingAnimation({ element, playerName: name })) }
                     />
-                </div>
-                <div className="right-side">
-                    <CardZoom
-                        imageUrl={ cardToZoom ? computeImageUrl(cardToZoom) : "" }
-                        show={ !!cardToZoom }
-                        cardName={ cardToZoom ? cardToZoom.name : null }
-                    />
-                    <Chat
-                        extraControls={ extraControls }
-                        visible={ showChat }
-                        messages={ currentGame.messages }
-                        onMouseOver={ (fragment: MessageFragment) => zoomCard(fragment) }
-                        onMouseOut={ onMouseOut }
-                        sendMessage={ sendMessage }
-                        onSettingsClick={ onSettingsClick }
-                        onManualModeClick={ onManualModeClick }
-                        onDownloadLogClick={ onDownloadLogClick }
-                        onToggleChatClick={ onToggleChatClick }
-                        showDownloadLog={ !!currentGame.winner }
-                        showChatAlert={ showChatAlert }
-                        manualModeEnabled={ manualMode }
-                        showManualMode={ !spectating }
-                    />
+                    <div className={ `play-area${user.settings.cardSize ? ` ${user.settings.cardSize}` : ""}` }>
+                        <OpponentBoardArea
+                            otherPlayer={ otherPlayer }
+                            otherPlayerCards={ otherPlayerCards }
+                            cardSize={ user.settings.cardSize }
+                            gameMode={ currentGame.gameMode }
+                            skirmishMode={ currentGame.skirmishMode }
+                            onCardClick={ onCardClick }
+                            onMouseOver={ onMouseOver }
+                            onMouseOut={ onMouseOut }
+                            onMenuItemClick={ onMenuItemClick }
+                        />
+                        <CenterBar
+                            currentGame={ currentGame }
+                            thisPlayer={ thisPlayer }
+                            otherPlayer={ otherPlayer }
+                            cardSize={ user.settings.cardSize }
+                            showRingEffects={ !!thisPlayer?.optionSettings?.showRingEffects }
+                            onRingClick={ onRingClick }
+                            onRingMenuItemClick={ onRingMenuItemClick }
+                            onCardClick={ onCardClick }
+                            onDragDrop={ onDragDrop }
+                            onMenuItemClick={ onMenuItemClick }
+                            onMouseOver={ onMouseOver }
+                            onMouseOut={ onMouseOut }
+                        />
+                        <MyBoardArea
+                            thisPlayer={ thisPlayer }
+                            thisPlayerCards={ thisPlayerCards }
+                            cardSize={ user.settings.cardSize }
+                            spectating={ spectating }
+                            manualMode={ manualMode }
+                            gameMode={ currentGame.gameMode }
+                            skirmishMode={ currentGame.skirmishMode }
+                            showConflictDeck={ showConflictDeck }
+                            showDynastyDeck={ showDynastyDeck }
+                            onCardClick={ onCardClick }
+                            onMouseOver={ onMouseOver }
+                            onMouseOut={ onMouseOut }
+                            onMenuItemClick={ onMenuItemClick }
+                            onDragDrop={ onDragDrop }
+                            onConflictClick={ onConflictClick }
+                            onDynastyClick={ onDynastyClick }
+                            onConflictShuffleClick={ onConflictShuffleClick }
+                            onDynastyShuffleClick={ onDynastyShuffleClick }
+                            onDragOver={ onDragOver }
+                            onDropToPlayArea={ event => onDragDropEvent(event, "play area") }
+                        />
+                    </div>
+                    <div className="right-side">
+                        <CardZoom
+                            imageUrl={ cardToZoom ? computeImageUrl(cardToZoom) : "" }
+                            show={ !!cardToZoom }
+                            cardName={ cardToZoom ? cardToZoom.name : null }
+                        />
+                        <Chat
+                            extraControls={ extraControls }
+                            visible={ showChat }
+                            messages={ currentGame.messages }
+                            onMouseOver={ (fragment: MessageFragment) => zoomCard(fragment) }
+                            onMouseOut={ onMouseOut }
+                            sendMessage={ sendMessage }
+                            onSettingsClick={ onSettingsClick }
+                            onManualModeClick={ onManualModeClick }
+                            onDownloadLogClick={ onDownloadLogClick }
+                            onToggleChatClick={ onToggleChatClick }
+                            showDownloadLog={ !!currentGame.winner }
+                            showChatAlert={ showChatAlert }
+                            manualModeEnabled={ manualMode }
+                            showManualMode={ !spectating }
+                        />
+                    </div>
                 </div>
             </div>
-        </div>
+        </CardDragContext>
     );
 }

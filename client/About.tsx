@@ -6,9 +6,9 @@ function About() {
             <div className="panel-title text-center">
                 About Jigoku Online - Help and information
             </div>
-            <div className="panel about-container">
+            <div className="panel about-container help-page">
                 <a
-                    className="btn btn-danger btn-lg pull-right"
+                    className="btn btn-quiet btn-lg pull-right"
                     target="_blank"
                     rel="noopener noreferrer"
                     href="https://github.com/emerald-legacy/jigoku-client/issues"

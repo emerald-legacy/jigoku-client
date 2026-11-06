@@ -124,7 +124,7 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
                         <Checkbox
                             name="optionSettings.confirmOneClick"
                             noGroup
-                            label="Show a confirmation prompt when initating 1-click abilities"
+                            label="Show a confirmation prompt when initiating 1-click abilities"
                             fieldClass="col-sm-6"
                             onChange={ (e) => handleOptionSettingToggle("confirmOneClick", e) }
                             checked={ optionSettings.confirmOneClick }
@@ -148,7 +148,7 @@ function GameConfiguration({ actionWindows, onOptionSettingToggle, onTimerSettin
                         <Checkbox
                             name="optionSettings.sortHandByName"
                             noGroup
-                            label="Sort Hand by Name"
+                            label="Sort hand by name"
                             fieldClass="col-sm-6"
                             onChange={ (e) => handleOptionSettingToggle("sortHandByName", e) }
                             checked={ optionSettings.sortHandByName }

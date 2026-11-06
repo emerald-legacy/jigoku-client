@@ -68,8 +68,6 @@ export interface Card {
     isConflict?: boolean;
     isStronghold?: boolean;
     isBroken?: boolean;
-    inDanger?: boolean;
-    saved?: boolean;
     unselectable?: boolean;
     abilityLimits?: AbilityLimit[];
     strengthSummary?: SkillSummary;
@@ -278,6 +276,9 @@ export interface ConflictInfo {
     attackerSkill?: number;
     defenderSkill?: number;
     unopposed?: boolean;
+    // Whether the attacker would win, and whether a conflict province would break, counting what resolution adds (Conflict.getSummary)
+    attackerWins?: boolean;
+    breaking?: boolean;
     type?: string;
     elements?: string[];
     declarationComplete?: boolean;

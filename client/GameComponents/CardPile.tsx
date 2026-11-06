@@ -301,6 +301,7 @@ function CardPile({
             onDragLeave={ onDragLeave }
             onDragOver={ onDragOver }
             onDrop={ (event) => handleDragDrop(event, source) }
+            data-drop-target={ source }
             onClick={ onCollectionClick }
         >
             <div className="panel-header">{ headerText }</div>

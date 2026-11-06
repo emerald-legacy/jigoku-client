@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import React from "react";
 import { InnerDecks } from "../../client/Decks.tsx";
@@ -75,7 +75,7 @@ describe("the <InnerDecks /> component", () => {
     it("should show the empty state when the account has no decks", () => {
         render(<InnerDecks { ...defaultProps } decks={ [] } />, { wrapper });
 
-        expect(screen.getByText("You have no decks, try adding one.")).toBeInTheDocument();
+        expect(screen.getByText("No decks yet. Use New Deck to import one from EmeraldDB.")).toBeInTheDocument();
         expect(skeletons()).toHaveLength(0);
     });
 
@@ -115,7 +115,7 @@ describe("the <InnerDecks /> component", () => {
         render(<InnerDecks { ...defaultProps } decks={ undefined } />, { wrapper });
 
         expect(skeletons()).toHaveLength(6);
-        expect(screen.queryByText("You have no decks, try adding one.")).not.toBeInTheDocument();
+        expect(screen.queryByText("No decks yet. Use New Deck to import one from EmeraldDB.")).not.toBeInTheDocument();
     });
 
     it("should report a failed decks load instead of claiming the account has none", () => {
@@ -123,7 +123,7 @@ describe("the <InnerDecks /> component", () => {
 
         expect(screen.getByTestId("alert-panel")).toHaveAttribute("data-type", "error");
         expect(screen.getByTestId("alert-panel")).toHaveTextContent("Boom");
-        expect(screen.queryByText("You have no decks, try adding one.")).not.toBeInTheDocument();
+        expect(screen.queryByText("No decks yet. Use New Deck to import one from EmeraldDB.")).not.toBeInTheDocument();
         expect(skeletons()).toHaveLength(0);
     });
 
@@ -134,5 +134,30 @@ describe("the <InnerDecks /> component", () => {
         expect(screen.getByText("My Decks")).toBeInTheDocument();
         expect(screen.queryByText(/\/ 50/)).not.toBeInTheDocument();
         expect(screen.getByRole("link", { name: "New Deck" })).toBeInTheDocument();
+    });
+    describe("deleting the selected deck", () => {
+        const deck = { _id: "d1", name: "Crane Duelists" };
+
+        it("asks first: Delete… turns into Cancel next to a red Delete deck", () => {
+            render(<InnerDecks { ...defaultProps } decks={ [deck] } selectedDeck={ deck } />, { wrapper });
+
+            fireEvent.click(screen.getByRole("button", { name: "Delete…" }));
+
+            expect(screen.getByRole("button", { name: "Cancel" }).className).toContain("btn-quiet");
+            expect(screen.getByRole("button", { name: "Delete deck" }).className).toContain("btn-danger");
+            expect(defaultProps.deleteDeck).not.toHaveBeenCalled();
+        });
+
+        it("deletes only after the red button, and Cancel backs out", () => {
+            render(<InnerDecks { ...defaultProps } decks={ [deck] } selectedDeck={ deck } />, { wrapper });
+
+            fireEvent.click(screen.getByRole("button", { name: "Delete…" }));
+            fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+            expect(screen.queryByRole("button", { name: "Delete deck" })).toBeNull();
+
+            fireEvent.click(screen.getByRole("button", { name: "Delete…" }));
+            fireEvent.click(screen.getByRole("button", { name: "Delete deck" }));
+            expect(defaultProps.deleteDeck).toHaveBeenCalledWith(deck);
+        });
     });
 });

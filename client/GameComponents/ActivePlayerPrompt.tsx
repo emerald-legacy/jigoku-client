@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import Draggable from "react-draggable";
 
+import { useBoundedPosition, useViewportSize } from "./useBoundedPosition";
+
 import AbilityTargeting from "./AbilityTargeting";
 import CardNameLookup from "./CardNameLookup";
 import type { Button, Card, Control } from "../types/game";
@@ -19,6 +21,14 @@ interface ActivePlayerPromptProps {
     promptTitle?: string;
     title?: string;
     user?: User;
+}
+
+/**
+ * Buttons that pass or back out of a prompt (the engine's "pass"/"cancel" args, the triggered-ability window's pass
+ * method, a handler menu's "Cancel") look quieter than the choices next to them, so they are harder to hit by mistake.
+ */
+function isBailOut(button: Button) {
+    return button.arg === "pass" || button.arg === "cancel" || button.method === "pass" || button.text === "Cancel";
 }
 
 function ActivePlayerPrompt({
@@ -48,6 +58,12 @@ function ActivePlayerPrompt({
     const timerHandleRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const onTimerExpiredRef = useRef(onTimerExpired);
     const draggableRef = useRef<HTMLDivElement | null>(null);
+    // Stays on screen when the window shrinks or a tablet is rotated
+    const viewport = useViewportSize();
+    const promptPosition = useBoundedPosition(
+        () => ({ x: (window.innerWidth / 2) - 105, y: (window.innerHeight / 2) - 211 }),
+        { left: 0, top: 0, right: viewport.width - 210, bottom: viewport.height - 172 }
+    );
 
     const timerButton = buttons?.find((button: Button) => button.timer);
     const hasTimerButton = !!timerButton;
@@ -180,7 +196,7 @@ function ActivePlayerPrompt({
             const option = (
                 <button
                     key={ (button.command ?? "") + buttonIndex.toString() }
-                    className="btn btn-default"
+                    className={ isBailOut(button) ? "btn btn-quiet" : "btn btn-default" }
                     onClick={ clickCallback }
                     onMouseOver={ (event: React.MouseEvent) => handleMouseOver(event, button.card) }
                     onMouseOut={ (event: React.MouseEvent) => handleMouseOut(event, button.card) }
@@ -233,39 +249,28 @@ function ActivePlayerPrompt({
         });
     })();
 
-    const getDefaultPosition = () => ({
-        x: (window.innerWidth / 2) - 105,
-        y: (window.innerHeight / 2) - 211
-    });
-
-    const activePromptBounds = {
-        top: 0,
-        bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 172,
-        left: 0,
-        right: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 210
-    };
 
     let promptTitleElement = null;
     if(promptTitle) {
         promptTitleElement = <div className="menu-pane-source">{ promptTitle }</div>;
     }
 
+    // Inside the panel, under the question it answers; turns red for the last 3 seconds.
     let timer = null;
     if(showTimer) {
         timer = (
-            <div>
-                <span>Auto passing in { timeLeft }...</span>
-                <div className="progress">
-                    <div className="progress-bar progress-bar-success" role="progressbar" style={ { width: timerClass } } />
+            <div className={ `prompt-timer${timeLeft <= 3 ? " ending" : ""}` }>
+                <span>{ `Auto-passing in ${timeLeft}s` }</span>
+                <div className="prompt-timer-track">
+                    <div className="prompt-timer-bar" role="progressbar" aria-label="Time left" style={ { width: timerClass } } />
                 </div>
             </div>
         );
     }
 
     return (
-        <Draggable handle=".grip" bounds={ activePromptBounds } defaultPosition={ getDefaultPosition() } nodeRef={ draggableRef }>
+        <Draggable handle=".grip" { ...promptPosition } nodeRef={ draggableRef }>
             <div ref={ draggableRef } className="no-highlight">
-                { timer }
                 <div className="grip">
                     <div className={ `phase-indicator ${phase}` } onClick={ onTitleClick }>
                         { phase } phase
@@ -273,8 +278,10 @@ function ActivePlayerPrompt({
                 </div>
                 { promptTitleElement }
                 <div className="menu-pane">
-                    <div className="panel">
+                    { /* A long button list scrolls inside the panel; not with a card-name search, whose suggestion list would be cut off */ }
+                    <div className={ controls?.some((control) => control.type === "card-name") ? "panel" : "panel menu-pane-scroll" }>
                         <div className="menu-pane-title">{ title }</div>
+                        { timer }
                         { renderedControls }
                         { renderedButtons }
                     </div>

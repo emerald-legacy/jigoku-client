@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 
@@ -49,7 +49,7 @@ vi.mock("../../client/GameComponents/Card.tsx", () => ({
 }));
 
 vi.mock("../../client/GameComponents/Chat.tsx", () => ({
-    default: () => <div data-testid="chat">Chat</div>
+    default: ({ visible }: { visible?: boolean }) => <div data-testid="chat" data-visible={ String(visible) }>Chat</div>
 }));
 
 vi.mock("../../client/GameComponents/CardPile.tsx", () => ({
@@ -188,6 +188,27 @@ describe("the <GameBoard /> component", () => {
             expect(screen.getAllByTestId("ring-fire").length).toBeGreaterThanOrEqual(1);
             expect(screen.getAllByTestId("ring-void").length).toBeGreaterThanOrEqual(1);
             expect(screen.getAllByTestId("ring-water").length).toBeGreaterThanOrEqual(1);
+        });
+    });
+
+    describe("the chat on start", () => {
+        const originalWidth = window.innerWidth;
+        const setWidth = (width: number) => Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
+
+        afterEach(() => setWidth(originalWidth));
+
+        it("is open on a desktop-sized window", () => {
+            setWidth(1440);
+            render(<InnerGameBoard { ...defaultProps } />);
+
+            expect(screen.getByTestId("chat").dataset.visible).toBe("true");
+        });
+
+        it("is collapsed below 1280px, where the board needs the room", () => {
+            setWidth(1024);
+            render(<InnerGameBoard { ...defaultProps } />);
+
+            expect(screen.getByTestId("chat").dataset.visible).toBe("false");
         });
     });
 

@@ -143,7 +143,7 @@ export default function InnerDeckStatus({ className: propsClassName, deck, updat
         className += " invalid";
     } else {
         statusName = "Validating";
-        className += " casual-play";
+        className += " validating";
     }
 
     return (

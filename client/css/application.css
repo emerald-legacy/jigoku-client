@@ -14,6 +14,18 @@
     }
 }
 
+/* The page you are on: full colour and a jade underline (this file is unlayered, so it must live here to win) */
+.navbar li.active > a {
+    color: var(--color-foreground);
+    background: rgb(var(--white-rgb) / 0.1);
+    box-shadow: inset 0 -2px 0 var(--jade-vivid);
+}
+
+/* Inside a dropdown the items read in full colour */
+.navbar .dropdown-menu li a {
+    color: var(--color-foreground);
+}
+
 /* Keep the patron name inline (overrides `.navbar li span { display: block }`) */
 .navbar .patron-name {
     display: inline;

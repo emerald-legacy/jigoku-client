@@ -13,7 +13,7 @@
 .ring-panel.removed-rings {
     padding-left: 10px;
     justify-content: start;
-    border-left: silver 3px dotted;
+    border-left: 3px dotted rgb(var(--white-rgb) / 0.4);
     min-width: 0%;
 
     & .ring {

@@ -441,11 +441,11 @@ export default function InnerDeckEditor({
     const backdrop = showModal ? <div className="modal-backdrop fade in" onClick={ () => setShowModal(false) } /> : null;
 
     return (
-        <div>
+        <div className="deck-editor">
             { popup }
             { backdrop }
-            <span className="btn btn-primary" onClick={ handleImportDeckClick }>Import deck</span>
-            <p>Either type the cards manually into the box below, add the cards one by one using the card box and autocomplete or for best results, copy the permalink url from <a href="https://www.emeralddb.org" target="_blank" rel="noreferrer">Emerald DB</a> and paste it into the popup from clicking the &quot;Import Deck&quot; button.</p>
+            <button type="button" className="btn btn-primary deck-editor-import" onClick={ handleImportDeckClick }>Import deck</button>
+            <p>Importing is fastest: copy the deck&apos;s link from <a href="https://www.emeralddb.org" target="_blank" rel="noreferrer">EmeraldDB</a> and paste it into Import deck. You can also add cards one by one with the card search, or type the list into the box below.</p>
             <form className="form form-horizontal">
                 <Input name="deckName" label="Deck Name" labelClass="col-sm-3" fieldClass="col-sm-9" placeholder="Deck Name"
                     type="text" onChange={ (e) => handleChange("name", e) } value={ deck.name } />
@@ -457,14 +457,14 @@ export default function InnerDeckEditor({
                     onChange={ handleAllianceChange } value={ deck.alliance ? deck.alliance.value : undefined }
                     valueKey="value" nameKey="name" blankOption={ { name: "- Select -", value: "" } } />
 
-                <Typeahead name="card" label="Card" labelClass="col-sm-3" fieldClass="col-sm-4" labelKey="name" options={ cardsArray }
+                <Typeahead name="card" label="Card" labelClass="col-sm-3" fieldClass="col-sm-9" labelKey="name" options={ cardsArray }
                     onChange={ handleAddCardChange }>
-                    <Input name="numcards" type="text" label="Num" labelClass="col-sm-1" fieldClass="col-sm-2"
-                        value={ numberToAdd.toString() } onChange={ handleNumberToAddChange }>
-                        <div className="col-sm-1">
-                            <button className="btn btn-primary add-card-button" onClick={ handleAddCard }>Add</button>
-                        </div>
-                    </Input>
+                    <div className="col-sm-offset-3 col-sm-9 add-card-row">
+                        <label htmlFor="numcards" className="add-card-count-label">Copies</label>
+                        <input id="numcards" type="text" inputMode="numeric" className="form-control add-card-count"
+                            value={ numberToAdd.toString() } onChange={ handleNumberToAddChange } />
+                        <button className="btn btn-primary add-card-button" onClick={ handleAddCard }>Add</button>
+                    </div>
                 </Typeahead>
                 <TextArea name="cards" label="Cards" labelClass="col-sm-3" fieldClass="col-sm-9" rows={ 10 } value={ cardList }
                     onChange={ handleCardListChange } />

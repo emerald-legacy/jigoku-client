@@ -65,6 +65,11 @@
     outline: 0px;
 }
 
+.btn-stat:focus-visible {
+    outline: 2px solid var(--jade-vivid);
+    outline-offset: 1px;
+}
+
 .btn-stat svg {
     display: block;
     margin: auto;

@@ -172,7 +172,7 @@ export function InnerDecks({
     } else if(decksPending) {
         listBody = deckListSkeleton;
     } else if(deckCount === 0) {
-        listBody = "You have no decks, try adding one.";
+        listBody = <p className="status-text">No decks yet. Use New Deck to import one from EmeraldDB.</p>;
     } else {
         listBody = deckList;
     }
@@ -187,9 +187,10 @@ export function InnerDecks({
                 <div className="panel">
                     <div className="btn-group">
                         <button className="btn btn-primary" onClick={ handleEditClick }>Edit</button>
-                        <button className="btn btn-primary" onClick={ handleDeleteClick }>Delete</button>
+                        { /* "Delete…" asks first: it turns into Cancel next to the red button that really deletes */ }
+                        <button className="btn btn-quiet" onClick={ handleDeleteClick }>{ showDelete ? "Cancel" : "Delete…" }</button>
                         { showDelete && (
-                            <button className="btn btn-danger" onClick={ handleConfirmDeleteClick }>Delete</button>
+                            <button className="btn btn-danger" onClick={ handleConfirmDeleteClick }>Delete deck</button>
                         ) }
                     </div>
                     <DeckSummary deck={ selectedDeck } cards={ cards } stats={ deckStats && selectedDeck && selectedDeck._id ? (deckStats[selectedDeck._id] as React.ComponentProps<typeof DeckSummary>["stats"]) : undefined } />
@@ -212,7 +213,7 @@ export function InnerDecks({
     }
 
     return (
-        <div className="full-height">
+        <div className="full-height decks-page">
             { successPanel }
             { limitWarning }
             <div className="row h-full">

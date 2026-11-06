@@ -69,7 +69,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, u
         event.preventDefault();
 
         if(!username) {
-            toast.error("Please login before trying to join a game");
+            toast.error("Log in to join a game");
             return;
         }
 
@@ -93,7 +93,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, u
         event.preventDefault();
 
         if(!username) {
-            toast.error("Please login before trying to watch a game");
+            toast.error("Log in to watch a game");
             return;
         }
 

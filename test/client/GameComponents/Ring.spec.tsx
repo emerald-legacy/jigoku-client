@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render } from "@testing-library/react";
+import { render, fireEvent, act } from "@testing-library/react";
 import React from "react";
 
 vi.mock("../../../client/GameComponents/CardCounters.tsx", () => ({
@@ -20,7 +20,7 @@ const claimAnimation = (element: string, playerName: string) => ({
 
 describe("the <Ring /> component claim flash", () => {
     let onClaimAnimationEnd: ReturnType<typeof vi.fn>;
-    let baseProps: any;
+    let baseProps: unknown;
 
     beforeEach(() => {
         vi.useFakeTimers();
@@ -100,5 +100,39 @@ describe("the <Ring /> component claim flash", () => {
         vi.advanceTimersByTime(5000);
 
         expect(onClaimAnimationEnd).not.toHaveBeenCalled();
+    });
+});
+
+describe("the <Ring /> effect text on a touch screen", () => {
+    beforeEach(() => {
+        vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+        vi.useRealTimers();
+    });
+
+    const renderRing = () => render(<Ring owner={ null } showRingEffects ring={ { element: "fire", conflictType: "military", claimed: false } } />);
+    const ringOf = (container: HTMLElement) => container.querySelector(".ring.no-highlight") as HTMLElement;
+
+    it("shows the ring effect after a long press, and hides it on the next touch", () => {
+        const { container } = renderRing();
+
+        fireEvent.touchStart(ringOf(container), { touches: [{ clientX: 5, clientY: 5 }] });
+        act(() => vi.advanceTimersByTime(500));
+        expect(container.querySelector(".ring-tooltip")).not.toBeNull();
+
+        fireEvent.touchStart(document.body, { touches: [{ clientX: 300, clientY: 300 }] });
+        expect(container.querySelector(".ring-tooltip")).toBeNull();
+    });
+
+    it("doesn't show it on a short tap", () => {
+        const { container } = renderRing();
+
+        fireEvent.touchStart(ringOf(container), { touches: [{ clientX: 5, clientY: 5 }] });
+        fireEvent.touchEnd(ringOf(container));
+        vi.advanceTimersByTime(500);
+
+        expect(container.querySelector(".ring-tooltip")).toBeNull();
     });
 });

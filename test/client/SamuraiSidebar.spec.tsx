@@ -49,6 +49,19 @@ describe("<SamuraiSidebar /> (collapsed by default)", () => {
     });
 });
 
+describe("<SamuraiSidebar /> rail labels", () => {
+    beforeEach(() => {
+        setUsers(sampleUsers);
+    });
+
+    it("names each count for tooltips and screen readers", () => {
+        const { container } = render(<SamuraiSidebar />);
+        const counts = Array.from(container.querySelectorAll(".samurai-rail-count"));
+        expect(counts.map(count => count.getAttribute("title"))).toEqual(["At court", "Dueling", "Watching"]);
+        expect(counts.map(count => count.textContent)).toEqual(["◉At court: 1", "⚔Dueling: 2", "◇Watching: 1"]);
+    });
+});
+
 describe("<SamuraiSidebar /> (expanded)", () => {
     beforeEach(() => {
         setUsers(sampleUsers);
@@ -102,6 +115,26 @@ describe("<SamuraiSidebar /> (expanded)", () => {
         fireEvent.click(screen.getByLabelText("Close samurai sidebar"));
         expect(container.querySelector(".samurai-panel")).toBeNull();
         expect(container.querySelector(".samurai-rail")).not.toBeNull();
+    });
+
+    it("collapses when the dimmed page behind the panel is tapped", () => {
+        const { container } = render(<SamuraiSidebar />);
+        expand(container);
+        fireEvent.click(container.querySelector(".samurai-backdrop")!);
+        expect(container.querySelector(".samurai-panel")).toBeNull();
+        expect(container.querySelector(".samurai-backdrop")).toBeNull();
+    });
+
+    it("collapses on Escape", () => {
+        const { container } = render(<SamuraiSidebar />);
+        expand(container);
+        fireEvent.keyDown(document, { key: "Escape" });
+        expect(container.querySelector(".samurai-panel")).toBeNull();
+    });
+
+    it("has no backdrop while collapsed", () => {
+        const { container } = render(<SamuraiSidebar />);
+        expect(container.querySelector(".samurai-backdrop")).toBeNull();
     });
 
     it("also opens the panel when the mobile burger is clicked", () => {

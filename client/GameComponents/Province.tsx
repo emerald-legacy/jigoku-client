@@ -155,6 +155,7 @@ function Province({
             onDragLeave={ onDragLeave }
             onDragOver={ onDragOver }
             onDrop={ (event) => handleDragDrop(event, source) }
+            data-drop-target={ source }
             style={ provinceCard ? { ...getWrapperStyle(provinceCard) } : {} }
         >
             <div className="panel-header">{ headerText }</div>

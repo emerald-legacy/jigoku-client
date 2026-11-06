@@ -111,4 +111,16 @@ describe("<InnerProfile /> save flow", () => {
         fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
         expect(saveProfileSpy.mock.calls[0][0].payload.settings.background).toBe("CRANE");
     });
+
+    it("lets keyboard users pick a card size, and marks the chosen one", () => {
+        render(<InnerProfile user={ userFixture as any } />);
+        const large = screen.getByRole("radio", { name: "Large" });
+        expect(screen.getByRole("radio", { name: "Normal" }).getAttribute("aria-checked")).toBe("true");
+
+        fireEvent.keyDown(large, { key: "Enter" });
+
+        expect(large.getAttribute("aria-checked")).toBe("true");
+        fireEvent.click(screen.getByRole("button", { name: "Save changes" }));
+        expect(saveProfileSpy.mock.calls[0][0].payload.settings.cardSize).toBe("large");
+    });
 });

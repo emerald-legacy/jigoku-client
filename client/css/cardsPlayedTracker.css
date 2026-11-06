@@ -15,3 +15,13 @@
     font-size: var(--text-h1);
     font-variant-numeric: tabular-nums;
 }
+
+.cards-played-tracker__icon {
+    opacity: 0.55;
+}
+
+.cards-played-tracker__label {
+    margin-left: 4px;
+    font-size: var(--text-caption);
+    color: rgb(var(--sage-rgb) / 0.9);
+}
