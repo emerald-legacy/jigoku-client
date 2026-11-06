@@ -44,6 +44,10 @@
     max-height: 380px;
 }
 
+.menu-pane .panel.menu-pane-scroll {
+    overflow-y: auto;
+}
+
 .menu-pane-title {
     font-family: var(--font-body);
     font-size: var(--text-body);

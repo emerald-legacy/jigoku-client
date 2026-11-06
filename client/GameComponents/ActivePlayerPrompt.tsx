@@ -270,7 +270,8 @@ function ActivePlayerPrompt({
                 </div>
                 { promptTitleElement }
                 <div className="menu-pane">
-                    <div className="panel">
+                    { /* A long button list scrolls inside the panel; not with a card-name search, whose suggestion list would be cut off */ }
+                    <div className={ controls?.some((control) => control.type === "card-name") ? "panel" : "panel menu-pane-scroll" }>
                         <div className="menu-pane-title">{ title }</div>
                         { renderedControls }
                         { renderedButtons }

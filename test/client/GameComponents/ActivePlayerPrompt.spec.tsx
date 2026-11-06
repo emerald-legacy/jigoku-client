@@ -274,3 +274,19 @@ describe("the <ActivePlayerPrompt /> targeting controls", () => {
         expect(screen.queryAllByTestId("ability-targeting")).toHaveLength(0);
     });
 });
+
+describe("the <ActivePlayerPrompt /> panel", () => {
+    const panel = () => document.querySelector(".menu-pane .panel") as HTMLElement;
+
+    it("lets a long button list scroll inside the panel", () => {
+        render(<ActivePlayerPrompt title="How much fate to spend?" buttons={ Array.from({ length: 13 }, (_, i) => ({ text: `${i}`, arg: `${i}` })) } />);
+
+        expect(panel().className).toContain("menu-pane-scroll");
+    });
+
+    it("doesn't scroll when a card-name search is in it, so its suggestions aren't cut off", () => {
+        render(<ActivePlayerPrompt title="Name a card" controls={ [{ type: "card-name", uuid: "prompt-uuid", command: "menuButton", method: "selectCardName" } as Control] } />);
+
+        expect(panel().className).not.toContain("menu-pane-scroll");
+    });
+});
