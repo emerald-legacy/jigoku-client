@@ -186,7 +186,7 @@
     .form-group { @apply mb-4 flex flex-wrap items-center; }
     .form-control { @apply w-full h-[34px] px-3 py-1.5 bg-white text-black border border-gray-300 rounded text-body shadow-inner transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary; }
     textarea.form-control { height: auto; }
-    .control-label { @apply mb-0 font-bold text-body text-right pr-2; }
+    .control-label { @apply mb-0 font-bold text-body sm:text-right pr-2; }
     .help-block { @apply mt-1 text-body text-danger; }
     .checkbox { @apply flex items-center gap-1 text-body py-0.5; }
     .checkbox label { @apply flex items-center gap-1.5 cursor-pointer; }
@@ -272,7 +272,8 @@
     .small { @apply text-body; }
     .text-muted { @apply text-gray-500; }
     .pull-right { @apply float-right; }
-    /* Column grid */
+    /* Column grid. As in Bootstrap, a sm/md column is full width below its breakpoint; an xs class still wins there (declared after this rule) */
+    .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-12, .col-md-6 { @apply w-full; }
     .col-xs-2 { @apply w-2/12 px-[15px]; }
     .col-xs-8 { @apply w-8/12 px-[15px]; }
     .col-xs-12 { @apply w-full px-[15px]; }
@@ -296,7 +297,6 @@
     /* Form horizontal */
     .form-horizontal .form-group { @apply ml-0 mr-0 flex flex-wrap items-center mb-3; }
     .form-horizontal .form-group .form-group { @apply mb-0 contents; }
-    .form-horizontal .control-label { @apply text-right; }
 
     /* Dropdown */
     .dropdown { @apply relative; }
