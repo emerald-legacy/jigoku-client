@@ -176,3 +176,12 @@
     -khtml-user-select: none;
     user-select: none;
 }
+
+/* iOS zooms the page in when a text field under 16px gets focus, so touch screens get 16px fields. */
+@media (pointer: coarse) {
+    input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"]),
+    textarea,
+    select {
+        font-size: var(--text-lead);
+    }
+}
