@@ -103,7 +103,7 @@
     position: absolute;
     right: 5px;
     bottom: 5px;
-    width: 410px;
+    width: var(--chat-width);
     height: calc(100% - 360px);
     min-height: 200px;
     display: flex;

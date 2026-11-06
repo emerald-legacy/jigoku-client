@@ -96,7 +96,7 @@
     --card-xxl-height: 210px;
 
     /* Layout */
-    --chat-width: 410px;
+    --chat-width: min(410px, 35vw); /* narrower on tablets, so the board keeps more room */
     --center-bar-height: 90px;
     --sidebar-width: 125px;
     --scrollbar-width: 20px;

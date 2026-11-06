@@ -93,7 +93,8 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     const zoomCard = (props.zoomCard ?? boundActions.zoomCard) as ActionFn;
     const clearZoom = (props.clearZoom ?? boundActions.clearZoom) as ActionFn;
 
-    const [showChat, setShowChat] = useState(true);
+    // Below 1280px the board needs the room, so the chat starts collapsed there (the chat button opens it).
+    const [showChat, setShowChat] = useState(() => window.innerWidth >= 1280);
     const [showChatAlert, setShowChatAlert] = useState(false);
     const [showConflictDeck, setShowConflictDeck] = useState(false);
     const [showDynastyDeck, setShowDynastyDeck] = useState(false);
