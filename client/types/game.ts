@@ -68,8 +68,6 @@ export interface Card {
     isConflict?: boolean;
     isStronghold?: boolean;
     isBroken?: boolean;
-    inDanger?: boolean;
-    saved?: boolean;
     unselectable?: boolean;
     abilityLimits?: AbilityLimit[];
     strengthSummary?: SkillSummary;

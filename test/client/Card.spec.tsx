@@ -210,17 +210,6 @@ describe("the <Card /> component", () => {
         });
     });
 
-    describe("that is in danger", () => {
-        beforeEach(() => {
-            render(<Card card={ { ...card, inDanger: true } } source="hand" />);
-        });
-
-        it("should mark the card as in-danger", () => {
-            const cardElement = document.querySelector(".card");
-            expect(cardElement.className).toContain("in-danger");
-        });
-    });
-
     describe("that is in conflict", () => {
         beforeEach(() => {
             render(<Card card={ { ...card, inConflict: true } } source="play area" />);

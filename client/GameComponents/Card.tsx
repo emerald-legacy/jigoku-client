@@ -363,10 +363,6 @@ function Card(props: CardProps) {
             cardClass += " selected";
         } else if(card.selectable) {
             cardClass += " selectable";
-        } else if(card.inDanger) {
-            cardClass += " in-danger";
-        } else if(card.saved) {
-            cardClass += " saved";
         } else if(card.inConflict) {
             cardClass += " conflict";
         } else if(card.covert) {

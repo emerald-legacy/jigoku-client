@@ -18,6 +18,7 @@
     --jade-vivid-rgb: 125 194 66;     /* hover and active accents, selection */
     --jade-glow-rgb: 80 160 60;       /* button hover halo */
     --jade-deep-rgb: 62 146 56;       /* resolved/positive states */
+    --jade-pale-rgb: 204 255 153;     /* glow of a card you may select */
     --tertiary-rgb: 94 160 38;        /* links, active and selected states — literal in @theme */
     --success-rgb: 92 184 92;         /* success — literal in @theme */
 
@@ -92,6 +93,9 @@
     --element-air: rgb(var(--element-air-rgb));
     --element-void: rgb(var(--element-void-rgb));
     --element-void-deep: rgb(var(--element-void-deep-rgb));
+
+    /* Card states without a home in the families above */
+    --covert-rgb: 153 0 204;          /* a covert character */
 
     /* Golds and ambers — patron trim, warnings, the fire flare */
     --gold-rgb: 212 175 55;           /* patron names */

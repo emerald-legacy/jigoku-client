@@ -207,9 +207,8 @@
         width: var(--card-height);
     }
 
-    /* lighten(var(--color-primary), 60%) = HSL(90,100%,80%) ≈ #ccff99, fadeout 10% = alpha 0.9 */
     &.selectable {
-        & .card-image { box-shadow: 0 0 10px 1px rgba(204, 255, 153, 0.9); }
+        & .card-image { box-shadow: 0 0 10px 1px rgb(var(--jade-pale-rgb) / 0.9); }
     }
 
     /* Safari leaves the previous card painted behind when a filter-induced compositing layer is
@@ -224,10 +223,6 @@
         & .card-image {
             filter: grayscale(100%);
         }
-    }
-
-    &.in-danger {
-        & .card-image { box-shadow: 0 0 1px 2px red; }
     }
 
     /* Out of play but still playable (set aside by an effect for the round). Amber, so it does
@@ -247,8 +242,9 @@
         }
     }
 
+    /* Sky, so a card taken from you isn't confused with the amber "playable out of play" */
     &.controlled {
-        & .card-image { box-shadow: 0 0 1px 2px var(--color-warning); }
+        & .card-image { box-shadow: 0 0 1px 2px var(--sky); }
     }
 
     &.conflict {
@@ -256,7 +252,7 @@
     }
 
     &.covert {
-        & .card-image { box-shadow: 0 0 1px 2px #9900cc; }
+        & .card-image { box-shadow: 0 0 1px 2px rgb(var(--covert-rgb)); }
     }
 
     /* The card a hovered chat-log name points at: bright jade, dashed so it isn't mistaken for "selected" */
