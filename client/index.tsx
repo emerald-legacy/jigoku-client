@@ -63,7 +63,7 @@ const render = () => {
                         mobileOffset={ { top: 48 } }
                         duration={ 4000 }
                     />
-                    <ErrorBoundary message={ "We're sorry, a critical error has occurred in the client and we're unable to show you anything. Please try refreshing your browser after filling out a report." }>
+                    <ErrorBoundary message={ "Something went wrong and the site can't be shown." }>
                         <Application />
                     </ErrorBoundary>
                 </div>

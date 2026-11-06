@@ -235,3 +235,16 @@ button:focus-visible,
     font-style: italic;
     color: rgb(var(--sage-rgb) / 0.8);
 }
+
+/* Buttons under an error message, and the not-found / no-access pages */
+.error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.error-page {
+    padding: 1.5rem;
+    text-align: center;
+}
