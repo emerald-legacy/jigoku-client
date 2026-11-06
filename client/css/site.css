@@ -411,6 +411,16 @@ ol.htp-legend > li::before {
     color: rgb(var(--sage-pale-rgb) / 0.6);
 }
 
+.window-timer-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    & .form-control {
+        width: 4rem;
+    }
+}
+
 .timer-toggles {
     clear: both;
     margin-top: 1.25rem;

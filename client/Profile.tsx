@@ -210,10 +210,10 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                             max={ 10 }
                                             min={ 0 } />
                                     </div>
-                                    <div className="col-sm-2">
-                                        <input className="form-control text-center" name="timer" value={ settings.windowTimer } onChange={ handleSlideStop } />
+                                    <div className="col-sm-4 window-timer-value">
+                                        <input className="form-control text-center" name="timer" aria-label="Window timeout in seconds" value={ settings.windowTimer } onChange={ handleSlideStop } />
+                                        <span>seconds</span>
                                     </div>
-                                    <label className="col-sm-1 control-label">seconds</label>
                                 </div>
                                 <div className="form-group timer-toggles">
                                     <Checkbox name="timerSettings.events" noGroup label="Show timer for opponent's events" fieldClass="col-sm-6"

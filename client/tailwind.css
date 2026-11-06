@@ -274,7 +274,7 @@
     .text-muted { @apply text-gray-500; }
     .pull-right { @apply float-right; }
     /* Column grid. As in Bootstrap, a sm/md column is full width below its breakpoint; an xs class still wins there (declared after this rule) */
-    .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-12, .col-md-6 { @apply w-full; }
+    .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-12, .col-md-6, .col-lg-2, .col-lg-3, .col-lg-6 { @apply w-full; }
     .col-xs-2 { @apply w-2/12 px-[15px]; }
     .col-xs-8 { @apply w-8/12 px-[15px]; }
     .col-xs-12 { @apply w-full px-[15px]; }
@@ -291,10 +291,16 @@
     .col-sm-10 { @apply sm:w-10/12 px-[15px]; }
     .col-sm-12 { @apply sm:w-full px-[15px]; }
     .col-md-6 { @apply md:w-6/12 px-[15px]; }
+    /* lg is Tailwind's 1024px: forms that are too narrow on tablets switch to their desktop columns there */
+    .col-lg-2 { @apply lg:w-2/12 px-[15px]; }
+    .col-lg-3 { @apply lg:w-3/12 px-[15px]; }
+    .col-lg-6 { @apply lg:w-6/12 px-[15px]; }
     /* Column offsets */
     .col-sm-offset-2 { @apply sm:ml-[16.666667%]; }
     .col-sm-offset-3 { @apply sm:ml-[25%]; }
     .col-sm-offset-4 { @apply sm:ml-[33.333333%]; }
+    .col-lg-offset-2 { @apply lg:ml-[16.666667%]; }
+    .col-lg-offset-3 { @apply lg:ml-[25%]; }
     /* Form horizontal */
     .form-horizontal .form-group { @apply ml-0 mr-0 flex flex-wrap items-center mb-3; }
     .form-horizontal .form-group .form-group { @apply mb-0 contents; }

@@ -457,14 +457,14 @@ export default function InnerDeckEditor({
                     onChange={ handleAllianceChange } value={ deck.alliance ? deck.alliance.value : undefined }
                     valueKey="value" nameKey="name" blankOption={ { name: "- Select -", value: "" } } />
 
-                <Typeahead name="card" label="Card" labelClass="col-sm-3" fieldClass="col-sm-4" labelKey="name" options={ cardsArray }
+                <Typeahead name="card" label="Card" labelClass="col-sm-3" fieldClass="col-sm-9" labelKey="name" options={ cardsArray }
                     onChange={ handleAddCardChange }>
-                    <Input name="numcards" type="text" label="Num" labelClass="col-sm-1" fieldClass="col-sm-2"
-                        value={ numberToAdd.toString() } onChange={ handleNumberToAddChange }>
-                        <div className="col-sm-1">
-                            <button className="btn btn-primary add-card-button" onClick={ handleAddCard }>Add</button>
-                        </div>
-                    </Input>
+                    <div className="col-sm-offset-3 col-sm-9 add-card-row">
+                        <label htmlFor="numcards" className="add-card-count-label">Copies</label>
+                        <input id="numcards" type="text" inputMode="numeric" className="form-control add-card-count"
+                            value={ numberToAdd.toString() } onChange={ handleNumberToAddChange } />
+                        <button className="btn btn-primary add-card-button" onClick={ handleAddCard }>Add</button>
+                    </div>
                 </Typeahead>
                 <TextArea name="cards" label="Cards" labelClass="col-sm-3" fieldClass="col-sm-9" rows={ 10 } value={ cardList }
                     onChange={ handleCardListChange } />

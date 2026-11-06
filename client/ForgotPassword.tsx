@@ -80,7 +80,7 @@ export function ForgotPassword() {
 
         return (
             <div key={ field.name } className={ className }>
-                <label htmlFor={ field.name } className="col-sm-2 control-label">{ field.label }</label>
+                <label htmlFor={ field.name } className="col-sm-3 col-lg-2 control-label">{ field.label }</label>
                 <div className="col-sm-6">
                     <input
                         type={ field.inputType }
@@ -107,7 +107,7 @@ export function ForgotPassword() {
         <div>
             { errorBar }
             <AlertPanel type="info" message="To start the password recovery process, please enter your username and click the submit button." />
-            <div className="col-sm-6 col-sm-offset-3">
+            <div className="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
                 <div className="panel-title">
                     Forgot password
                 </div>
@@ -115,7 +115,7 @@ export function ForgotPassword() {
                     <form className="form form-horizontal">
                         { fieldsToRender }
                         <div className="form-group">
-                            <div className="col-sm-offset-2 col-sm-3">
+                            <div className="col-sm-offset-3 col-lg-offset-2 col-sm-3">
                                 { submitting ? (
                                     <button type="submit" className="btn btn-primary" disabled>Submitting...</button>
                                 ) : (

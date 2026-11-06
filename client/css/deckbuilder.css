@@ -299,8 +299,21 @@
     transform: translateY(-2px) scale(1.03);
 }
 
-.add-card-button {
-    margin: 5px 0;
+/* Copies and Add sit on their own line under the card search */
+.add-card-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.add-card-count-label {
+    font-weight: bold;
+}
+
+.add-card-count {
+    width: 4rem;
+    text-align: center;
 }
 
 .deck-stats {
