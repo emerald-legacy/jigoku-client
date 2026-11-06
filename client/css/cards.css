@@ -530,7 +530,13 @@
     color: var(--white);
     text-shadow: 1px 1px 2px var(--black);
     z-index: calc(var(--layer-cards) + 3);
-    font-size: 0.5em;
+    /* At least caption size: half the token was about 9px on a normal card and 7px on a small one */
+    font-size: max(var(--text-caption), 0.62em);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-variant-numeric: lining-nums tabular-nums;
+    -webkit-text-stroke: 2px rgb(var(--black-rgb) / 0.8);
+    paint-order: stroke fill;
 }
 
 @media(max-width: 1279px) {
