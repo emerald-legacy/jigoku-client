@@ -25,6 +25,31 @@ describe("<StatusPopOver />", () => {
         expect(screen.queryByTestId("body")).toBeNull();
     });
 
+    describe("on a touch screen", () => {
+        // A tap sends touchstart, then the emulated mouse events, then click.
+        const tap = (element: Element) => {
+            fireEvent.touchStart(element);
+            fireEvent.mouseOver(element);
+            fireEvent.click(element);
+        };
+
+        it("opens on a tap and closes on a second tap", () => {
+            const { container } = render(<StatusPopOver status="Invalid" show><span data-testid="body">deck too small</span></StatusPopOver>);
+            const trigger = container.querySelector(".status-popover-container") as HTMLElement;
+            tap(trigger);
+            expect(screen.getByTestId("body")).toBeInTheDocument();
+            tap(trigger);
+            expect(screen.queryByTestId("body")).toBeNull();
+        });
+
+        it("closes on a tap outside", () => {
+            const { container } = render(<><StatusPopOver status="Invalid" show><span data-testid="body">deck too small</span></StatusPopOver><p>elsewhere</p></>);
+            tap(container.querySelector(".status-popover-container") as HTMLElement);
+            fireEvent.click(screen.getByText("elsewhere"));
+            expect(screen.queryByTestId("body")).toBeNull();
+        });
+    });
+
     it("renders untrusted strings as text, not HTML (regression: previously rendered via dangerouslySetInnerHTML)", () => {
         const malicious = "<img src=x onerror=\"alert(1)\">attacker</img>";
         const { container } = render(

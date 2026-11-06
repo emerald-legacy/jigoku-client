@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useLayoutEffect, useRef } from "react";
+
+import { useHoverOrTap } from "./useHoverOrTap";
 import type { ReactNode } from "react";
 
 interface StatusPopOverProps {
@@ -8,7 +10,25 @@ interface StatusPopOverProps {
 }
 
 function StatusPopOver({ children, show, status }: StatusPopOverProps) {
-    const [isHovered, setIsHovered] = useState(false);
+    const popover = useHoverOrTap<true>();
+    const popoverRef = useRef<HTMLDivElement | null>(null);
+
+    // Centred under the status, but shifted back inside the window when that would cut it off at a screen edge.
+    useLayoutEffect(() => {
+        const element = popoverRef.current;
+        if(!element) {
+            return;
+        }
+        element.style.marginLeft = "0px";
+        const margin = 8;
+        const rect = element.getBoundingClientRect();
+        const shift = Math.max(margin - rect.left, 0) + Math.min(window.innerWidth - margin - rect.right, 0);
+        element.style.marginLeft = `${shift}px`;
+        const arrow = element.querySelector<HTMLElement>(".arrow");
+        if(arrow) {
+            arrow.style.marginLeft = `${-shift}px`;
+        }
+    }, [popover.shown]);
 
     if(!show) {
         return <span>{ status }</span>;
@@ -17,13 +37,13 @@ function StatusPopOver({ children, show, status }: StatusPopOverProps) {
     return (
         <span
             className="status-popover-container"
-            onMouseEnter={ () => setIsHovered(true) }
-            onMouseLeave={ () => setIsHovered(false) }
+            { ...popover.triggerProps("status", true) }
             style={ { position: "relative", cursor: "pointer" } }
         >
             { status }
-            { isHovered && (
+            { popover.shown && (
                 <div
+                    ref={ popoverRef }
                     className="popover bottom in"
                     style={ {
                         display: "block",
@@ -33,7 +53,7 @@ function StatusPopOver({ children, show, status }: StatusPopOverProps) {
                         transform: "translateX(-50%)",
                         zIndex: 1060,
                         minWidth: "200px",
-                        maxWidth: "300px"
+                        maxWidth: "min(300px, calc(100vw - 16px))"
                     } }
                 >
                     <div className="arrow" style={ { left: "50%" } } />
