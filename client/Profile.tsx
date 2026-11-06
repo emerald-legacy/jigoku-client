@@ -21,6 +21,7 @@ import {
 import { backgrounds } from "./backgrounds";
 import { DialPicker, TokenPicker, RingPicker, PromoPicker } from "./ProfileCosmetics";
 import { asset } from "./assetUrl";
+import { activateOnKey } from "./keyboardActivate";
 
 const windows = [
     { name: "dynasty", label: "Dynasty phase", style: "col-sm-4" },
@@ -32,6 +33,17 @@ const windows = [
 
 interface InnerProfileProps {
     user?: User & { promptedActionWindows?: Record<string, boolean> };
+}
+
+/** A picture choice (card size, board background) that works like a radio button, also from the keyboard */
+function pickerProps(selected: boolean, onPick: () => void) {
+    return {
+        role: "radio",
+        "aria-checked": selected,
+        tabIndex: 0,
+        onClick: onPick,
+        onKeyDown: activateOnKey(onPick)
+    };
 }
 
 export function InnerProfile({ user }: InnerProfileProps) {
@@ -303,36 +315,36 @@ export function InnerProfile({ user }: InnerProfileProps) {
                             </div>
                             <div className="panel">
                                 <div className="row">
-                                    <div className="col-xs-12">
-                                        <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "small" }) }>
+                                    <div className="col-xs-12" role="radiogroup" aria-label="Card image size">
+                                        <div className="card-settings" { ...pickerProps(settings.cardSize === "small", () => dispatch({ type: "setting", field: "cardSize", value: "small" })) }>
                                             <div className={ `card small vertical${settings.cardSize === "small" ? " selected" : ""}` }>
                                                 <img className="card small vertical"
                                                     src={ asset("cardbacks/dynastycardback.webp") } />
                                             </div>
                                             <span className="bg-label">Small</span>
                                         </div>
-                                        <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "normal" }) }>
+                                        <div className="card-settings" { ...pickerProps(settings.cardSize === "normal", () => dispatch({ type: "setting", field: "cardSize", value: "normal" })) }>
                                             <div className={ `card vertical${settings.cardSize === "normal" ? " selected" : ""}` }>
                                                 <img className="card vertical"
                                                     src={ asset("cardbacks/dynastycardback.webp") } />
                                             </div>
                                             <span className="bg-label">Normal</span>
                                         </div>
-                                        <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "large" }) }>
+                                        <div className="card-settings" { ...pickerProps(settings.cardSize === "large", () => dispatch({ type: "setting", field: "cardSize", value: "large" })) }>
                                             <div className={ `card vertical large${settings.cardSize === "large" ? " selected" : ""}` }>
                                                 <img className="card-image large vertical"
                                                     src={ asset("cardbacks/dynastycardback.webp") } />
                                             </div>
                                             <span className="bg-label">Large</span>
                                         </div>
-                                        <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "x-large" }) }>
+                                        <div className="card-settings" { ...pickerProps(settings.cardSize === "x-large", () => dispatch({ type: "setting", field: "cardSize", value: "x-large" })) }>
                                             <div className={ `card vertical x-large${settings.cardSize === "x-large" ? " selected" : ""}` }>
                                                 <img className="card-image x-large vertical"
                                                     src={ asset("cardbacks/dynastycardback.webp") } />
                                             </div>
                                             <span className="bg-label">Extra-Large</span>
                                         </div>
-                                        <div className="card-settings" onClick={ () => dispatch({ type: "setting", field: "cardSize", value: "xxl" }) }>
+                                        <div className="card-settings" { ...pickerProps(settings.cardSize === "xxl", () => dispatch({ type: "setting", field: "cardSize", value: "xxl" })) }>
                                             <div className={ `card vertical xxl${settings.cardSize === "xxl" ? " selected" : ""}` }>
                                                 <img className="card-image xxl vertical"
                                                     src={ asset("cardbacks/dynastycardback.webp") } />
@@ -393,10 +405,10 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                 Game Board Background
                             </div>
                             <div className="panel">
-                                <div className="bg-grid">
+                                <div className="bg-grid" role="radiogroup" aria-label="Game board background">
                                     { backgrounds.map(bg => (
-                                        <div key={ bg.value } className="bg-swatch" onClick={ () => dispatch({ type: "setting", field: "background", value: bg.value }) }>
-                                            <img className={ `img-responsive${settings.background === bg.value ? " selected" : ""}` } src={ bg.thumbnail } />
+                                        <div key={ bg.value } className="bg-swatch" { ...pickerProps(settings.background === bg.value, () => dispatch({ type: "setting", field: "background", value: bg.value })) }>
+                                            <img className={ `img-responsive${settings.background === bg.value ? " selected" : ""}` } src={ bg.thumbnail } alt="" />
                                             <span className="bg-label">{ bg.label }</span>
                                         </div>
                                     )) }

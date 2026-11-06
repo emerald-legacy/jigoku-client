@@ -54,3 +54,30 @@ describe("<DeckRow /> status pill", () => {
         expect(pill().className).toContain("invalid");
     });
 });
+
+describe("<DeckRow /> keyboard", () => {
+    it("opens the deck with Enter or Space, like a button", () => {
+        const onClick = vi.fn();
+        render(<DeckRow deck={ deck } onClick={ onClick } />);
+        const row = screen.getByRole("button", { name: /Crane Duelists/ });
+
+        fireEvent.keyDown(row, { key: "Enter" });
+        fireEvent.keyDown(row, { key: " " });
+
+        expect(onClick).toHaveBeenCalledTimes(2);
+    });
+
+    it("leaves keys inside the checkbox to the checkbox", () => {
+        const onClick = vi.fn();
+        render(<DeckRow deck={ deck } showCheckbox onClick={ onClick } onCheckboxChange={ vi.fn() } />);
+
+        fireEvent.keyDown(screen.getByRole("checkbox"), { key: "Enter" });
+
+        expect(onClick).not.toHaveBeenCalled();
+    });
+
+    it("names the clan icon", () => {
+        render(<DeckRow deck={ deck } />);
+        expect(screen.getByAltText("Crane")).toBeInTheDocument();
+    });
+});

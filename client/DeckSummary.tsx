@@ -128,6 +128,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
                 <img
                     className="hover-image"
                     src={ getCardImagePath(cardToShow, packIdToShow) }
+                    alt={ cardToShow.name }
                 />
             ) : null }
             <div className="decklist">
@@ -136,6 +137,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
                         <img
                             className="deck-mon img-responsive"
                             src={ asset(`mons/${deck.faction.value}.png`) }
+                            alt=""
                         />
                     ) : null }
                 </div>
@@ -182,6 +184,7 @@ function DeckSummary({ cards, deck, stats }: DeckSummaryProps) {
                         <img
                             className="deck-alliance-mon img-responsive"
                             src={ asset(`mons/${deck.alliance.value}.png`) }
+                            alt=""
                         />
                     ) : null }
                 </div>
