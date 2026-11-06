@@ -243,8 +243,8 @@
     .modal-backdrop.fade { @apply opacity-0 transition-opacity duration-150; }
     .modal-backdrop.fade.in { @apply opacity-100; }
     .modal-dialog { @apply relative mx-4 sm:mx-auto mt-[10vh] max-w-lg z-50; }
-    .modal-content { @apply bg-gray-800 border border-gray-600 rounded-lg shadow-xl; }
-    .modal-header { @apply flex flex-row-reverse items-center p-4 border-b border-gray-600; }
+    .modal-content { @apply rounded-lg shadow-xl; background: var(--ink); border: 1px solid rgb(var(--jade-rgb) / 0.2); }
+    .modal-header { @apply flex flex-row-reverse items-center p-4; border-bottom: 1px solid rgb(var(--jade-rgb) / 0.2); }
     .modal-header .modal-title { @apply flex-1 text-center; }
     .modal-body { @apply p-4; }
     .modal-title { @apply text-lead font-bold; }
@@ -265,7 +265,9 @@
     .no-highlight { user-select: none; }
 
     /* Navbar menu: a row from md up; below md a full-width panel under the bar, opened by the toggle */
-    .navbar-toggle { @apply md:hidden ml-auto flex flex-col items-center justify-center w-11 h-11 text-gray-400; }
+    .navbar-toggle { @apply md:hidden ml-auto flex flex-col items-center justify-center w-11 h-11; }
+    .navbar-toggle-bar { @apply block w-[22px] h-0.5 rounded my-1; background: rgb(var(--sage-rgb) / 0.8); }
+    .navbar-brand { @apply font-bold text-body py-2 leading-tight mr-2 no-underline; color: rgb(var(--sage-rgb) / 0.8); }
     .navbar-menu { @apply flex-col w-full max-h-[calc(100dvh-40px)] overflow-y-auto pb-2 md:flex-row md:items-center md:flex-1 md:w-auto md:max-h-none md:overflow-visible md:pb-0; }
     .navbar-open { background: rgb(var(--ink-rgb) / 0.97); }
     .navbar-list { @apply flex flex-col md:flex-row list-none m-0 p-0; }
@@ -273,9 +275,8 @@
 
     /* Navbar links and items */
     .navbar li { @apply flex items-center; }
-    .navbar li a { @apply block px-2 text-body text-gray-400 no-underline rounded transition-colors hover:text-white hover:bg-white/10; line-height: 40px; }
-    .navbar li.active > a { @apply text-white bg-white/15; }
-    .navbar li span { @apply block px-2 text-body text-gray-400; line-height: 40px; }
+    .navbar li a { @apply block px-2 text-body no-underline rounded transition-colors hover:bg-white/10; line-height: 40px; }
+    .navbar li span { @apply block px-2 text-body; line-height: 40px; color: rgb(var(--sage-rgb) / 0.8); }
     .navbar li a, .navbar li span { @apply max-md:leading-[44px]; }
     /* In the stacked menu a dropdown opens inline under its toggle instead of floating over the items below */
     .navbar li.dropdown { @apply max-md:flex-col max-md:items-stretch; }
@@ -337,11 +338,15 @@
     /* Dropdown */
     .dropdown { @apply relative; }
     .dropdown-toggle { @apply cursor-pointer flex items-center gap-1; }
+    /* Dropdowns and dialogs use the site's ink surface with a faint jade border, like its panels */
     .dropdown-menu {
-        @apply absolute top-full left-0 bg-gray-800 border border-gray-600 rounded shadow-lg z-50 list-none p-1 m-0 hidden whitespace-nowrap;
+        @apply absolute top-full left-0 rounded shadow-lg z-50 list-none p-1 m-0 hidden whitespace-nowrap;
+        background: var(--ink);
+        border: 1px solid rgb(var(--jade-rgb) / 0.2);
     }
     .dropdown-menu li { @apply block; }
-    .dropdown-menu li a { @apply block w-full px-3 py-1 text-white no-underline hover:bg-gray-700 rounded leading-normal; }
+    .dropdown-menu li a { @apply block w-full px-3 py-1 no-underline rounded leading-normal; color: var(--color-foreground); }
+    .dropdown-menu li a:hover { background: rgb(var(--moss-rgb) / 0.6); }
     .dropdown.open .dropdown-menu { @apply block; }
 
     /* Typeahead: override hidden dropdown-menu inside rbt container */

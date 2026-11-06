@@ -149,3 +149,15 @@ describe("the <InnerNavBar /> mobile menu", () => {
         expect(dropdownOf("Help").classList.contains("open")).toBe(false);
     });
 });
+
+describe("the <InnerNavBar /> game count", () => {
+    it("says 1 Game for a single game", () => {
+        render(<InnerNavBar title="Jigoku" numGames={ 1 } />, { wrapper });
+        expect(screen.getByText("1 Game")).toBeInTheDocument();
+    });
+
+    it("says n Games otherwise", () => {
+        render(<InnerNavBar title="Jigoku" numGames={ 3 } />, { wrapper });
+        expect(screen.getByText("3 Games")).toBeInTheDocument();
+    });
+});

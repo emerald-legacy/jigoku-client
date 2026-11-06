@@ -126,7 +126,7 @@ export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: I
     const leftMenuToRender = leftMenu?.map(renderMenuItem);
     const rightMenuToRender = rightMenu?.map(renderMenuItem);
 
-    const numGamesElement = numGames !== undefined ? <li><span>{ `${numGames} Games` }</span></li> : null;
+    const numGamesElement = numGames !== undefined ? <li><span>{ numGames === 1 ? "1 Game" : `${numGames} Games` }</span></li> : null;
 
     const contextMenu = context?.map((menuItem: NavContextItem) => (
         <li key={ menuItem.text } style={ { position: "relative" } }
@@ -149,16 +149,16 @@ export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: I
     return (
         <nav ref={ navRef } className={ navbarCollapsed ? "navbar navbar-inverse no-highlight" : "navbar navbar-inverse navbar-open no-highlight" }>
             <div className="max-w-[1170px] mx-auto px-4 flex items-center flex-wrap text-body">
-                <Link to="/" className="text-gray-400 font-bold text-body py-2 leading-tight mr-2">{ title }</Link>
+                <Link to="/" className="navbar-brand">{ title }</Link>
                 <button className="navbar-toggle md:hidden"
                     type="button"
                     aria-expanded={ !navbarCollapsed }
                     aria-controls="navbar"
                     onClick={ handleNavbarToggle }>
                     <span className="sr-only">Toggle Navigation</span>
-                    <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
-                    <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
-                    <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
+                    <span className="navbar-toggle-bar" />
+                    <span className="navbar-toggle-bar" />
+                    <span className="navbar-toggle-bar" />
                 </button>
                 <div id="navbar" className={ navbarCollapsed ? "navbar-menu hidden md:flex" : "navbar-menu flex" }>
                     <ul className="navbar-list">
