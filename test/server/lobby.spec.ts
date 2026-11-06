@@ -600,6 +600,26 @@ describe("Lobby.onNodeReconnected", () => {
         expect(game.players.bob.owner).toBe(false);
         expect(ctx.broadcastGameList).toHaveBeenCalled();
     });
+
+    it("keeps a player who left as a left seat, so they can rejoin after a lobby restart", () => {
+        const ctx: NodeReconnectedCtx = {
+            games: {},
+            router: { workers: { "node-1": { identity: "node-1" } } },
+            broadcastGameList: vi.fn()
+        };
+
+        onNodeReconnected.call(ctx, "node-1", [nodeGame({ players: {
+            alice: { id: "a", name: "alice", faction: "crane", owner: true, deck: {}, left: true },
+            bob: { id: "b", name: "bob", faction: "crab", owner: false, deck: {} }
+        } })]);
+
+        const game = ctx.games.g1;
+        expect(game.players.alice.left).toBe(true);
+        expect(game.players.bob.left).toBeFalsy();
+        expect(gameListProto.canRejoin(game, "alice")).toBe(true);
+        expect(gameListProto.canRejoin(game, "bob")).toBe(false);
+        expect(Object.keys(game.getSummary().players)).toEqual(["bob"]);
+    });
 });
 
 type StartGameCtx = {
