@@ -100,7 +100,7 @@ export default function CenterBar(props: CenterBarProps) {
             { anyRemoved
                 ? <RingRow rings={ rings } owner={ null } cardSize={ cardSize } showRingEffects={ showRingEffects } gameMode={ gameMode } onClick={ props.onRingClick } onMenuItemClick={ props.onRingMenuItemClick } removed className="ring-panel removed-rings" ringSet={ ringSet } />
                 : null }
-            <ConflictPanel conflict={ conflict } otherPlayer={ otherPlayer } />
+            <ConflictPanel conflict={ conflict } thisPlayer={ thisPlayer } otherPlayer={ otherPlayer } />
             <CardsPlayedTracker conflict={ conflict } thisPlayer={ thisPlayer } otherPlayer={ otherPlayer } />
         </div>
     );
