@@ -185,3 +185,32 @@
         font-size: var(--text-lead);
     }
 }
+
+/* Toasts (sonner, dark theme): the site's ink surface and jade border, the type as a coloured left edge.
+   ".body" outranks sonner's own rules, which it injects into the page after this stylesheet. */
+.body [data-sonner-toaster][data-sonner-theme="dark"] {
+    --normal-bg: var(--ink);
+    --normal-border: rgb(var(--jade-rgb) / 0.2);
+    --normal-text: var(--color-foreground);
+}
+
+.body [data-sonner-toast][data-styled="true"] {
+    font-family: var(--font-body);
+    box-shadow: 0 8px 24px rgb(var(--black-rgb) / 0.5);
+}
+
+.body [data-sonner-toast][data-type="error"] {
+    border-left: 3px solid var(--color-danger);
+}
+
+.body [data-sonner-toast][data-type="success"] {
+    border-left: 3px solid var(--color-success);
+}
+
+.body [data-sonner-toast][data-type="warning"] {
+    border-left: 3px solid var(--color-warning);
+}
+
+.body [data-sonner-toast][data-type="info"] {
+    border-left: 3px solid var(--color-info);
+}
