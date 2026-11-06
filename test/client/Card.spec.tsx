@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import React from "react";
 
 vi.mock("../../client/GameComponents/CardMenu.tsx", () => ({
@@ -434,6 +434,15 @@ describe("the <Card /> component", () => {
             const touchEnd = new TouchEvent("touchend", { bubbles: true, cancelable: true });
             document.querySelector(".card")!.dispatchEvent(touchEnd);
             expect(touchEnd.defaultPrevented).toBe(true);
+        });
+
+        it("shows the card's stats after a long press, until the next touch", () => {
+            press();
+            act(() => vi.advanceTimersByTime(500));
+            expect(document.querySelector(".card-frame")!.className).toContain("peeking");
+
+            fireEvent.touchStart(document.body, { touches: [{ clientX: 300, clientY: 300 }] });
+            expect(document.querySelector(".card-frame")!.className).not.toContain("peeking");
         });
 
         it("does not zoom on a short tap, and leaves its click alone", () => {

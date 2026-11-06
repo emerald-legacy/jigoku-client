@@ -172,4 +172,29 @@ describe("the <PlayerStatsBox /> component", () => {
             expect(militaryIcons.length).toBe(2);
         });
     });
+    describe("the clock details", () => {
+        const clockState = { mode: "chess", timeLeft: 600, mainTime: 1800, periods: 0, timePeriod: 0, name: "Chess clock", manuallyPaused: false, delayToStartClock: 0, stateId: 1 };
+        const isOpen = () => document.querySelector(".clock-frame")!.classList.contains("open");
+        const tap = (element: Element) => {
+            fireEvent.touchStart(element);
+            fireEvent.mouseOver(element);
+            fireEvent.click(element);
+        };
+
+        it("open on hover with a mouse", () => {
+            render(<PlayerStatsBox { ...defaultProps } clockState={ clockState } />);
+            fireEvent.mouseOver(document.querySelector(".clock-frame")!);
+            expect(isOpen()).toBe(true);
+            fireEvent.mouseOut(document.querySelector(".clock-frame")!);
+            expect(isOpen()).toBe(false);
+        });
+
+        it("open on a tap and close on a second tap on a touch screen", () => {
+            render(<PlayerStatsBox { ...defaultProps } clockState={ clockState } />);
+            tap(document.querySelector(".clock-frame")!);
+            expect(isOpen()).toBe(true);
+            tap(document.querySelector(".clock-frame")!);
+            expect(isOpen()).toBe(false);
+        });
+    });
 });

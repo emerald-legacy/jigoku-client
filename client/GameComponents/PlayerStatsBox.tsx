@@ -1,6 +1,7 @@
 import { Plus, Minus } from "lucide-react";
 import Clock from "./Clock";
 import ClockPopup from "./ClockPopup";
+import { useHoverOrTap } from "../useHoverOrTap";
 import { resolveFateImage, resolveHonorImage, resolveFirstPlayerImage } from "../boardCosmetics";
 import { usePatronViewerConfig } from "../PatronContext";
 import { asset } from "../assetUrl";
@@ -37,6 +38,8 @@ export function PlayerStatsBox({
     onAnimationEnd
 }: PlayerStatsBoxProps) {
     const viewer = usePatronViewerConfig();
+    // The clock details open on hover, or on a tap on touch screens
+    const clockDetails = useHoverOrTap<true>();
     const fateImage = resolveFateImage(viewer);
     const honorImage = resolveHonorImage(viewer);
     const firstPlayerImage = resolveFirstPlayerImage(viewer);
@@ -85,7 +88,7 @@ export function PlayerStatsBox({
 
     const clock =
         !clockState || clockState.mode === "off" ? null : (
-            <div className="state clock-frame">
+            <div className={ `state clock-frame${clockDetails.shown ? " open" : ""}` } { ...clockDetails.triggerProps("clock", true) }>
                 <Clock
                     delayToStartClock={ clockState.delayToStartClock }
                     manuallyPaused={ clockState.manuallyPaused }

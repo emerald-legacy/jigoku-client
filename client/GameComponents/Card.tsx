@@ -9,7 +9,7 @@ import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl";
 import { useOwnerShowsPromo } from "../PatronContext";
 import { buildCardCounters } from "./buildCardCounters";
 import { startCardDrag, useCardTouchDrag } from "./cardDrag";
-import { useLongPress } from "./useLongPress";
+import { useTouchPeek } from "./useTouchPeek";
 import { CardDragContext } from "./CardDragContext";
 import CardAttachments from "./CardAttachments";
 import CardPopup from "./CardPopup";
@@ -119,8 +119,8 @@ function Card(props: CardProps) {
         }
     };
 
-    // Touch screens have no hover: a long press zooms the card instead, without also clicking it.
-    const longPressZoom = useLongPress(() => handleMouseOver(card));
+    // Touch screens have no hover: a long press zooms the card and shows its stats instead, without also clicking it.
+    const touchPeek = useTouchPeek(() => handleMouseOver(card));
 
     const handleClick = (event: React.MouseEvent, cardData: CardType) => {
         event.preventDefault();
@@ -404,6 +404,9 @@ function Card(props: CardProps) {
         const cardPile = player && card && player.cardPiles[card.uuid];
 
         let frameClassName = "card-frame";
+        if(touchPeek.peeking) {
+            frameClassName += " peeking";
+        }
         if(cardPile) {
             frameClassName += " card-pile-frame";
         }
@@ -428,7 +431,7 @@ function Card(props: CardProps) {
                     id={ id }
                     onMouseOver={ disableMouseOver ? null : () => handleMouseOver(card) }
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
-                    { ...(disableMouseOver ? {} : longPressZoom) }
+                    { ...(disableMouseOver ? {} : touchPeek.handlers) }
                     onClick={ (ev: React.MouseEvent) => handleClick(ev, card) }
                     onDragStart={ (ev: React.DragEvent<HTMLElement>) => draggable ? startCardDrag(ev, card, source) : ev.preventDefault() }
                     onAnimationEnd={ (ev: React.AnimationEvent<HTMLDivElement>) => {

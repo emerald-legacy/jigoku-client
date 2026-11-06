@@ -2,6 +2,7 @@ import React, { useState, useEffect, memo } from "react";
 
 import CardCounters from "./CardCounters";
 import CardMenu from "./CardMenu";
+import { useTouchPeek } from "./useTouchPeek";
 import { getRingEffect } from "../RingEffectDescriptions";
 import { ringSetImage, DEFAULT_RINGS } from "../boardCosmetics";
 import { isClaimAnimation } from "../types/redux";
@@ -26,6 +27,8 @@ const CLAIM_FLASH_MS = 2500;
 function Ring({ onClick, onMenuItemClick, owner, ring, size, showRingEffects, gameMode, ringSet, pendingAnimations, onClaimAnimationEnd }: RingProps) {
     const [showMenu, setShowMenu] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    // A tap on a ring acts on it, so touch screens show the ring effect on a long press
+    const effectPeek = useTouchPeek();
 
     // The flash is the animation still being pending, so it needs no state of its own:
     // the event is cleared once the 2.5s burst (see .ring-claim-flash) has run.
@@ -120,7 +123,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size, showRingEffects, ga
         return <div />;
     }
 
-    const shouldShowTooltip = showRingEffects && isHovered && !ring.claimed && !showMenu;
+    const shouldShowTooltip = showRingEffects && (isHovered || effectPeek.peeking) && !ring.claimed && !showMenu;
     const ringEffect = shouldShowTooltip ? getRingEffect(gameMode, ring.element) : "";
 
     // A patron ring set overlays an image and hides the stock glyph; "default" keeps the glyph.
@@ -132,6 +135,7 @@ function Ring({ onClick, onMenuItemClick, owner, ring, size, showRingEffects, ga
             onClick={ (event) => handleClick(event, ring.element) }
             onMouseEnter={ () => setIsHovered(true) }
             onMouseLeave={ () => setIsHovered(false) }
+            { ...effectPeek.handlers }
         >
             <div className="ring-visual">
                 <svg className={ svgClassName }>
