@@ -4,7 +4,7 @@ function Formats() {
             <div className="panel-title text-center">
                 Game Formats
             </div>
-            <div className="panel about-container">
+            <div className="panel about-container help-page">
                 <h2>What formats can be played via Jigoku Online?</h2>
                 <p>
                     During its initial run under FFG, and continuation via the Emerald Legacy community-led project,

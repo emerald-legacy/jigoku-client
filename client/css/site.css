@@ -68,6 +68,37 @@
     background: linear-gradient(90deg, transparent, rgb(var(--jade-rgb) / 0.6), transparent);
 }
 
+/* === Help pages (How To Play, About, Formats) ===
+   Body text at lead size with room between lines, lines kept to about 72 characters (figures stay wide),
+   and headings in the display face so they stand out from the text. */
+.help-page {
+    font-size: var(--text-lead);
+    line-height: 1.6;
+}
+
+.help-page :is(p, li) {
+    max-width: 72ch;
+}
+
+.help-page :is(h2, h3, h4) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.help-page h2 {
+    font-size: var(--text-h1);
+}
+
+.help-page h3 {
+    font-size: var(--text-heading);
+    margin-top: 1.25rem;
+}
+
+.help-page h4 {
+    font-size: var(--text-lead);
+}
+
 /* === How To Play === */
 
 .full-height.htp-page {
