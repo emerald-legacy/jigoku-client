@@ -318,6 +318,17 @@
     transform: translateY(-2px) scale(1.03);
 }
 
+/* Deck editor buttons are as tall as its fields (34px) instead of the taller default button */
+.deck-editor .btn {
+    height: 34px;
+    padding: 0 12px;
+    line-height: 32px;
+}
+
+.deck-editor-import {
+    margin-bottom: 0.75rem;
+}
+
 /* Copies and Add sit on their own line under the card search */
 .add-card-row {
     display: flex;

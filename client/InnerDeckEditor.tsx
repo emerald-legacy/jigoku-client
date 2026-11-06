@@ -441,10 +441,10 @@ export default function InnerDeckEditor({
     const backdrop = showModal ? <div className="modal-backdrop fade in" onClick={ () => setShowModal(false) } /> : null;
 
     return (
-        <div>
+        <div className="deck-editor">
             { popup }
             { backdrop }
-            <button type="button" className="btn btn-primary" onClick={ handleImportDeckClick }>Import deck</button>
+            <button type="button" className="btn btn-primary deck-editor-import" onClick={ handleImportDeckClick }>Import deck</button>
             <p>Importing is fastest: copy the deck&apos;s link from <a href="https://www.emeralddb.org" target="_blank" rel="noreferrer">EmeraldDB</a> and paste it into Import deck. You can also add cards one by one with the card search, or type the list into the box below.</p>
             <form className="form form-horizontal">
                 <Input name="deckName" label="Deck Name" labelClass="col-sm-3" fieldClass="col-sm-9" placeholder="Deck Name"
