@@ -41,13 +41,15 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
     return (
         <div className={ `deck-row${active ? " active" : ""}` } key={ deck.name } onClick={ onClick }>
             { showCheckbox && (
-                <div className="deck-row-checkbox" onClick={ (e: React.MouseEvent) => e.stopPropagation() }>
+                // A label, so a tap anywhere in the checkbox's cell ticks it instead of selecting the deck
+                <label className="deck-row-checkbox" onClick={ (e: React.MouseEvent) => e.stopPropagation() }>
                     <input
                         type="checkbox"
+                        aria-label={ `Select ${deck.name}` }
                         checked={ isSelected }
                         onChange={ () => onCheckboxChange?.(deck._id) }
                     />
-                </div>
+                </label>
             ) }
             <div className="deck-row-clans">
                 <img className="deck-clan-icon" src={ asset(`mons/${deck.faction.value}.png`) } />

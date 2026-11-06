@@ -51,6 +51,41 @@
     color: var(--color-danger);
 }
 
+/* Touch screens: 44px targets for the small controls, without changing the row heights */
+@media (pointer: coarse) {
+    .game-row-remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        margin: -15px -10px;
+    }
+
+    .game-stats-tab {
+        min-height: 40px;
+    }
+
+    /* Invisible hit areas around "Select deck..." and your deck name, so their look stays the same.
+       The deck name clips its overflow for the ellipsis, so it gets a transparent border instead of a pseudo-element. */
+    .player-row .card-link {
+        position: relative;
+    }
+
+    .player-row .card-link::after {
+        content: "";
+        position: absolute;
+        inset: -12px 0;
+    }
+
+    .player-row .deck-selection.clickable {
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        background-clip: padding-box;
+        margin: -10px 0;
+    }
+}
+
 .game-badge {
     flex-shrink: 0;
     font-family: var(--font-mono);
@@ -244,7 +279,8 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
-    flex-wrap: nowrap;
+    /* A long deck name or the status badge wraps to the next line in a narrow column instead of overflowing the panel */
+    flex-wrap: wrap;
     min-width: 0;
 
     &:last-child {

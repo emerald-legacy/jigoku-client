@@ -124,6 +124,22 @@
 
 .deck-row-checkbox {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    cursor: pointer;
+}
+
+@media (pointer: coarse) {
+    .deck-row-checkbox {
+        padding: 0 10px;
+        margin: 0 -10px;
+
+        & input {
+            width: 20px;
+            height: 20px;
+        }
+    }
 }
 
 .deck-row-clans {
