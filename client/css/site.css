@@ -69,15 +69,10 @@
 }
 
 /* === Help pages (How To Play, About, Formats) ===
-   Body text at lead size with room between lines, lines kept to about 72 characters (figures stay wide),
-   and headings in the display face so they stand out from the text. */
+   Body text at lead size with room between lines, and headings in the display face so they stand out from the text. */
 .help-page {
     font-size: var(--text-lead);
     line-height: 1.6;
-}
-
-.help-page :is(p, li) {
-    max-width: 72ch;
 }
 
 .help-page :is(h2, h3, h4) {
