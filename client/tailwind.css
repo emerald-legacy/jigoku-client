@@ -148,6 +148,17 @@
         border-color: rgb(var(--jade-rgb) / 0.6);
         color: var(--color-foreground);
     }
+    /* Quiet secondary action: a way out (Pass, Cancel, Leave) next to the real choices */
+    .btn-quiet {
+        background: transparent;
+        color: var(--sage);
+        border: 1px solid rgb(var(--jade-rgb) / 0.2);
+    }
+    .btn-quiet:not(:disabled):hover {
+        background: rgb(var(--moss-rgb) / 0.6);
+        border-color: rgb(var(--jade-rgb) / 0.4);
+        color: var(--color-foreground);
+    }
     .btn-danger {
         background: linear-gradient(180deg, rgb(var(--crimson-deep-rgb) / 0.9), rgb(var(--crimson-deep-rgb) / 0.5));
         color: var(--color-foreground);

@@ -23,6 +23,14 @@ interface ActivePlayerPromptProps {
     user?: User;
 }
 
+/**
+ * Buttons that pass or back out of a prompt (the engine's "pass"/"cancel" args, the triggered-ability window's pass
+ * method, a handler menu's "Cancel") look quieter than the choices next to them, so they are harder to hit by mistake.
+ */
+function isBailOut(button: Button) {
+    return button.arg === "pass" || button.arg === "cancel" || button.method === "pass" || button.text === "Cancel";
+}
+
 function ActivePlayerPrompt({
     buttons,
     cards,
@@ -188,7 +196,7 @@ function ActivePlayerPrompt({
             const option = (
                 <button
                     key={ (button.command ?? "") + buttonIndex.toString() }
-                    className="btn btn-default"
+                    className={ isBailOut(button) ? "btn btn-quiet" : "btn btn-default" }
                     onClick={ clickCallback }
                     onMouseOver={ (event: React.MouseEvent) => handleMouseOver(event, button.card) }
                     onMouseOut={ (event: React.MouseEvent) => handleMouseOut(event, button.card) }

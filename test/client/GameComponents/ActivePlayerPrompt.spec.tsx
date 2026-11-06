@@ -303,3 +303,33 @@ describe("the <ActivePlayerPrompt /> panel", () => {
         expect(panel().className).not.toContain("menu-pane-scroll");
     });
 });
+
+describe("the <ActivePlayerPrompt /> bail-out buttons", () => {
+    const classOf = (text: string) => screen.getByText(text).className;
+
+    it("look quiet for pass and cancel, and like the other choices otherwise", () => {
+        render(<ActivePlayerPrompt
+            title="Any reactions?"
+            buttons={ [
+                { text: "I need more time", timerCancel: true },
+                { text: "Don't ask again until end of round", timerCancel: true, method: "pass", arg: "pauseRound" },
+                { text: "Pass", method: "pass" }
+            ] }
+        />);
+
+        expect(classOf("I need more time")).toContain("btn-default");
+        expect(classOf("Don't ask again until end of round")).toContain("btn-quiet");
+        expect(classOf("Pass")).toContain("btn-quiet");
+    });
+
+    it("treat the engine's cancel arg and a handler menu's Cancel as bail-outs", () => {
+        render(<ActivePlayerPrompt
+            title="Choose"
+            buttons={ [{ text: "Done", arg: "done" }, { text: "Cancel Prompt", arg: "cancel" }, { text: "Cancel", arg: "3" }] }
+        />);
+
+        expect(classOf("Done")).toContain("btn-default");
+        expect(classOf("Cancel Prompt")).toContain("btn-quiet");
+        expect(classOf("Cancel")).toContain("btn-quiet");
+    });
+});
