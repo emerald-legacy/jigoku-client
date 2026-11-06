@@ -214,3 +214,14 @@
 .body [data-sonner-toast][data-type="info"] {
     border-left: 3px solid var(--color-info);
 }
+
+/* One visible keyboard focus ring for everything you can press: buttons, links and the clickable rows and tiles
+   that act as buttons or radios. Only for keyboard focus (focus-visible), so mouse clicks don't draw it.
+   Text fields keep their own jade focus style. */
+a:focus-visible,
+button:focus-visible,
+[role="button"]:focus-visible,
+[role="radio"]:focus-visible {
+    outline: 2px solid var(--jade-vivid);
+    outline-offset: 2px;
+}
