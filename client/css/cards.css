@@ -259,8 +259,13 @@
         & .card-image { box-shadow: 0 0 1px 2px #9900cc; }
     }
 
+    /* The card a hovered chat-log name points at: bright jade, dashed so it isn't mistaken for "selected" */
     &.highlight {
-        & .card-image { box-shadow: 0 0 3px 5px var(--color-primary); }
+        & .card-image {
+            outline: 2px dashed var(--jade-vivid);
+            outline-offset: 2px;
+            box-shadow: 0 0 10px 3px rgb(var(--jade-vivid-rgb) / 0.5);
+        }
     }
 }
 
