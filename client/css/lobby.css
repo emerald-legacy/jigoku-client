@@ -22,8 +22,11 @@
 
 .lobby-hero-logo {
     position: relative;
-    height: 96px;
+    /* 96px tall, scaled down on screens narrower than the logo */
     width: auto;
+    height: auto;
+    max-height: 96px;
+    max-width: 100%;
     margin: 0 auto;
     display: block;
     filter: drop-shadow(0 6px 22px rgb(var(--black-rgb) / 0.7));
@@ -89,6 +92,14 @@
     border-radius: 50%;
     background: radial-gradient(circle, rgb(var(--vermilion-rgb) / 0.2), transparent 65%);
     z-index: -1;
+}
+
+/* Phones scroll the page, not a box inside it */
+@media (max-width: 639px) {
+    .lobby-news-scroll {
+        height: auto;
+        overflow-y: visible;
+    }
 }
 
 @media (max-width: 600px) {

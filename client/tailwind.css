@@ -213,7 +213,7 @@
     .modal-backdrop { @apply fixed inset-0 bg-black/50 z-40; }
     .modal-backdrop.fade { @apply opacity-0 transition-opacity duration-150; }
     .modal-backdrop.fade.in { @apply opacity-100; }
-    .modal-dialog { @apply relative mx-auto mt-[10vh] max-w-lg z-50; }
+    .modal-dialog { @apply relative mx-4 sm:mx-auto mt-[10vh] max-w-lg z-50; }
     .modal-content { @apply bg-gray-800 border border-gray-600 rounded-lg shadow-xl; }
     .modal-header { @apply flex flex-row-reverse items-center p-4 border-b border-gray-600; }
     .modal-header .modal-title { @apply flex-1 text-center; }
@@ -222,7 +222,8 @@
 
     /* Close button (Bootstrap .close) */
     .close {
-        @apply bg-transparent border-0 cursor-pointer text-h1 leading-none py-0 px-1;
+        /* 44px tap target; the negative margin keeps the header's height */
+        @apply bg-transparent border-0 cursor-pointer text-h1 leading-none min-w-11 min-h-11 -my-2.5 inline-flex items-center justify-center;
         color: rgb(var(--sage-rgb) / 0.7);
         transition: color 0.15s;
 

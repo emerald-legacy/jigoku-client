@@ -71,7 +71,7 @@
 
 .full-height.htp-page {
     height: auto;
-    min-height: calc(100vh - 88px);
+    min-height: calc(100dvh - 88px);
     padding-bottom: 2rem;
 }
 
@@ -308,12 +308,12 @@ ol.htp-legend > li::before {
 }
 
 .full-height {
-    height: calc(100vh - 88px);
+    height: calc(100dvh - 88px);
 }
 
 .bg {
     padding-top: 40px;
-    min-height: 100vh;
+    min-height: 100dvh;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -324,7 +324,7 @@ ol.htp-legend > li::before {
    via backgroundImageByValue() (Application.tsx) so it resolves to the Vite
    content-hashed asset URL; CSS url() can't be hashed here under Tailwind v4. */
 .bg-board {
-    min-height: 100vh;
+    min-height: 100dvh;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
