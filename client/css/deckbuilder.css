@@ -1,9 +1,33 @@
+/* The deck status details (StatusPopOver). It sits inside the status pill, so it resets the pill's
+   mono, uppercase, no-wrap label style and reads like a small panel. */
 .popover {
-    background-color: var(--color-background);
+    background: var(--ink);
     color: var(--color-foreground);
+    border: 1px solid rgb(var(--jade-rgb) / 0.3);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgb(var(--black-rgb) / 0.5);
+    margin-top: 8px;
+    padding: 8px 12px;
     width: 300px;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    text-transform: none;
+    text-align: left;
+    white-space: normal;
+    cursor: default;
+
+    & .arrow {
+        top: -8px;
+        transform: translateX(-50%);
+        border-top-width: 0;
+        border-bottom-color: rgb(var(--jade-rgb) / 0.3);
+    }
 
     & ul {
+        margin: 0;
         padding: 0;
     }
 
@@ -124,6 +148,22 @@
 
 .deck-row-checkbox {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    cursor: pointer;
+}
+
+@media (pointer: coarse) {
+    .deck-row-checkbox {
+        padding: 0 10px;
+        margin: 0 -10px;
+
+        & input {
+            width: 20px;
+            height: 20px;
+        }
+    }
 }
 
 .deck-row-clans {
@@ -160,30 +200,9 @@
     text-overflow: ellipsis;
 }
 
+/* Colours and shape are shared with the pending game's pill (.deck-status, gamelist.css) */
 .deck-row-status {
     flex-shrink: 0;
-    padding: 2px 9px;
-    border-radius: 3px;
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    white-space: nowrap;
-
-    &.valid {
-        background: linear-gradient(180deg, var(--moss-light), rgb(var(--moss-rgb) / 0.9));
-        color: var(--jade-vivid);
-        border: 1px solid rgb(var(--jade-rgb) / 0.4);
-    }
-
-    &.casual-play {
-        background: var(--color-warning);
-    }
-
-    &.invalid {
-        background: var(--color-danger);
-    }
 }
 
 .deck-detail-placeholder {
@@ -299,8 +318,34 @@
     transform: translateY(-2px) scale(1.03);
 }
 
-.add-card-button {
-    margin: 5px 0;
+/* Buttons on the deck pages (overview and editor) are as tall as the editor's fields (34px)
+   instead of the taller default button */
+.decks-page .btn,
+.deck-editor .btn {
+    height: 34px;
+    padding: 0 12px;
+    line-height: 32px;
+}
+
+.deck-editor-import {
+    margin-bottom: 0.75rem;
+}
+
+/* Copies and Add sit on their own line under the card search */
+.add-card-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.add-card-count-label {
+    font-weight: bold;
+}
+
+.add-card-count {
+    width: 4rem;
+    text-align: center;
 }
 
 .deck-stats {

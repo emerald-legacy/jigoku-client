@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import React from "react";
 
 vi.mock("../../client/GameComponents/CardMenu.tsx", () => ({
@@ -15,7 +15,7 @@ vi.mock("../../client/GameComponents/CardCounters.tsx", () => ({
 }));
 
 vi.mock("../../client/GameComponents/CardPile.tsx", () => ({
-    default: ({ title }) => <div data-testid="card-pile">{ title }</div>
+    default: ({ title, source }) => <div data-testid="card-pile" data-source={ source }>{ title }</div>
 }));
 
 const patronState = vi.hoisted(() => ({ promoOwners: {} as Record<string, boolean> }));
@@ -34,6 +34,7 @@ vi.mock("../../client/assetUrl", async (importOriginal) => {
 });
 
 import Card from "../../client/GameComponents/Card.tsx";
+import { CardDragContext } from "../../client/GameComponents/CardDragContext";
 
 describe("the <Card /> component", () => {
     let card;
@@ -209,17 +210,6 @@ describe("the <Card /> component", () => {
         });
     });
 
-    describe("that is in danger", () => {
-        beforeEach(() => {
-            render(<Card card={ { ...card, inDanger: true } } source="hand" />);
-        });
-
-        it("should mark the card as in-danger", () => {
-            const cardElement = document.querySelector(".card");
-            expect(cardElement.className).toContain("in-danger");
-        });
-    });
-
     describe("that is in conflict", () => {
         beforeEach(() => {
             render(<Card card={ { ...card, inConflict: true } } source="play area" />);
@@ -376,6 +366,104 @@ describe("the <Card /> component", () => {
             render(<Card card={ noControllerCard } player={ patronPlayer } source="play area" />);
             const cardImage = document.querySelector(".card-image-src");
             expect(cardImage.src).toContain("/assets/promo-card.abc123.webp");
+        });
+    });
+
+    describe("cards underneath", () => {
+        it("drags a card from under the stronghold from its location", () => {
+            const under = { uuid: "u-1", name: "Imperial Storehouse", location: "underneath stronghold" };
+            render(<Card card={ { ...card, childCards: [under] } } source="stronghold province" />);
+            expect(screen.getByTestId("card-pile").dataset.source).toBe("underneath stronghold");
+        });
+
+        it("drags a card from under a host card from its location", () => {
+            const under = { uuid: "u-2", name: "Let Go", location: "underneath" };
+            const player = { name: "P", cardPiles: { [card.uuid]: [under] } };
+            render(<Card card={ card } player={ player } source="play area" />);
+            expect(screen.getByTestId("card-pile").dataset.source).toBe("underneath");
+        });
+    });
+
+    describe("dragging", () => {
+        it("starts a drag with the card and its source", () => {
+            render(<Card card={ card } source="hand" />);
+            const setData = vi.fn();
+            const element = document.querySelector(".card");
+            expect(element.getAttribute("draggable")).toBe("true");
+            fireEvent.dragStart(element, { dataTransfer: { setData } });
+            expect(setData).toHaveBeenCalledWith("Text", JSON.stringify({ card, source: "hand" }));
+        });
+
+        it("does not drag a card that is not draggable", () => {
+            render(<Card card={ card } source="role card" draggable={ false } />);
+            const setData = vi.fn();
+            const element = document.querySelector(".card");
+            expect(element.getAttribute("draggable")).toBe("false");
+            fireEvent.dragStart(element, { dataTransfer: { setData } });
+            expect(setData).not.toHaveBeenCalled();
+        });
+    });
+    describe("long press on a touch screen", () => {
+        const press = () => fireEvent.touchStart(document.querySelector(".card")!, { touches: [{ clientX: 10, clientY: 10 }] });
+
+        beforeEach(() => {
+            vi.useFakeTimers();
+            render(<Card card={ card } source="play area" onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onClick={ onClick } />);
+        });
+
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
+        it("zooms the card after holding it, and cancels the click that would follow", () => {
+            press();
+            vi.advanceTimersByTime(500);
+
+            expect(onMouseOver).toHaveBeenCalledWith(card);
+            const touchEnd = new TouchEvent("touchend", { bubbles: true, cancelable: true });
+            document.querySelector(".card")!.dispatchEvent(touchEnd);
+            expect(touchEnd.defaultPrevented).toBe(true);
+        });
+
+        it("shows the card's stats after a long press, until the next touch", () => {
+            press();
+            act(() => vi.advanceTimersByTime(500));
+            expect(document.querySelector(".card-frame")!.className).toContain("peeking");
+
+            fireEvent.touchStart(document.body, { touches: [{ clientX: 300, clientY: 300 }] });
+            expect(document.querySelector(".card-frame")!.className).not.toContain("peeking");
+        });
+
+        it("does not zoom on a short tap, and leaves its click alone", () => {
+            press();
+            vi.advanceTimersByTime(200);
+            const touchEnd = new TouchEvent("touchend", { bubbles: true, cancelable: true });
+            document.querySelector(".card")!.dispatchEvent(touchEnd);
+            vi.advanceTimersByTime(500);
+
+            expect(onMouseOver).not.toHaveBeenCalled();
+            expect(touchEnd.defaultPrevented).toBe(false);
+        });
+
+        it("does not zoom when the finger moves (a drag or a scroll)", () => {
+            press();
+            fireEvent.touchMove(document.querySelector(".card")!, { touches: [{ clientX: 40, clientY: 10 }], targetTouches: [{ clientX: 40, clientY: 10, screenX: 40, screenY: 10 }] });
+            vi.advanceTimersByTime(500);
+
+            expect(onMouseOver).not.toHaveBeenCalled();
+        });
+    });
+    describe("dragging", () => {
+        it("is on by default", () => {
+            render(<Card card={ card } source="hand" />);
+
+            expect(document.querySelector(".card")!.getAttribute("draggable")).toBe("true");
+        });
+
+        it("is off when the board turns it off (auto mode, spectators)", () => {
+            render(<CardDragContext value={ false }><Card card={ card } source="hand" /></CardDragContext>);
+
+            expect(document.querySelector(".card")!.getAttribute("draggable")).toBe("false");
         });
     });
 });

@@ -207,9 +207,8 @@
         width: var(--card-height);
     }
 
-    /* lighten(var(--color-primary), 60%) = HSL(90,100%,80%) ≈ #ccff99, fadeout 10% = alpha 0.9 */
     &.selectable {
-        & .card-image { box-shadow: 0 0 10px 1px rgba(204, 255, 153, 0.9); }
+        & .card-image { box-shadow: 0 0 10px 1px rgb(var(--jade-pale-rgb) / 0.9); }
     }
 
     /* Safari leaves the previous card painted behind when a filter-induced compositing layer is
@@ -224,10 +223,6 @@
         & .card-image {
             filter: grayscale(100%);
         }
-    }
-
-    &.in-danger {
-        & .card-image { box-shadow: 0 0 1px 2px red; }
     }
 
     /* Out of play but still playable (set aside by an effect for the round). Amber, so it does
@@ -247,8 +242,9 @@
         }
     }
 
+    /* Sky, so a card taken from you isn't confused with the amber "playable out of play" */
     &.controlled {
-        & .card-image { box-shadow: 0 0 1px 2px var(--color-warning); }
+        & .card-image { box-shadow: 0 0 1px 2px var(--sky); }
     }
 
     &.conflict {
@@ -256,11 +252,16 @@
     }
 
     &.covert {
-        & .card-image { box-shadow: 0 0 1px 2px #9900cc; }
+        & .card-image { box-shadow: 0 0 1px 2px rgb(var(--covert-rgb)); }
     }
 
+    /* The card a hovered chat-log name points at: bright jade, dashed so it isn't mistaken for "selected" */
     &.highlight {
-        & .card-image { box-shadow: 0 0 3px 5px var(--color-primary); }
+        & .card-image {
+            outline: 2px dashed var(--jade-vivid);
+            outline-offset: 2px;
+            box-shadow: 0 0 10px 3px rgb(var(--jade-vivid-rgb) / 0.5);
+        }
     }
 }
 
@@ -530,7 +531,13 @@
     color: var(--white);
     text-shadow: 1px 1px 2px var(--black);
     z-index: calc(var(--layer-cards) + 3);
-    font-size: 0.5em;
+    /* At least caption size: half the token was about 9px on a normal card and 7px on a small one */
+    font-size: max(var(--text-caption), 0.62em);
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-variant-numeric: lining-nums tabular-nums;
+    -webkit-text-stroke: 2px rgb(var(--black-rgb) / 0.8);
+    paint-order: stroke fill;
 }
 
 @media(max-width: 1279px) {
@@ -669,7 +676,7 @@
     right: 0;
     width: 18cqi;
     height: 18cqi;
-    background: rgb(var(--success-rgb) / 0.3);
+    background: rgb(var(--success-rgb) / 0.7);
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
     pointer-events: auto;
     z-index: calc(var(--layer-cards) + 2);
@@ -687,6 +694,13 @@
     color: var(--color-foreground);
     text-shadow: 0 0.3cqi 0.5cqi rgb(var(--black-rgb) / 0.7);
     pointer-events: none;
+    /* About 4px on smaller cards, where it is only noise; the green corner says enough */
+    display: none;
+}
+
+.x-large .card-effect-corner::after,
+.xxl .card-effect-corner::after {
+    display: block;
 }
 
 .ability-used-corner-bottom-left {
@@ -737,4 +751,19 @@
         transition: none;
     }
 
+}
+
+/* A draggable card follows the finger (useCardTouchDrag), so a touch on it must not scroll the page */
+.card[draggable="true"] {
+    touch-action: none;
+}
+
+/* A long press on a card zooms it (useLongPress), so the browser's own long-press callout and selection stay off */
+@media (pointer: coarse) {
+    .card-frame,
+    .card-frame img {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
 }

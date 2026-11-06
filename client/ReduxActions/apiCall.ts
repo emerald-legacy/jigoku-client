@@ -1,4 +1,4 @@
-import type { AxiosError, AxiosResponse } from "axios";
+import { httpErrorStatus, type HttpResponse } from "../http.js";
 
 export interface ApiFailure {
     message: string;
@@ -11,7 +11,7 @@ interface ApiResponseEnvelope {
 }
 
 export async function apiCall<T = unknown>(
-    request: () => Promise<AxiosResponse<T & ApiResponseEnvelope>>,
+    request: () => Promise<HttpResponse<T & ApiResponseEnvelope>>,
     rejectWithValue: (value: ApiFailure) => unknown
 ): Promise<T> {
     try {
@@ -22,10 +22,9 @@ export async function apiCall<T = unknown>(
         }
         return data as T;
     } catch(error: unknown) {
-        const axiosError = error as AxiosError | undefined;
         return rejectWithValue({
             message: "An error occured communicating with the server.  Please try again later.",
-            status: axiosError?.response?.status
+            status: httpErrorStatus(error)
         }) as T;
     }
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
-import axios from "axios";
+import { onHttpErrorStatus } from "./http";
 import { bindActionCreators, type ActionCreatorsMapObject } from "@reduxjs/toolkit";
 import { shallowEqual } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ import type { GameSocket } from "./socket";
 import type { RootState, PendingGameInfo } from "./types/redux";
 import type { GameState, OnlineUser } from "./types/game";
 import type { User } from "./types/user";
-import type { HiddenInfo } from "./gameStateRecorder";
+import type { HiddenInfoChange } from "./gameStateRecorder";
 
 interface HandoffServer {
     protocol?: string;
@@ -120,19 +120,13 @@ export default function Application() {
         initialActions.loadFactions();
         initialActions.loadFormats();
 
-        const axiosInterceptor = axios.interceptors.response.use(
-            response => response,
-            error => {
-                if(error.response) {
-                    if(error.response.status === 401) {
-                        navigateRef.current("/login");
-                    } else if(error.response.status === 403) {
-                        navigateRef.current("/unauth");
-                    }
-                }
-                return Promise.reject(error);
+        const removeHttpErrorHandler = onHttpErrorStatus(status => {
+            if(status === 401) {
+                navigateRef.current("/login");
+            } else if(status === 403) {
+                navigateRef.current("/unauth");
             }
-        );
+        });
 
         const socket = io(window.location.origin, {
             reconnection: true,
@@ -186,6 +180,10 @@ export default function Application() {
 
         socket.on("passworderror", (message: string) => {
             stateRef.current.boundActions.receivePasswordError(message);
+        });
+
+        socket.on("nogameserver", () => {
+            toast.error("No game server is available right now. Please try again in a moment.");
         });
 
         socket.on("handoff", (server: HandoffServer) => {
@@ -258,7 +256,7 @@ export default function Application() {
                 gameActions.receiveGameState(game, liveUsername);
             });
 
-            gameSocket.on("hiddeninfo", (data: HiddenInfo[]) => {
+            gameSocket.on("hiddeninfo", (data: HiddenInfoChange[]) => {
                 setHiddenInfo(data);
             });
 
@@ -276,7 +274,7 @@ export default function Application() {
             socket.removeAllListeners();
             socket.disconnect();
             setLobbySocket(null);
-            axios.interceptors.response.eject(axiosInterceptor);
+            removeHttpErrorHandler();
         };
 
     }, []);
@@ -377,7 +375,7 @@ export default function Application() {
         <div className={ backgroundClass }>
             <NavBar leftMenu={ leftMenu } rightMenu={ rightMenu } title="Jigoku Online" numGames={ games.length } />
             <div className="container">
-                <ErrorBoundary navigate={ navigate } errorPath={ location.pathname } message={ "We're sorry - something's gone wrong." }>
+                <ErrorBoundary navigate={ navigate } errorPath={ location.pathname } message={ "Something went wrong and this page can't be shown." }>
                     <React.Suspense fallback={ null }>
                         <AppRoutes permissions={ permissions } />
                     </React.Suspense>

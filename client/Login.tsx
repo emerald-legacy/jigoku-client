@@ -64,7 +64,7 @@ export function Login() {
             await dispatch(loginUser({ username, password })).unwrap();
             navigate("/");
         } catch(err) {
-            setError(rejectionMessage(err, "Could not communicate with the server.  Please try again later."));
+            setError(rejectionMessage(err, "Could not communicate with the server. Please try again later."));
         }
     };
 
@@ -100,7 +100,7 @@ export function Login() {
 
         return (
             <div key={ field.name } className={ className }>
-                <label htmlFor={ field.name } className="col-sm-2 control-label">{ field.label }</label>
+                <label htmlFor={ field.name } className="col-sm-3 col-lg-2 control-label">{ field.label }</label>
                 <div className="col-sm-8">
                     <input
                         type={ field.inputType }
@@ -120,7 +120,7 @@ export function Login() {
     const errorBar = error ? <AlertPanel type="error" message={ error } /> : null;
 
     return (
-        <div className="col-sm-6 col-sm-offset-3">
+        <div className="col-sm-8 col-sm-offset-2 col-lg-6 col-lg-offset-3">
             { errorBar }
             <div className="panel-title">
                 Login
@@ -129,12 +129,12 @@ export function Login() {
                 <form className="form form-horizontal">
                     { fieldsToRender }
                     <div className="form-group">
-                        <div className="col-sm-offset-2 col-sm-10">
+                        <div className="col-sm-offset-3 col-lg-offset-2 col-sm-10">
                             <Link to="/forgot">Forgot your password?</Link>
                         </div>
                     </div>
                     <div className="form-group">
-                        <div className="col-sm-offset-2 col-sm-3">
+                        <div className="col-sm-offset-3 col-lg-offset-2 col-sm-3">
                             <button type="submit" className="btn btn-primary" onClick={ onLogin }>Login</button>
                         </div>
                     </div>

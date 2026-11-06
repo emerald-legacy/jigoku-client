@@ -2,6 +2,8 @@ import { memo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import Draggable from "react-draggable";
 
+import { useBoundedPosition, useViewportSize } from "./useBoundedPosition";
+
 const BASE_WIDTH = 220;
 const BASE_HEIGHT = 307;
 const MAX_WIDTH = 330;
@@ -23,16 +25,16 @@ function CardZoom({ cardName, imageUrl, show }: CardZoomProps) {
     const frameWidth = BASE_WIDTH * effScale;
     const frameHeight = BASE_HEIGHT * effScale;
 
-    const viewportWidth = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-    const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
-    // Origin is the top-right corner (its default fixed spot). Allow dragging left/down across the board.
+    const viewport = useViewportSize();
+    // Origin is the top-right corner (its default fixed spot). Allow dragging left/down across the board, and move it back
+    // on screen when the window shrinks or a tablet is rotated.
     // Buffers (40 horizontal, 53 vertical) cover frame padding/border/grip beyond the card image.
-    const bounds = {
-        left: -(viewportWidth - (frameWidth + 40)),
+    const zoomPosition = useBoundedPosition(() => ({ x: 0, y: 0 }), {
+        left: Math.min(0, -(viewport.width - (frameWidth + 40))),
         top: 0,
         right: 0,
-        bottom: viewportHeight - (frameHeight + 53)
-    };
+        bottom: viewport.height - (frameHeight + 53)
+    });
 
     const onResizeStart = (e: ReactPointerEvent<HTMLSpanElement>) => {
         e.stopPropagation();
@@ -61,7 +63,7 @@ function CardZoom({ cardName, imageUrl, show }: CardZoomProps) {
     const zoomedStyle = { width: `${frameWidth}px`, height: `${frameHeight}px` };
 
     return (
-        <Draggable handle=".card-zoom-grip" nodeRef={ nodeRef } bounds={ bounds } defaultPosition={ { x: 0, y: 0 } }>
+        <Draggable handle=".card-zoom-grip" nodeRef={ nodeRef } { ...zoomPosition }>
             <div ref={ nodeRef } className={ frameClass }>
                 <div className="card-zoom-grip no-highlight">
                     <span className="card-zoom-grip-dots" />

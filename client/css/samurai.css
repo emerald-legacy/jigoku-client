@@ -26,8 +26,16 @@
         width: 44px;
     }
 
-    .samurai-expanded {
-        box-shadow: 0 0 0 9999px rgb(var(--black-rgb) / 0.5);
+    .samurai-backdrop {
+        position: fixed;
+        inset: 40px 0 0 0;
+        z-index: 39;
+        background: rgb(var(--black-rgb) / 0.5);
+    }
+
+    /* The collapsed rail stays on screen, so the lobby content starts right of it */
+    .samurai ~ .lobby-page {
+        padding-left: 30px;
     }
 
     .samurai-desktop-only {
@@ -36,6 +44,10 @@
 }
 
 @media (min-width: 1280px) {
+    .samurai-backdrop {
+        display: none;
+    }
+
     .samurai-mobile-only {
         display: none;
     }
@@ -90,7 +102,9 @@
     border: none;
     color: rgb(var(--sage-pale-rgb) / 0.8);
     cursor: pointer;
-    padding: 2px;
+    /* A 44px tap target that keeps the header's height */
+    padding: 14px;
+    margin: -14px -10px -14px 0;
     display: inline-flex;
     align-items: center;
 }
@@ -137,16 +151,12 @@
     padding: 0;
 }
 
+/* Rows are a list of names, not links, so they don't react to hover */
 .samurai-row {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 3px 14px;
-    transition: background-color 120ms ease;
-}
-
-.samurai-row:hover {
-    background-color: rgb(var(--jade-rgb) / 0.1);
 }
 
 .samurai-glyph {

@@ -1,4 +1,4 @@
-import axios from "axios";
+import { http } from "../http";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { GameErrorSummary, GameErrorRecord, RootState } from "../types/redux";
 import { apiCall } from "./apiCall";
@@ -12,7 +12,7 @@ interface LoadGameErrorsOptions {
 export const loadGameErrors = createAsyncThunk(
     "gameErrors/load",
     (options: LoadGameErrorsOptions | undefined, { rejectWithValue }) => {
-        const params: Record<string, unknown> = {};
+        const params: Record<string, number> = {};
         if(options && options.limit) {
             params.limit = options.limit;
         }
@@ -20,7 +20,7 @@ export const loadGameErrors = createAsyncThunk(
             params.skip = options.skip;
         }
         return apiCall<{ success: boolean; errors: GameErrorSummary[] }>(
-            () => axios.get("/api/admin/game-errors", { params }),
+            () => http.get("/api/admin/game-errors", { params }),
             rejectWithValue
         );
     },
@@ -35,7 +35,7 @@ export const loadGameErrors = createAsyncThunk(
 export const loadGameError = createAsyncThunk(
     "gameErrors/loadOne",
     (id: string, { rejectWithValue }) => apiCall<{ success: boolean; error: GameErrorRecord }>(
-        () => axios.get(`/api/admin/game-errors/${id}`),
+        () => http.get(`/api/admin/game-errors/${id}`),
         rejectWithValue
     )
 );
@@ -44,7 +44,7 @@ export const resolveGameError = createAsyncThunk(
     "gameErrors/resolve",
     async (id: string, { rejectWithValue }) => {
         const result = await apiCall<{ success: boolean }>(
-            () => axios.delete(`/api/admin/game-errors/${id}`),
+            () => http.delete(`/api/admin/game-errors/${id}`),
             rejectWithValue
         );
         return { ...result, id };

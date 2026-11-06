@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { Toaster } from "sonner";
-import axios from "axios";
+import { http } from "./http";
 import configureStore from "./configureStore";
 import { login } from "./actions";
 import Application from "./Application";
@@ -16,7 +16,7 @@ function reportClientError(payload: {
     errorStack?: string;
     kind: "window" | "unhandledRejection";
 }) {
-    axios.post("/api/admin/game-errors/client", {
+    http.post("/api/admin/game-errors/client", {
         ...payload,
         url: window.location.href,
         userAgent: navigator.userAgent
@@ -55,12 +55,15 @@ const render = () => {
         <Provider store={ store }>
             <BrowserRouter>
                 <div className="body">
+                    { /* Dark toasts styled in common.css; below the 40px navbar on every screen size */ }
                     <Toaster
                         position="top-right"
+                        theme="dark"
+                        offset={ { top: 48 } }
+                        mobileOffset={ { top: 48 } }
                         duration={ 4000 }
-                        richColors
                     />
-                    <ErrorBoundary message={ "We're sorry, a critical error has occurred in the client and we're unable to show you anything. Please try refreshing your browser after filling out a report." }>
+                    <ErrorBoundary message={ "Something went wrong and the site can't be shown." }>
                         <Application />
                     </ErrorBoundary>
                 </div>

@@ -68,8 +68,6 @@ export interface Card {
     isConflict?: boolean;
     isStronghold?: boolean;
     isBroken?: boolean;
-    inDanger?: boolean;
-    saved?: boolean;
     unselectable?: boolean;
     abilityLimits?: AbilityLimit[];
     strengthSummary?: SkillSummary;
@@ -278,6 +276,9 @@ export interface ConflictInfo {
     attackerSkill?: number;
     defenderSkill?: number;
     unopposed?: boolean;
+    // Whether the attacker would win, and whether a conflict province would break, counting what resolution adds (Conflict.getSummary)
+    attackerWins?: boolean;
+    breaking?: boolean;
     type?: string;
     elements?: string[];
     declarationComplete?: boolean;
@@ -294,6 +295,8 @@ export interface GameState {
     spectators: Spectator[];
     messages: GameMessage[];
     newMessages?: GameMessage[];
+    /** Number of this state update, shared with the hidden-info log's entries. */
+    stateSeq?: number;
     winner?: string;
     finishedAt?: string;
     rings?: Record<string, Ring>;

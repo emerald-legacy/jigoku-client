@@ -15,12 +15,29 @@ vi.mock("../../server/db.js", () => ({
     default: { getDb: vi.fn(() => null) }
 }));
 
+vi.mock("config", () => ({
+    default: { has: () => true, get: () => "node-secret" }
+}));
+
+const fakeServers: EventEmitter[] = [];
+
+vi.mock("ws", () => ({
+    WebSocket: { OPEN: 1 },
+    WebSocketServer: class extends EventEmitter {
+        constructor() {
+            super();
+            fakeServers.push(this);
+        }
+    }
+}));
+
 import GameRouter from "../../server/gamerouter.js";
 import logger from "../../server/log.js";
 
 type RouterCtx = EventEmitter & {
     workers: Record<string, ReturnType<typeof makeWorker>>;
     connections: Map<string, FakeWs>;
+    isConnected: (identity: string) => boolean;
     sendCommand: ReturnType<typeof vi.fn>;
     updateDeckStats: ReturnType<typeof vi.fn>;
     gameService: { create: ReturnType<typeof vi.fn>; update: ReturnType<typeof vi.fn> };
@@ -72,10 +89,11 @@ function makeWs(open = true, sendImpl?: (data: string) => void): FakeWs {
 }
 
 function makeRouterCtx(overrides: Partial<RouterCtx> = {}): RouterCtx {
+    const workers = overrides.workers ?? {};
     const ctx = Object.assign(new EventEmitter(), {
-        workers: {},
-        connections: new Map(),
-        sendCommand: vi.fn(),
+        workers,
+        connections: new Map(Object.keys(workers).map(identity => [identity, makeWs(true)])),
+        sendCommand: vi.fn(() => true),
         updateDeckStats: vi.fn(),
         gameService: { create: vi.fn(), update: vi.fn() },
         gameStatsService: { invalidateCache: vi.fn() },
@@ -83,6 +101,7 @@ function makeRouterCtx(overrides: Partial<RouterCtx> = {}): RouterCtx {
         gameErrorService: { addError: vi.fn().mockResolvedValue(undefined) },
         ...overrides
     }) as RouterCtx;
+    ctx.isConnected = (identity: string) => call<boolean>("isConnected", ctx, identity);
     vi.spyOn(ctx, "emit");
     return ctx;
 }
@@ -141,6 +160,19 @@ describe("GameRouter.getNextAvailableGameNode", () => {
         });
         expect(call<{ identity: string }>("getNextAvailableGameNode", ctx).identity).toBe("node-1");
     });
+
+    it("skips workers whose connection is closed or missing", () => {
+        const ctx = makeRouterCtx({
+            workers: {
+                "node-1": makeWorker({ identity: "node-1", numGames: 5 }),
+                "node-2": makeWorker({ identity: "node-2", numGames: 0 }),
+                "node-3": makeWorker({ identity: "node-3", numGames: 1 })
+            }
+        });
+        ctx.connections.set("node-2", makeWs(false));
+        ctx.connections.delete("node-3");
+        expect(call<{ identity: string }>("getNextAvailableGameNode", ctx).identity).toBe("node-1");
+    });
 });
 
 describe("GameRouter.getNodeStatus", () => {
@@ -163,48 +195,24 @@ describe("GameRouter.getNodeStatus", () => {
     });
 });
 
-describe("GameRouter.disableNode / enableNode", () => {
-    it("disableNode flips the disabled flag and returns true", () => {
-        const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1", disabled: false }) } });
-        expect(call("disableNode", ctx, "node-1")).toBe(true);
-        expect(ctx.workers["node-1"].disabled).toBe(true);
-    });
-
-    it("disableNode returns false for unknown worker", () => {
-        const ctx = makeRouterCtx();
-        expect(call("disableNode", ctx, "missing")).toBe(false);
-    });
-
-    it("enableNode flips the disabled flag and returns true", () => {
-        const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1", disabled: true }) } });
-        expect(call("enableNode", ctx, "node-1")).toBe(true);
-        expect(ctx.workers["node-1"].disabled).toBe(false);
-    });
-
-    it("enableNode returns false for unknown worker", () => {
-        const ctx = makeRouterCtx();
-        expect(call("enableNode", ctx, "missing")).toBe(false);
-    });
-});
-
 describe("GameRouter.sendCommand", () => {
     it("sends JSON over the matching connection when ws is open", () => {
         const ws = makeWs(true);
         const ctx = makeRouterCtx({ connections: new Map([["node-1", ws]]), sendCommand: undefined as unknown as RouterCtx["sendCommand"] });
-        call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" });
+        expect(call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" })).toBe(true);
         expect(ws.send).toHaveBeenCalledWith(JSON.stringify({ command: "CLOSEGAME", arg: { gameId: "g1" } }));
     });
 
     it("logs and skips when no ws is registered for identity", () => {
         const ctx = makeRouterCtx({ sendCommand: undefined as unknown as RouterCtx["sendCommand"] });
-        call("sendCommand", ctx, "missing", "CLOSEGAME", { gameId: "g1" });
+        expect(call("sendCommand", ctx, "missing", "CLOSEGAME", { gameId: "g1" })).toBe(false);
         expect(logger.error).toHaveBeenCalledWith("Cannot send CLOSEGAME to missing: not connected");
     });
 
     it("logs and skips when ws is not in OPEN state", () => {
         const ws = makeWs(false);
         const ctx = makeRouterCtx({ connections: new Map([["node-1", ws]]), sendCommand: undefined as unknown as RouterCtx["sendCommand"] });
-        call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" });
+        expect(call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" })).toBe(false);
         expect(ws.send).not.toHaveBeenCalled();
         expect(logger.error).toHaveBeenCalledWith("Cannot send CLOSEGAME to node-1: not connected");
     });
@@ -221,7 +229,7 @@ describe("GameRouter.sendCommand", () => {
     it("catches and logs ws.send errors", () => {
         const ws = makeWs(true, () => { throw new Error("kaboom"); });
         const ctx = makeRouterCtx({ connections: new Map([["node-1", ws]]), sendCommand: undefined as unknown as RouterCtx["sendCommand"] });
-        call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" });
+        expect(call("sendCommand", ctx, "node-1", "CLOSEGAME", { gameId: "g1" })).toBe(false);
         expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("Error sending command"));
     });
 });
@@ -248,6 +256,40 @@ describe("GameRouter.startGame", () => {
         expect(worker.numGames).toBe(3);
         expect(ctx.gameService.create).toHaveBeenCalledWith(saveState);
         expect(ctx.sendCommand).toHaveBeenCalledWith("node-1", "STARTGAME", { ...game, owner: "owner1" });
+    });
+
+    it("returns undefined without a save state or a game count when STARTGAME can't be sent", () => {
+        const worker = makeWorker({ identity: "node-1", numGames: 2 });
+        const ctx = Object.assign(makeRouterCtx({ workers: { "node-1": worker }, sendCommand: vi.fn(() => false) }), {
+            getNextAvailableGameNode: vi.fn(() => worker)
+        });
+        const game = { id: "g1", owner: { username: "owner1" }, getSaveState: () => ({ gameId: "g1", players: [] }) };
+
+        expect(call("startGame", ctx, game)).toBeUndefined();
+        expect(worker.numGames).toBe(2);
+        expect(ctx.gameService.create).not.toHaveBeenCalled();
+    });
+});
+
+describe("GameRouter.init", () => {
+    function connect(ws: EventEmitter) {
+        fakeServers[fakeServers.length - 1].emit("connection", ws, { url: "/?identity=node-1&secret=node-secret" });
+    }
+
+    it("a late close of a node's old socket keeps its new connection", () => {
+        const ctx = makeRouterCtx();
+        call("init", ctx, "ws://lobby:6100");
+        const oldWs = Object.assign(new EventEmitter(), { readyState: 1 });
+        const newWs = Object.assign(new EventEmitter(), { readyState: 1 });
+
+        connect(oldWs);
+        connect(newWs);
+        oldWs.emit("close");
+
+        expect(ctx.connections.get("node-1")).toBe(newWs);
+
+        newWs.emit("close");
+        expect(ctx.connections.has("node-1")).toBe(false);
     });
 });
 
@@ -303,6 +345,48 @@ describe("GameRouter.onMessage", () => {
         return { toString: () => JSON.stringify(obj) };
     }
 
+    function saveState(overrides: Record<string, unknown> = {}) {
+        return {
+            gameId: "g1",
+            winner: "alice",
+            winReason: "honor",
+            roundNumber: 3,
+            initialFirstPlayer: null,
+            players: [
+                { name: "alice", faction: "Crab Clan", honor: 25, lostProvinces: 0, deckId: "d1" },
+                { name: "bob", faction: "Crane Clan", honor: 4, lostProvinces: 2 }
+            ],
+            ...overrides
+        };
+    }
+
+    function summary(id: string) {
+        return {
+            id,
+            name: "Game",
+            owner: "alice",
+            allowSpectators: true,
+            manualMode: false,
+            started: true,
+            createdAt: "2026-11-05T10:00:00Z",
+            players: { alice: { id: "a", name: "alice", owner: true, deck: {}, faction: "crab" } },
+            spectators: [{ id: "c", name: "carol" }]
+        };
+    }
+
+    function hello(overrides: Record<string, unknown> = {}) {
+        return {
+            maxGames: 5,
+            address: "host",
+            port: 9500,
+            protocol: "ws",
+            version: "v2",
+            protocolVersion: 1,
+            games: [summary("g1"), summary("g2")],
+            ...overrides
+        };
+    }
+
     it("logs and returns when JSON is malformed", () => {
         const ctx = makeRouterCtx();
         call("onMessage", ctx, "node-1", { toString: () => "{not-json" });
@@ -348,14 +432,7 @@ describe("GameRouter.onMessage", () => {
 
     it("HELLO registers the worker, emits onWorkerStarted + onNodeReconnected, and seeds numGames from arg.games length", () => {
         const ctx = makeRouterCtx();
-        const arg = {
-            maxGames: 5,
-            address: "host",
-            port: 9500,
-            protocol: "ws",
-            version: "v2",
-            games: [{ id: "g1" }, { id: "g2" }]
-        };
+        const arg = hello();
         call("onMessage", ctx, "node-1", encode({ command: "HELLO", arg }));
         expect(ctx.emit).toHaveBeenCalledWith("onWorkerStarted", "node-1");
         expect(ctx.emit).toHaveBeenCalledWith("onNodeReconnected", "node-1", arg.games);
@@ -368,25 +445,44 @@ describe("GameRouter.onMessage", () => {
             version: "v2",
             numGames: 2
         });
+        expect(ctx.workers["node-1"].disabled).toBeUndefined();
     });
 
-    it("HELLO defaults missing fields (maxGames=20, address='', port=0, protocol='ws', version='unknown')", () => {
+    it("HELLO with a different protocolVersion registers the node disabled", () => {
         const ctx = makeRouterCtx();
-        call("onMessage", ctx, "node-1", encode({ command: "HELLO", arg: {} }));
-        expect(ctx.workers["node-1"]).toMatchObject({
-            maxGames: 20,
-            address: "",
-            port: 0,
-            protocol: "ws",
-            version: "unknown",
-            numGames: 0
-        });
+        call("onMessage", ctx, "node-1", encode({ command: "HELLO", arg: hello({ protocolVersion: 2 }) }));
+        expect(ctx.workers["node-1"].disabled).toBe(true);
+        expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("speaks protocol 2"));
+    });
+
+    it("HELLO with a malformed payload is rejected", () => {
+        const invalid = [
+            {},
+            hello({ protocolVersion: undefined }),
+            hello({ port: "9500" }),
+            hello({ games: [{ ...summary("g1"), players: { alice: { name: "alice" } } }] }),
+            hello({ games: [{ ...summary("g1"), spectators: {} }] })
+        ];
+        for(const arg of invalid) {
+            const ctx = makeRouterCtx();
+            call("onMessage", ctx, "node-1", encode({ command: "HELLO", arg }));
+            expect(ctx.workers["node-1"]).toBeUndefined();
+            expect(ctx.emit).not.toHaveBeenCalled();
+            expect(logger.error).toHaveBeenLastCalledWith("Invalid HELLO payload from node-1");
+        }
+    });
+
+    it("HELLO accepts a node's game without the optional fields", () => {
+        const ctx = makeRouterCtx();
+        const game = { ...summary("g1"), gameType: "casual", gameMode: "emerald", startedAt: "2026-11-05T10:01:00Z" };
+        call("onMessage", ctx, "node-1", encode({ command: "HELLO", arg: hello({ games: [game, summary("g2")] }) }));
+        expect(ctx.workers["node-1"].numGames).toBe(2);
     });
 
     it("GAMEWIN with valid payload updates gameService, invalidates stats cache, and calls updateDeckStats", () => {
         const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
-        const game = { gameId: "g1", winner: "alice", players: [{ name: "alice" }, { name: "bob" }] };
-        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game } }));
+        const game = saveState();
+        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game, winner: "alice", reason: "honor" } }));
         expect(ctx.gameService.update).toHaveBeenCalledWith(game);
         expect(ctx.gameStatsService.invalidateCache).toHaveBeenCalledTimes(1);
         expect(ctx.updateDeckStats).toHaveBeenCalledWith(game);
@@ -394,17 +490,26 @@ describe("GameRouter.onMessage", () => {
 
     it("GAMEWIN with missing gameId logs error and does not update", () => {
         const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
-        const game = { winner: "alice", players: [{ name: "alice" }] };
-        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game } }));
+        const game = saveState({ gameId: undefined });
+        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game, winner: "alice", reason: "honor" } }));
         expect(logger.error).toHaveBeenCalledWith(expect.stringContaining("Invalid GAMEWIN payload"));
         expect(ctx.gameService.update).not.toHaveBeenCalled();
     });
 
     it("GAMEWIN where winner is not in players list logs error and does not update", () => {
         const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
-        const game = { gameId: "g1", winner: "ghost", players: [{ name: "alice" }, { name: "bob" }] };
-        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game } }));
+        const game = saveState({ winner: "ghost" });
+        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game, winner: "ghost", reason: "honor" } }));
         expect(logger.error).toHaveBeenCalled();
+        expect(ctx.gameService.update).not.toHaveBeenCalled();
+    });
+
+    it("GAMEWIN with a malformed player or no winner field is rejected", () => {
+        const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
+        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game: saveState({ players: [{ name: "alice" }] }), winner: "alice", reason: "honor" } }));
+        call("onMessage", ctx, "node-1", encode({ command: "GAMEWIN", arg: { game: saveState() } }));
+        expect(logger.error).toHaveBeenCalledTimes(2);
+        expect(logger.error).toHaveBeenCalledWith("Invalid GAMEWIN payload from node-1");
         expect(ctx.gameService.update).not.toHaveBeenCalled();
     });
 
@@ -425,7 +530,7 @@ describe("GameRouter.onMessage", () => {
 
     it("PLAYERLEFT non-spectator updates gameService and emits onPlayerLeft", () => {
         const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
-        const game = { gameId: "g1" };
+        const game = saveState({ winner: undefined, winReason: undefined });
         call("onMessage", ctx, "node-1", encode({ command: "PLAYERLEFT", arg: { gameId: "g1", game, player: "alice", spectator: false } }));
         expect(ctx.gameService.update).toHaveBeenCalledWith(game);
         expect(ctx.emit).toHaveBeenCalledWith("onPlayerLeft", "g1", "alice");
@@ -433,9 +538,24 @@ describe("GameRouter.onMessage", () => {
 
     it("PLAYERLEFT spectator does not update gameService", () => {
         const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
-        call("onMessage", ctx, "node-1", encode({ command: "PLAYERLEFT", arg: { gameId: "g1", game: { gameId: "g1" }, player: "alice", spectator: true } }));
+        call("onMessage", ctx, "node-1", encode({ command: "PLAYERLEFT", arg: { gameId: "g1", game: saveState(), player: "alice", spectator: true } }));
         expect(ctx.gameService.update).not.toHaveBeenCalled();
         expect(ctx.emit).toHaveBeenCalledWith("onPlayerLeft", "g1", "alice");
+    });
+
+    it("PLAYERLEFT without a valid save state is rejected", () => {
+        const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1" }) } });
+        call("onMessage", ctx, "node-1", encode({ command: "PLAYERLEFT", arg: { gameId: "g1", game: { gameId: "g1" }, player: "alice", spectator: false } }));
+        expect(logger.error).toHaveBeenCalledWith("Invalid PLAYERLEFT payload from node-1");
+        expect(ctx.gameService.update).not.toHaveBeenCalled();
+        expect(ctx.emit).not.toHaveBeenCalled();
+    });
+
+    it("GAMECLOSED without a game id is rejected", () => {
+        const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1", numGames: 3 }) } });
+        call("onMessage", ctx, "node-1", encode({ command: "GAMECLOSED", arg: {} }));
+        expect(logger.error).toHaveBeenCalledWith("Invalid GAMECLOSED payload from node-1");
+        expect(ctx.workers["node-1"].numGames).toBe(3);
     });
 
     it("GAMEERROR with valid arg persists via gameErrorService.addError", () => {

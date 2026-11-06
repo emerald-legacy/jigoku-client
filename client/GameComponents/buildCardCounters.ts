@@ -30,9 +30,14 @@ export function buildCardCounters(card: CardType): Record<string, CounterData> {
         });
     }
 
+    // An attachment's counters show on the host (dimmed), but never in place of the host's own counter of the same kind.
     if(card.attachments) {
         card.attachments.forEach((attachment: CardType) => {
-            Object.assign(counters, buildCardCounters(attachment));
+            for(const [key, counter] of Object.entries(buildCardCounters(attachment))) {
+                if(!counters[key]) {
+                    counters[key] = counter;
+                }
+            }
         });
     }
 

@@ -37,9 +37,12 @@ interface InnerNavBarProps {
 export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: InnerNavBarProps) {
     const currentPath = useLocation().pathname;
     const [showPopup, setShowPopup] = useState<NavContextItem | undefined>(undefined);
-    const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-    const [navbarCollapsed, setNavbarCollapsed] = useState(true);
-    const dropdownRef = useRef<HTMLLIElement | null>(null);
+    // The mobile menu and the dropdowns remember the path they were opened on, so they close by themselves when a tap navigates away.
+    const [openedDropdown, setOpenedDropdown] = useState<{ name: string; path: string } | null>(null);
+    const [menuOpenedOn, setMenuOpenedOn] = useState<string | null>(null);
+    const openDropdown = openedDropdown?.path === currentPath ? openedDropdown.name : null;
+    const navbarCollapsed = menuOpenedOn !== currentPath;
+    const navRef = useRef<HTMLElement | null>(null);
 
     const onMenuItemMouseOver = (menuItem: NavContextItem) => {
         setShowPopup(menuItem);
@@ -52,23 +55,37 @@ export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: I
     const handleDropdownToggle = (menuItemName: string, event: React.MouseEvent) => {
         event.preventDefault();
         event.stopPropagation();
-        setOpenDropdown((prev: string | null) => prev === menuItemName ? null : menuItemName);
+        setOpenedDropdown(openDropdown === menuItemName ? null : { name: menuItemName, path: currentPath });
     };
 
     const handleNavbarToggle = () => {
-        setNavbarCollapsed(prev => !prev);
+        setMenuOpenedOn(navbarCollapsed ? currentPath : null);
     };
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
-            if(openDropdown && dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setOpenDropdown(null);
+            const target = event.target instanceof Element ? event.target : null;
+            if(!target?.closest(".dropdown.open")) {
+                setOpenedDropdown(null);
+            }
+            if(!navRef.current?.contains(target)) {
+                setMenuOpenedOn(null);
+            }
+        };
+        const handleEscape = (event: KeyboardEvent) => {
+            if(event.key === "Escape") {
+                setOpenedDropdown(null);
+                setMenuOpenedOn(null);
             }
         };
 
         document.addEventListener("click", handleClickOutside);
-        return () => document.removeEventListener("click", handleClickOutside);
-    }, [openDropdown]);
+        document.addEventListener("keydown", handleEscape);
+        return () => {
+            document.removeEventListener("click", handleClickOutside);
+            document.removeEventListener("keydown", handleEscape);
+        };
+    }, []);
 
     const renderMenuItem = (menuItem: NavMenuItem) => {
         if(menuItem.childItems) {
@@ -84,11 +101,11 @@ export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: I
             }
 
             const childItems = menuItem.childItems.map((item: NavMenuItem) => (
-                <li key={ item.name } className={ item.path === currentPath ? "active" : "" } onClick={ () => setOpenDropdown(null) }><Link to={ item.path ?? "#" }>{ item.name }</Link></li>
+                <li key={ item.name } className={ item.path === currentPath ? "active" : "" } onClick={ () => setOpenedDropdown(null) }><Link to={ item.path ?? "#" }>{ item.name }</Link></li>
             ));
 
             return (
-                <li key={ menuItem.name } className={ className } ref={ dropdownRef }>
+                <li key={ menuItem.name } className={ className }>
                     <a href="#" className="dropdown-toggle" role="button" aria-haspopup="true" aria-expanded={ isOpen }
                         onClick={ (e) => handleDropdownToggle(menuItem.name, e) }>
                         { menuItem.avatar ? <Avatar emailHash={ menuItem.emailHash } forceDefault={ menuItem.disableGravatar } /> : null }
@@ -109,7 +126,7 @@ export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: I
     const leftMenuToRender = leftMenu?.map(renderMenuItem);
     const rightMenuToRender = rightMenu?.map(renderMenuItem);
 
-    const numGamesElement = numGames !== undefined ? <li><span>{ `${numGames} Games` }</span></li> : null;
+    const numGamesElement = numGames !== undefined ? <li><span>{ numGames === 1 ? "1 Game" : `${numGames} Games` }</span></li> : null;
 
     const contextMenu = context?.map((menuItem: NavContextItem) => (
         <li key={ menuItem.text } style={ { position: "relative" } }
@@ -130,24 +147,24 @@ export function InnerNavBar({ context, leftMenu, numGames, rightMenu, title }: I
     ));
 
     return (
-        <nav className="navbar navbar-inverse no-highlight">
+        <nav ref={ navRef } className={ navbarCollapsed ? "navbar navbar-inverse no-highlight" : "navbar navbar-inverse navbar-open no-highlight" }>
             <div className="max-w-[1170px] mx-auto px-4 flex items-center flex-wrap text-body">
-                <Link to="/" className="text-gray-400 font-bold text-body py-2 leading-tight mr-2">{ title }</Link>
-                <button className="md:hidden p-2 text-gray-400 ml-auto"
+                <Link to="/" className="navbar-brand">{ title }</Link>
+                <button className="navbar-toggle md:hidden"
                     type="button"
                     aria-expanded={ !navbarCollapsed }
                     aria-controls="navbar"
                     onClick={ handleNavbarToggle }>
                     <span className="sr-only">Toggle Navigation</span>
-                    <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
-                    <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
-                    <span className="block w-[22px] h-0.5 bg-gray-400 rounded my-1" />
+                    <span className="navbar-toggle-bar" />
+                    <span className="navbar-toggle-bar" />
+                    <span className="navbar-toggle-bar" />
                 </button>
-                <div id="navbar" className={ navbarCollapsed ? "hidden md:flex md:items-center md:flex-1" : "flex flex-col md:flex-row md:items-center md:flex-1 w-full md:w-auto" }>
-                    <ul className="flex flex-col md:flex-row list-none m-0 p-0">
+                <div id="navbar" className={ navbarCollapsed ? "navbar-menu hidden md:flex" : "navbar-menu flex" }>
+                    <ul className="navbar-list">
                         { leftMenuToRender }
                     </ul>
-                    <ul className="flex flex-col md:flex-row list-none m-0 p-0 ml-auto">
+                    <ul className="navbar-list navbar-list-right">
                         { contextMenu }
                         { numGamesElement }
                         { rightMenuToRender }

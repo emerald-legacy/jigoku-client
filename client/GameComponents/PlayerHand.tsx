@@ -206,6 +206,7 @@ function PlayerHand({ cardSize, cards, isMe, onAnimationEnd, onCardClick, onDrag
                 onDragLeave={ handleDragLeave }
                 onDragOver={ handleDragOver }
                 onDrop={ (event) => handleDragDrop(event as React.DragEvent, "hand") }
+                data-drop-target="hand"
                 onAnimationEnd={ earthAnim && onAnimationEnd ? () => onAnimationEnd(playerName!) : undefined }
             >
                 { handCards }

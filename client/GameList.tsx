@@ -28,6 +28,7 @@ interface LobbyGame {
     started?: boolean;
     needsPassword?: boolean;
     allowSpectators?: boolean;
+    canRejoin?: boolean;
     gameMode?: string;
     gameType?: string;
     node?: string;
@@ -68,7 +69,7 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, u
         event.preventDefault();
 
         if(!username) {
-            toast.error("Please login before trying to join a game");
+            toast.error("Log in to join a game");
             return;
         }
 
@@ -80,14 +81,19 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, u
     };
 
     const canWatch = (game: LobbyGame) => {
-        return !currentGame && game.allowSpectators;
+        return !currentGame && game.allowSpectators && !game.canRejoin;
+    };
+
+    const rejoinGame = (event: React.MouseEvent, game: LobbyGame) => {
+        event.preventDefault();
+        getLobbySocket()?.emit("watchgame", game.id);
     };
 
     const watchGame = (event: React.MouseEvent, game: LobbyGame) => {
         event.preventDefault();
 
         if(!username) {
-            toast.error("Please login before trying to watch a game");
+            toast.error("Log in to watch a game");
             return;
         }
 
@@ -132,6 +138,8 @@ export function InnerGameList({ currentGame, games, isAdmin, joinPasswordGame, u
                         { playerCount === 0 && <span className="game-row-empty">Waiting for players...</span> }
                     </div>
                     <div className="game-row-buttons">
+                        { !currentGame && game.canRejoin ?
+                            <button className="btn btn-primary btn-sm" onClick={ (event) => rejoinGame(event, game) }>Rejoin</button> : null }
                         { canWatch(game) ?
                             <button className="btn btn-primary btn-sm" onClick={ (event) => watchGame(event, game) }>Watch</button> : null }
                         { (currentGame || playerCount === 2 || game.started) ?

@@ -13,7 +13,7 @@
     z-index: 120;
 }
 
-.clock-frame:hover .clock--popup {
+.clock-frame.open .clock--popup {
     opacity: 1;
     transition-delay: 0.2s;
 }

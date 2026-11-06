@@ -1,5 +1,4 @@
 import express from "express";
-import cookieParser from "cookie-parser";
 import session from "express-session";
 import MongoStore from "connect-mongo";
 import config from "config";
@@ -184,7 +183,6 @@ class Server {
         passport.serializeUser(this.serializeUser.bind(this));
         passport.deserializeUser(this.deserializeUser.bind(this));
 
-        app.use(cookieParser());
         app.use(express.json());
         app.use(express.urlencoded({ extended: false }));
 

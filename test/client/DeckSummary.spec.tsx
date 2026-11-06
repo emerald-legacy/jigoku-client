@@ -162,6 +162,25 @@ describe("the <DeckSummary /> component", () => {
             expect(hoverImage).toBeInTheDocument();
         });
 
+        it("should show the image on a tap and switch to another card on a tap on it", () => {
+            const tap = (element: Element) => {
+                fireEvent.touchStart(element);
+                fireEvent.mouseOver(element);
+                fireEvent.click(element);
+            };
+            tap(screen.getByText("Dynasty Character"));
+            const firstImage = document.querySelector(".hover-image")?.getAttribute("src");
+            expect(firstImage).toBeTruthy();
+
+            tap(screen.getByText("Conflict Character"));
+            const secondImage = document.querySelector(".hover-image")?.getAttribute("src");
+            expect(secondImage).toBeTruthy();
+            expect(secondImage).not.toBe(firstImage);
+
+            fireEvent.click(document.querySelector(".hover-image")!);
+            expect(document.querySelector(".hover-image")).not.toBeInTheDocument();
+        });
+
         it("should hide hover image when mousing out", () => {
             const cardLink = screen.getByText("Dynasty Character");
             fireEvent.mouseOver(cardLink);

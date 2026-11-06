@@ -51,6 +51,41 @@
     color: var(--color-danger);
 }
 
+/* Touch screens: 44px targets for the small controls, without changing the row heights */
+@media (pointer: coarse) {
+    .game-row-remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 44px;
+        min-height: 44px;
+        margin: -15px -10px;
+    }
+
+    .game-stats-tab {
+        min-height: 40px;
+    }
+
+    /* Invisible hit areas around "Select deck..." and your deck name, so their look stays the same.
+       The deck name clips its overflow for the ellipsis, so it gets a transparent border instead of a pseudo-element. */
+    .player-row .card-link {
+        position: relative;
+    }
+
+    .player-row .card-link::after {
+        content: "";
+        position: absolute;
+        inset: -12px 0;
+    }
+
+    .player-row .deck-selection.clickable {
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        background-clip: padding-box;
+        margin: -10px 0;
+    }
+}
+
 .game-badge {
     flex-shrink: 0;
     font-family: var(--font-mono);
@@ -69,6 +104,7 @@
     .game-row.skirmish &,
     .game-row.imperial & {
         background: var(--gold-deep);
+        color: var(--ink);
     }
 
     .game-row.obsidian & {
@@ -193,7 +229,10 @@
     margin-bottom: 10px;
 }
 
-.deck-status {
+/* Deck validity pill, shared by the deck list (.deck-row-status) and the pending game (.deck-status).
+   Tinted like .valid so the 11px text stays readable; "validating" is neutral, not a warning. */
+.deck-status,
+.deck-row-status {
     padding: 2px 9px;
     border-radius: 3px;
     font-family: var(--font-mono);
@@ -202,21 +241,24 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     white-space: nowrap;
+    border: 1px solid transparent;
 
     &.valid {
         background: linear-gradient(180deg, var(--moss-light), rgb(var(--moss-rgb) / 0.9));
         color: var(--jade-vivid);
-        border: 1px solid rgb(var(--jade-rgb) / 0.4);
+        border-color: rgb(var(--jade-rgb) / 0.4);
     }
 
-    &.casual-play {
-        background: var(--color-warning);
-        color: var(--white);
+    &.validating {
+        background: rgb(var(--sage-rgb) / 0.1);
+        color: var(--sage);
+        border-color: rgb(var(--sage-rgb) / 0.3);
     }
 
     &.invalid {
-        background: var(--color-danger);
-        color: var(--white);
+        background: rgb(var(--danger-rgb) / 0.15);
+        color: var(--color-danger);
+        border-color: rgb(var(--danger-rgb) / 0.4);
     }
 }
 
@@ -233,10 +275,7 @@
 }
 
 .deck-status-errors {
-    border-top: 1px solid rgb(var(--jade-rgb) / 0.4);
     font-size: var(--text-body);
-    margin-top: 1em;
-    padding-top: 1em;
 }
 
 .player-row {
@@ -244,7 +283,8 @@
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
-    flex-wrap: nowrap;
+    /* A long deck name or the status badge wraps to the next line in a narrow column instead of overflowing the panel */
+    flex-wrap: wrap;
     min-width: 0;
 
     &:last-child {

@@ -119,6 +119,7 @@ function StrongholdRow({
                     <CardPile
                         className="rolecard"
                         source="role card"
+                        disableDrag
                         cards={ [thisPlayer.role] }
                         topCard={ thisPlayer.role }
                         disableMenu
@@ -148,6 +149,7 @@ function StrongholdRow({
                 <CardPile
                     className="rolecard"
                     source="role card"
+                    disableDrag
                     cards={ [otherPlayer.role] }
                     topCard={ otherPlayer.role }
                     disableMenu

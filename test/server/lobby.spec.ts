@@ -374,9 +374,18 @@ describe("Lobby.ejectBlockedUsers", () => {
     });
 });
 
-const filterGameListWithBlockList = (Lobby as unknown as { prototype: {
-    filterGameListWithBlockList: (this: { games: Record<string, PendingGame> }, user?: { username: string; blockList?: string[] }) => PendingGame[] | Record<string, PendingGame>;
-} }).prototype.filterGameListWithBlockList;
+type GameListCtx = { games: Record<string, PendingGame>; canRejoin: (game: PendingGame, username: string) => boolean };
+
+const gameListProto = (Lobby as unknown as { prototype: {
+    filterGameListWithBlockList: (this: GameListCtx, user?: { username: string; blockList?: string[] }) => PendingGame[] | Record<string, PendingGame>;
+    mapGamesToGameSummaries: (this: GameListCtx, games: PendingGame[] | Record<string, PendingGame>, username?: string) => Array<{ id: string; canRejoin: boolean }>;
+    canRejoin: (game: PendingGame, username: string) => boolean;
+} }).prototype;
+const filterGameListWithBlockList = gameListProto.filterGameListWithBlockList;
+
+function gameListCtx(games: Record<string, PendingGame>): GameListCtx {
+    return { games, canRejoin: gameListProto.canRejoin };
+}
 
 function gameOwnedBy(owner: { username: string; blockList?: string[] }, playerNames: string[]) {
     const game = new PendingGame(owner, { name: `${owner.username}'s game` });
@@ -388,7 +397,7 @@ function gameOwnedBy(owner: { username: string; blockList?: string[] }, playerNa
 
 describe("Lobby.filterGameListWithBlockList", () => {
     it("hides the game from a player the owner has blocked", () => {
-        const ctx = { games: { g1: gameOwnedBy({ username: "alice", blockList: ["bob"] }, ["alice"]) } };
+        const ctx = gameListCtx({ g1: gameOwnedBy({ username: "alice", blockList: ["bob"] }, ["alice"]) });
 
         const games = filterGameListWithBlockList.call(ctx, { username: "bob", blockList: [] });
 
@@ -396,7 +405,7 @@ describe("Lobby.filterGameListWithBlockList", () => {
     });
 
     it("hides a game containing someone the viewer has blocked", () => {
-        const ctx = { games: { g1: gameOwnedBy({ username: "alice", blockList: [] }, ["Alice"]) } };
+        const ctx = gameListCtx({ g1: gameOwnedBy({ username: "alice", blockList: [] }, ["Alice"]) });
 
         const games = filterGameListWithBlockList.call(ctx, { username: "bob", blockList: ["alice"] });
 
@@ -404,11 +413,57 @@ describe("Lobby.filterGameListWithBlockList", () => {
     });
 
     it("keeps games with no block relationship", () => {
-        const ctx = { games: { g1: gameOwnedBy({ username: "alice", blockList: ["charlie"] }, ["alice"]) } };
+        const ctx = gameListCtx({ g1: gameOwnedBy({ username: "alice", blockList: ["charlie"] }, ["alice"]) });
 
         const games = filterGameListWithBlockList.call(ctx, { username: "bob", blockList: ["dave"] });
 
         expect(games).toHaveLength(1);
+    });
+
+    it("keeps a started game the viewer left even when the owner blocked them", () => {
+        const game = gameOwnedBy({ username: "alice", blockList: ["bob"] }, ["alice", "bob"]);
+        game.started = true;
+        game.node = { identity: "node-1" };
+        game.players.bob.left = true;
+
+        const games = filterGameListWithBlockList.call(gameListCtx({ g1: game }), { username: "bob", blockList: [] });
+
+        expect(games).toEqual([game]);
+    });
+});
+
+describe("Lobby.mapGamesToGameSummaries", () => {
+    it("marks only the viewer's own left seat in a started game as canRejoin", () => {
+        const left = gameOwnedBy({ username: "alice" }, ["alice", "bob"]);
+        left.started = true;
+        left.node = { identity: "node-1" };
+        left.players.bob.left = true;
+        const playing = gameOwnedBy({ username: "carol" }, ["carol", "dave"]);
+        playing.started = true;
+        playing.node = { identity: "node-1" };
+        const ctx = gameListCtx({ [left.id]: left, [playing.id]: playing });
+
+        const forBob = gameListProto.mapGamesToGameSummaries.call(ctx, ctx.games, "bob");
+        const forAlice = gameListProto.mapGamesToGameSummaries.call(ctx, ctx.games, "alice");
+        const anonymous = gameListProto.mapGamesToGameSummaries.call(ctx, ctx.games);
+
+        expect(forBob.find(game => game.id === left.id)?.canRejoin).toBe(true);
+        expect(forBob.find(game => game.id === playing.id)?.canRejoin).toBe(false);
+        expect(forAlice.every(game => !game.canRejoin)).toBe(true);
+        expect(anonymous.every(game => !game.canRejoin)).toBe(true);
+    });
+
+    it("doesn't offer a rejoin before the game started or without a node", () => {
+        const notStarted = gameOwnedBy({ username: "alice" }, ["alice", "bob"]);
+        notStarted.players.bob.left = true;
+        const noNode = gameOwnedBy({ username: "alice" }, ["alice", "bob"]);
+        noNode.started = true;
+        noNode.players.bob.left = true;
+        const ctx = gameListCtx({ [notStarted.id]: notStarted, [noNode.id]: noNode });
+
+        const forBob = gameListProto.mapGamesToGameSummaries.call(ctx, ctx.games, "bob");
+
+        expect(forBob.every(game => !game.canRejoin)).toBe(true);
     });
 });
 
@@ -441,5 +496,253 @@ describe("PendingGame block list gates", () => {
 
         expect(callback).toHaveBeenCalledWith();
         expect(game.players.bob).toBeDefined();
+    });
+});
+
+type NodeReconnectedCtx = {
+    games: Record<string, PendingGame>;
+    router: { workers: Record<string, { identity: string }> };
+    broadcastGameList: () => void;
+};
+
+const onNodeReconnected = (Lobby as unknown as { prototype: {
+    onNodeReconnected: (this: NodeReconnectedCtx, nodeName: string, games: unknown[]) => void;
+} }).prototype.onNodeReconnected;
+
+function nodeGame(overrides: Record<string, unknown> = {}) {
+    return {
+        id: "g1",
+        name: "Game",
+        owner: "alice",
+        players: { bob: { id: "b", name: "bob", faction: "crab", owner: false, deck: {} } },
+        spectators: [],
+        allowSpectators: true,
+        manualMode: false,
+        started: true,
+        createdAt: "2026-11-05T09:59:00Z",
+        startedAt: "2026-11-05T10:00:00Z",
+        gameType: "casual",
+        gameMode: "emerald",
+        ...overrides
+    };
+}
+
+describe("Lobby.onNodeReconnected", () => {
+    it("rebuilds an unknown game with its game mode and spectators", () => {
+        const ctx: NodeReconnectedCtx = {
+            games: {},
+            router: { workers: { "node-1": { identity: "node-1" } } },
+            broadcastGameList: vi.fn()
+        };
+
+        onNodeReconnected.call(ctx, "node-1", [nodeGame({ gameMode: "skirmish", spectators: [{ id: "c", name: "carol" }] })]);
+
+        const game = ctx.games.g1;
+        expect(game.gameMode).toBe("skirmish");
+        expect(game.skirmishMode).toBe(true);
+        expect(game.spectators.carol).toEqual({ id: "c", name: "carol" });
+    });
+
+    it("keeps the lobby's record of a known game and only refreshes its node", () => {
+        const known = new PendingGame({ username: "alice" }, { name: "Game", gameMode: "emerald", spectatorSquelch: true });
+        known.id = "g1";
+        known.started = true;
+        known.players.alice = { id: "a", name: "alice", owner: true, user: { username: "alice" } };
+        known.players.bob = { id: "b", name: "bob", user: { username: "bob" } };
+        known.node = { identity: "node-1" };
+        const ctx: NodeReconnectedCtx = {
+            games: { g1: known },
+            router: { workers: { "node-1": { identity: "node-1" } } },
+            broadcastGameList: vi.fn()
+        };
+
+        onNodeReconnected.call(ctx, "node-1", [nodeGame({ gameMode: undefined })]);
+
+        expect(ctx.games.g1).toBe(known);
+        expect(known.node).toBe(ctx.router.workers["node-1"]);
+        expect(known.gameMode).toBe("emerald");
+        expect(known.spectatorSquelch).toBe(true);
+        expect(known.players.alice.user).toEqual({ username: "alice" });
+    });
+
+    it("removes the node's games that it no longer runs", () => {
+        const gone = new PendingGame({ username: "alice" }, { name: "Gone" });
+        gone.id = "g2";
+        gone.node = { identity: "node-1" };
+        const otherNode = new PendingGame({ username: "dave" }, { name: "Elsewhere" });
+        otherNode.id = "g3";
+        otherNode.node = { identity: "node-2" };
+        const ctx: NodeReconnectedCtx = {
+            games: { g2: gone, g3: otherNode },
+            router: { workers: { "node-1": { identity: "node-1" } } },
+            broadcastGameList: vi.fn()
+        };
+
+        onNodeReconnected.call(ctx, "node-1", [nodeGame()]);
+
+        expect(Object.keys(ctx.games).sort()).toEqual(["g1", "g3"]);
+    });
+
+    it("keeps a game whose owner has left (the node no longer lists the owner as a player)", () => {
+        const ctx: NodeReconnectedCtx = {
+            games: {},
+            router: { workers: { "node-1": { identity: "node-1" } } },
+            broadcastGameList: vi.fn()
+        };
+
+        onNodeReconnected.call(ctx, "node-1", [nodeGame()]);
+
+        const game = ctx.games.g1;
+        expect(game).toBeDefined();
+        expect(game.node).toBe(ctx.router.workers["node-1"]);
+        expect(game.started).toBe(true);
+        expect(Object.keys(game.players)).toEqual(["bob"]);
+        expect(game.players.bob.owner).toBe(false);
+        expect(ctx.broadcastGameList).toHaveBeenCalled();
+    });
+
+    it("keeps a player who left as a left seat, so they can rejoin after a lobby restart", () => {
+        const ctx: NodeReconnectedCtx = {
+            games: {},
+            router: { workers: { "node-1": { identity: "node-1" } } },
+            broadcastGameList: vi.fn()
+        };
+
+        onNodeReconnected.call(ctx, "node-1", [nodeGame({ players: {
+            alice: { id: "a", name: "alice", faction: "crane", owner: true, deck: {}, left: true },
+            bob: { id: "b", name: "bob", faction: "crab", owner: false, deck: {} }
+        } })]);
+
+        const game = ctx.games.g1;
+        expect(game.players.alice.left).toBe(true);
+        expect(game.players.bob.left).toBeFalsy();
+        expect(gameListProto.canRejoin(game, "alice")).toBe(true);
+        expect(gameListProto.canRejoin(game, "bob")).toBe(false);
+        expect(Object.keys(game.getSummary().players)).toEqual(["bob"]);
+    });
+});
+
+type StartGameCtx = {
+    games: Record<string, PendingGame>;
+    router: { startGame: ReturnType<typeof vi.fn> };
+    io: { to: ReturnType<typeof vi.fn> };
+    broadcastGameList: ReturnType<typeof vi.fn>;
+};
+
+const onStartGame = (Lobby as unknown as { prototype: {
+    onStartGame: (this: StartGameCtx, socket: { user: { username: string } }, gameId: string) => void;
+} }).prototype.onStartGame;
+
+describe("Lobby.onStartGame", () => {
+    it("tells the players when no game server takes the game", () => {
+        const game = new PendingGame({ username: "alice" }, { name: "Game" });
+        game.players.alice = { id: "a", name: "alice", owner: true, deck: {} };
+        const emit = vi.fn();
+        const ctx: StartGameCtx = {
+            games: { [game.id]: game },
+            router: { startGame: vi.fn(() => undefined) },
+            io: { to: vi.fn(() => ({ emit })) },
+            broadcastGameList: vi.fn()
+        };
+
+        onStartGame.call(ctx, { user: { username: "alice" } }, game.id);
+
+        expect(ctx.io.to).toHaveBeenCalledWith(game.id);
+        expect(emit).toHaveBeenCalledExactlyOnceWith("nogameserver");
+        expect(game.started).toBe(false);
+        expect(ctx.broadcastGameList).not.toHaveBeenCalled();
+    });
+});
+
+type WatchGameCtx = {
+    games: Record<string, PendingGame>;
+    router: { addSpectator: ReturnType<typeof vi.fn> };
+    findGameForUser: (username: string) => PendingGame | undefined;
+    sendGameState: ReturnType<typeof vi.fn>;
+    broadcastGameList: ReturnType<typeof vi.fn>;
+    broadcastUserList: ReturnType<typeof vi.fn>;
+    rejoinGame: (...args: unknown[]) => void;
+    canRejoin: (game: PendingGame, username: string) => boolean;
+};
+
+type WatchSocket = { user: { username: string }; joinChannel: ReturnType<typeof vi.fn>; send: ReturnType<typeof vi.fn> };
+
+const lobbyProto = (Lobby as unknown as { prototype: {
+    onWatchGame: (this: WatchGameCtx, socket: WatchSocket, gameId: string, password?: string) => void;
+    findGameForUser: (this: WatchGameCtx, username: string) => PendingGame | undefined;
+    rejoinGame: (this: WatchGameCtx, ...args: unknown[]) => void;
+} }).prototype;
+
+describe("Lobby.onWatchGame", () => {
+    function startedGame(allowSpectators: boolean) {
+        const game = new PendingGame({ username: "alice" }, { name: "Game", spectators: allowSpectators });
+        game.started = true;
+        game.node = { identity: "node-1", address: "host", port: 9500, protocol: "https" };
+        game.players.alice = { id: "a", name: "alice", owner: true, emailHash: "ha" };
+        game.players.bob = { id: "b", name: "bob", emailHash: "hb" };
+        return game;
+    }
+
+    function makeCtx(game: PendingGame): WatchGameCtx {
+        const ctx: WatchGameCtx = {
+            games: { [game.id]: game },
+            router: { addSpectator: vi.fn() },
+            findGameForUser: (username: string) => lobbyProto.findGameForUser.call(ctx, username),
+            sendGameState: vi.fn(),
+            broadcastGameList: vi.fn(),
+            broadcastUserList: vi.fn(),
+            rejoinGame: (...args: unknown[]) => lobbyProto.rejoinGame.call(ctx, ...args),
+            canRejoin: gameListProto.canRejoin
+        };
+        return ctx;
+    }
+
+    function makeSocket(username: string): WatchSocket {
+        return { user: { username }, joinChannel: vi.fn(), send: vi.fn() };
+    }
+
+    it("takes a player who left a started game back to their seat, without spectator, password or block checks", () => {
+        const game = startedGame(false);
+        game.password = "hashed";
+        game.owner.blockList = ["alice"];
+        game.players.alice.left = true;
+        const ctx = makeCtx(game);
+        const socket = makeSocket("alice");
+
+        lobbyProto.onWatchGame.call(ctx, socket, game.id);
+
+        expect(game.players.alice.left).toBe(false);
+        expect(game.spectators.alice).toBeUndefined();
+        expect(ctx.findGameForUser("alice")).toBe(game);
+        expect(socket.joinChannel).toHaveBeenCalledWith(game.id);
+        expect(ctx.router.addSpectator).toHaveBeenCalledExactlyOnceWith(game, { username: "alice", emailHash: "ha" });
+        expect(socket.send).toHaveBeenCalledExactlyOnceWith("handoff", { address: "host", port: 9500, protocol: "https", name: "node-1", gameId: game.id });
+        expect(ctx.broadcastGameList).toHaveBeenCalled();
+    });
+
+    it("still adds anyone else as a spectator", () => {
+        const game = startedGame(true);
+        const ctx = makeCtx(game);
+        const socket = makeSocket("carol");
+
+        lobbyProto.onWatchGame.call(ctx, socket, game.id);
+
+        expect(game.spectators.carol).toBeDefined();
+        expect(ctx.router.addSpectator).toHaveBeenCalledWith(game, { username: "carol" });
+        expect(socket.send).toHaveBeenCalledWith("handoff", { address: "host", port: 9500, protocol: "https", name: "node-1" });
+    });
+
+    it("doesn't let a player who left watch a game that doesn't allow spectators before it started", () => {
+        const game = startedGame(false);
+        game.started = false;
+        game.players.alice.left = true;
+        const ctx = makeCtx(game);
+        const socket = makeSocket("alice");
+
+        lobbyProto.onWatchGame.call(ctx, socket, game.id);
+
+        expect(game.players.alice.left).toBe(true);
+        expect(ctx.router.addSpectator).not.toHaveBeenCalled();
+        expect(socket.send).not.toHaveBeenCalledWith("handoff", expect.anything());
     });
 });

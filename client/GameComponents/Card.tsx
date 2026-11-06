@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, memo } from "react";
+import React, { useState, useRef, useEffect, use, memo } from "react";
 
 import CardMenu from "./CardMenu";
 import CardStats from "./CardStats";
@@ -9,6 +9,8 @@ import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl";
 import { useOwnerShowsPromo } from "../PatronContext";
 import { buildCardCounters } from "./buildCardCounters";
 import { startCardDrag, useCardTouchDrag } from "./cardDrag";
+import { useTouchPeek } from "./useTouchPeek";
+import { CardDragContext } from "./CardDragContext";
 import CardAttachments from "./CardAttachments";
 import CardPopup from "./CardPopup";
 import type { Card as CardType, MenuItem, Player } from "../types/game";
@@ -22,6 +24,7 @@ interface CardProps {
     className?: string;
     declaring?: boolean;
     disableMouseOver?: boolean;
+    draggable?: boolean;
     id?: string;
     isMe?: boolean;
     onClick?: (card: CardType) => void;
@@ -52,6 +55,7 @@ function Card(props: CardProps) {
         className,
         declaring,
         disableMouseOver,
+        draggable: draggableProp = true,
         id,
         isMe,
         onClick,
@@ -99,6 +103,8 @@ function Card(props: CardProps) {
         prevBrokenRef.current = isBroken;
     }, [card?.isBroken]);
 
+    const dragAllowed = use(CardDragContext);
+    const draggable = draggableProp && dragAllowed;
     const { onTouchStart, onTouchMove, onTouchEnd } = useCardTouchDrag(card, source, onDragDrop);
 
     const handleMouseOver = (cardData: CardType) => {
@@ -112,6 +118,9 @@ function Card(props: CardProps) {
             onMouseOut();
         }
     };
+
+    // Touch screens have no hover: a long press zooms the card and shows its stats instead, without also clicking it.
+    const touchPeek = useTouchPeek(() => handleMouseOver(card));
 
     const handleClick = (event: React.MouseEvent, cardData: CardType) => {
         event.preventDefault();
@@ -212,7 +221,7 @@ function Card(props: CardProps) {
 
         return (
             <CardPile
-                source="none"
+                source={ cardPile[0].location }
                 title={ `${card.name}` }
                 className="underneath"
                 cards={ cardPile }
@@ -239,7 +248,7 @@ function Card(props: CardProps) {
 
         return (
             <CardPile
-                source="none"
+                source={ underneathCards[0].location }
                 title={ "Underneath" }
                 className="beside"
                 cards={ underneathCards }
@@ -354,10 +363,6 @@ function Card(props: CardProps) {
             cardClass += " selected";
         } else if(card.selectable) {
             cardClass += " selectable";
-        } else if(card.inDanger) {
-            cardClass += " in-danger";
-        } else if(card.saved) {
-            cardClass += " saved";
         } else if(card.inConflict) {
             cardClass += " conflict";
         } else if(card.covert) {
@@ -395,6 +400,9 @@ function Card(props: CardProps) {
         const cardPile = player && card && player.cardPiles[card.uuid];
 
         let frameClassName = "card-frame";
+        if(touchPeek.peeking) {
+            frameClassName += " peeking";
+        }
         if(cardPile) {
             frameClassName += " card-pile-frame";
         }
@@ -408,9 +416,9 @@ function Card(props: CardProps) {
             <div
                 className={ frameClassName }
                 ref={ cardRef }
-                onTouchMove={ (ev: React.TouchEvent<HTMLDivElement>) => onTouchMove(ev) }
-                onTouchEnd={ (ev: React.TouchEvent<HTMLDivElement>) => onTouchEnd(ev) }
-                onTouchStart={ (ev: React.TouchEvent<HTMLDivElement>) => onTouchStart(ev) }
+                onTouchMove={ draggable ? (ev: React.TouchEvent<HTMLDivElement>) => onTouchMove(ev) : undefined }
+                onTouchEnd={ draggable ? (ev: React.TouchEvent<HTMLDivElement>) => onTouchEnd(ev) : undefined }
+                onTouchStart={ draggable ? (ev: React.TouchEvent<HTMLDivElement>) => onTouchStart(ev) : undefined }
             >
                 { getCardOrder() }
                 <div
@@ -419,8 +427,9 @@ function Card(props: CardProps) {
                     id={ id }
                     onMouseOver={ disableMouseOver ? null : () => handleMouseOver(card) }
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
+                    { ...(disableMouseOver ? {} : touchPeek.handlers) }
                     onClick={ (ev: React.MouseEvent) => handleClick(ev, card) }
-                    onDragStart={ (ev: React.DragEvent<HTMLElement>) => startCardDrag(ev, card, source) }
+                    onDragStart={ (ev: React.DragEvent<HTMLElement>) => draggable ? startCardDrag(ev, card, source) : ev.preventDefault() }
                     onAnimationEnd={ (ev: React.AnimationEvent<HTMLDivElement>) => {
                         if(ev.animationName === "card-enter-play" && card.uuid) {
                             seenEnterPlayAnimations.add(card.uuid);
@@ -429,7 +438,7 @@ function Card(props: CardProps) {
                             onAnimationEnd(card.uuid);
                         }
                     } }
-                    draggable
+                    draggable={ draggable }
                 >
                     <div>
                         <span className="card-name">{ card.name }</span>

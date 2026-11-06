@@ -4,7 +4,7 @@ import React from "react";
 
 import { useOwnerShowsPromo, PatronProvider } from "../../client/PatronContext";
 
-// usePatronStatuses fetches patron status via axios; stub it so the provider's isPatronByUsername
+// usePatronStatuses fetches patron status over HTTP; stub it so the provider's isPatronByUsername
 // is deterministic and synchronous in tests.
 const patronByName = vi.hoisted(() => ({ map: {} as Record<string, boolean> }));
 vi.mock("../../client/patronStatus", () => ({

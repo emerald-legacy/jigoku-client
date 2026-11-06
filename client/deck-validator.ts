@@ -1,5 +1,5 @@
 /// <reference lib="dom" />
-import axios from "axios";
+import { http } from "./http.js";
 import GameModes from "../shared/GameModes.js";
 import type { Deck, DeckCard, Pack } from "./types/deck.js";
 
@@ -99,7 +99,7 @@ class DeckValidator {
         }
 
         try {
-            const res = await axios.post("https://www.emeralddb.org/api/decklists/validate", body);
+            const res = await http.post<{ valid?: boolean; errors?: string[] }>("https://www.emeralddb.org/api/decklists/validate", body);
             const resultObj = {
                 valid: res.data.valid,
                 extendedStatus: res.data.errors

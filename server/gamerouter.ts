@@ -12,6 +12,8 @@ import DeckStatsService from "./services/DeckStatsService.js";
 import GameErrorService from "./services/GameErrorService.js";
 import type PendingGame from "./pendinggame.js";
 import {
+    PROTOCOL_VERSION,
+    isInboundCommand,
     parseInbound,
     type InboundMessage,
     type LobbyUser,
@@ -44,12 +46,6 @@ export interface RouterGame {
     getSaveState?: () => GameRecord;
 }
 
-type GameWinGame = GameRecord & {
-    winner?: string;
-    winReason?: string;
-    gameId?: string;
-};
-
 class GameRouter extends EventEmitter {
     workers: Record<string, GameWorker>;
     gameService: GameService;
@@ -75,7 +71,7 @@ class GameRouter extends EventEmitter {
 
     init(listenUrl: string) {
         const parsed = new URL(listenUrl);
-        const port = parseInt(parsed.port, 10) || 6000;
+        const port = parseInt(parsed.port, 10) || 6100;
 
         this.wss = new WebSocketServer({ port });
         logger.info(`GameRouter listening on ws://0.0.0.0:${port}`);
@@ -112,7 +108,9 @@ class GameRouter extends EventEmitter {
 
             ws.on("close", () => {
                 logger.info(`Game node disconnected: ${identity}`);
-                this.connections.delete(identity);
+                if(this.connections.get(identity) === ws) {
+                    this.connections.delete(identity);
+                }
             });
 
             ws.on("error", (err) => {
@@ -131,11 +129,14 @@ class GameRouter extends EventEmitter {
         }
         logger.info(`starting game on node ${node.identity}`);
 
+        if(!this.sendCommand(node.identity, "STARTGAME", { ...game, owner: game.owner.username })) {
+            return;
+        }
+
         this.gameService.create(game.getSaveState() as GameRecord);
 
         node.numGames++;
 
-        this.sendCommand(node.identity, "STARTGAME", { ...game, owner: game.owner.username });
         return node;
     }
 
@@ -158,7 +159,7 @@ class GameRouter extends EventEmitter {
         var returnedWorker: GameWorker | undefined = undefined;
 
         workerList.forEach(worker => {
-            if(worker.numGames >= worker.maxGames || worker.disabled) {
+            if(worker.numGames >= worker.maxGames || worker.disabled || !this.isConnected(worker.identity)) {
                 return;
             }
 
@@ -170,32 +171,14 @@ class GameRouter extends EventEmitter {
         return returnedWorker;
     }
 
+    isConnected(identity: string): boolean {
+        return this.connections.get(identity)?.readyState === WebSocket.OPEN;
+    }
+
     getNodeStatus() {
         return Object.values(this.workers).map(worker => {
             return { name: worker.identity, numGames: worker.numGames, status: worker.disabled ? "disabled" : "active", version: worker.version };
         });
-    }
-
-    disableNode(nodeName: string) {
-        var worker = this.workers[nodeName];
-        if(!worker) {
-            return false;
-        }
-
-        worker.disabled = true;
-
-        return true;
-    }
-
-    enableNode(nodeName: string) {
-        var worker = this.workers[nodeName];
-        if(!worker) {
-            return false;
-        }
-
-        worker.disabled = false;
-
-        return true;
     }
 
     notifyFailedConnect(game: RouterGame, username: string) {
@@ -231,7 +214,12 @@ class GameRouter extends EventEmitter {
 
         const message: InboundMessage | null = parseInbound(parsed);
         if(!message) {
-            logger.error(`Unrecognised message from ${identityStr}: ${JSON.stringify(parsed)}`);
+            const command = typeof parsed === "object" && parsed !== null && "command" in parsed ? parsed.command : undefined;
+            if(isInboundCommand(command)) {
+                logger.error(`Invalid ${command} payload from ${identityStr}`);
+            } else {
+                logger.error(`Unrecognised message from ${identityStr}: ${JSON.stringify(parsed)}`);
+            }
             return;
         }
 
@@ -257,25 +245,29 @@ class GameRouter extends EventEmitter {
                 const arg = message.arg;
                 this.workers[identityStr] = {
                     identity: identityStr,
-                    maxGames: arg.maxGames || 20,
+                    maxGames: arg.maxGames,
                     numGames: 0,
-                    address: arg.address ?? "",
-                    port: arg.port ?? 0,
-                    protocol: arg.protocol ?? "ws",
-                    version: arg.version || "unknown"
+                    address: arg.address,
+                    port: arg.port,
+                    protocol: arg.protocol,
+                    version: arg.version
                 };
                 worker = this.workers[identityStr];
+                if(arg.protocolVersion !== PROTOCOL_VERSION) {
+                    logger.error(`Game node ${identityStr} speaks protocol ${arg.protocolVersion}, lobby ${PROTOCOL_VERSION}: no games are routed to it`);
+                    worker.disabled = true;
+                }
 
                 this.emit("onNodeReconnected", identityStr, arg.games);
 
-                worker.numGames = (arg.games ?? []).length;
+                worker.numGames = arg.games.length;
 
                 break;
             }
             case "GAMEWIN": {
                 logger.info(`received GAMEWIN from ${identityStr}`);
-                const game = message.arg?.game as GameWinGame | undefined;
-                if(!game || !game.gameId || !Array.isArray(game.players) || !game.players.some((p: { name: string }) => p.name === game.winner)) {
+                const game = message.arg.game;
+                if(!game.players.some(player => player.name === game.winner)) {
                     logger.error(`Invalid GAMEWIN payload from ${identityStr}: ${JSON.stringify(game)}`);
                     break;
                 }
@@ -292,13 +284,13 @@ class GameRouter extends EventEmitter {
                     logger.error(`Got close game for non existent worker ${identity}`);
                 }
 
-                this.emit("onGameClosed", message.arg?.game);
+                this.emit("onGameClosed", message.arg.game);
 
                 break;
             case "PLAYERLEFT":
                 logger.info(`received PLAYERLEFT from ${identityStr}`);
-                if(!message.arg.spectator && message.arg.game) {
-                    this.gameService.update(message.arg.game as GameRecord);
+                if(!message.arg.spectator) {
+                    this.gameService.update(message.arg.game);
                 }
 
                 this.emit("onPlayerLeft", message.arg.gameId, message.arg.player);
@@ -307,10 +299,6 @@ class GameRouter extends EventEmitter {
             case "GAMEERROR": {
                 logger.info(`received GAMEERROR from ${identityStr}`);
                 const arg = message.arg;
-                if(!arg || !arg.gameId || !arg.errorMessage || !arg.timestamp || !Array.isArray(arg.players)) {
-                    logger.error(`Invalid GAMEERROR payload from ${identityStr}`);
-                    break;
-                }
                 this.gameErrorService.addError({
                     gameId: arg.gameId,
                     gameName: arg.gameName,
@@ -367,21 +355,24 @@ class GameRouter extends EventEmitter {
     }
 
     // Internal methods
-    sendCommand<C extends OutboundCommand>(identity: string, command: C, arg?: OutboundArg<C>) {
+    sendCommand<C extends OutboundCommand>(identity: string, command: C, arg?: OutboundArg<C>): boolean {
         const logLevel = (command === "PING") ? "debug" : "info";
         logger[logLevel](`sending ${command} to ${identity}`);
 
         const ws = this.connections.get(identity);
-        if(!ws || ws.readyState !== 1) {
+        if(!ws || ws.readyState !== WebSocket.OPEN) {
             logger.error(`Cannot send ${command} to ${identity}: not connected`);
-            return;
+            return false;
         }
 
         try {
             ws.send(JSON.stringify({ command: command, arg: arg }));
         } catch(err) {
             logger.error(`Error sending command: ${err}`);
+            return false;
         }
+
+        return true;
     }
 
     checkTimeouts() {

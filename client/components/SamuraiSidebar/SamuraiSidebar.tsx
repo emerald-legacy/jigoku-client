@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X, Menu } from "lucide-react";
 
 import CollapsedRail from "./CollapsedRail";
@@ -29,42 +29,59 @@ export default function SamuraiSidebar() {
     const list = users ?? [];
     const groups = partition(list);
 
+    useEffect(() => {
+        if(!expanded) {
+            return;
+        }
+        const closeOnEscape = (event: KeyboardEvent) => {
+            if(event.key === "Escape") {
+                setExpanded(false);
+            }
+        };
+        document.addEventListener("keydown", closeOnEscape);
+        return () => document.removeEventListener("keydown", closeOnEscape);
+    }, [expanded]);
+
     return (
-        <aside className={ `samurai${expanded ? " samurai-expanded" : " samurai-collapsed"}` } aria-label="Online players">
-            { expanded ? (
-                <div className="samurai-panel">
-                    <header className="samurai-header">
-                        <span className="samurai-title">Samurai</span>
-                        <span className="samurai-total">{ list.length }</span>
-                        <button type="button" className="samurai-close" aria-label="Close samurai sidebar" onClick={ () => setExpanded(false) }>
-                            <X size={ 16 } />
+        <>
+            <aside className={ `samurai${expanded ? " samurai-expanded" : " samurai-collapsed"}` } aria-label="Online players">
+                { expanded ? (
+                    <div className="samurai-panel">
+                        <header className="samurai-header">
+                            <span className="samurai-title">Samurai</span>
+                            <span className="samurai-total">{ list.length }</span>
+                            <button type="button" className="samurai-close" aria-label="Close samurai sidebar" onClick={ () => setExpanded(false) }>
+                                <X size={ 16 } />
+                            </button>
+                        </header>
+                        <div className="samurai-groups">
+                            <UserGroup label="At Court" status="lobby" users={ groups.lobby } />
+                            <UserGroup label="Dueling" status="playing" users={ groups.playing } />
+                            <UserGroup label="Watching" status="spectating" users={ groups.spectating } />
+                        </div>
+                    </div>
+                ) : (
+                    <>
+                        <div className="samurai-desktop-only">
+                            <CollapsedRail
+                                counts={ { lobby: groups.lobby.length, playing: groups.playing.length, spectating: groups.spectating.length } }
+                                onExpand={ () => setExpanded(true) }
+                            />
+                        </div>
+                        <button
+                            type="button"
+                            className="samurai-burger samurai-mobile-only"
+                            aria-label="Open samurai sidebar"
+                            aria-expanded="false"
+                            onClick={ () => setExpanded(true) }
+                        >
+                            <Menu size={ 16 } />
                         </button>
-                    </header>
-                    <div className="samurai-groups">
-                        <UserGroup label="At Court" status="lobby" users={ groups.lobby } />
-                        <UserGroup label="Dueling" status="playing" users={ groups.playing } />
-                        <UserGroup label="Watching" status="spectating" users={ groups.spectating } />
-                    </div>
-                </div>
-            ) : (
-                <>
-                    <div className="samurai-desktop-only">
-                        <CollapsedRail
-                            counts={ { lobby: groups.lobby.length, playing: groups.playing.length, spectating: groups.spectating.length } }
-                            onExpand={ () => setExpanded(true) }
-                        />
-                    </div>
-                    <button
-                        type="button"
-                        className="samurai-burger samurai-mobile-only"
-                        aria-label="Open samurai sidebar"
-                        aria-expanded="false"
-                        onClick={ () => setExpanded(true) }
-                    >
-                        <Menu size={ 16 } />
-                    </button>
-                </>
-            ) }
-        </aside>
+                    </>
+                ) }
+            </aside>
+            { /* Below 1280px the open panel covers the page; a tap on the dimmed page closes it (CSS hides this on desktop) */ }
+            { expanded ? <div className="samurai-backdrop" aria-hidden="true" onClick={ () => setExpanded(false) } /> : null }
+        </>
     );
 }

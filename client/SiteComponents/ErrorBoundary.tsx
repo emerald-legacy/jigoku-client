@@ -1,6 +1,6 @@
 import React from "react";
 import type { ReactNode, ErrorInfo } from "react";
-import axios from "axios";
+import { http } from "../http";
 
 interface ErrorBoundaryProps {
     children: ReactNode;
@@ -54,7 +54,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
         console.error("React Error Boundary caught an error:", error, info);
 
-        axios.post("/api/admin/game-errors/client", {
+        http.post("/api/admin/game-errors/client", {
             errorMessage: error.message,
             errorStack: error.stack,
             componentStack: info.componentStack,
@@ -84,9 +84,9 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                 return (
                     <div className="alert alert-info">
                         <p>A new version of Jigoku is available.</p>
-                        <p>
-                            <a href="#" onClick={ this.onReloadClick }>Click here to reload</a> and pick up the latest update.
-                        </p>
+                        <div className="error-actions">
+                            <button type="button" className="btn btn-primary" onClick={ this.onReloadClick }>Reload to update</button>
+                        </div>
                     </div>
                 );
             }
@@ -94,10 +94,12 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
             return (
                 <div className="alert alert-danger">
                     <p>{ this.props.message }</p>
-                    <p>An error has been logged. Please try refreshing the page.</p>
-
-                    { this.props.navigate &&
-                        <p>Click <a href="#" onClick={ this.onReturnClick }>here</a> to clear the error and return to the home page</p> }
+                    <p>The error has been logged.</p>
+                    <div className="error-actions">
+                        <button type="button" className="btn btn-primary" onClick={ this.onReloadClick }>Reload page</button>
+                        { this.props.navigate &&
+                            <button type="button" className="btn btn-quiet" onClick={ this.onReturnClick }>Back to the lobby</button> }
+                    </div>
                 </div>
             );
         }

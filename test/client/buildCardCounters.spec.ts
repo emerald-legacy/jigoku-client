@@ -59,4 +59,22 @@ describe("buildCardCounters", () => {
         expect(result["card-fate"]?.count).toBe(1);
         expect(result.honor).toEqual({ count: 2, fade: true });
     });
+    it("keeps the host's own counter when an attachment has one of the same kind", () => {
+        const result = buildCardCounters({
+            uuid: "u",
+            type: "character",
+            fate: 2,
+            attachments: [{ uuid: "a", type: "attachment", fate: 1 } as any]
+        } as any);
+        expect(result["card-fate"]).toEqual({ count: 2, fade: false, shortName: "F" });
+    });
+
+    it("still shows an attachment's counter when the host has none of that kind", () => {
+        const result = buildCardCounters({
+            uuid: "u",
+            type: "character",
+            attachments: [{ uuid: "a", type: "attachment", fate: 1 } as any]
+        } as any);
+        expect(result["card-fate"]).toEqual({ count: 1, fade: true, shortName: "F" });
+    });
 });

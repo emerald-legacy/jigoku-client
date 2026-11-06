@@ -8,14 +8,22 @@ export interface PlayerHiddenInfo {
 
 export type HiddenInfo = Record<string, PlayerHiddenInfo>;
 
+/** Hidden card identities from state `seq` on, until the next change. */
+export interface HiddenInfoChange {
+    seq: number;
+    info: HiddenInfo;
+}
+
 interface RecordedState {
     state: GameState;
     timestamp: number;
 }
 
 let recording: RecordedState[] = [];
-let hiddenInfo: HiddenInfo[] = [];
+let hiddenInfo: HiddenInfoChange[] = [];
 let isRecording = false;
+/** The replay ends with the winning state, even if the players play on. */
+let reachedWin = false;
 
 export function startRecording(): void {
     if(isRecording) {
@@ -24,10 +32,11 @@ export function startRecording(): void {
     recording = [];
     hiddenInfo = [];
     isRecording = true;
+    reachedWin = false;
 }
 
 export function recordState(gameState: GameState): void {
-    if(!isRecording) {
+    if(!isRecording || reachedWin) {
         return;
     }
 
@@ -35,9 +44,10 @@ export function recordState(gameState: GameState): void {
         state: structuredClone(gameState),
         timestamp: Date.now()
     });
+    reachedWin = !!gameState.winner;
 }
 
-export function setHiddenInfo(data: HiddenInfo[]): void {
+export function setHiddenInfo(data: HiddenInfoChange[]): void {
     if(!isRecording) {
         return;
     }
@@ -48,7 +58,7 @@ export function getRecording(): RecordedState[] {
     return recording;
 }
 
-export function getHiddenInfo(): HiddenInfo[] {
+export function getHiddenInfo(): HiddenInfoChange[] {
     return hiddenInfo;
 }
 
@@ -56,4 +66,5 @@ export function clearRecording(): void {
     recording = [];
     hiddenInfo = [];
     isRecording = false;
+    reachedWin = false;
 }

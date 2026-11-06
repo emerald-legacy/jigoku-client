@@ -1,4 +1,4 @@
-import axios from "axios";
+import { http } from "../http.js";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { apiCall } from "./apiCall.js";
 
@@ -13,5 +13,5 @@ export interface ServerVersionResponse {
 
 export const loadServerVersion = createAsyncThunk<ServerVersionResponse>(
     "serverVersion/load",
-    (_, { rejectWithValue }) => apiCall(() => axios.get("/api/server-version"), rejectWithValue)
+    (_, { rejectWithValue }) => apiCall(() => http.get("/api/server-version"), rejectWithValue)
 );

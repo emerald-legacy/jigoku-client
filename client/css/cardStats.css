@@ -10,7 +10,8 @@
     }
 }
 
-.card-frame:hover .card--stats {
+.card-frame:hover .card--stats,
+.card-frame.peeking .card--stats {
     opacity: 1;
     transition-delay: 0.5s;
 }

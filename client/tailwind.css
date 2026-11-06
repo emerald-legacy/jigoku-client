@@ -38,6 +38,7 @@
 @import "./css/gameboard/clock-popup.css";
 @import "./css/gameboard/ring-effects.css";
 @import "./css/gameboard/stat-change-overlay.css";
+@import "./css/gameboard/touch.css";
 /* end gameboard */
 @import "./css/cards.css";
 @import "./css/cardStats.css";
@@ -96,7 +97,7 @@
     --card-xxl-height: 210px;
 
     /* Layout */
-    --chat-width: 410px;
+    --chat-width: min(410px, 35vw); /* narrower on tablets, so the board keeps more room */
     --center-bar-height: 90px;
     --sidebar-width: 125px;
     --scrollbar-width: 20px;
@@ -147,6 +148,17 @@
         border-color: rgb(var(--jade-rgb) / 0.6);
         color: var(--color-foreground);
     }
+    /* Quiet secondary action: a way out (Pass, Cancel, Leave) next to the real choices */
+    .btn-quiet {
+        background: transparent;
+        color: var(--sage);
+        border: 1px solid rgb(var(--jade-rgb) / 0.2);
+    }
+    .btn-quiet:not(:disabled):hover {
+        background: rgb(var(--moss-rgb) / 0.6);
+        border-color: rgb(var(--jade-rgb) / 0.4);
+        color: var(--color-foreground);
+    }
     .btn-danger {
         background: linear-gradient(180deg, rgb(var(--crimson-deep-rgb) / 0.9), rgb(var(--crimson-deep-rgb) / 0.5));
         color: var(--color-foreground);
@@ -184,9 +196,29 @@
 
     /* Forms */
     .form-group { @apply mb-4 flex flex-wrap items-center; }
-    .form-control { @apply w-full h-[34px] px-3 py-1.5 bg-white text-black border border-gray-300 rounded text-body shadow-inner transition-colors focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary; }
+    /* Dark fields like the admin pages: ink well, faint jade border, jade focus ring, red border on a field with an error */
+    .form-control {
+        @apply w-full h-[34px] px-3 py-1.5 rounded text-body;
+        background: rgb(var(--ink-rgb) / 0.9);
+        color: var(--color-foreground);
+        border: 1px solid rgb(var(--jade-rgb) / 0.2);
+        color-scheme: dark;
+        accent-color: var(--jade-vivid);
+        transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+    }
+    .form-control::placeholder { color: rgb(var(--sage-rgb) / 0.7); }
+    .form-control:focus {
+        outline: none;
+        background: var(--ink);
+        border-color: rgb(var(--jade-rgb) / 0.6);
+        box-shadow: 0 0 0 1px rgb(var(--jade-rgb) / 0.4);
+    }
+    .has-error .form-control { border-color: rgb(var(--danger-rgb) / 0.7); }
     textarea.form-control { height: auto; }
-    .control-label { @apply mb-0 font-bold text-body text-right pr-2; }
+    input[type="range"].form-control { background: transparent; border-color: transparent; box-shadow: none; }
+    /* The typeahead's suggestion hint sets a dark inline colour meant for white fields */
+    .rbt-input-hint { color: rgb(var(--sage-rgb) / 0.5) !important; }
+    .control-label { @apply mb-0 font-bold text-body sm:text-right pr-2; }
     .help-block { @apply mt-1 text-body text-danger; }
     .checkbox { @apply flex items-center gap-1 text-body py-0.5; }
     .checkbox label { @apply flex items-center gap-1.5 cursor-pointer; }
@@ -195,9 +227,6 @@
     .radio-inline input[type="radio"] { @apply mt-0; }
 
     /* Progress bars */
-    .progress { @apply w-full h-5 bg-gray-700 rounded overflow-hidden; }
-    .progress-bar { @apply h-full transition-[width] duration-500 ease-linear; }
-    .progress-bar-success { @apply bg-success; }
 
     /* Alerts */
     .alert { @apply p-4 mb-4 border rounded; }
@@ -213,16 +242,17 @@
     .modal-backdrop { @apply fixed inset-0 bg-black/50 z-40; }
     .modal-backdrop.fade { @apply opacity-0 transition-opacity duration-150; }
     .modal-backdrop.fade.in { @apply opacity-100; }
-    .modal-dialog { @apply relative mx-auto mt-[10vh] max-w-lg z-50; }
-    .modal-content { @apply bg-gray-800 border border-gray-600 rounded-lg shadow-xl; }
-    .modal-header { @apply flex flex-row-reverse items-center p-4 border-b border-gray-600; }
+    .modal-dialog { @apply relative mx-4 sm:mx-auto mt-[10vh] max-w-lg z-50; }
+    .modal-content { @apply rounded-lg shadow-xl; background: var(--ink); border: 1px solid rgb(var(--jade-rgb) / 0.2); }
+    .modal-header { @apply flex flex-row-reverse items-center p-4; border-bottom: 1px solid rgb(var(--jade-rgb) / 0.2); }
     .modal-header .modal-title { @apply flex-1 text-center; }
     .modal-body { @apply p-4; }
     .modal-title { @apply text-lead font-bold; }
 
     /* Close button (Bootstrap .close) */
     .close {
-        @apply bg-transparent border-0 cursor-pointer text-h1 leading-none py-0 px-1;
+        /* 44px tap target; the negative margin keeps the header's height */
+        @apply bg-transparent border-0 cursor-pointer text-h1 leading-none min-w-11 min-h-11 -my-2.5 inline-flex items-center justify-center;
         color: rgb(var(--sage-rgb) / 0.7);
         transition: color 0.15s;
 
@@ -230,15 +260,28 @@
     }
 
     /* Navbar */
-    .navbar { @apply fixed top-0 inset-x-0; height: 40px; z-index: 10000; }
+    .navbar { @apply fixed top-0 inset-x-0 min-h-[40px] md:h-[40px]; z-index: 10000; }
     .navbar-inverse { @apply text-white; background: rgb(var(--ink-rgb) / 0.8); }
     .no-highlight { user-select: none; }
 
+    /* Navbar menu: a row from md up; below md a full-width panel under the bar, opened by the toggle */
+    .navbar-toggle { @apply md:hidden ml-auto flex flex-col items-center justify-center w-11 h-11; }
+    .navbar-toggle-bar { @apply block w-[22px] h-0.5 rounded my-1; background: rgb(var(--sage-rgb) / 0.8); }
+    .navbar-brand { @apply font-bold text-body py-2 leading-tight mr-2 no-underline; color: rgb(var(--sage-rgb) / 0.8); }
+    .navbar-menu { @apply flex-col w-full max-h-[calc(100dvh-40px)] overflow-y-auto pb-2 md:flex-row md:items-center md:flex-1 md:w-auto md:max-h-none md:overflow-visible md:pb-0; }
+    .navbar-open { background: rgb(var(--ink-rgb) / 0.97); }
+    .navbar-list { @apply flex flex-col md:flex-row list-none m-0 p-0; }
+    .navbar-list-right { @apply border-t border-white/10 md:border-0 md:ml-auto; }
+
     /* Navbar links and items */
     .navbar li { @apply flex items-center; }
-    .navbar li a { @apply block px-2 text-body text-gray-400 no-underline rounded transition-colors hover:text-white hover:bg-white/10; line-height: 40px; }
-    .navbar li.active > a { @apply text-white bg-white/15; }
-    .navbar li span { @apply block px-2 text-body text-gray-400; line-height: 40px; }
+    .navbar li a { @apply block px-2 text-body no-underline rounded transition-colors hover:bg-white/10; line-height: 40px; }
+    .navbar li span { @apply block px-2 text-body; line-height: 40px; color: rgb(var(--sage-rgb) / 0.8); }
+    .navbar li a, .navbar li span { @apply max-md:leading-[44px]; }
+    /* In the stacked menu a dropdown opens inline under its toggle instead of floating over the items below */
+    .navbar li.dropdown { @apply max-md:flex-col max-md:items-stretch; }
+    .navbar .dropdown-menu { @apply max-md:static max-md:border-0 max-md:shadow-none max-md:bg-transparent max-md:pl-4; }
+    .navbar .dropdown-menu li a { @apply max-md:py-2.5; }
 
     /* Gravatar avatar */
     .gravatar { @apply inline-block align-middle mr-1.5 rounded-sm; }
@@ -260,7 +303,8 @@
     .small { @apply text-body; }
     .text-muted { @apply text-gray-500; }
     .pull-right { @apply float-right; }
-    /* Column grid */
+    /* Column grid. As in Bootstrap, a sm/md column is full width below its breakpoint; an xs class still wins there (declared after this rule) */
+    .col-sm-1, .col-sm-2, .col-sm-3, .col-sm-4, .col-sm-5, .col-sm-6, .col-sm-7, .col-sm-8, .col-sm-9, .col-sm-10, .col-sm-12, .col-md-6, .col-lg-2, .col-lg-3, .col-lg-6 { @apply w-full; }
     .col-xs-2 { @apply w-2/12 px-[15px]; }
     .col-xs-8 { @apply w-8/12 px-[15px]; }
     .col-xs-12 { @apply w-full px-[15px]; }
@@ -277,23 +321,35 @@
     .col-sm-10 { @apply sm:w-10/12 px-[15px]; }
     .col-sm-12 { @apply sm:w-full px-[15px]; }
     .col-md-6 { @apply md:w-6/12 px-[15px]; }
+    /* lg is Tailwind's 1024px: forms that are too narrow on tablets switch to their desktop columns there */
+    .col-lg-2 { @apply lg:w-2/12 px-[15px]; }
+    .col-lg-3 { @apply lg:w-3/12 px-[15px]; }
+    .col-lg-6 { @apply lg:w-6/12 px-[15px]; }
     /* Column offsets */
     .col-sm-offset-2 { @apply sm:ml-[16.666667%]; }
     .col-sm-offset-3 { @apply sm:ml-[25%]; }
     .col-sm-offset-4 { @apply sm:ml-[33.333333%]; }
+    .col-lg-offset-2 { @apply lg:ml-[16.666667%]; }
+    .col-lg-offset-3 { @apply lg:ml-[25%]; }
     /* Form horizontal */
     .form-horizontal .form-group { @apply ml-0 mr-0 flex flex-wrap items-center mb-3; }
     .form-horizontal .form-group .form-group { @apply mb-0 contents; }
-    .form-horizontal .control-label { @apply text-right; }
 
     /* Dropdown */
     .dropdown { @apply relative; }
     .dropdown-toggle { @apply cursor-pointer flex items-center gap-1; }
+    /* Dropdowns and dialogs use the site's ink surface with a faint jade border, like its panels */
     .dropdown-menu {
-        @apply absolute top-full left-0 bg-gray-800 border border-gray-600 rounded shadow-lg z-50 list-none p-1 m-0 hidden whitespace-nowrap;
+        @apply absolute top-full left-0 rounded shadow-lg z-50 list-none p-1 m-0 hidden whitespace-nowrap;
+        background: var(--ink);
+        border: 1px solid rgb(var(--jade-rgb) / 0.2);
     }
     .dropdown-menu li { @apply block; }
-    .dropdown-menu li a { @apply block w-full px-3 py-1 text-white no-underline hover:bg-gray-700 rounded leading-normal; }
+    .dropdown-menu li a { @apply block w-full px-3 py-1 no-underline rounded leading-normal; color: var(--color-foreground); }
+    .dropdown-menu li a:hover { background: rgb(var(--moss-rgb) / 0.6); }
+    /* Typeahead suggestions (react-bootstrap-typeahead renders them as a.dropdown-item, one per line) */
+    .dropdown-item { @apply block px-3 py-1 no-underline rounded cursor-pointer leading-normal; color: var(--color-foreground); }
+    .dropdown-item:hover, .dropdown-item.active { background: rgb(var(--moss-rgb) / 0.6); color: var(--color-foreground); }
     .dropdown.open .dropdown-menu { @apply block; }
 
     /* Typeahead: override hidden dropdown-menu inside rbt container */

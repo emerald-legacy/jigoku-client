@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
 
@@ -10,6 +10,11 @@ const loadFormatsSpy = vi.fn();
 const receiveGameStateSpy = vi.fn();
 const socketConnectedSpy = vi.fn();
 const receiveBannerNoticeSpy = vi.fn();
+const toastErrorSpy = vi.hoisted(() => vi.fn());
+
+vi.mock("sonner", () => ({
+    toast: { error: toastErrorSpy, success: vi.fn(), info: vi.fn() }
+}));
 
 vi.mock("../../client/actions", () => ({
     loadCards: () => () => loadCardsSpy(),
@@ -67,19 +72,11 @@ vi.mock("socket.io-client", () => ({
     })
 }));
 
-const axiosInterceptorUseSpy = vi.fn();
-const axiosInterceptorEjectSpy = vi.fn();
-vi.mock("axios", () => ({
-    default: {
-        interceptors: {
-            response: {
-                use: (...args: any[]) => {
-                    axiosInterceptorUseSpy(...args);
-                    return 42;
-                },
-                eject: (...args: any[]) => axiosInterceptorEjectSpy(...args)
-            }
-        }
+const httpErrorHandlers = vi.hoisted(() => new Set<(status: number) => void>());
+vi.mock("../../client/http", () => ({
+    onHttpErrorStatus: (handler: (status: number) => void) => {
+        httpErrorHandlers.add(handler);
+        return () => httpErrorHandlers.delete(handler);
     }
 }));
 
@@ -98,6 +95,7 @@ vi.mock("../../client/Logout", () => ({ default: () => <div>Logout</div> }));
 vi.mock("../../client/Register", () => ({ default: () => <div>Register</div> }));
 vi.mock("../../client/Lobby", () => ({ default: () => <div>Lobby</div> }));
 vi.mock("../../client/NotFound", () => ({ default: () => <div>NotFound</div> }));
+vi.mock("../../client/Unauthorised", () => ({ default: () => <div>Unauthorised</div> }));
 vi.mock("../../client/SiteComponents/ErrorBoundary", () => ({ default: ({ children }: any) => <>{ children }</> }));
 vi.mock("../../client/NavBar", () => ({ default: (props: any) => <nav data-testid="navbar" data-num={ props.numGames } /> }));
 vi.mock("../../client/GameLobby", () => ({ default: () => <div>GameLobby</div> }));
@@ -124,10 +122,10 @@ describe("<Application />", () => {
         receiveGameStateSpy.mockReset();
         socketConnectedSpy.mockReset();
         receiveBannerNoticeSpy.mockReset();
+        toastErrorSpy.mockReset();
         setLobbySocketSpy.mockReset();
         setGameSocketSpy.mockReset();
-        axiosInterceptorUseSpy.mockReset();
-        axiosInterceptorEjectSpy.mockReset();
+        httpErrorHandlers.clear();
         fakeSocket.on.mockReset();
         fakeSocket.removeAllListeners.mockReset();
         fakeSocket.disconnect.mockReset();
@@ -146,12 +144,20 @@ describe("<Application />", () => {
         expect(loadFormatsSpy).toHaveBeenCalledOnce();
     });
 
-    it("installs exactly one axios response interceptor on mount and ejects it on unmount", () => {
+    it("registers exactly one HTTP error handler on mount and removes it on unmount", () => {
         const { unmount } = renderApp();
-        expect(axiosInterceptorUseSpy).toHaveBeenCalledOnce();
-        expect(axiosInterceptorEjectSpy).not.toHaveBeenCalled();
+        expect(httpErrorHandlers.size).toBe(1);
         unmount();
-        expect(axiosInterceptorEjectSpy).toHaveBeenCalledExactlyOnceWith(42);
+        expect(httpErrorHandlers.size).toBe(0);
+    });
+
+    it("navigates to /login on a 401 and to /unauth on a 403", async () => {
+        renderApp();
+        const [handler] = httpErrorHandlers;
+        act(() => handler(401));
+        expect(await screen.findByText("Login")).toBeTruthy();
+        act(() => handler(403));
+        expect(await screen.findByText("Unauthorised")).toBeTruthy();
     });
 
     it("creates the lobby socket with the auth token from the store and registers it via setLobbySocket", () => {
@@ -187,5 +193,11 @@ describe("<Application />", () => {
         renderApp();
         fakeSocket.handlers.banner("downtime tonight");
         expect(receiveBannerNoticeSpy).toHaveBeenCalledExactlyOnceWith("downtime tonight");
+    });
+
+    it("shows a toast when the lobby has no game server for the game", () => {
+        renderApp();
+        fakeSocket.handlers.nogameserver();
+        expect(toastErrorSpy).toHaveBeenCalledExactlyOnceWith("No game server is available right now. Please try again in a moment.");
     });
 });

@@ -1,0 +1,54 @@
+/* Touch screens (tablets): larger tap targets on the game board. Mouse screens keep the compact sizes.
+   Loaded after the other board styles so these win at equal specificity. */
+@media (pointer: coarse) {
+    /* Card and ring menus: about 40px per item instead of 24px */
+    .menu {
+        font-size: var(--text-body);
+        line-height: 20px;
+    }
+
+    .menu > div {
+        padding: 9px 10px;
+        margin-bottom: 6px;
+    }
+
+    /* Manual-mode +/- buttons: an invisible hit area around the 22px button, so the stats row keeps its layout */
+    .btn-stat {
+        position: relative;
+    }
+
+    .btn-stat::after {
+        content: "";
+        position: absolute;
+        inset: -9px -5px;
+    }
+
+    /* Chat controls fill the 40px bar instead of being 24px tall */
+    .chat-control-btn {
+        align-self: stretch;
+        margin: -4px 0;
+        padding: 4px 10px;
+    }
+
+    /* Close buttons of card pile popups */
+    .close-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 40px;
+        min-height: 40px;
+        margin: -12px -12px -12px 0;
+    }
+}
+
+/* Mouse screens shrink the rings below 1360px; touch screens keep them large enough to tap */
+@media (pointer: coarse) and (max-width: 1360px) {
+    .ring-panel,
+    .ring-prompt {
+        --ring-size: 44px;
+    }
+
+    .claimed-pool {
+        --ring-size: 32px;
+    }
+}

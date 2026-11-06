@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import React from "react";
 
-vi.mock("axios", () => ({ default: { get: vi.fn() } }));
+vi.mock("../../client/http", () => ({ http: { get: vi.fn() } }));
 
 vi.mock("../../client/FormComponents/Input.tsx", () => ({
     default: ({ name, value, children }: any) => (

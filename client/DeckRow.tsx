@@ -1,4 +1,5 @@
 import { asset } from "./assetUrl";
+import { activateOnKey } from "./keyboardActivate";
 import type { Deck, DeckStatus as DeckStatusType } from "./types/deck";
 
 interface DeckRowProps {
@@ -25,36 +26,47 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
 
     const getStatusClass = (status: DeckStatusType | undefined) => {
         if(!status) {
-            return "casual-play";
+            return "validating";
         }
         if(status.valid) {
             return "valid";
         } else if(status.valid === false) {
             return "invalid";
         }
-        return "casual-play";
+        return "validating";
     };
 
     const deckStatus = getStatusName(deck.status);
     const statusClass = getStatusClass(deck.status);
 
     return (
-        <div className={ `deck-row${active ? " active" : ""}` } key={ deck.name } onClick={ onClick }>
+        // Not a <button>: it holds the selection checkbox. Keyboard users reach and open it like a button.
+        <div
+            className={ `deck-row${active ? " active" : ""}` }
+            key={ deck.name }
+            role="button"
+            tabIndex={ 0 }
+            aria-pressed={ !!active }
+            onClick={ onClick }
+            onKeyDown={ activateOnKey(() => onClick?.()) }
+        >
             { showCheckbox && (
-                <div className="deck-row-checkbox" onClick={ (e: React.MouseEvent) => e.stopPropagation() }>
+                // A label, so a tap anywhere in the checkbox's cell ticks it instead of selecting the deck
+                <label className="deck-row-checkbox" onClick={ (e: React.MouseEvent) => e.stopPropagation() }>
                     <input
                         type="checkbox"
+                        aria-label={ `Select ${deck.name}` }
                         checked={ isSelected }
                         onChange={ () => onCheckboxChange?.(deck._id) }
                     />
-                </div>
+                </label>
             ) }
             <div className="deck-row-clans">
-                <img className="deck-clan-icon" src={ asset(`mons/${deck.faction.value}.png`) } />
+                <img className="deck-clan-icon" src={ asset(`mons/${deck.faction.value}.png`) } alt={ deck.faction.name } />
                 { deck.alliance && deck.alliance.value ? (
                     <>
                         <span className="deck-clan-separator">/</span>
-                        <img className="deck-clan-icon" src={ asset(`mons/${deck.alliance.value}.png`) } />
+                        <img className="deck-clan-icon" src={ asset(`mons/${deck.alliance.value}.png`) } alt={ deck.alliance.name } />
                     </>
                 ) : null }
             </div>

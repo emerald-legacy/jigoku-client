@@ -1,28 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-const axiosGet = vi.fn();
-vi.mock("axios", () => ({ default: { get: (...args: any[]) => axiosGet(...args) } }));
+const httpGet = vi.fn();
+vi.mock("../../client/http", async (importOriginal) => ({
+    ...(await importOriginal<typeof import("../../client/http")>()),
+    http: { get: (...args: any[]) => httpGet(...args) }
+}));
 
 import serverVersionReducer, { type ServerVersionState } from "../../client/reducers/serverVersion";
 import { loadServerVersion } from "../../client/ReduxActions/serverVersion";
+import { HttpError } from "../../client/http";
 
 describe("serverVersion thunk", () => {
     beforeEach(() => {
-        axiosGet.mockReset();
+        httpGet.mockReset();
     });
 
     it("issues GET /api/server-version exactly once per dispatch", async () => {
-        axiosGet.mockResolvedValue({ data: { nodes: [] } });
+        httpGet.mockResolvedValue({ data: { nodes: [] } });
         const thunk = loadServerVersion();
         const dispatch = vi.fn();
         const getState = vi.fn(() => ({}));
         await thunk(dispatch, getState, undefined);
-        expect(axiosGet).toHaveBeenCalledExactlyOnceWith("/api/server-version");
+        expect(httpGet).toHaveBeenCalledExactlyOnceWith("/api/server-version");
     });
 
     it("returns the nodes payload when the server responds with success", async () => {
         const nodes = [{ name: "node-1", version: "1.0" }];
-        axiosGet.mockResolvedValue({ data: { nodes } });
+        httpGet.mockResolvedValue({ data: { nodes } });
         const dispatch = vi.fn();
         const result = await loadServerVersion()(dispatch, () => ({}), undefined);
         expect(result.payload).toEqual({ nodes });
@@ -30,7 +34,7 @@ describe("serverVersion thunk", () => {
     });
 
     it("rejects via apiCall when the request throws", async () => {
-        axiosGet.mockRejectedValue({ response: { status: 503 } });
+        httpGet.mockRejectedValue(new HttpError(503, ""));
         const result = await loadServerVersion()(vi.fn(), () => ({}), undefined);
         expect((result as any).meta.requestStatus).toBe("rejected");
         expect((result.payload as any).status).toBe(503);

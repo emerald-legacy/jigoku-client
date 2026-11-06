@@ -53,7 +53,7 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
     } else {
         content = (
             <div className="row">
-                <div className="col-sm-6">
+                <div className="col-lg-6">
                     <div className="panel-title text-center">
                         Deck Editor
                     </div>
@@ -61,7 +61,7 @@ export function InnerAddDeck({ addDeck, apiError, cards, deck, deckSaved, loadin
                         <DeckEditor onDeckSave={ handleAddDeck } />
                     </div>
                 </div>
-                <div className="col-sm-6">
+                <div className="col-lg-6">
                     <div className="panel-title text-center">
                         { deck ? deck.name : "New Deck" }
                     </div>

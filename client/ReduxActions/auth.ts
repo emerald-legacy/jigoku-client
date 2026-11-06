@@ -1,4 +1,4 @@
-import axios, { type AxiosError } from "axios";
+import { http, httpErrorStatus } from "../http";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { User } from "../types/user";
 import { register, login, logout } from "../reducers/auth";
@@ -23,7 +23,7 @@ export const loginUser = createAsyncThunk(
     "auth/login",
     async ({ username, password }: LoginArg, { dispatch, rejectWithValue }) => {
         try {
-            const response = await axios.post<LoginResponse>("/api/account/login", { username, password });
+            const response = await http.post<LoginResponse>("/api/account/login", { username, password });
             if(!response.data.success) {
                 return rejectWithValue({ message: response.data.message, status: 200 });
             }
@@ -31,8 +31,7 @@ export const loginUser = createAsyncThunk(
             getLobbySocket()?.emit("authenticate", response.data.token);
             return response.data;
         } catch(error: unknown) {
-            const axiosError = error as AxiosError | undefined;
-            const status = axiosError?.response?.status;
+            const status = httpErrorStatus(error);
             if(status === 401) {
                 return rejectWithValue({ message: "Invalid Username/password", status });
             }
@@ -46,7 +45,7 @@ export const loginUser = createAsyncThunk(
 
 export async function checkUsername(username: string): Promise<{ message?: string }> {
     try {
-        const response = await axios.post<{ message?: string }>("/api/account/check-username", { username });
+        const response = await http.post<{ message?: string }>("/api/account/check-username", { username });
         return response.data ?? {};
     } catch(_error) {
         return {};
@@ -70,7 +69,7 @@ export const registerUser = createAsyncThunk(
     "auth/register",
     async (arg: RegisterArg, { dispatch, rejectWithValue }) => {
         try {
-            const response = await axios.post<RegisterResponse>("/api/account/register", arg);
+            const response = await http.post<RegisterResponse>("/api/account/register", arg);
             const data = response.data;
             if(!data.success) {
                 return rejectWithValue({ message: data.message, status: 200 });
@@ -90,7 +89,7 @@ export const logoutUser = createAsyncThunk(
     "auth/logout",
     async (_, { dispatch }) => {
         try {
-            await axios.post("/api/account/logout");
+            await http.post("/api/account/logout");
         } catch(_error) {
             // Logout always proceeds locally even if server call fails.
         }
@@ -106,7 +105,7 @@ interface PasswordResetArg {
 export const requestPasswordReset = createAsyncThunk(
     "auth/requestPasswordReset",
     (arg: PasswordResetArg, { rejectWithValue }) => apiCall(
-        () => axios.post("/api/account/password-reset", arg),
+        () => http.post("/api/account/password-reset", arg),
         rejectWithValue
     )
 );
@@ -120,7 +119,7 @@ interface FinishResetArg {
 export const finishPasswordReset = createAsyncThunk(
     "auth/finishPasswordReset",
     (arg: FinishResetArg, { rejectWithValue }) => apiCall(
-        () => axios.post("/api/account/password-reset-finish", arg),
+        () => http.post("/api/account/password-reset-finish", arg),
         rejectWithValue
     )
 );
