@@ -195,30 +195,6 @@ describe("GameRouter.getNodeStatus", () => {
     });
 });
 
-describe("GameRouter.disableNode / enableNode", () => {
-    it("disableNode flips the disabled flag and returns true", () => {
-        const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1", disabled: false }) } });
-        expect(call("disableNode", ctx, "node-1")).toBe(true);
-        expect(ctx.workers["node-1"].disabled).toBe(true);
-    });
-
-    it("disableNode returns false for unknown worker", () => {
-        const ctx = makeRouterCtx();
-        expect(call("disableNode", ctx, "missing")).toBe(false);
-    });
-
-    it("enableNode flips the disabled flag and returns true", () => {
-        const ctx = makeRouterCtx({ workers: { "node-1": makeWorker({ identity: "node-1", disabled: true }) } });
-        expect(call("enableNode", ctx, "node-1")).toBe(true);
-        expect(ctx.workers["node-1"].disabled).toBe(false);
-    });
-
-    it("enableNode returns false for unknown worker", () => {
-        const ctx = makeRouterCtx();
-        expect(call("enableNode", ctx, "missing")).toBe(false);
-    });
-});
-
 describe("GameRouter.sendCommand", () => {
     it("sends JSON over the matching connection when ws is open", () => {
         const ws = makeWs(true);

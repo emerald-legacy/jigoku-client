@@ -181,28 +181,6 @@ class GameRouter extends EventEmitter {
         });
     }
 
-    disableNode(nodeName: string) {
-        var worker = this.workers[nodeName];
-        if(!worker) {
-            return false;
-        }
-
-        worker.disabled = true;
-
-        return true;
-    }
-
-    enableNode(nodeName: string) {
-        var worker = this.workers[nodeName];
-        if(!worker) {
-            return false;
-        }
-
-        worker.disabled = false;
-
-        return true;
-    }
-
     notifyFailedConnect(game: RouterGame, username: string) {
         if(!game.node) {
             return;

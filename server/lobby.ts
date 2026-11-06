@@ -113,53 +113,6 @@ class Lobby {
         return nodeStatus;
     }
 
-    disableNode(nodeName: string) {
-        return this.router.disableNode(nodeName);
-    }
-
-    enableNode(nodeName: string) {
-        return this.router.enableNode(nodeName);
-    }
-
-    debugDump() {
-        var games = Object.values(this.games).map(game => {
-            var players = Object.values(game.players).map(player => {
-                return {
-                    name: player.name,
-                    left: player.left,
-                    disconnected: player.disconnected,
-                    id: player.id
-                };
-            });
-
-            var spectators = Object.values(game.spectators).map(spectator => {
-                return {
-                    name: spectator.name,
-                    id: spectator.id
-                };
-            });
-
-            return {
-                name: game.name,
-                players: players,
-                spectators: spectators,
-                id: game.id,
-                started: game.started,
-                node: game.node ? game.node.identity : "None",
-                startedAt: game.createdAt
-            };
-        });
-
-        var nodes = this.router.getNodeStatus();
-
-        return {
-            games: games,
-            nodes: nodes,
-            socketCount: Object.keys(this.sockets).length,
-            userCount: Object.keys(this.users).length
-        };
-    }
-
     // Helpers
     findGameForUser(user: string): PendingGame | undefined {
         return Object.values(this.games).find(game => {
