@@ -196,9 +196,6 @@
     .radio-inline input[type="radio"] { @apply mt-0; }
 
     /* Progress bars */
-    .progress { @apply w-full h-5 bg-gray-700 rounded overflow-hidden; }
-    .progress-bar { @apply h-full transition-[width] duration-500 ease-linear; }
-    .progress-bar-success { @apply bg-success; }
 
     /* Alerts */
     .alert { @apply p-4 mb-4 border rounded; }

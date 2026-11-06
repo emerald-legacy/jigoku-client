@@ -247,13 +247,14 @@ function ActivePlayerPrompt({
         promptTitleElement = <div className="menu-pane-source">{ promptTitle }</div>;
     }
 
+    // Inside the panel, under the question it answers; turns red for the last 3 seconds.
     let timer = null;
     if(showTimer) {
         timer = (
-            <div>
-                <span>Auto passing in { timeLeft }...</span>
-                <div className="progress">
-                    <div className="progress-bar progress-bar-success" role="progressbar" style={ { width: timerClass } } />
+            <div className={ `prompt-timer${timeLeft <= 3 ? " ending" : ""}` }>
+                <span>{ `Auto-passing in ${timeLeft}s` }</span>
+                <div className="prompt-timer-track">
+                    <div className="prompt-timer-bar" role="progressbar" aria-label="Time left" style={ { width: timerClass } } />
                 </div>
             </div>
         );
@@ -262,7 +263,6 @@ function ActivePlayerPrompt({
     return (
         <Draggable handle=".grip" { ...promptPosition } nodeRef={ draggableRef }>
             <div ref={ draggableRef } className="no-highlight">
-                { timer }
                 <div className="grip">
                     <div className={ `phase-indicator ${phase}` } onClick={ onTitleClick }>
                         { phase } phase
@@ -273,6 +273,7 @@ function ActivePlayerPrompt({
                     { /* A long button list scrolls inside the panel; not with a card-name search, whose suggestion list would be cut off */ }
                     <div className={ controls?.some((control) => control.type === "card-name") ? "panel" : "panel menu-pane-scroll" }>
                         <div className="menu-pane-title">{ title }</div>
+                        { timer }
                         { renderedControls }
                         { renderedButtons }
                     </div>

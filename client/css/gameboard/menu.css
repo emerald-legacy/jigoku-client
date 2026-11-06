@@ -48,6 +48,35 @@
     overflow-y: auto;
 }
 
+/* Auto-pass countdown, under the prompt's question */
+.prompt-timer {
+    margin-bottom: 8px;
+    font-size: var(--text-small);
+    color: var(--sage);
+
+    &.ending {
+        color: var(--vermilion);
+    }
+}
+
+.prompt-timer-track {
+    height: 4px;
+    margin-top: 3px;
+    border-radius: 2px;
+    background: rgb(var(--jade-rgb) / 0.1);
+    overflow: hidden;
+}
+
+.prompt-timer-bar {
+    height: 100%;
+    background: var(--jade);
+    transition: width 0.5s linear;
+
+    .ending & {
+        background: var(--vermilion);
+    }
+}
+
 .menu-pane-title {
     font-family: var(--font-body);
     font-size: var(--text-body);

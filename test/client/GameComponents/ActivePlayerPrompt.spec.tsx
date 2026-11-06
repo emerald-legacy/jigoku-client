@@ -45,25 +45,38 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
         vi.useRealTimers();
     });
 
-    const progressWidth = () => (document.querySelector(".progress-bar") as HTMLElement | null)?.style.width;
+    const progressWidth = () => (document.querySelector(".prompt-timer-bar") as HTMLElement | null)?.style.width;
 
     it("should show the countdown at full width before any tick", () => {
         render(<ActivePlayerPrompt { ...baseProps } />);
 
-        expect(screen.getByText(/Auto passing in/)).toBeInTheDocument();
+        expect(screen.getByText(/Auto-passing in/)).toBeInTheDocument();
         expect(progressWidth()).toBe("100%");
     });
 
     it("should not show a timer when no button asks for one", () => {
         render(<ActivePlayerPrompt { ...baseProps } buttons={ [{ text: "Done", command: "done" }] } />);
 
-        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Auto-passing in/)).not.toBeInTheDocument();
     });
 
     it("should not show a timer when the user has no window timer configured", () => {
         render(<ActivePlayerPrompt { ...baseProps } user={ { settings: {} } } />);
 
-        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Auto-passing in/)).not.toBeInTheDocument();
+    });
+
+    it("should show the countdown inside the prompt panel, red for the last 3 seconds", () => {
+        render(<ActivePlayerPrompt { ...baseProps } />);
+        const timer = () => document.querySelector(".menu-pane .panel .prompt-timer") as HTMLElement;
+        expect(timer()).not.toBeNull();
+        expect(timer().className).not.toContain("ending");
+
+        act(() => {
+            vi.advanceTimersByTime(7500);
+        });
+
+        expect(timer().className).toContain("ending");
     });
 
     it("should count down as time passes", () => {
@@ -73,7 +86,7 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
             vi.advanceTimersByTime(4000);
         });
 
-        expect(screen.getByText(/Auto passing in 6/)).toBeInTheDocument();
+        expect(screen.getByText(/Auto-passing in 6s/)).toBeInTheDocument();
         expect(progressWidth()).toBe("60%");
     });
 
@@ -85,7 +98,7 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
         });
 
         expect(onTimerExpired).toHaveBeenCalledTimes(1);
-        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Auto-passing in/)).not.toBeInTheDocument();
     });
 
     it("should hand back the timer button so the auto-pass carries the prompt uuid", () => {
@@ -117,7 +130,7 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
         });
 
         expect(onButtonClick).toHaveBeenCalledWith("trigger", undefined, undefined, undefined);
-        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Auto-passing in/)).not.toBeInTheDocument();
 
         act(() => {
             vi.advanceTimersByTime(20000);
@@ -138,7 +151,7 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
             buttons={ [{ text: "Pass", command: "pass2", timer: true }] }
         />);
 
-        expect(screen.getByText(/Auto passing in/)).toBeInTheDocument();
+        expect(screen.getByText(/Auto-passing in/)).toBeInTheDocument();
 
         act(() => {
             vi.advanceTimersByTime(10000);
@@ -152,13 +165,13 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
         act(() => {
             screen.getByRole("button", { name: "Trigger" }).click();
         });
-        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Auto-passing in/)).not.toBeInTheDocument();
 
         // Same ability offered a second time (e.g. its use limit was increased): identical
         // button contents, but a fresh array from the next gamestate push.
         rerender(<ActivePlayerPrompt { ...baseProps } buttons={ [...baseProps.buttons] } />);
 
-        expect(screen.getByText(/Auto passing in/)).toBeInTheDocument();
+        expect(screen.getByText(/Auto-passing in/)).toBeInTheDocument();
         act(() => {
             vi.advanceTimersByTime(10000);
         });
@@ -175,7 +188,7 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
 
         rerender(<ActivePlayerPrompt { ...baseProps } buttons={ [...baseProps.buttons] } />);
 
-        expect(screen.getByText(/Auto passing in/)).toBeInTheDocument();
+        expect(screen.getByText(/Auto-passing in/)).toBeInTheDocument();
         act(() => {
             vi.advanceTimersByTime(10000);
         });
@@ -191,7 +204,7 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
 
         rerender(<ActivePlayerPrompt { ...baseProps } title="Any reactions?" />);
 
-        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Auto-passing in/)).not.toBeInTheDocument();
         act(() => {
             vi.advanceTimersByTime(20000);
         });
@@ -211,11 +224,11 @@ describe("the <ActivePlayerPrompt /> window timer", () => {
         act(() => {
             screen.getByRole("button", { name: "I need more time" }).click();
         });
-        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Auto-passing in/)).not.toBeInTheDocument();
 
         rerender(<ActivePlayerPrompt { ...props } buttons={ [...props.buttons] } />);
 
-        expect(screen.queryByText(/Auto passing in/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Auto-passing in/)).not.toBeInTheDocument();
         act(() => {
             vi.advanceTimersByTime(20000);
         });
