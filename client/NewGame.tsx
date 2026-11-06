@@ -114,40 +114,40 @@ export function InnerNewGame({ cancelNewGame, connected, defaultGameName, loadDe
             <div>
                 <div className="row game-password">
                     <div className="col-sm-12">
-                        <b>Clocks</b>
+                        <b id="clockTypeLabel">Clocks</b>
                     </div>
-                    <div className="col-sm-10">
+                    <div className="col-sm-10" role="radiogroup" aria-labelledby="clockTypeLabel">
                         <label className="radio-inline">
-                            <input type="radio" onChange={ () => handleClockRadioChange("timer") } checked={ isClockTypeSelected("timer") } />
+                            <input type="radio" name="clockType" onChange={ () => handleClockRadioChange("timer") } checked={ isClockTypeSelected("timer") } />
                             Timer
                         </label>
                         <label className="radio-inline">
-                            <input type="radio" onChange={ () => handleClockRadioChange("chess") } checked={ isClockTypeSelected("chess") } />
+                            <input type="radio" name="clockType" onChange={ () => handleClockRadioChange("chess") } checked={ isClockTypeSelected("chess") } />
                             Chess
                         </label>
                         <label className="radio-inline">
-                            <input type="radio" onChange={ () => handleClockRadioChange("hourglass") } checked={ isClockTypeSelected("hourglass") } />
+                            <input type="radio" name="clockType" onChange={ () => handleClockRadioChange("hourglass") } checked={ isClockTypeSelected("hourglass") } />
                             Hourglass
                         </label>
                         <label className="radio-inline">
-                            <input type="radio" onChange={ () => handleClockRadioChange("byoyomi") } checked={ isClockTypeSelected("byoyomi") } />
+                            <input type="radio" name="clockType" onChange={ () => handleClockRadioChange("byoyomi") } checked={ isClockTypeSelected("byoyomi") } />
                             Byoyomi
                         </label>
                     </div>
                 </div>
                 <div className="row">
                     <div className="col-sm-8">
-                        <label>Main Time (Minutes)</label>
-                        <input className="form-control" value={ clockTimer } onChange={ (event) => setClockTimer(event.target.value.replace(/\D/, "")) } />
+                        <label htmlFor="clockMainTime">Main Time (Minutes)</label>
+                        <input id="clockMainTime" className="form-control" inputMode="numeric" value={ clockTimer } onChange={ (event) => setClockTimer(event.target.value.replace(/\D/, "")) } />
                     </div>
                 </div>
                 { selectedClockType === "byoyomi" && (
                     <div className="row">
                         <div className="col-sm-8">
-                            <label>Number of Byoyomi Periods</label>
-                            <input className="form-control" value={ byoyomiPeriods } onChange={ (event) => setByoyomiPeriods(event.target.value.replace(/\D/, "")) } />
-                            <label>Byoyomi Time Period (Seconds)</label>
-                            <input className="form-control" value={ byoyomiTimePeriod } onChange={ (event) => setByoyomiTimePeriod(event.target.value.replace(/\D/, "")) } />
+                            <label htmlFor="byoyomiPeriods">Number of Byoyomi Periods</label>
+                            <input id="byoyomiPeriods" className="form-control" inputMode="numeric" value={ byoyomiPeriods } onChange={ (event) => setByoyomiPeriods(event.target.value.replace(/\D/, "")) } />
+                            <label htmlFor="byoyomiTimePeriod">Byoyomi Time Period (Seconds)</label>
+                            <input id="byoyomiTimePeriod" className="form-control" inputMode="numeric" value={ byoyomiTimePeriod } onChange={ (event) => setByoyomiTimePeriod(event.target.value.replace(/\D/, "")) } />
                         </div>
                     </div>
                 ) }
@@ -175,8 +175,8 @@ export function InnerNewGame({ cancelNewGame, connected, defaultGameName, loadDe
                     <div className="row">
                         <div className="col-sm-8">
                             <label htmlFor="gameName">Name</label>
-                            <label className="game-name-char-limit">{ charsLeft >= 0 ? charsLeft : 0 }</label>
-                            <input className="form-control" placeholder="Game Name" type="text" onChange={ handleNameChange } value={ gameName } />
+                            <span className="game-name-char-limit" aria-label="Characters left">{ charsLeft >= 0 ? charsLeft : 0 }</span>
+                            <input id="gameName" className="form-control" placeholder="Game Name" type="text" onChange={ handleNameChange } value={ gameName } />
                         </div>
                     </div>
                     <div className="row">
@@ -201,46 +201,46 @@ export function InnerNewGame({ cancelNewGame, connected, defaultGameName, loadDe
                     </div>
                     <div className="row">
                         <div className="col-sm-12">
-                            <b>Format</b>
+                            <b id="gameModeLabel">Format</b>
                         </div>
-                        <div className="col-sm-10">
+                        <div className="col-sm-10" role="radiogroup" aria-labelledby="gameModeLabel">
                             <label className="radio-inline">
-                                <input type="radio" onChange={ () => handleRulesRadioChange(GameModes.Emerald) } checked={ isGameModeSelected(GameModes.Emerald) } />
+                                <input type="radio" name="gameMode" onChange={ () => handleRulesRadioChange(GameModes.Emerald) } checked={ isGameModeSelected(GameModes.Emerald) } />
                                 Emerald
                             </label>
                             <label className="radio-inline">
-                                <input type="radio" onChange={ () => handleRulesRadioChange(GameModes.Sanctuary) } checked={ isGameModeSelected(GameModes.Sanctuary) } />
+                                <input type="radio" name="gameMode" onChange={ () => handleRulesRadioChange(GameModes.Sanctuary) } checked={ isGameModeSelected(GameModes.Sanctuary) } />
                                 Sanctuary
                             </label>
                             <label className="radio-inline">
-                                <input type="radio" onChange={ () => handleRulesRadioChange(GameModes.Stronghold) } checked={ isGameModeSelected(GameModes.Stronghold) } />
+                                <input type="radio" name="gameMode" onChange={ () => handleRulesRadioChange(GameModes.Stronghold) } checked={ isGameModeSelected(GameModes.Stronghold) } />
                                 Stronghold
                             </label>
                             <label className="radio-inline">
-                                <input type="radio" onChange={ () => handleRulesRadioChange(GameModes.Skirmish) } checked={ isGameModeSelected(GameModes.Skirmish) } />
+                                <input type="radio" name="gameMode" onChange={ () => handleRulesRadioChange(GameModes.Skirmish) } checked={ isGameModeSelected(GameModes.Skirmish) } />
                                 Skirmish
                             </label>
                             <label className="radio-inline">
-                                <input type="radio" onChange={ () => handleRulesRadioChange(GameModes.Obsidian) } checked={ isGameModeSelected(GameModes.Obsidian) } />
+                                <input type="radio" name="gameMode" onChange={ () => handleRulesRadioChange(GameModes.Obsidian) } checked={ isGameModeSelected(GameModes.Obsidian) } />
                                 Obsidian
                             </label>
                         </div>
                     </div>
                     <div className="row game-password">
                         <div className="col-sm-12">
-                            <b>Game Type</b>
+                            <b id="gameTypeLabel">Game Type</b>
                         </div>
-                        <div className="col-sm-10">
+                        <div className="col-sm-10" role="radiogroup" aria-labelledby="gameTypeLabel">
                             <label className="radio-inline">
-                                <input type="radio" onChange={ () => handleRadioChange("beginner") } checked={ isGameTypeSelected("beginner") } />
+                                <input type="radio" name="gameType" onChange={ () => handleRadioChange("beginner") } checked={ isGameTypeSelected("beginner") } />
                                 Beginner
                             </label>
                             <label className="radio-inline">
-                                <input type="radio" onChange={ () => handleRadioChange("casual") } checked={ isGameTypeSelected("casual") } />
+                                <input type="radio" name="gameType" onChange={ () => handleRadioChange("casual") } checked={ isGameTypeSelected("casual") } />
                                 Casual
                             </label>
                             <label className="radio-inline">
-                                <input type="radio" onChange={ () => handleRadioChange("competitive") } checked={ isGameTypeSelected("competitive") } />
+                                <input type="radio" name="gameType" onChange={ () => handleRadioChange("competitive") } checked={ isGameTypeSelected("competitive") } />
                                 Competitive
                             </label>
                         </div>
@@ -248,8 +248,8 @@ export function InnerNewGame({ cancelNewGame, connected, defaultGameName, loadDe
                     { clocks ? getClockInput() : null }
                     <div className="row game-password">
                         <div className="col-sm-8">
-                            <label>Password</label>
-                            <input className="form-control" type="password" onChange={ handlePasswordChange } value={ password } />
+                            <label htmlFor="gamePassword">Password</label>
+                            <input id="gamePassword" className="form-control" type="password" onChange={ handlePasswordChange } value={ password } />
                         </div>
                     </div>
                     <div className="button-row">
