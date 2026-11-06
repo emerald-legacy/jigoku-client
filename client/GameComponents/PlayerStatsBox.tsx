@@ -64,9 +64,10 @@ export function PlayerStatsBox({
                 { showControls && (
                     <button
                         className={ `btn btn-stat ${size}` }
+                        aria-label={ `Remove 1 ${name.toLowerCase()}` }
                         onClick={ () => sendUpdate(statToSet, "down") }
                     >
-                        <Minus size={ 16 } strokeWidth={ 3 } aria-label="-" />
+                        <Minus size={ 16 } strokeWidth={ 3 } aria-hidden="true" />
                     </button>
                 ) }
                 <div className={ `stat-image ${size}` } style={ imageStyle } />
@@ -75,9 +76,10 @@ export function PlayerStatsBox({
                 { showControls && (
                     <button
                         className={ `btn btn-stat ${size}` }
+                        aria-label={ `Add 1 ${name.toLowerCase()}` }
                         onClick={ () => sendUpdate(statToSet, "up") }
                     >
-                        <Plus size={ 16 } strokeWidth={ 3 } aria-label="+" />
+                        <Plus size={ 16 } strokeWidth={ 3 } aria-hidden="true" />
                     </button>
                 ) }
             </div>

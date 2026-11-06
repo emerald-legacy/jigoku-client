@@ -676,7 +676,7 @@
     right: 0;
     width: 18cqi;
     height: 18cqi;
-    background: rgb(var(--success-rgb) / 0.3);
+    background: rgb(var(--success-rgb) / 0.7);
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
     pointer-events: auto;
     z-index: calc(var(--layer-cards) + 2);
@@ -694,6 +694,13 @@
     color: var(--color-foreground);
     text-shadow: 0 0.3cqi 0.5cqi rgb(var(--black-rgb) / 0.7);
     pointer-events: none;
+    /* About 4px on smaller cards, where it is only noise; the green corner says enough */
+    display: none;
+}
+
+.x-large .card-effect-corner::after,
+.xxl .card-effect-corner::after {
+    display: block;
 }
 
 .ability-used-corner-bottom-left {

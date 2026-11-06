@@ -92,23 +92,21 @@ describe("the <PlayerStatsBox /> component", () => {
             render(<PlayerStatsBox { ...defaultProps } showControls />);
         });
 
-        it("should render increment and decrement buttons", () => {
-            const minusButtons = screen.getAllByRole("button", { name: "-" });
-            const plusButtons = screen.getAllByRole("button", { name: "+" });
-            expect(minusButtons.length).toBeGreaterThan(0);
-            expect(plusButtons.length).toBeGreaterThan(0);
+        it("should render increment and decrement buttons named after their stat", () => {
+            expect(screen.getByRole("button", { name: "Remove 1 fate" })).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "Add 1 fate" })).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "Remove 1 honor" })).toBeInTheDocument();
+            expect(screen.getByRole("button", { name: "Add 1 honor" })).toBeInTheDocument();
         });
 
         it("should call sendGameMessage with changeStat when minus is clicked", () => {
-            const minusButtons = screen.getAllByRole("button", { name: "-" });
-            fireEvent.click(minusButtons[0]);
-            expect(sendGameMessage).toHaveBeenCalledWith("changeStat", expect.any(String), -1);
+            fireEvent.click(screen.getByRole("button", { name: "Remove 1 fate" }));
+            expect(sendGameMessage).toHaveBeenCalledWith("changeStat", "fate", -1);
         });
 
         it("should call sendGameMessage with changeStat when plus is clicked", () => {
-            const plusButtons = screen.getAllByRole("button", { name: "+" });
-            fireEvent.click(plusButtons[0]);
-            expect(sendGameMessage).toHaveBeenCalledWith("changeStat", expect.any(String), 1);
+            fireEvent.click(screen.getByRole("button", { name: "Add 1 honor" }));
+            expect(sendGameMessage).toHaveBeenCalledWith("changeStat", "honor", 1);
         });
     });
 
@@ -118,10 +116,7 @@ describe("the <PlayerStatsBox /> component", () => {
         });
 
         it("should not render increment and decrement buttons", () => {
-            const minusButtons = screen.queryAllByTitle("-");
-            const plusButtons = screen.queryAllByTitle("+");
-            expect(minusButtons.length).toBe(0);
-            expect(plusButtons.length).toBe(0);
+            expect(screen.queryByRole("button", { name: /^(Add|Remove) 1 / })).toBeNull();
         });
     });
 
