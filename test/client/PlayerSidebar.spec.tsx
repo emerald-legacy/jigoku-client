@@ -71,6 +71,26 @@ describe("the <PlayerSidebar /> component", () => {
         expect(screen.getByText("OppUser")).toBeInTheDocument();
     });
 
+    it("shows on the opponent's nameplate that they disconnected", () => {
+        baseProps.otherPlayer.disconnected = true;
+        const { container } = render(<PlayerSidebar { ...baseProps } />);
+        expect(screen.getByText("Disconnected")).toBeInTheDocument();
+        expect(container.querySelector(".player-nameplate.is-away")).not.toBeNull();
+    });
+
+    it("says Left rather than Disconnected once the opponent left", () => {
+        baseProps.otherPlayer.disconnected = true;
+        baseProps.otherPlayer.left = true;
+        render(<PlayerSidebar { ...baseProps } />);
+        expect(screen.getByText("Left")).toBeInTheDocument();
+        expect(screen.queryByText("Disconnected")).toBeNull();
+    });
+
+    it("shows no away state while the opponent is connected", () => {
+        const { container } = render(<PlayerSidebar { ...baseProps } />);
+        expect(container.querySelector(".is-away")).toBeNull();
+    });
+
     it("falls back to 'Noone' when otherPlayer is absent", () => {
         baseProps.otherPlayer = undefined;
         render(<PlayerSidebar { ...baseProps } />);

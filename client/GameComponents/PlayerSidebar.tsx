@@ -30,12 +30,20 @@ export default function PlayerSidebar(props: PlayerSidebarProps) {
     const ringSet = useRingSet();
     const thisIsPatron = usePatronOwnerStatus(thisPlayer.user?.username);
     const otherIsPatron = usePatronOwnerStatus(otherPlayer?.user?.username);
+    // Only a chat line used to say the opponent was gone; the nameplate now shows it while it applies.
+    let otherAway = "";
+    if(otherPlayer?.left) {
+        otherAway = "Left";
+    } else if(otherPlayer?.disconnected) {
+        otherAway = "Disconnected";
+    }
     return (
         <div className={ `province-pane ${cardSize}` }>
-            <div className="player-nameplate">
+            <div className={ `player-nameplate${otherAway ? " is-away" : ""}` }>
                 <Avatar emailHash={ otherPlayer && otherPlayer.user ? otherPlayer.user.emailHash : "unknown" } />
                 <div className="player-name">
                     { otherPlayer && otherPlayer.user ? otherPlayer.user.username : "Noone" }
+                    { otherAway ? <div className="player-away">{ otherAway }</div> : null }
                 </div>
             </div>
             <div className={ `sidebar-pane their-side ${cardSize}` }>

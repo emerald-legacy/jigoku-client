@@ -70,3 +70,14 @@
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* The opponent disconnected or left the game */
+.player-nameplate.is-away .gravatar {
+    opacity: 0.55;
+}
+
+.player-away {
+    font-size: var(--text-caption);
+    font-weight: normal;
+    color: var(--vermilion);
+}
