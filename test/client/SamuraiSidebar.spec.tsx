@@ -104,6 +104,26 @@ describe("<SamuraiSidebar /> (expanded)", () => {
         expect(container.querySelector(".samurai-rail")).not.toBeNull();
     });
 
+    it("collapses when the dimmed page behind the panel is tapped", () => {
+        const { container } = render(<SamuraiSidebar />);
+        expand(container);
+        fireEvent.click(container.querySelector(".samurai-backdrop")!);
+        expect(container.querySelector(".samurai-panel")).toBeNull();
+        expect(container.querySelector(".samurai-backdrop")).toBeNull();
+    });
+
+    it("collapses on Escape", () => {
+        const { container } = render(<SamuraiSidebar />);
+        expand(container);
+        fireEvent.keyDown(document, { key: "Escape" });
+        expect(container.querySelector(".samurai-panel")).toBeNull();
+    });
+
+    it("has no backdrop while collapsed", () => {
+        const { container } = render(<SamuraiSidebar />);
+        expect(container.querySelector(".samurai-backdrop")).toBeNull();
+    });
+
     it("also opens the panel when the mobile burger is clicked", () => {
         const { container } = render(<SamuraiSidebar />);
         fireEvent.click(screen.getByLabelText("Open samurai sidebar"));
