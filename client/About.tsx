@@ -8,7 +8,7 @@ function About() {
             </div>
             <div className="panel about-container">
                 <a
-                    className="btn btn-danger btn-lg pull-right"
+                    className="btn btn-quiet btn-lg pull-right"
                     target="_blank"
                     rel="noopener noreferrer"
                     href="https://github.com/emerald-legacy/jigoku-client/issues"

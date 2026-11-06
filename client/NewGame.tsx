@@ -253,8 +253,8 @@ export function InnerNewGame({ cancelNewGame, connected, defaultGameName, loadDe
                         </div>
                     </div>
                     <div className="button-row">
-                        <button className="btn btn-primary" onClick={ handleSubmitClick }>Submit</button>
-                        <button className="btn btn-primary" onClick={ handleCancelClick }>Cancel</button>
+                        <button className="btn btn-primary" onClick={ handleSubmitClick }>Create game</button>
+                        <button className="btn btn-quiet" onClick={ handleCancelClick }>Cancel</button>
                     </div>
                 </form>
             </div>

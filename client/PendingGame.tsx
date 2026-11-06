@@ -295,7 +295,7 @@ export function InnerPendingGame({
                     <div className="column-flex-box">
                         <div className="btn-group">
                             <button className="btn btn-primary" disabled={ !isGameReady() || connecting || waiting } onClick={ handleStartClick }>Start</button>
-                            <button className="btn btn-primary" onClick={ handleLeaveClick }>Leave</button>
+                            <button className="btn btn-quiet" onClick={ handleLeaveClick }>Leave</button>
                         </div>
                         <div className="game-status">{ getGameStatus() }</div>
                     </div>
