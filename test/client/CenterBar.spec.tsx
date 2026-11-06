@@ -194,6 +194,15 @@ describe("the <CenterBar /> component", () => {
             expect(counts[0].textContent).toBe("2");
             expect(counts[1].textContent).toBe("4");
         });
+
+        it("labels the counts so they aren't read as hand size", () => {
+            baseProps.currentGame.conflict = { attackingPlayerId: "me-id", type: "military", elements: [] };
+            const { container } = render(<CenterBar { ...baseProps } />);
+            const rows = container.querySelectorAll(".cards-played-tracker");
+            expect(rows[0].getAttribute("title")).toBe("Cards your opponent played this conflict");
+            expect(rows[1].getAttribute("title")).toBe("Cards you played this conflict");
+            expect(container.querySelector(".stat-image.undefined")).toBeNull();
+        });
     });
 
     describe("ring attachments", () => {
