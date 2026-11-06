@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import Draggable from "react-draggable";
 
+import { useBoundedPosition, useViewportSize } from "./useBoundedPosition";
+
 import AbilityTargeting from "./AbilityTargeting";
 import CardNameLookup from "./CardNameLookup";
 import type { Button, Card, Control } from "../types/game";
@@ -48,6 +50,12 @@ function ActivePlayerPrompt({
     const timerHandleRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const onTimerExpiredRef = useRef(onTimerExpired);
     const draggableRef = useRef<HTMLDivElement | null>(null);
+    // Stays on screen when the window shrinks or a tablet is rotated
+    const viewport = useViewportSize();
+    const promptPosition = useBoundedPosition(
+        () => ({ x: (window.innerWidth / 2) - 105, y: (window.innerHeight / 2) - 211 }),
+        { left: 0, top: 0, right: viewport.width - 210, bottom: viewport.height - 172 }
+    );
 
     const timerButton = buttons?.find((button: Button) => button.timer);
     const hasTimerButton = !!timerButton;
@@ -233,17 +241,6 @@ function ActivePlayerPrompt({
         });
     })();
 
-    const getDefaultPosition = () => ({
-        x: (window.innerWidth / 2) - 105,
-        y: (window.innerHeight / 2) - 211
-    });
-
-    const activePromptBounds = {
-        top: 0,
-        bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 172,
-        left: 0,
-        right: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 210
-    };
 
     let promptTitleElement = null;
     if(promptTitle) {
@@ -263,7 +260,7 @@ function ActivePlayerPrompt({
     }
 
     return (
-        <Draggable handle=".grip" bounds={ activePromptBounds } defaultPosition={ getDefaultPosition() } nodeRef={ draggableRef }>
+        <Draggable handle=".grip" { ...promptPosition } nodeRef={ draggableRef }>
             <div ref={ draggableRef } className="no-highlight">
                 { timer }
                 <div className="grip">

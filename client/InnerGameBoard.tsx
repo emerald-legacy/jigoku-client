@@ -26,6 +26,7 @@ import StatChangeOverlay from "./GameComponents/StatChangeOverlay";
 import CenterBar from "./GameComponents/CenterBar";
 import PlayerSidebar from "./GameComponents/PlayerSidebar";
 import { CardDragContext } from "./GameComponents/CardDragContext";
+import { useBoundedPosition, useViewportSize } from "./GameComponents/useBoundedPosition";
 import type { AppDispatch } from "./hooks";
 
 type ActionFn = (...args: unknown[]) => unknown;
@@ -101,6 +102,12 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     const draggableRef = useRef<HTMLDivElement>(null);
     const opponentDraggableRef = useRef<HTMLDivElement>(null);
     const prevPlayerMsgCountRef = useRef(0);
+
+    // The floating hands stay on screen: their bounds follow the window size, and a resize or rotation moves them back inside.
+    const viewport = useViewportSize();
+    const handBounds = { left: 0, top: 0, right: viewport.width - 490, bottom: viewport.height - 160 };
+    const playerHandPosition = useBoundedPosition(() => ({ x: (window.innerWidth / 2) - 240, y: window.innerHeight / 2 }), handBounds);
+    const opponentHandPosition = useBoundedPosition(() => ({ x: (window.innerWidth / 2) - 240, y: 50 }), handBounds);
 
     const groupCardsInPlayForMe = useMemo(() => makeCardsInPlayGrouper(), []);
     const groupCardsInPlayForOther = useMemo(() => makeCardsInPlayGrouper(), []);
@@ -369,18 +376,8 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         if(spectating) {
             return null;
         }
-        const defaultPosition = {
-            x: (window.innerWidth / 2) - 240,
-            y: (window.innerHeight / 2)
-        };
-        const handBounds = {
-            left: 0,
-            right: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 490,
-            top: 0,
-            bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 160
-        };
         return (
-            <Draggable handle=".grip" nodeRef={ draggableRef } bounds={ handBounds } defaultPosition={ defaultPosition }>
+            <Draggable handle=".grip" nodeRef={ draggableRef } { ...playerHandPosition }>
                 <div ref={ draggableRef } className="player-home-row-container">
                     <PlayerHand
                         cards={ thisPlayer.cardPiles.hand }
@@ -407,18 +404,8 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         if(!hasRevealedCards) {
             return null;
         }
-        const defaultPosition = {
-            x: (window.innerWidth / 2) - 240,
-            y: 50
-        };
-        const handBounds = {
-            left: 0,
-            right: Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0) - 490,
-            top: 0,
-            bottom: Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0) - 160
-        };
         return (
-            <Draggable handle=".grip" nodeRef={ opponentDraggableRef } bounds={ handBounds } defaultPosition={ defaultPosition }>
+            <Draggable handle=".grip" nodeRef={ opponentDraggableRef } { ...opponentHandPosition }>
                 <div ref={ opponentDraggableRef } className="player-home-row-container opponent-hand-container">
                     <PlayerHand
                         cards={ otherPlayer.cardPiles.hand }
