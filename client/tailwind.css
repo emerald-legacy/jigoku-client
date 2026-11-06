@@ -347,6 +347,9 @@
     .dropdown-menu li { @apply block; }
     .dropdown-menu li a { @apply block w-full px-3 py-1 no-underline rounded leading-normal; color: var(--color-foreground); }
     .dropdown-menu li a:hover { background: rgb(var(--moss-rgb) / 0.6); }
+    /* Typeahead suggestions (react-bootstrap-typeahead renders them as a.dropdown-item, one per line) */
+    .dropdown-item { @apply block px-3 py-1 no-underline rounded cursor-pointer leading-normal; color: var(--color-foreground); }
+    .dropdown-item:hover, .dropdown-item.active { background: rgb(var(--moss-rgb) / 0.6); color: var(--color-foreground); }
     .dropdown.open .dropdown-menu { @apply block; }
 
     /* Typeahead: override hidden dropdown-menu inside rbt container */
