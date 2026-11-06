@@ -38,6 +38,7 @@
 @import "./css/gameboard/clock-popup.css";
 @import "./css/gameboard/ring-effects.css";
 @import "./css/gameboard/stat-change-overlay.css";
+@import "./css/gameboard/touch.css";
 /* end gameboard */
 @import "./css/cards.css";
 @import "./css/cardStats.css";
