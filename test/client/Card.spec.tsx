@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 
@@ -411,6 +411,47 @@ describe("the <Card /> component", () => {
             expect(element.getAttribute("draggable")).toBe("false");
             fireEvent.dragStart(element, { dataTransfer: { setData } });
             expect(setData).not.toHaveBeenCalled();
+        });
+    });
+    describe("long press on a touch screen", () => {
+        const press = () => fireEvent.touchStart(document.querySelector(".card")!, { touches: [{ clientX: 10, clientY: 10 }] });
+
+        beforeEach(() => {
+            vi.useFakeTimers();
+            render(<Card card={ card } source="play area" onMouseOver={ onMouseOver } onMouseOut={ onMouseOut } onClick={ onClick } />);
+        });
+
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
+        it("zooms the card after holding it, and cancels the click that would follow", () => {
+            press();
+            vi.advanceTimersByTime(500);
+
+            expect(onMouseOver).toHaveBeenCalledWith(card);
+            const touchEnd = new TouchEvent("touchend", { bubbles: true, cancelable: true });
+            document.querySelector(".card")!.dispatchEvent(touchEnd);
+            expect(touchEnd.defaultPrevented).toBe(true);
+        });
+
+        it("does not zoom on a short tap, and leaves its click alone", () => {
+            press();
+            vi.advanceTimersByTime(200);
+            const touchEnd = new TouchEvent("touchend", { bubbles: true, cancelable: true });
+            document.querySelector(".card")!.dispatchEvent(touchEnd);
+            vi.advanceTimersByTime(500);
+
+            expect(onMouseOver).not.toHaveBeenCalled();
+            expect(touchEnd.defaultPrevented).toBe(false);
+        });
+
+        it("does not zoom when the finger moves (a drag or a scroll)", () => {
+            press();
+            fireEvent.touchMove(document.querySelector(".card")!, { touches: [{ clientX: 40, clientY: 10 }], targetTouches: [{ clientX: 40, clientY: 10, screenX: 40, screenY: 10 }] });
+            vi.advanceTimersByTime(500);
+
+            expect(onMouseOver).not.toHaveBeenCalled();
         });
     });
 });

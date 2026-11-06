@@ -9,6 +9,7 @@ import { getCardImageUrl, getCardBackUrl } from "../cardImageUrl";
 import { useOwnerShowsPromo } from "../PatronContext";
 import { buildCardCounters } from "./buildCardCounters";
 import { startCardDrag, useCardTouchDrag } from "./cardDrag";
+import { useLongPress } from "./useLongPress";
 import CardAttachments from "./CardAttachments";
 import CardPopup from "./CardPopup";
 import type { Card as CardType, MenuItem, Player } from "../types/game";
@@ -114,6 +115,9 @@ function Card(props: CardProps) {
             onMouseOut();
         }
     };
+
+    // Touch screens have no hover: a long press zooms the card instead, without also clicking it.
+    const longPressZoom = useLongPress(() => handleMouseOver(card));
 
     const handleClick = (event: React.MouseEvent, cardData: CardType) => {
         event.preventDefault();
@@ -421,6 +425,7 @@ function Card(props: CardProps) {
                     id={ id }
                     onMouseOver={ disableMouseOver ? null : () => handleMouseOver(card) }
                     onMouseOut={ disableMouseOver ? null : handleMouseOut }
+                    { ...(disableMouseOver ? {} : longPressZoom) }
                     onClick={ (ev: React.MouseEvent) => handleClick(ev, card) }
                     onDragStart={ (ev: React.DragEvent<HTMLElement>) => draggable ? startCardDrag(ev, card, source) : ev.preventDefault() }
                     onAnimationEnd={ (ev: React.AnimationEvent<HTMLDivElement>) => {

@@ -738,3 +738,13 @@
     }
 
 }
+
+/* A long press on a card zooms it (useLongPress), so the browser's own long-press callout and selection stay off */
+@media (pointer: coarse) {
+    .card-frame,
+    .card-frame img {
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+}
