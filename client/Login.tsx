@@ -64,7 +64,7 @@ export function Login() {
             await dispatch(loginUser({ username, password })).unwrap();
             navigate("/");
         } catch(err) {
-            setError(rejectionMessage(err, "Could not communicate with the server.  Please try again later."));
+            setError(rejectionMessage(err, "Could not communicate with the server. Please try again later."));
         }
     };
 

@@ -267,7 +267,7 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     <Checkbox
                                         name="optionSettings.confirmOneClick"
                                         noGroup
-                                        label="Show a confirmation prompt when initating 1-click abilities"
+                                        label="Show a confirmation prompt when initiating 1-click abilities"
                                         fieldClass="col-sm-6"
                                         onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "confirmOneClick", value: e.target.checked }) }
                                         checked={ !!settings.optionSettings.confirmOneClick }
@@ -291,7 +291,7 @@ export function InnerProfile({ user }: InnerProfileProps) {
                                     <Checkbox
                                         name="optionSettings.sortHandByName"
                                         noGroup
-                                        label="Sort Hand by Name"
+                                        label="Sort hand by name"
                                         fieldClass="col-sm-6"
                                         onChange={ (e) => dispatch({ type: "toggle", map: "optionSettings", field: "sortHandByName", value: e.target.checked }) }
                                         checked={ !!settings.optionSettings.sortHandByName }

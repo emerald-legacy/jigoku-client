@@ -75,7 +75,7 @@ describe("the <InnerDecks /> component", () => {
     it("should show the empty state when the account has no decks", () => {
         render(<InnerDecks { ...defaultProps } decks={ [] } />, { wrapper });
 
-        expect(screen.getByText("You have no decks, try adding one.")).toBeInTheDocument();
+        expect(screen.getByText("No decks yet. Use New Deck to import one from EmeraldDB.")).toBeInTheDocument();
         expect(skeletons()).toHaveLength(0);
     });
 
@@ -115,7 +115,7 @@ describe("the <InnerDecks /> component", () => {
         render(<InnerDecks { ...defaultProps } decks={ undefined } />, { wrapper });
 
         expect(skeletons()).toHaveLength(6);
-        expect(screen.queryByText("You have no decks, try adding one.")).not.toBeInTheDocument();
+        expect(screen.queryByText("No decks yet. Use New Deck to import one from EmeraldDB.")).not.toBeInTheDocument();
     });
 
     it("should report a failed decks load instead of claiming the account has none", () => {
@@ -123,7 +123,7 @@ describe("the <InnerDecks /> component", () => {
 
         expect(screen.getByTestId("alert-panel")).toHaveAttribute("data-type", "error");
         expect(screen.getByTestId("alert-panel")).toHaveTextContent("Boom");
-        expect(screen.queryByText("You have no decks, try adding one.")).not.toBeInTheDocument();
+        expect(screen.queryByText("No decks yet. Use New Deck to import one from EmeraldDB.")).not.toBeInTheDocument();
         expect(skeletons()).toHaveLength(0);
     });
 

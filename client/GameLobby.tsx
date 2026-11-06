@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { shallowEqual } from "react-redux";
 import { bindActionCreators } from "@reduxjs/toolkit";
 
@@ -9,6 +9,7 @@ import Court from "./Court";
 import PendingGame from "./PendingGame";
 import PasswordGame from "./PasswordGame";
 import AlertPanel from "./SiteComponents/AlertPanel";
+import { Link } from "react-router-dom";
 
 import * as actions from "./actions";
 import { useAppSelector, useAppDispatch } from "./hooks";
@@ -35,7 +36,6 @@ interface InnerGameLobbyProps {
 }
 
 export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, newGame, passwordGame, loadGameStats, setContextMenu, startNewGame, username }: InnerGameLobbyProps) {
-    const [errorMessage, setErrorMessage] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         if(!currentGame) {
@@ -49,12 +49,6 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
 
     const onNewGameClick = (event: React.MouseEvent) => {
         event.preventDefault();
-
-        if(!username) {
-            setErrorMessage("Please login before trying to start a new game");
-            return;
-        }
-
         startNewGame();
     };
 
@@ -69,7 +63,6 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
     return (
         <div className="full-height">
             { bannerNotice ? <AlertPanel type="error" message={ bannerNotice } /> : null }
-            { !username && errorMessage ? <AlertPanel type="error" message={ errorMessage } /> : null }
 
             <div className="row h-full">
                 <div className="col-sm-7 full-height relative">
@@ -77,8 +70,12 @@ export function InnerGameLobby({ bannerNotice, currentGame, gameStats, games, ne
                         Current Games
                     </div>
                     <div className="panel game-list-container">
-                        <button className="btn btn-primary" onClick={ onNewGameClick } disabled={ !!currentGame }>New Game</button>
-                        { games.length === 0 ? <h4>No games are currently in progress</h4> : <GameList games={ games } /> }
+                        { username
+                            ? <button className="btn btn-primary" onClick={ onNewGameClick } disabled={ !!currentGame }>New Game</button>
+                            : <Link className="btn btn-primary" to="/login">Log in to play</Link> }
+                        { games.length === 0
+                            ? <p className="status-text">No open games. Start one with New Game and it will appear here for everyone online.</p>
+                            : <GameList games={ games } /> }
                     </div>
                 </div>
                 <div className="col-sm-5">

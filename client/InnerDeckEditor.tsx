@@ -445,7 +445,7 @@ export default function InnerDeckEditor({
             { popup }
             { backdrop }
             <button type="button" className="btn btn-primary" onClick={ handleImportDeckClick }>Import deck</button>
-            <p>Either type the cards manually into the box below, add the cards one by one using the card box and autocomplete or for best results, copy the permalink url from <a href="https://www.emeralddb.org" target="_blank" rel="noreferrer">Emerald DB</a> and paste it into the popup from clicking the &quot;Import Deck&quot; button.</p>
+            <p>Importing is fastest: copy the deck&apos;s link from <a href="https://www.emeralddb.org" target="_blank" rel="noreferrer">EmeraldDB</a> and paste it into Import deck. You can also add cards one by one with the card search, or type the list into the box below.</p>
             <form className="form form-horizontal">
                 <Input name="deckName" label="Deck Name" labelClass="col-sm-3" fieldClass="col-sm-9" placeholder="Deck Name"
                     type="text" onChange={ (e) => handleChange("name", e) } value={ deck.name } />

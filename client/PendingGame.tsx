@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { shallowEqual } from "react-redux";
+import { Link } from "react-router-dom";
 import { bindActionCreators } from "@reduxjs/toolkit";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
@@ -239,7 +240,7 @@ export function InnerPendingGame({
             <DeckRow key={ deck.name + index.toString() } deck={ deck } onClick={ () => selectDeck(index) } />
         ));
     } else {
-        renderedDecks = <div>You have no decks for this format, please add one</div>;
+        renderedDecks = <p className="status-text">No decks for this format yet. <Link to="/decks/add">Add a deck</Link></p>;
     }
 
     const handleModalClick = (event: React.MouseEvent) => {
@@ -250,7 +251,7 @@ export function InnerPendingGame({
     };
 
     if(currentGame && currentGame.started) {
-        return <div>Loading game in progress, please wait...</div>;
+        return <p className="status-text">Loading the game…</p>;
     }
 
     const game = currentGame;

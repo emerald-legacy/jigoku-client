@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
+import { MemoryRouter } from "react-router-dom";
+
+const wrapper = ({ children }: { children: React.ReactNode }) => <MemoryRouter>{ children }</MemoryRouter>;
 
 vi.mock("../../client/SiteComponents/AlertPanel.tsx", () => ({
     default: ({ message }: any) => <div data-testid="alert-panel">{ message }</div>
@@ -65,14 +68,14 @@ describe("the <InnerPendingGame /> start flow", () => {
     const status = () => (document.querySelector(".game-status") as HTMLElement).textContent;
 
     it("should offer to start once every player has a deck", () => {
-        render(<InnerPendingGame { ...baseProps } />);
+        render(<InnerPendingGame { ...baseProps } />, { wrapper });
 
         expect(startButton()).not.toBeDisabled();
         expect(status()).toMatch(/Ready to begin/);
     });
 
     it("should ask the lobby to start the game", () => {
-        render(<InnerPendingGame { ...baseProps } />);
+        render(<InnerPendingGame { ...baseProps } />, { wrapper });
 
         fireEvent.click(startButton());
 
@@ -81,26 +84,26 @@ describe("the <InnerPendingGame /> start flow", () => {
 
     // `waiting` is state.socket.startRequested; the socket slice owns its lifetime
     it("should report waiting on the lobby while a start request is outstanding", () => {
-        render(<InnerPendingGame { ...baseProps } waiting />);
+        render(<InnerPendingGame { ...baseProps } waiting />, { wrapper });
 
         expect(status()).toMatch(/Waiting for lobby server/);
         expect(startButton()).toBeDisabled();
     });
 
     it("should hand over to the game view once the lobby reports the game as started", () => {
-        render(<InnerPendingGame { ...baseProps } currentGame={ readyGame({ started: true }) } />);
+        render(<InnerPendingGame { ...baseProps } currentGame={ readyGame({ started: true }) } />, { wrapper });
 
-        expect(screen.getByText(/Loading game in progress/)).toBeInTheDocument();
+        expect(screen.getByText(/Loading the game/)).toBeInTheDocument();
     });
 
     it("should report the game server it is connecting to", () => {
-        render(<InnerPendingGame { ...baseProps } connecting host="node-1" />);
+        render(<InnerPendingGame { ...baseProps } connecting host="node-1" />, { wrapper });
 
         expect(status()).toMatch(/Connecting to game server: node-1/);
     });
 
     it("should offer to start again once the request has been cleared", () => {
-        render(<InnerPendingGame { ...baseProps } waiting={ false } />);
+        render(<InnerPendingGame { ...baseProps } waiting={ false } />, { wrapper });
 
         expect(status()).toMatch(/Ready to begin/);
         expect(startButton()).not.toBeDisabled();
@@ -110,7 +113,7 @@ describe("the <InnerPendingGame /> start flow", () => {
         render(<InnerPendingGame
             { ...baseProps }
             currentGame={ readyGame({ players: { Me: { name: "Me", deck: { selected: true } }, Them: { name: "Them" } } }) }
-        />);
+        />, { wrapper });
 
         expect(startButton()).toBeDisabled();
         expect(status()).toMatch(/Waiting for players to select decks/);

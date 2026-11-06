@@ -172,7 +172,7 @@ export function InnerDecks({
     } else if(decksPending) {
         listBody = deckListSkeleton;
     } else if(deckCount === 0) {
-        listBody = "You have no decks, try adding one.";
+        listBody = <p className="status-text">No decks yet. Use New Deck to import one from EmeraldDB.</p>;
     } else {
         listBody = deckList;
     }

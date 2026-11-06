@@ -33,7 +33,7 @@ describe("<InnerNewGame /> form semantics", () => {
     it("connects the name and password labels to their fields", () => {
         renderForm();
         expect(screen.getByLabelText("Name")).toHaveValue("Test game");
-        expect(screen.getByLabelText("Password")).toHaveAttribute("type", "password");
+        expect(screen.getByLabelText("Password (optional)")).toHaveAttribute("type", "password");
     });
 
     it("groups the format and game type radios under their headings", () => {

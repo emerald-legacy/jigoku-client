@@ -159,9 +159,7 @@ export function InnerNewGame({ cancelNewGame, connected, defaultGameName, loadDe
 
     if(!connected) {
         return (
-            <div>
-                Connecting to the server, please wait...
-            </div>
+            <p className="status-text">Connecting to the server…</p>
         );
     }
 
@@ -248,7 +246,7 @@ export function InnerNewGame({ cancelNewGame, connected, defaultGameName, loadDe
                     { clocks ? getClockInput() : null }
                     <div className="row game-password">
                         <div className="col-sm-8">
-                            <label htmlFor="gamePassword">Password</label>
+                            <label htmlFor="gamePassword">Password (optional)</label>
                             <input id="gamePassword" className="form-control" type="password" onChange={ handlePasswordChange } value={ password } />
                         </div>
                     </div>

@@ -225,3 +225,13 @@ button:focus-visible,
     outline: 2px solid var(--jade-vivid);
     outline-offset: 2px;
 }
+
+/* Quiet status lines: empty lists, loading and waiting messages */
+.status-text {
+    margin: 0;
+    padding: 1.5rem 0;
+    text-align: center;
+    font-family: var(--font-body);
+    font-style: italic;
+    color: rgb(var(--sage-rgb) / 0.8);
+}
