@@ -275,10 +275,7 @@
 }
 
 .deck-status-errors {
-    border-top: 1px solid rgb(var(--jade-rgb) / 0.4);
     font-size: var(--text-body);
-    margin-top: 1em;
-    padding-top: 1em;
 }
 
 .player-row {

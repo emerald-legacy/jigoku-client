@@ -1,9 +1,33 @@
+/* The deck status details (StatusPopOver). It sits inside the status pill, so it resets the pill's
+   mono, uppercase, no-wrap label style and reads like a small panel. */
 .popover {
-    background-color: var(--color-background);
+    background: var(--ink);
     color: var(--color-foreground);
+    border: 1px solid rgb(var(--jade-rgb) / 0.3);
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgb(var(--black-rgb) / 0.5);
+    margin-top: 8px;
+    padding: 8px 12px;
     width: 300px;
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    font-weight: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    text-transform: none;
+    text-align: left;
+    white-space: normal;
+    cursor: default;
+
+    & .arrow {
+        top: -8px;
+        transform: translateX(-50%);
+        border-top-width: 0;
+        border-bottom-color: rgb(var(--jade-rgb) / 0.3);
+    }
 
     & ul {
+        margin: 0;
         padding: 0;
     }
 
