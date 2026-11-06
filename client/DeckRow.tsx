@@ -25,14 +25,14 @@ function DeckRow({ active, deck, isSelected, onCheckboxChange, onClick, showChec
 
     const getStatusClass = (status: DeckStatusType | undefined) => {
         if(!status) {
-            return "casual-play";
+            return "validating";
         }
         if(status.valid) {
             return "valid";
         } else if(status.valid === false) {
             return "invalid";
         }
-        return "casual-play";
+        return "validating";
     };
 
     const deckStatus = getStatusName(deck.status);

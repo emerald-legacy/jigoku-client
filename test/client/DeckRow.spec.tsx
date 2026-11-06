@@ -39,3 +39,18 @@ describe("<DeckRow /> selection checkbox", () => {
         expect(onCheckboxChange).not.toHaveBeenCalled();
     });
 });
+
+describe("<DeckRow /> status pill", () => {
+    const pill = () => document.querySelector(".deck-row-status") as HTMLElement;
+
+    it("is neutral while the deck is validating", () => {
+        render(<DeckRow deck={ deck } />);
+        expect(pill().className).toContain("validating");
+        expect(pill().textContent).toBe("Validating");
+    });
+
+    it("marks an invalid deck", () => {
+        render(<DeckRow deck={ { ...deck, status: { valid: false } } as Deck } />);
+        expect(pill().className).toContain("invalid");
+    });
+});

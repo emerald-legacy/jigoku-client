@@ -176,30 +176,9 @@
     text-overflow: ellipsis;
 }
 
+/* Colours and shape are shared with the pending game's pill (.deck-status, gamelist.css) */
 .deck-row-status {
     flex-shrink: 0;
-    padding: 2px 9px;
-    border-radius: 3px;
-    font-family: var(--font-mono);
-    font-size: var(--text-caption);
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    white-space: nowrap;
-
-    &.valid {
-        background: linear-gradient(180deg, var(--moss-light), rgb(var(--moss-rgb) / 0.9));
-        color: var(--jade-vivid);
-        border: 1px solid rgb(var(--jade-rgb) / 0.4);
-    }
-
-    &.casual-play {
-        background: var(--color-warning);
-    }
-
-    &.invalid {
-        background: var(--color-danger);
-    }
 }
 
 .deck-detail-placeholder {

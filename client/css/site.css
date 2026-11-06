@@ -30,6 +30,7 @@
 .format-badge-imperial,
 .format-badge-skirmish {
     background: var(--gold-deep);
+    color: var(--ink);
 }
 .format-badge-obsidian {
     background: var(--crimson);
