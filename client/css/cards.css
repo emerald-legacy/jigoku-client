@@ -739,6 +739,11 @@
 
 }
 
+/* A draggable card follows the finger (useCardTouchDrag), so a touch on it must not scroll the page */
+.card[draggable="true"] {
+    touch-action: none;
+}
+
 /* A long press on a card zooms it (useLongPress), so the browser's own long-press callout and selection stay off */
 @media (pointer: coarse) {
     .card-frame,

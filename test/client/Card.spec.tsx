@@ -34,6 +34,7 @@ vi.mock("../../client/assetUrl", async (importOriginal) => {
 });
 
 import Card from "../../client/GameComponents/Card.tsx";
+import { CardDragContext } from "../../client/GameComponents/CardDragContext";
 
 describe("the <Card /> component", () => {
     let card;
@@ -452,6 +453,19 @@ describe("the <Card /> component", () => {
             vi.advanceTimersByTime(500);
 
             expect(onMouseOver).not.toHaveBeenCalled();
+        });
+    });
+    describe("dragging", () => {
+        it("is on by default", () => {
+            render(<Card card={ card } source="hand" />);
+
+            expect(document.querySelector(".card")!.getAttribute("draggable")).toBe("true");
+        });
+
+        it("is off when the board turns it off (auto mode, spectators)", () => {
+            render(<CardDragContext value={ false }><Card card={ card } source="hand" /></CardDragContext>);
+
+            expect(document.querySelector(".card")!.getAttribute("draggable")).toBe("false");
         });
     });
 });

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, memo } from "react";
+import React, { useState, useRef, useEffect, use, memo } from "react";
 
 import CardMenu from "./CardMenu";
 import CardStats from "./CardStats";
@@ -10,6 +10,7 @@ import { useOwnerShowsPromo } from "../PatronContext";
 import { buildCardCounters } from "./buildCardCounters";
 import { startCardDrag, useCardTouchDrag } from "./cardDrag";
 import { useLongPress } from "./useLongPress";
+import { CardDragContext } from "./CardDragContext";
 import CardAttachments from "./CardAttachments";
 import CardPopup from "./CardPopup";
 import type { Card as CardType, MenuItem, Player } from "../types/game";
@@ -54,7 +55,7 @@ function Card(props: CardProps) {
         className,
         declaring,
         disableMouseOver,
-        draggable = true,
+        draggable: draggableProp = true,
         id,
         isMe,
         onClick,
@@ -102,6 +103,8 @@ function Card(props: CardProps) {
         prevBrokenRef.current = isBroken;
     }, [card?.isBroken]);
 
+    const dragAllowed = use(CardDragContext);
+    const draggable = draggableProp && dragAllowed;
     const { onTouchStart, onTouchMove, onTouchEnd } = useCardTouchDrag(card, source, onDragDrop);
 
     const handleMouseOver = (cardData: CardType) => {
