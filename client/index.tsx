@@ -57,6 +57,7 @@ const render = () => {
                 <div className="body">
                     <Toaster
                         position="top-right"
+                        mobileOffset={ { top: 48 } }
                         duration={ 4000 }
                         richColors
                     />

@@ -66,3 +66,86 @@ describe("the <InnerNavBar /> context menu", () => {
         expect(screen.getByText("Concede")).toBeInTheDocument();
     });
 });
+
+describe("the <InnerNavBar /> mobile menu", () => {
+    const leftMenu = [
+        { name: "Decks", path: "/decks" },
+        { name: "Help", childItems: [{ name: "About", path: "/about" }] }
+    ];
+    const rightMenu = [
+        { name: "TestUser", childItems: [{ name: "Profile", path: "/profile" }] }
+    ];
+
+    const renderMenu = () => render(
+        <>
+            <InnerNavBar title="Jigoku" leftMenu={ leftMenu } rightMenu={ rightMenu } />
+            <p>Page</p>
+        </>,
+        { wrapper }
+    );
+    const toggle = () => screen.getByRole("button", { name: "Toggle Navigation" });
+    const menu = () => document.getElementById("navbar") as HTMLElement;
+    const isOpen = () => !menu().classList.contains("hidden");
+    const dropdownOf = (name: string) => screen.getByText(name).closest("li") as HTMLElement;
+
+    it("should open and close with the toggle", () => {
+        renderMenu();
+
+        expect(isOpen()).toBe(false);
+        fireEvent.click(toggle());
+        expect(isOpen()).toBe(true);
+        expect(toggle().getAttribute("aria-expanded")).toBe("true");
+        fireEvent.click(toggle());
+        expect(isOpen()).toBe(false);
+    });
+
+    it("should close after a link navigates", () => {
+        renderMenu();
+
+        fireEvent.click(toggle());
+        fireEvent.click(screen.getByText("Decks"));
+
+        expect(isOpen()).toBe(false);
+    });
+
+    it("should close on a tap outside the navbar", () => {
+        renderMenu();
+
+        fireEvent.click(toggle());
+        fireEvent.click(screen.getByText("Page"));
+
+        expect(isOpen()).toBe(false);
+    });
+
+    it("should close the menu and the dropdowns on Escape", () => {
+        renderMenu();
+
+        fireEvent.click(toggle());
+        fireEvent.click(screen.getByText("Help"));
+        fireEvent.keyDown(document, { key: "Escape" });
+
+        expect(isOpen()).toBe(false);
+        expect(dropdownOf("Help").classList.contains("open")).toBe(false);
+    });
+
+    it("should close an open dropdown when another one opens", () => {
+        renderMenu();
+
+        fireEvent.click(screen.getByText("Help"));
+        expect(dropdownOf("Help").classList.contains("open")).toBe(true);
+
+        fireEvent.click(screen.getByText("TestUser"));
+
+        expect(dropdownOf("Help").classList.contains("open")).toBe(false);
+        expect(dropdownOf("TestUser").classList.contains("open")).toBe(true);
+    });
+
+    it("should close the first dropdown on a tap outside it", () => {
+        renderMenu();
+
+        fireEvent.click(screen.getByText("Help"));
+        fireEvent.click(screen.getByText("Page"));
+
+        expect(dropdownOf("Help").classList.contains("open")).toBe(false);
+    });
+});

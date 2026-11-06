@@ -230,15 +230,27 @@
     }
 
     /* Navbar */
-    .navbar { @apply fixed top-0 inset-x-0; height: 40px; z-index: 10000; }
+    .navbar { @apply fixed top-0 inset-x-0 min-h-[40px] md:h-[40px]; z-index: 10000; }
     .navbar-inverse { @apply text-white; background: rgb(var(--ink-rgb) / 0.8); }
     .no-highlight { user-select: none; }
+
+    /* Navbar menu: a row from md up; below md a full-width panel under the bar, opened by the toggle */
+    .navbar-toggle { @apply md:hidden ml-auto flex flex-col items-center justify-center w-11 h-11 text-gray-400; }
+    .navbar-menu { @apply flex-col w-full max-h-[calc(100dvh-40px)] overflow-y-auto pb-2 md:flex-row md:items-center md:flex-1 md:w-auto md:max-h-none md:overflow-visible md:pb-0; }
+    .navbar-open { background: rgb(var(--ink-rgb) / 0.97); }
+    .navbar-list { @apply flex flex-col md:flex-row list-none m-0 p-0; }
+    .navbar-list-right { @apply border-t border-white/10 md:border-0 md:ml-auto; }
 
     /* Navbar links and items */
     .navbar li { @apply flex items-center; }
     .navbar li a { @apply block px-2 text-body text-gray-400 no-underline rounded transition-colors hover:text-white hover:bg-white/10; line-height: 40px; }
     .navbar li.active > a { @apply text-white bg-white/15; }
     .navbar li span { @apply block px-2 text-body text-gray-400; line-height: 40px; }
+    .navbar li a, .navbar li span { @apply max-md:leading-[44px]; }
+    /* In the stacked menu a dropdown opens inline under its toggle instead of floating over the items below */
+    .navbar li.dropdown { @apply max-md:flex-col max-md:items-stretch; }
+    .navbar .dropdown-menu { @apply max-md:static max-md:border-0 max-md:shadow-none max-md:bg-transparent max-md:pl-4; }
+    .navbar .dropdown-menu li a { @apply max-md:py-2.5; }
 
     /* Gravatar avatar */
     .gravatar { @apply inline-block align-middle mr-1.5 rounded-sm; }
