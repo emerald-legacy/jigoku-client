@@ -49,6 +49,19 @@ describe("<SamuraiSidebar /> (collapsed by default)", () => {
     });
 });
 
+describe("<SamuraiSidebar /> rail labels", () => {
+    beforeEach(() => {
+        setUsers(sampleUsers);
+    });
+
+    it("names each count for tooltips and screen readers", () => {
+        const { container } = render(<SamuraiSidebar />);
+        const counts = Array.from(container.querySelectorAll(".samurai-rail-count"));
+        expect(counts.map(count => count.getAttribute("title"))).toEqual(["At court", "Dueling", "Watching"]);
+        expect(counts.map(count => count.textContent)).toEqual(["◉At court: 1", "⚔Dueling: 2", "◇Watching: 1"]);
+    });
+});
+
 describe("<SamuraiSidebar /> (expanded)", () => {
     beforeEach(() => {
         setUsers(sampleUsers);

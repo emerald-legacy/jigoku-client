@@ -19,16 +19,19 @@ export default function CollapsedRail({ counts, onExpand }: CollapsedRailProps) 
                 <ChevronRight size={ 14 } />
             </button>
             <ul className="samurai-rail-counts">
-                <li className="samurai-rail-count" data-status="lobby">
+                <li className="samurai-rail-count" data-status="lobby" title="At court">
                     <span className="samurai-glyph" aria-hidden="true">◉</span>
+                    <span className="sr-only">At court: </span>
                     <span>{ counts.lobby }</span>
                 </li>
-                <li className="samurai-rail-count" data-status="playing">
+                <li className="samurai-rail-count" data-status="playing" title="Dueling">
                     <span className="samurai-glyph" aria-hidden="true">⚔</span>
+                    <span className="sr-only">Dueling: </span>
                     <span>{ counts.playing }</span>
                 </li>
-                <li className="samurai-rail-count" data-status="spectating">
+                <li className="samurai-rail-count" data-status="spectating" title="Watching">
                     <span className="samurai-glyph" aria-hidden="true">◇</span>
+                    <span className="sr-only">Watching: </span>
                     <span>{ counts.spectating }</span>
                 </li>
             </ul>

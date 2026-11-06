@@ -151,16 +151,12 @@
     padding: 0;
 }
 
+/* Rows are a list of names, not links, so they don't react to hover */
 .samurai-row {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 3px 14px;
-    transition: background-color 120ms ease;
-}
-
-.samurai-row:hover {
-    background-color: rgb(var(--jade-rgb) / 0.1);
 }
 
 .samurai-glyph {
