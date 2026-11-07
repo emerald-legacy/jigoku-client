@@ -1,8 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import type { DraggableData, DraggableEvent } from "react-draggable";
 
-import { useBoundedPosition, useViewportSize, type Bounds } from "../../../client/GameComponents/useBoundedPosition";
+import { useBoardSize, useBoundedPosition, type Bounds } from "../../../client/GameComponents/useBoundedPosition";
 
 const dragTo = (x: number, y: number) => [{} as DraggableEvent, { x, y } as DraggableData] as const;
 
@@ -34,9 +34,13 @@ describe("useBoundedPosition", () => {
     });
 });
 
-describe("useViewportSize", () => {
+describe("useBoardSize", () => {
+    afterEach(() => {
+        document.body.innerHTML = "";
+    });
+
     it("follows window resizes", () => {
-        const { result } = renderHook(() => useViewportSize());
+        const { result } = renderHook(() => useBoardSize());
 
         act(() => {
             Object.defineProperty(window, "innerWidth", { configurable: true, value: 4000 });
@@ -44,5 +48,33 @@ describe("useViewportSize", () => {
         });
 
         expect(result.current.width).toBe(4000);
+        expect(result.current.boardWidth).toBe(4000);
+    });
+
+    const addBoard = (playAreaWidth: number, playAreaHeight: number) => {
+        const board = document.createElement("div");
+        board.className = "game-board";
+        board.innerHTML = "<div class=\"main-window\"><div class=\"play-area\"></div><div class=\"right-side\"></div></div>";
+        document.body.appendChild(board);
+        const playArea = board.querySelector(".play-area")!;
+        Object.defineProperty(playArea, "scrollWidth", { configurable: true, value: playAreaWidth });
+        Object.defineProperty(playArea, "scrollHeight", { configurable: true, value: playAreaHeight });
+        // The right side is placed by the board size, so it must not count towards it
+        const rightSide = board.querySelector(".right-side")!;
+        Object.defineProperty(rightSide, "scrollWidth", { configurable: true, value: 5000 });
+    };
+
+    it("covers a board larger than the window (a phone scrolls the page), measured again on drag start", () => {
+        Object.defineProperty(window, "innerWidth", { configurable: true, value: 397 });
+        Object.defineProperty(window, "innerHeight", { configurable: true, value: 799 });
+        const { result } = renderHook(() => useBoardSize());
+        expect(result.current.boardWidth).toBe(397);
+
+        addBoard(1100, 1300);
+        act(() => result.current.measure());
+
+        expect(result.current.width).toBe(397);
+        expect(result.current.boardWidth).toBe(1100);
+        expect(result.current.boardHeight).toBe(1300);
     });
 });

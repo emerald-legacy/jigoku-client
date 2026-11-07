@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import Draggable from "react-draggable";
 
-import { useBoundedPosition, useViewportSize } from "./useBoundedPosition";
+import { useBoardSize, useBoundedPosition } from "./useBoundedPosition";
 
 import AbilityTargeting from "./AbilityTargeting";
 import CardNameLookup from "./CardNameLookup";
@@ -59,10 +59,10 @@ function ActivePlayerPrompt({
     const onTimerExpiredRef = useRef(onTimerExpired);
     const draggableRef = useRef<HTMLDivElement | null>(null);
     // Stays on screen when the window shrinks or a tablet is rotated
-    const viewport = useViewportSize();
+    const board = useBoardSize();
     const promptPosition = useBoundedPosition(
         () => ({ x: (window.innerWidth / 2) - 105, y: (window.innerHeight / 2) - 211 }),
-        { left: 0, top: 0, right: viewport.width - 210, bottom: viewport.height - 172 }
+        { left: 0, top: 0, right: board.boardWidth - 210, bottom: board.boardHeight - 172 }
     );
 
     const timerButton = buttons?.find((button: Button) => button.timer);
@@ -269,7 +269,7 @@ function ActivePlayerPrompt({
     }
 
     return (
-        <Draggable handle=".grip" { ...promptPosition } nodeRef={ draggableRef }>
+        <Draggable handle=".grip" { ...promptPosition } onStart={ board.measure } nodeRef={ draggableRef }>
             <div ref={ draggableRef } className="no-highlight">
                 <div className="grip">
                     <div className={ `phase-indicator ${phase}` } onClick={ onTitleClick }>

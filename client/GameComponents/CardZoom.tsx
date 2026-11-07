@@ -2,7 +2,7 @@ import { memo, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import Draggable from "react-draggable";
 
-import { useBoundedPosition, useViewportSize } from "./useBoundedPosition";
+import { useBoardSize, useBoundedPosition } from "./useBoundedPosition";
 
 const BASE_WIDTH = 220;
 const BASE_HEIGHT = 307;
@@ -25,15 +25,15 @@ function CardZoom({ cardName, imageUrl, show }: CardZoomProps) {
     const frameWidth = BASE_WIDTH * effScale;
     const frameHeight = BASE_HEIGHT * effScale;
 
-    const viewport = useViewportSize();
-    // Origin is the top-right corner (its default fixed spot). Allow dragging left/down across the board, and move it back
-    // on screen when the window shrinks or a tablet is rotated.
+    const board = useBoardSize();
+    // Origin is the top-right corner of the board (its default fixed spot; on a phone the board is wider than the window).
+    // Allow dragging left/down across the board, and move it back inside when the window shrinks or a tablet is rotated.
     // Buffers (40 horizontal, 53 vertical) cover frame padding/border/grip beyond the card image.
     const zoomPosition = useBoundedPosition(() => ({ x: 0, y: 0 }), {
-        left: Math.min(0, -(viewport.width - (frameWidth + 40))),
+        left: Math.min(0, -(board.boardWidth - (frameWidth + 40))),
         top: 0,
         right: 0,
-        bottom: viewport.height - (frameHeight + 53)
+        bottom: board.boardHeight - (frameHeight + 53)
     });
 
     const onResizeStart = (e: ReactPointerEvent<HTMLSpanElement>) => {
@@ -63,7 +63,7 @@ function CardZoom({ cardName, imageUrl, show }: CardZoomProps) {
     const zoomedStyle = { width: `${frameWidth}px`, height: `${frameHeight}px` };
 
     return (
-        <Draggable handle=".card-zoom-grip" nodeRef={ nodeRef } { ...zoomPosition }>
+        <Draggable handle=".card-zoom-grip" nodeRef={ nodeRef } { ...zoomPosition } onStart={ board.measure }>
             <div ref={ nodeRef } className={ frameClass }>
                 <div className="card-zoom-grip no-highlight">
                     <span className="card-zoom-grip-dots" />

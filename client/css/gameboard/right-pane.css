@@ -103,7 +103,9 @@
     position: absolute;
     right: 5px;
     bottom: 5px;
-    width: var(--chat-width);
+    /* The board column narrows on small screens, but the chat stays wide enough to use (at most the window) */
+    width: max(var(--chat-width), min(300px, 100vw - 10px));
+    container-type: inline-size;
     height: calc(100% - 360px);
     min-height: 200px;
     display: flex;
@@ -220,6 +222,13 @@
 
 .chat-control-label {
     letter-spacing: 0.02em;
+}
+
+/* A narrow chat shows the buttons as icons only (each has a tooltip), so none is pushed out of the bar */
+@container (max-width: 399px) {
+    .chat-control-label {
+        display: none;
+    }
 }
 
 .chat-control-btn:hover {

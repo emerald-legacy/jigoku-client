@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Draggable from "react-draggable";
 import { asset } from "./assetUrl";
 
@@ -26,7 +26,7 @@ import StatChangeOverlay from "./GameComponents/StatChangeOverlay";
 import CenterBar from "./GameComponents/CenterBar";
 import PlayerSidebar from "./GameComponents/PlayerSidebar";
 import { CardDragContext } from "./GameComponents/CardDragContext";
-import { useBoundedPosition, useViewportSize } from "./GameComponents/useBoundedPosition";
+import { readRightSideOffset, useBoardSize, useBoundedPosition } from "./GameComponents/useBoundedPosition";
 import type { AppDispatch } from "./hooks";
 
 type ActionFn = (...args: unknown[]) => unknown;
@@ -105,8 +105,16 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     const prevPlayerMsgCountRef = useRef(0);
 
     // The floating hands stay on screen: their bounds follow the window size, and a resize or rotation moves them back inside.
-    const viewport = useViewportSize();
-    const handBounds = { left: 0, top: 0, right: viewport.width - 490, bottom: viewport.height - 160 };
+    const board = useBoardSize();
+    // After every render: the right side (chat, card zoom) sits at the right edge of the board, which on a phone is wider
+    // than the window and scrolls.
+    const rightSideRef = useRef<HTMLDivElement>(null);
+    useLayoutEffect(() => {
+        if(rightSideRef.current) {
+            rightSideRef.current.style.right = `${-readRightSideOffset()}px`;
+        }
+    });
+    const handBounds = { left: 0, top: 0, right: board.boardWidth - 490, bottom: board.boardHeight - 160 };
     const playerHandPosition = useBoundedPosition(() => ({ x: (window.innerWidth / 2) - 240, y: window.innerHeight / 2 }), handBounds);
     const opponentHandPosition = useBoundedPosition(() => ({ x: (window.innerWidth / 2) - 240, y: 50 }), handBounds);
 
@@ -378,7 +386,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
             return null;
         }
         return (
-            <Draggable handle=".grip" nodeRef={ draggableRef } { ...playerHandPosition }>
+            <Draggable handle=".grip" nodeRef={ draggableRef } { ...playerHandPosition } onStart={ board.measure }>
                 <div ref={ draggableRef } className="player-home-row-container">
                     <PlayerHand
                         cards={ thisPlayer.cardPiles.hand }
@@ -406,7 +414,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
             return null;
         }
         return (
-            <Draggable handle=".grip" nodeRef={ opponentDraggableRef } { ...opponentHandPosition }>
+            <Draggable handle=".grip" nodeRef={ opponentDraggableRef } { ...opponentHandPosition } onStart={ board.measure }>
                 <div ref={ opponentDraggableRef } className="player-home-row-container opponent-hand-container">
                     <PlayerHand
                         cards={ otherPlayer.cardPiles.hand }
@@ -534,7 +542,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
                             onDropToPlayArea={ event => onDragDropEvent(event, "play area") }
                         />
                     </div>
-                    <div className="right-side">
+                    <div className="right-side" ref={ rightSideRef }>
                         <CardZoom
                             imageUrl={ cardToZoom ? computeImageUrl(cardToZoom) : "" }
                             show={ !!cardToZoom }

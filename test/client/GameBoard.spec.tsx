@@ -212,6 +212,33 @@ describe("the <GameBoard /> component", () => {
         });
     });
 
+    describe("the right side (chat and card zoom)", () => {
+        afterEach(() => {
+            delete (HTMLElement.prototype as { scrollWidth?: number }).scrollWidth;
+            delete (Element.prototype as { clientWidth?: number }).clientWidth;
+        });
+
+        it("sits at the right edge of a board wider than its frame (a phone scrolls the page)", () => {
+            // Measured in Firefox's iPhone 14 mode: a 393px frame, 1026px of board (window.innerWidth said 1026 too)
+            Object.defineProperty(HTMLElement.prototype, "scrollWidth", {
+                configurable: true,
+                get(this: HTMLElement) {
+                    return this.classList.contains("play-area") ? 1026 : 0;
+                }
+            });
+            Object.defineProperty(Element.prototype, "clientWidth", {
+                configurable: true,
+                get(this: Element) {
+                    return this.classList.contains("main-window") ? 393 : 0;
+                }
+            });
+
+            render(<InnerGameBoard { ...defaultProps } />);
+
+            expect((document.querySelector(".right-side") as HTMLElement).style.right).toBe("-633px");
+        });
+    });
+
     describe("when user is a spectator", () => {
         beforeEach(() => {
             render(<InnerGameBoard { ...defaultProps } username="SpectatorUser" />);

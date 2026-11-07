@@ -351,23 +351,12 @@ export default function Application() {
     const backgroundValue = gameBoardVisible && user ? user.settings.background : undefined;
 
     useEffect(() => {
+        // Painted by body::before (site.css), a fixed layer behind the page, so a board wider than the window isn't dark beyond it
         const url = backgroundImageByValue(backgroundValue);
-        const prevImage = document.body.style.backgroundImage;
-        const prevSize = document.body.style.backgroundSize;
-        const prevPos = document.body.style.backgroundPosition;
-        const prevAttach = document.body.style.backgroundAttachment;
-        const prevRepeat = document.body.style.backgroundRepeat;
-        document.body.style.backgroundImage = `url("${url}")`;
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundPosition = "center";
-        document.body.style.backgroundAttachment = "fixed";
-        document.body.style.backgroundRepeat = "no-repeat";
+        const previous = document.body.style.getPropertyValue("--page-background");
+        document.body.style.setProperty("--page-background", `url("${url}")`);
         return () => {
-            document.body.style.backgroundImage = prevImage;
-            document.body.style.backgroundSize = prevSize;
-            document.body.style.backgroundPosition = prevPos;
-            document.body.style.backgroundAttachment = prevAttach;
-            document.body.style.backgroundRepeat = prevRepeat;
+            document.body.style.setProperty("--page-background", previous);
         };
     }, [backgroundValue]);
 

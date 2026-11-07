@@ -347,9 +347,20 @@ ol.htp-legend > li::before {
     background-attachment: fixed;
 }
 
-/* Board layout. The actual board image is applied to document.body as an inline style
-   via backgroundImageByValue() (Application.tsx) so it resolves to the Vite
-   content-hashed asset URL; CSS url() can't be hashed here under Tailwind v4. */
+/* The page background. Application.tsx sets the image as --page-background on document.body (from
+   backgroundImageByValue(), so it resolves to the Vite content-hashed asset URL; CSS url() can't be hashed here
+   under Tailwind v4). A fixed layer instead of a fixed body background: iOS ignores background-attachment: fixed and
+   sizes the image to the window, so a board wider than a phone screen turned dark when scrolled. */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--page-background, none) center / cover no-repeat;
+}
+
+/* Board layout */
 .bg-board {
     min-height: 100dvh;
     background-position: center;
