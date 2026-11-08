@@ -37,6 +37,8 @@ export interface Card {
     name: string;
     facedown: boolean;
     type?: string;
+    side?: string;
+    is_unique?: boolean;
     element?: string;
     label?: string;
     packId?: string;
@@ -215,6 +217,13 @@ export interface TargetingControl {
     method?: string;
 }
 
+/** Which names a card-name control offers: a name is offered if any card with that title matches. */
+export interface CardNameFilter {
+    types?: string[];
+    sides?: string[];
+    unique?: boolean;
+}
+
 export interface CardNameControl {
     type: "card-name";
     source: string;
@@ -222,6 +231,7 @@ export interface CardNameControl {
     command?: string;
     uuid?: string;
     method?: string;
+    filter?: CardNameFilter;
 }
 
 export type Control = TargetingControl | CardNameControl;
