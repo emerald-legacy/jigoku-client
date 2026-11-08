@@ -87,6 +87,7 @@
     font-size: var(--text-lead);
     font-weight: 600;
     line-height: 1.4;
+    white-space: pre-line;
     color: var(--color-foreground);
     margin-bottom: 8px;
     padding-bottom: 6px;

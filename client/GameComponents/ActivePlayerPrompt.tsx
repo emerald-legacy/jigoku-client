@@ -240,6 +240,7 @@ function ActivePlayerPrompt({
                         <CardNameLookup
                             key={ controlKey }
                             cards={ cards ?? {} }
+                            filter={ control.filter }
                             onCardSelected={ (cardName: string | null) => handleCardNameSelected(control.command, control.uuid, control.method, cardName ?? "") }
                         />
                     );
