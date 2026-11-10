@@ -32,10 +32,12 @@ export interface Card {
     // Players who can play this card from where it currently sits (set by the engine for cards
     // that are out of play but still playable, e.g. set aside in "removed from game").
     playableBy?: string[];
-    uuid: string;
-    id: string;
-    name: string;
-    facedown: boolean;
+    // Hidden cards come without id and name (and without uuid for the opponent's), and the
+    // server leaves out fields with a default value, so a face-up card has no facedown field.
+    uuid?: string;
+    id?: string;
+    name?: string;
+    facedown?: boolean;
     type?: string;
     side?: string;
     is_unique?: boolean;
