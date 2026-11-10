@@ -220,6 +220,18 @@ describe("the <CenterBar /> component", () => {
             expect(oppSide.textContent).not.toContain("Ember");
         });
 
+        it("routes attachments whose controller is sent as a name", () => {
+            rings.fire.attachments = [
+                { uuid: "a1", name: "Ember", controller: "Me" },
+                { uuid: "a2", name: "Spark", controller: "Opp" }
+            ];
+            const { container } = render(<CenterBar { ...baseProps } />);
+            const mySide = container.querySelector(".ring-attachments--me") as HTMLElement;
+            const oppSide = container.querySelector(".ring-attachments--opponent") as HTMLElement;
+            expect(mySide.textContent).toContain("Ember");
+            expect(oppSide.textContent).toContain("Spark");
+        });
+
         it("overlays the ring panel so attachments line up with the rings", () => {
             rings.fire.attachments = [{ uuid: "a1", name: "Ember", controller: { name: "Me" } }];
             const { container } = render(<CenterBar { ...baseProps } />);

@@ -4,6 +4,7 @@ import ConflictPanel from "./ConflictPanel";
 import CardsPlayedTracker from "./CardsPlayedTracker";
 import RingAttachmentRow from "./RingAttachmentRow";
 import { useRingSet } from "../PatronContext";
+import { controllerName } from "../cardController";
 import type { Card as CardType, Ring as RingType, Player, MenuItem, GameState, ConflictInfo } from "../types/game";
 
 export { default as RingRow } from "./RingRow";
@@ -23,8 +24,8 @@ interface CenterBarProps {
     onMouseOut: () => void;
 }
 
-function isControlledByPlayer(card: CardType & { controller?: { name?: string } }, player: Player) {
-    return card.controller?.name === player.name;
+function isControlledByPlayer(card: CardType, player: Player) {
+    return controllerName(card.controller) === player.name;
 }
 
 function getControlledRingAttachments(rings: RingType[], player: Player): Record<string, CardType[]> {

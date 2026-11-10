@@ -26,6 +26,7 @@ import StatChangeOverlay from "./GameComponents/StatChangeOverlay";
 import CenterBar from "./GameComponents/CenterBar";
 import PlayerSidebar from "./GameComponents/PlayerSidebar";
 import { CardDragContext } from "./GameComponents/CardDragContext";
+import { controllerName } from "./cardController";
 import { readRightSideOffset, useBoardSize, useBoundedPosition } from "./GameComponents/useBoundedPosition";
 import type { AppDispatch } from "./hooks";
 
@@ -131,8 +132,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         if(card && card.uuid) {
             sendGameMessage("cardClicked", card.uuid);
         } else if(card && card.location && card.controller) {
-            const controllerName = typeof card.controller === "string" ? card.controller : card.controller.name;
-            sendGameMessage("facedownCardClicked", card.location, controllerName, card.isProvince);
+            sendGameMessage("facedownCardClicked", card.location, controllerName(card.controller), card.isProvince);
         }
     };
 
