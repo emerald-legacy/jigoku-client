@@ -23,8 +23,12 @@ describe("getCardImageUrl", () => {
         // The server resolves the stem to the file on disk, so the URL must not guess.
         expect(getCardImageUrl("hida-kisada", "core")).not.toContain(".jpg");
         expect(getCardImageUrl("hida-kisada", "core")).not.toContain(".webp");
-        expect(getCardImageUrl("unleashed-hound")).not.toContain(".webp");
-        expect(getCardImageUrl("unleashed-hound")).toContain("/img/cards/unleashed-hound");
+    });
+
+    it("returns the bundled art for token cards, without the card art path", () => {
+        const url = getCardImageUrl("unleashed-hound");
+        expect(url).toContain("token-cards/unleashed-hound");
+        expect(url).not.toContain("/img/cards/");
     });
 
     it("returns an empty string for a missing cardId", () => {

@@ -40,10 +40,6 @@ COPY --from=builder --chown=node:node /app/config ./config
 COPY --from=builder --chown=node:node /app/package.json ./
 COPY --from=builder --chown=node:node --chmod=755 /app/docker-entrypoint.sh ./
 
-# public/img/cards is a named volume at runtime, which hides whatever the image ships
-# there. Keep the repo's token art outside it for the entrypoint to sync in.
-COPY --from=builder --chown=node:node /app/public/img/cards ./token-images
-
 RUN mkdir -p build/server/logs public/img/cards && chown node:node build/server/logs public/img/cards
 
 ARG BUILD_VERSION=LOCAL
