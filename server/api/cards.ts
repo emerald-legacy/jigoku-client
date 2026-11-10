@@ -1,13 +1,24 @@
 import db from "../db.js";
 import CardService from "../services/CardService.js";
 
+// Every page load asks for the full card list, which only changes when card data is imported.
+const CARDS_CACHE_MS = 5 * 60 * 1000;
+
 export function init(server) {
     const cardService = new CardService(db.getDb());
+    let cachedCards: { body: string; at: number } | undefined;
 
     server.get("/api/cards", async function(req, res, next) {
         try {
-            const cards = await cardService.getAllCards({ shortForm: true });
-            res.send({ success: true, cards: cards });
+            if(!cachedCards || Date.now() - cachedCards.at > CARDS_CACHE_MS) {
+                const cards = await cardService.getAllCards({ shortForm: true });
+                const body = JSON.stringify({ success: true, cards: cards });
+                if(!cards) {
+                    return res.type("json").send(body);
+                }
+                cachedCards = { body, at: Date.now() };
+            }
+            res.type("json").send(cachedCards.body);
         } catch(err) {
             return next(err);
         }

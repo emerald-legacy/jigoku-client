@@ -17,6 +17,7 @@ import logger from "./log.js";
 import * as api from "./api/index.js";
 import db from "./db.js";
 import UserService from "./services/UserService.js";
+import DeckService from "./services/DeckService.js";
 import * as Settings from "./settings.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -72,6 +73,8 @@ class Server {
     async initDb() {
         const database = await db.connect(config.get("dbPath"));
         this.userService = new UserService(database);
+        this.userService.ensureIndexes();
+        new DeckService(database).ensureIndexes();
     }
 
     validateConfig() {

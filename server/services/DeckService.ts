@@ -18,6 +18,14 @@ class DeckService {
         this.decks = db.collection<DeckRecord>("decks");
     }
 
+    async ensureIndexes() {
+        try {
+            await this.decks.createIndex({ username: 1, lastUpdated: -1 });
+        } catch(err) {
+            logger.error(`Failed to create decks indexes: ${err}`);
+        }
+    }
+
     async getById(id: string) {
         try {
             return await this.decks.findOne({ _id: toObjectId(id) });

@@ -1,6 +1,5 @@
 import type { Collection, Db, ObjectId } from "mongodb";
 
-import { escapeRegex } from "../util.js";
 import logger from "../log.js";
 import { toObjectId } from "../db.js";
 
@@ -20,6 +19,9 @@ export interface UserRecord {
     tokenExpires?: string;
 }
 
+// Usernames and emails match regardless of case, and these indexes use the same collation.
+const caseInsensitive = { locale: "en", strength: 2 };
+
 class UserService {
     users: Collection<UserRecord>;
 
@@ -27,11 +29,18 @@ class UserService {
         this.users = db.collection<UserRecord>("users");
     }
 
+    async ensureIndexes() {
+        try {
+            await this.users.createIndex({ username: 1 }, { name: "username_ci", collation: caseInsensitive });
+            await this.users.createIndex({ email: 1 }, { name: "email_ci", collation: caseInsensitive });
+        } catch(err) {
+            logger.error(`Failed to create users indexes: ${err}`);
+        }
+    }
+
     async getUserByUsername(username: string) {
         try {
-            return await this.users.findOne({
-                username: { $regex: new RegExp("^" + escapeRegex(username.toLowerCase()) + "$", "i") }
-            });
+            return await this.users.findOne({ username }, { collation: caseInsensitive });
         } catch(err) {
             logger.error(`Error fetching user by username: ${err}`);
             throw new Error("Error occurred fetching users", { cause: err });
@@ -40,9 +49,7 @@ class UserService {
 
     async getUserByEmail(email: string) {
         try {
-            return await this.users.findOne({
-                email: { $regex: new RegExp("^" + escapeRegex(email.toLowerCase()) + "$", "i") }
-            });
+            return await this.users.findOne({ email }, { collation: caseInsensitive });
         } catch(err) {
             logger.error(`Error fetching user by email: ${err}`);
             throw new Error("Error occurred fetching users", { cause: err });
