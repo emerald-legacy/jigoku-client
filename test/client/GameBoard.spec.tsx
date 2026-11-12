@@ -139,7 +139,7 @@ describe("the <GameBoard /> component", () => {
             socket: {},
             dispatch: vi.fn(),
             sendGameMessage: vi.fn(),
-            closeGameSocket: vi.fn(),
+            leaveGame: vi.fn(),
             setContextMenu: vi.fn(),
             zoomCard: vi.fn(),
             clearZoom: vi.fn()

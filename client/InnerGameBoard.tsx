@@ -48,7 +48,7 @@ export interface InnerGameBoardProps {
     dispatch: AppDispatch | ((action: unknown) => unknown);
     boundActions: Record<string, ActionFn>;
     sendGameMessage?: ActionFn;
-    closeGameSocket?: ActionFn;
+    leaveGame?: ActionFn;
     setContextMenu?: ActionFn;
     zoomCard?: ActionFn;
     clearZoom?: ActionFn;
@@ -89,7 +89,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
     const { cardToZoom, cards, currentGame, extraControls, pendingAnimations, user, username, dispatch, boundActions } = props;
 
     const sendGameMessage = (props.sendGameMessage ?? boundActions.sendGameMessage) as ActionFn;
-    const closeGameSocket = (props.closeGameSocket ?? boundActions.closeGameSocket) as ActionFn;
+    const leaveGame = (props.leaveGame ?? boundActions.leaveGame) as ActionFn;
     const setContextMenu = (props.setContextMenu ?? boundActions.setContextMenu) as ActionFn;
     const zoomCard = (props.zoomCard ?? boundActions.zoomCard) as ActionFn;
     const clearZoom = (props.clearZoom ?? boundActions.clearZoom) as ActionFn;
@@ -247,13 +247,11 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         const onLeaveClick = () => {
             if(!spectating && isGameActive(currentGame, username)) {
                 if(window.confirm("Your game is not finished, are you sure you want to leave?")) {
-                    sendGameMessage("leavegame");
-                    closeGameSocket();
+                    leaveGame();
                 }
                 return;
             }
-            sendGameMessage("leavegame");
-            closeGameSocket();
+            leaveGame();
         };
 
         const menuOptions: ContextMenuOption[] = [
@@ -280,7 +278,7 @@ export function InnerGameBoard(props: InnerGameBoardProps) {
         } else {
             setContextMenu([]);
         }
-    }, [currentGame, username, spectating, sendGameMessage, closeGameSocket, setContextMenu]);
+    }, [currentGame, username, spectating, sendGameMessage, leaveGame, setContextMenu]);
 
     useEffect(() => {
         if(!currentGame) {
