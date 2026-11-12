@@ -79,7 +79,8 @@ export function init(server) {
         } catch(_e) {
             return res.status(400).send({ success: false, message: "Invalid request data" });
         }
-        const data = { id: req.params.id, ...parsed };
+        // the URL id was checked for ownership above, so an id in the posted data must not replace it
+        const data = { ...parsed, id: req.params.id };
         const updateResult = await deckService.update(data);
 
         if(updateResult.matchedCount === 0) {

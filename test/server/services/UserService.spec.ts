@@ -35,6 +35,16 @@ describe("UserService lookups", () => {
         await service.getUserByEmail("Hida@Example.com");
         expect(findOne).toHaveBeenCalledWith({ email: "Hida@Example.com" }, { collation: caseInsensitive });
     });
+
+    it("finds no user for a value that isn't a string, without querying", async () => {
+        const findOne = vi.fn().mockResolvedValue({ username: "Hida" });
+        const service = serviceWithCollection({ findOne });
+        const operator = { $regex: "^H" } as unknown as string;
+
+        expect(await service.getUserByUsername(operator)).toBeNull();
+        expect(await service.getUserByEmail(operator)).toBeNull();
+        expect(findOne).not.toHaveBeenCalled();
+    });
 });
 
 describe("UserService.ensureIndexes", () => {

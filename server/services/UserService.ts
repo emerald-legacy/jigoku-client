@@ -39,6 +39,10 @@ class UserService {
     }
 
     async getUserByUsername(username: string) {
+        // JSON bodies reach this: an object such as { $regex: ... } would match some other user
+        if(typeof username !== "string") {
+            return null;
+        }
         try {
             return await this.users.findOne({ username }, { collation: caseInsensitive });
         } catch(err) {
@@ -48,6 +52,9 @@ class UserService {
     }
 
     async getUserByEmail(email: string) {
+        if(typeof email !== "string") {
+            return null;
+        }
         try {
             return await this.users.findOne({ email }, { collation: caseInsensitive });
         } catch(err) {
