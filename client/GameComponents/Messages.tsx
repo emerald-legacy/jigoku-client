@@ -8,12 +8,7 @@ import { usePatronViewerConfig } from "../PatronContext";
 import { PatronName } from "../PatronName";
 import { asset } from "../assetUrl";
 import type { GameMessage, MessageFragment } from "../types/game";
-
-const iconsConflict = ["military", "political"];
-
-const iconsElement = ["air", "earth", "fire", "water", "void"];
-
-const iconsClan = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
+import { iconsClan, iconsConflict, iconsElement, isCountedIcon } from "./messageIcons";
 
 const otherIcons: Record<string, { className: string; imageSrc: string }> = {
     fate: { className: "icon-fate", imageSrc: asset("tokens/fate.webp") },
@@ -53,7 +48,7 @@ function formatMessageText(message: MessageInput, ctx: FormatContext): React.Rea
     }
 
     let index = 0;
-    return message.map((rawFragment: MessageInput, _key: number): React.ReactNode => {
+    return message.map((rawFragment: MessageInput, fragmentIndex: number, fragments: MessageInput[]): React.ReactNode => {
         if(rawFragment === null || rawFragment === undefined) {
             return "";
         }
@@ -79,7 +74,7 @@ function formatMessageText(message: MessageInput, ctx: FormatContext): React.Rea
                 </span>
             );
         }
-        if(typeof rawFragment === "string" && otherIcons[rawFragment]) {
+        if(typeof rawFragment === "string" && isCountedIcon(fragments, fragmentIndex)) {
             return (
                 <img
                     className={ otherIcons[rawFragment].className }
