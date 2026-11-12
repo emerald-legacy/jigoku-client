@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import AlertPanel from "./SiteComponents/AlertPanel";
 
 import { useAppDispatch } from "./hooks";
 import { requestPasswordReset } from "./ReduxActions/auth";
 import { rejectionMessage } from "./util";
+import { getRecaptchaToken, loadRecaptcha } from "./recaptcha";
 
 type ValidationMap = Record<string, string>;
 
@@ -15,6 +16,11 @@ export function ForgotPassword() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [submitting, setSubmitting] = useState(false);
+
+    useEffect(() => {
+        // Load early: reCAPTCHA v3 scores the visit, and the submit doesn't wait for the script.
+        loadRecaptcha().catch(() => {});
+    }, []);
 
     const verifyUsername = () => {
         const newValidation = { ...validation };
@@ -30,32 +36,32 @@ export function ForgotPassword() {
 
     const onSubmit = (event: React.MouseEvent) => {
         event.preventDefault();
-        grecaptcha.ready(() => {
-            grecaptcha.execute("6LdO-NMsAAAAAOetW0LZ70BAf12jY5Om101J9As2", { action: "submit" }).then(async (token: string) => {
-                setError("");
+        getRecaptchaToken("submit").then(async (token: string) => {
+            setError("");
 
-                const newValidation: ValidationMap = {};
-                if(!username || username === "") {
-                    newValidation["username"] = "Please enter your username";
-                }
-                setValidation(newValidation);
+            const newValidation: ValidationMap = {};
+            if(!username || username === "") {
+                newValidation["username"] = "Please enter your username";
+            }
+            setValidation(newValidation);
 
-                if(Object.values(newValidation).some((message) => message && message !== "")) {
-                    setError("Please complete the fields and try again");
-                    return;
-                }
+            if(Object.values(newValidation).some((message) => message && message !== "")) {
+                setError("Please complete the fields and try again");
+                return;
+            }
 
-                setSubmitting(true);
+            setSubmitting(true);
 
-                try {
-                    await dispatch(requestPasswordReset({ username, captcha: token })).unwrap();
-                    setSubmitting(false);
-                    setSuccess("Your request was submitted, if you have an account, an email will have been sent to the address you used to register with more instructions. This request could end up in your Spam folder, so make sure to check there if you do not see it.");
-                } catch(err) {
-                    setSubmitting(false);
-                    setError(rejectionMessage(err, "Could not communicate with the server.  Please try again later."));
-                }
-            });
+            try {
+                await dispatch(requestPasswordReset({ username, captcha: token })).unwrap();
+                setSubmitting(false);
+                setSuccess("Your request was submitted, if you have an account, an email will have been sent to the address you used to register with more instructions. This request could end up in your Spam folder, so make sure to check there if you do not see it.");
+            } catch(err) {
+                setSubmitting(false);
+                setError(rejectionMessage(err, "Could not communicate with the server.  Please try again later."));
+            }
+        }, () => {
+            setError("Could not load the captcha. Please check your connection and try again.");
         });
     };
 

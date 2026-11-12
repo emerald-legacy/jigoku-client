@@ -5,7 +5,7 @@
 // per-file content hash, so a changed asset busts its own cache automatically — no
 // manual ?v= versioning. Card art is the ONE exception: it lives in public/img/cards/
 // (runtime-populated volume, not seen by the build) and is still served raw with a
-// ?v=<timestamp> suffix via cardImageUrl.ts.
+// ?v=<timestamp> suffix via cardImageUrl.ts. Token card art and promos are bundled here.
 //
 // Paths are runtime-built strings (e.g. dials/<material>/<type>.webp), so the assets
 // cannot be statically imported one by one — import.meta.glob eagerly maps every file
@@ -34,4 +34,18 @@ for(const [key, url] of Object.entries(urls)) {
 
 export function promoArt(stem: string): string | undefined {
     return promoUrls[stem];
+}
+
+// Token card art (Soldier, Unleashed Hound, ...), keyed by card id. Bundled like the
+// promos, so a changed token busts its own cache.
+const tokenCardUrls: Record<string, string> = {};
+for(const [key, url] of Object.entries(urls)) {
+    const match = key.match(/^\.\/assets\/img\/token-cards\/(.+)\.webp$/);
+    if(match) {
+        tokenCardUrls[match[1]] = url;
+    }
+}
+
+export function tokenCardArt(cardId: string): string | undefined {
+    return tokenCardUrls[cardId];
 }

@@ -18,6 +18,8 @@ interface HandoffServer {
     port?: number;
     name: string;
     gameId?: string;
+    /** Fresh token from the lobby: the page-load one may have expired by now. */
+    token?: string;
 }
 import { backgroundImageByValue } from "./backgrounds";
 
@@ -209,7 +211,7 @@ export default function Application() {
                 reconnectionDelayMax: 10000,
                 reconnectionAttempts: 20,
                 auth: {
-                    token: liveToken
+                    token: server.token ?? liveToken
                 }
             });
             setGameSocket(gameSocket);

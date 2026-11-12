@@ -13,6 +13,7 @@ import { useTouchPeek } from "./useTouchPeek";
 import { CardDragContext } from "./CardDragContext";
 import CardAttachments from "./CardAttachments";
 import CardPopup from "./CardPopup";
+import { controllerName } from "../cardController";
 import type { Card as CardType, MenuItem, Player } from "../types/game";
 import type { AnimationEvent, CardAnimationEvent } from "../types/redux";
 import { isCardAnimation } from "../types/redux";
@@ -81,9 +82,7 @@ function Card(props: CardProps) {
     const card = cardInput as CardType;
 
     // Promo is owner-broadcast: resolve owner from card.controller (always present), not the viewer.
-    const ownerUsername = typeof card?.controller === "string"
-        ? card.controller
-        : card?.controller?.name ?? player?.user?.username;
+    const ownerUsername = controllerName(card?.controller) ?? player?.user?.username;
     const showPromo = useOwnerShowsPromo(ownerUsername);
 
     const [showPopup, setShowPopup] = useState(false);

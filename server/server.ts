@@ -17,7 +17,9 @@ import logger from "./log.js";
 import * as api from "./api/index.js";
 import db from "./db.js";
 import UserService from "./services/UserService.js";
+import DeckService from "./services/DeckService.js";
 import * as Settings from "./settings.js";
+import { rejectCrossSiteWrites } from "./csrf.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -72,6 +74,8 @@ class Server {
     async initDb() {
         const database = await db.connect(config.get("dbPath"));
         this.userService = new UserService(database);
+        this.userService.ensureIndexes();
+        new DeckService(database).ensureIndexes();
     }
 
     validateConfig() {
@@ -139,9 +143,93 @@ class Server {
         const cookieLifetime = config.has("cookieLifetime") ? config.get("cookieLifetime") : null;
         const https = config.has("https") ? config.get("https") : false;
         const domain = config.has("domain") ? config.get("domain") : null;
+
+        // Static files are served before the session middleware, so they cost no session
+        // lookup or write in Mongo.
+
+        // Card art is stored in whatever format the source used, so its URL carries no
+        // extension and this index resolves it. fetchdata can change the files under a
+        // running server -- a webp re-download deletes the old .jpg -- which would leave
+        // the index pointing at a file that no longer exists, so rescan periodically
+        // rather than looking at the disk on every request. The rescan also picks up a new
+        // version.json, so card art URLs (?v=<timestamp>) change as soon as fetchdata ran.
+        const cardImageDir = path.join(projectRoot, "public", "img", "cards");
+        const cardImageFormats = ["webp", "jpg", "png"];
+        const cardImageRescanIntervalMs = 30000;
+        let cardImageFiles = new Map<string, string>();
+        let cardImageVersion = "";
+
+        const scanCardImages = () => {
+            const found = new Map<string, string>();
+            try {
+                for(const file of fs.readdirSync(cardImageDir)) {
+                    const parsed = /^(.+)\.(webp|jpg|png)$/.exec(file);
+                    if(!parsed) {
+                        continue;
+                    }
+                    const [, stem, extension] = parsed;
+                    const current = found.get(stem);
+                    const currentRank = current
+                        ? cardImageFormats.indexOf(path.extname(current).slice(1))
+                        : cardImageFormats.length;
+                    if(cardImageFormats.indexOf(extension) < currentRank) {
+                        found.set(stem, file);
+                    }
+                }
+            } catch(_err) {
+                // No image directory -- extensionless requests fall through to a 404
+            }
+            cardImageFiles = found;
+
+            try {
+                const versionData = JSON.parse(fs.readFileSync(path.join(cardImageDir, "version.json"), "utf8"));
+                cardImageVersion = String(versionData.timestamp);
+            } catch(_err) {
+                cardImageVersion = "";
+            }
+        };
+
+        scanCardImages();
+        logger.info(`Card image index: ${cardImageFiles.size} images`);
+        setInterval(scanCardImages, cardImageRescanIntervalMs).unref();
+
+        // Rewrite to the real filename and let express.static serve it. The index is an
+        // allowlist of files that exist, so an unknown or crafted stem is never rewritten.
+        // Must run before express.static.
+        app.use((req, res, next) => {
+            const requested = /^\/img\/cards\/([^/.?]+)(\?.*)?$/.exec(req.url);
+            const filename = requested && cardImageFiles.get(requested[1]);
+            if(filename) {
+                req.url = `/img/cards/${filename}${requested[2] ?? ""}`;
+            }
+            next();
+        });
+
+        const cacheForever = "public, max-age=31536000, immutable";
+        const cacheForAWeek = "public, max-age=604800";
+
+        app.use(express.static(path.join(projectRoot, "public"), {
+            setHeaders: (res, filePath) => {
+                if(filePath.endsWith(".woff2")) {
+                    res.setHeader("Content-Type", "font/woff2");
+                } else if(filePath.endsWith(".woff")) {
+                    res.setHeader("Content-Type", "font/woff");
+                }
+
+                // Vite assets carry a content hash, card art a ?v=<timestamp>: a change gets a new URL.
+                const url = res.req.originalUrl;
+                if(url.startsWith("/assets/") || (url.startsWith("/img/cards/") && /[?&]v=/.test(url))) {
+                    res.setHeader("Cache-Control", cacheForever);
+                } else {
+                    res.setHeader("Cache-Control", cacheForAWeek);
+                }
+            }
+        }));
+
         const sessionStore = MongoStore.create({
             mongoUrl: config.get("dbPath"),
-            ttl: cookieLifetime ? cookieLifetime / 1000 : 14 * 24 * 60 * 60 // Default 14 days in seconds
+            ttl: cookieLifetime ? cookieLifetime / 1000 : 14 * 24 * 60 * 60, // Default 14 days in seconds
+            touchAfter: 24 * 60 * 60 // Unchanged sessions are written back at most once a day
         });
 
         // A cookie for a session that is no longer in Mongo (expired, or wiped by a
@@ -183,8 +271,9 @@ class Server {
         passport.serializeUser(this.serializeUser.bind(this));
         passport.deserializeUser(this.deserializeUser.bind(this));
 
+        // JSON only: the client never posts forms, and a cross-site HTML form can't send JSON
         app.use(express.json());
-        app.use(express.urlencoded({ extended: false }));
+        app.use("/api/", rejectCrossSiteWrites);
 
         // Apply rate limiting to API routes
         app.use("/api/", apiLimiter);
@@ -194,64 +283,6 @@ class Server {
 
         api.init(app);
 
-        // Card art is stored in whatever format the source used, so its URL carries no
-        // extension and this index resolves it. fetchdata can change the files under a
-        // running server -- a webp re-download deletes the old .jpg -- which would leave
-        // the index pointing at a file that no longer exists, so rescan periodically
-        // rather than looking at the disk on every request.
-        const cardImageDir = path.join(projectRoot, "public", "img", "cards");
-        const cardImageFormats = ["webp", "jpg", "png"];
-        const cardImageRescanIntervalMs = 30000;
-        let cardImageFiles = new Map<string, string>();
-
-        const scanCardImages = () => {
-            const found = new Map<string, string>();
-            try {
-                for(const file of fs.readdirSync(cardImageDir)) {
-                    const parsed = /^(.+)\.(webp|jpg|png)$/.exec(file);
-                    if(!parsed) {
-                        continue;
-                    }
-                    const [, stem, extension] = parsed;
-                    const current = found.get(stem);
-                    const currentRank = current
-                        ? cardImageFormats.indexOf(path.extname(current).slice(1))
-                        : cardImageFormats.length;
-                    if(cardImageFormats.indexOf(extension) < currentRank) {
-                        found.set(stem, file);
-                    }
-                }
-            } catch(_err) {
-                // No image directory -- extensionless requests fall through to a 404
-            }
-            cardImageFiles = found;
-        };
-
-        scanCardImages();
-        logger.info(`Card image index: ${cardImageFiles.size} images`);
-        setInterval(scanCardImages, cardImageRescanIntervalMs).unref();
-
-        // Rewrite to the real filename and let express.static serve it. The index is an
-        // allowlist of files that exist, so an unknown or crafted stem is never rewritten.
-        // Must run before express.static.
-        app.use((req, res, next) => {
-            const requested = /^\/img\/cards\/([^/.?]+)(\?.*)?$/.exec(req.url);
-            const filename = requested && cardImageFiles.get(requested[1]);
-            if(filename) {
-                req.url = `/img/cards/${filename}${requested[2] ?? ""}`;
-            }
-            next();
-        });
-
-        app.use(express.static(path.join(projectRoot, "public"), {
-            setHeaders: (res, filePath) => {
-                if(filePath.endsWith(".woff2")) {
-                    res.setHeader("Content-Type", "font/woff2");
-                } else if(filePath.endsWith(".woff")) {
-                    res.setHeader("Content-Type", "font/woff");
-                }
-            }
-        }));
         app.set("view engine", "pug");
         app.set("views", path.join(projectRoot, "views"));
 
@@ -288,16 +319,6 @@ class Server {
             } catch(_err) {
                 logger.warn("Could not load .vite/manifest.json, falling back to default filenames");
             }
-        }
-
-        // Load card image version for cache busting
-        let cardImageVersion = "";
-        try {
-            const versionPath = path.join(projectRoot, "public", "img", "cards", "version.json");
-            const versionData = JSON.parse(fs.readFileSync(versionPath, "utf8"));
-            cardImageVersion = String(versionData.timestamp);
-        } catch(_err) {
-            // No version file — no cache busting for images
         }
 
         app.get("/{*splat}", (req, res) => {

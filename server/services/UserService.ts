@@ -1,6 +1,5 @@
 import type { Collection, Db, ObjectId } from "mongodb";
 
-import { escapeRegex } from "../util.js";
 import logger from "../log.js";
 import { toObjectId } from "../db.js";
 
@@ -20,6 +19,9 @@ export interface UserRecord {
     tokenExpires?: string;
 }
 
+// Usernames and emails match regardless of case, and these indexes use the same collation.
+const caseInsensitive = { locale: "en", strength: 2 };
+
 class UserService {
     users: Collection<UserRecord>;
 
@@ -27,11 +29,22 @@ class UserService {
         this.users = db.collection<UserRecord>("users");
     }
 
-    async getUserByUsername(username: string) {
+    async ensureIndexes() {
         try {
-            return await this.users.findOne({
-                username: { $regex: new RegExp("^" + escapeRegex(username.toLowerCase()) + "$", "i") }
-            });
+            await this.users.createIndex({ username: 1 }, { name: "username_ci", collation: caseInsensitive });
+            await this.users.createIndex({ email: 1 }, { name: "email_ci", collation: caseInsensitive });
+        } catch(err) {
+            logger.error(`Failed to create users indexes: ${err}`);
+        }
+    }
+
+    async getUserByUsername(username: string) {
+        // JSON bodies reach this: an object such as { $regex: ... } would match some other user
+        if(typeof username !== "string") {
+            return null;
+        }
+        try {
+            return await this.users.findOne({ username }, { collation: caseInsensitive });
         } catch(err) {
             logger.error(`Error fetching user by username: ${err}`);
             throw new Error("Error occurred fetching users", { cause: err });
@@ -39,10 +52,11 @@ class UserService {
     }
 
     async getUserByEmail(email: string) {
+        if(typeof email !== "string") {
+            return null;
+        }
         try {
-            return await this.users.findOne({
-                email: { $regex: new RegExp("^" + escapeRegex(email.toLowerCase()) + "$", "i") }
-            });
+            return await this.users.findOne({ email }, { collation: caseInsensitive });
         } catch(err) {
             logger.error(`Error fetching user by email: ${err}`);
             throw new Error("Error occurred fetching users", { cause: err });

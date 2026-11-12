@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, original, PayloadAction } from "@reduxjs/toolkit";
 import type { GameMessage, GameState, OnlineUser } from "../types/game";
 import type { AnimationEvent, GamesState, PendingGameInfo } from "../types/redux";
 import { isCardAnimation, isClaimAnimation } from "../types/redux";
@@ -38,7 +38,9 @@ const gamesSlice = createSlice({
                 const { newMessages, animations, ...gameData } = action.payload.currentGame;
 
                 if(newMessages && state.currentGame?.messages) {
-                    gameData.messages = [...state.currentGame.messages, ...(gameData.messages || [])];
+                    // original() keeps Immer from wrapping every earlier message in a proxy on each update.
+                    const earlierMessages = original(state.currentGame.messages) ?? [];
+                    gameData.messages = [...earlierMessages, ...(gameData.messages || [])];
                 }
 
                 state.pendingAnimations = animations !== undefined

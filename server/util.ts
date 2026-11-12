@@ -1,10 +1,6 @@
 import http from "node:http";
 import https from "node:https";
 
-function escapeRegex(regex) {
-    return regex.replace(/[-[\]/{}()*+?.\\^$|]/g, "\\$&");
-}
-
 function httpRequest(url) {
     return new Promise((resolve, reject) => {
         const lib = url.startsWith("https") ? https : http;
@@ -62,7 +58,6 @@ function detectBinary(state, path = "", results = []) {
 
 export {
     detectBinary,
-    escapeRegex,
     httpRequest,
     wrapAsync
 };

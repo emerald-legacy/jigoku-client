@@ -1,5 +1,6 @@
 // @vitest-environment node
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import jwt from "jsonwebtoken";
 
 import Lobby from "../../server/lobby.js";
 import PendingGame from "../../server/pendinggame.js";
@@ -625,7 +626,9 @@ describe("Lobby.onNodeReconnected", () => {
 type StartGameCtx = {
     games: Record<string, PendingGame>;
     router: { startGame: ReturnType<typeof vi.fn> };
-    io: { to: ReturnType<typeof vi.fn> };
+    io: { to: ReturnType<typeof vi.fn>; sockets?: { adapter: { rooms: Map<string, Set<string>> } } };
+    sockets?: Record<string, { user: { username: string }; send: ReturnType<typeof vi.fn> }>;
+    handoffToken?: (socket: { user?: { username: string } }) => string | undefined;
     broadcastGameList: ReturnType<typeof vi.fn>;
 };
 
@@ -652,6 +655,51 @@ describe("Lobby.onStartGame", () => {
         expect(game.started).toBe(false);
         expect(ctx.broadcastGameList).not.toHaveBeenCalled();
     });
+
+    it("hands each socket in the game off with its own token", () => {
+        const game = new PendingGame({ username: "alice" }, { name: "Game" });
+        game.players.alice = { id: "a", name: "alice", owner: true, deck: {} };
+        game.players.bob = { id: "b", name: "bob", deck: {} };
+        const node = { identity: "node-1", address: "host", port: 9500, protocol: "https" };
+        const alice = { user: { username: "alice" }, send: vi.fn() };
+        const bob = { user: { username: "bob" }, send: vi.fn() };
+        const ctx: StartGameCtx = {
+            games: { [game.id]: game },
+            router: { startGame: vi.fn(() => node) },
+            io: { to: vi.fn(), sockets: { adapter: { rooms: new Map([[game.id, new Set(["sa", "sb"])]]) } } },
+            sockets: { sa: alice, sb: bob },
+            handoffToken: (socket) => `token-${socket.user?.username}`,
+            broadcastGameList: vi.fn()
+        };
+
+        onStartGame.call(ctx, { user: { username: "alice" } }, game.id);
+
+        expect(alice.send).toHaveBeenCalledExactlyOnceWith("handoff", { address: "host", port: 9500, protocol: "https", name: "node-1", token: "token-alice" });
+        expect(bob.send).toHaveBeenCalledExactlyOnceWith("handoff", { address: "host", port: 9500, protocol: "https", name: "node-1", token: "token-bob" });
+    });
+});
+
+const handoffToken = (Lobby as unknown as { prototype: {
+    handoffToken: (this: { config: { secret: string } }, socket: { user?: Record<string, unknown> & { username: string } }) => string | undefined;
+} }).prototype.handoffToken;
+
+describe("Lobby.handoffToken", () => {
+    it("signs the socket's user afresh for 5h, without the block list or the old token's times", () => {
+        const now = Math.floor(Date.now() / 1000);
+        const token = handoffToken.call({ config: { secret: "s" } }, {
+            user: { username: "alice", emailHash: "ha", blockList: ["bob"], iat: now - 7200, exp: now - 3600 }
+        });
+
+        const payload = jwt.verify(token as string, "s") as jwt.JwtPayload;
+        expect(payload.username).toBe("alice");
+        expect(payload.emailHash).toBe("ha");
+        expect(payload.blockList).toBeUndefined();
+        expect(payload.exp! - payload.iat!).toBe(5 * 60 * 60);
+    });
+
+    it("gives no token to a socket without a user", () => {
+        expect(handoffToken.call({ config: { secret: "s" } }, {})).toBeUndefined();
+    });
 });
 
 type WatchGameCtx = {
@@ -663,6 +711,7 @@ type WatchGameCtx = {
     broadcastUserList: ReturnType<typeof vi.fn>;
     rejoinGame: (...args: unknown[]) => void;
     canRejoin: (game: PendingGame, username: string) => boolean;
+    handoffToken: (socket: WatchSocket) => string;
 };
 
 type WatchSocket = { user: { username: string }; joinChannel: ReturnType<typeof vi.fn>; send: ReturnType<typeof vi.fn> };
@@ -692,7 +741,8 @@ describe("Lobby.onWatchGame", () => {
             broadcastGameList: vi.fn(),
             broadcastUserList: vi.fn(),
             rejoinGame: (...args: unknown[]) => lobbyProto.rejoinGame.call(ctx, ...args),
-            canRejoin: gameListProto.canRejoin
+            canRejoin: gameListProto.canRejoin,
+            handoffToken: (socket: WatchSocket) => `token-${socket.user.username}`
         };
         return ctx;
     }
@@ -716,7 +766,7 @@ describe("Lobby.onWatchGame", () => {
         expect(ctx.findGameForUser("alice")).toBe(game);
         expect(socket.joinChannel).toHaveBeenCalledWith(game.id);
         expect(ctx.router.addSpectator).toHaveBeenCalledExactlyOnceWith(game, { username: "alice", emailHash: "ha" });
-        expect(socket.send).toHaveBeenCalledExactlyOnceWith("handoff", { address: "host", port: 9500, protocol: "https", name: "node-1", gameId: game.id });
+        expect(socket.send).toHaveBeenCalledExactlyOnceWith("handoff", { address: "host", port: 9500, protocol: "https", name: "node-1", gameId: game.id, token: "token-alice" });
         expect(ctx.broadcastGameList).toHaveBeenCalled();
     });
 
@@ -729,7 +779,7 @@ describe("Lobby.onWatchGame", () => {
 
         expect(game.spectators.carol).toBeDefined();
         expect(ctx.router.addSpectator).toHaveBeenCalledWith(game, { username: "carol" });
-        expect(socket.send).toHaveBeenCalledWith("handoff", { address: "host", port: 9500, protocol: "https", name: "node-1" });
+        expect(socket.send).toHaveBeenCalledWith("handoff", { address: "host", port: 9500, protocol: "https", name: "node-1", token: "token-carol" });
     });
 
     it("doesn't let a player who left watch a game that doesn't allow spectators before it started", () => {

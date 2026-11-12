@@ -1,5 +1,5 @@
 import bootstrap from "./bootstrap";
-import { asset, promoArt } from "./assetUrl";
+import { asset, promoArt, tokenCardArt } from "./assetUrl";
 import type { Card } from "./types/game";
 
 export interface CardVersion {
@@ -17,6 +17,10 @@ const versionSuffix = bootstrap.cardImageVersion
 export function getCardImageUrl(cardId: string, packId?: string, showPromo?: boolean): string {
     if(!cardId) {
         return "";
+    }
+    const tokenCard = tokenCardArt(cardId);
+    if(tokenCard) {
+        return tokenCard;
     }
     const stem = packId ? `${cardId}-${packId}` : cardId;
     if(showPromo) {

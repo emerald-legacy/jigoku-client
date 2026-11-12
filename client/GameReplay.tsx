@@ -349,7 +349,7 @@ function GameReplay() {
                 dispatch={ noop as never }
                 boundActions={ {} }
                 sendGameMessage={ noop }
-                closeGameSocket={ noop }
+                leaveGame={ noop }
                 setContextMenu={ noop }
             />
         </div>

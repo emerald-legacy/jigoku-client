@@ -53,17 +53,14 @@ class CardService {
 
     async getAllCards(options?: { shortForm?: boolean }): Promise<Record<string, CardRecord> | undefined> {
         try {
-            const result = await this.cards.find({}).toArray();
+            const projection = options?.shortForm
+                ? { _id: 0, ...Object.fromEntries(SHORT_FORM_FIELDS.map(field => [field, 1])) }
+                : undefined;
+            const result = await this.cards.find({}, { projection }).toArray();
             const cards: Record<string, CardRecord> = {};
 
             result.forEach(card => {
-                if(options && options.shortForm) {
-                    cards[card.id] = Object.fromEntries(
-                        SHORT_FORM_FIELDS.map(field => [field, card[field]])
-                    ) as CardRecord;
-                } else {
-                    cards[card.id] = card;
-                }
+                cards[card.id] = card;
             });
 
             return cards;

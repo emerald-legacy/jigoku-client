@@ -31,16 +31,5 @@ else
   echo "Card data already exists ($CARD_COUNT cards)"
 fi
 
-# Token art ships with the repo but public/img/cards is a named volume, so the image's
-# copy is hidden once that volume exists. version.json is fetchdata's, so leave it be.
-if [ -d token-images ]; then
-  for img in token-images/*.webp token-images/*.jpg token-images/*.png; do
-    if [ -f "$img" ]; then
-      cp -f "$img" public/img/cards/ || echo "Could not sync $img"
-    fi
-  done
-  echo "Token images synced into public/img/cards"
-fi
-
 # Start the application
 exec node build/index.js

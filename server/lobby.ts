@@ -474,7 +474,7 @@ class Lobby {
 
         var game = this.findGameForUser(socket.user.username);
         if(game && game.started) {
-            socket.send("handoff", { address: game.node.address, port: game.node.port, protocol: game.node.protocol, name: game.node.identity, gameId: game.id });
+            socket.send("handoff", { address: game.node.address, port: game.node.port, protocol: game.node.protocol, name: game.node.identity, gameId: game.id, token: this.handoffToken(socket) });
         }
     }
 
@@ -608,7 +608,22 @@ class Lobby {
 
         this.broadcastGameList();
 
-        this.io.to(game.id).emit("handoff", { address: gameNode.address, port: gameNode.port, protocol: game.node.protocol, name: game.node.identity });
+        for(const socketId of this.io.sockets.adapter.rooms.get(game.id) ?? []) {
+            const member = this.sockets[socketId];
+            member?.send("handoff", { address: gameNode.address, port: gameNode.port, protocol: game.node.protocol, name: game.node.identity, token: this.handoffToken(member) });
+        }
+    }
+
+    /**
+     * A fresh token for the game node: the page-load token lasts 1h, so a handoff later on would fail with it.
+     * It outlives the longest game (4h), so the game socket can still reconnect late in a game.
+     */
+    handoffToken(socket: Socket): string | undefined {
+        if(!socket.user) {
+            return undefined;
+        }
+        const { blockList: _blockList, iat: _iat, exp: _exp, nbf: _nbf, ...user } = socket.user;
+        return jwt.sign(user, this.config.secret as string, { expiresIn: "5h" });
     }
 
     onWatchGame(socket: Socket, gameId: string, password: string) {
@@ -641,7 +656,7 @@ class Lobby {
 
             if(game.started) {
                 this.router.addSpectator(game, socket.user as { username: string });
-                socket.send("handoff", { address: game.node?.address, port: game.node?.port, protocol: game.node?.protocol, name: game.node?.identity });
+                socket.send("handoff", { address: game.node?.address, port: game.node?.port, protocol: game.node?.protocol, name: game.node?.identity, token: this.handoffToken(socket) });
             } else {
                 this.sendGameState(game);
             }
@@ -654,7 +669,7 @@ class Lobby {
         player.left = false;
         socket.joinChannel(game.id);
         this.router.addSpectator(game, { username: player.name, emailHash: player.emailHash });
-        socket.send("handoff", { address: game.node?.address, port: game.node?.port, protocol: game.node?.protocol, name: game.node?.identity, gameId: game.id });
+        socket.send("handoff", { address: game.node?.address, port: game.node?.port, protocol: game.node?.protocol, name: game.node?.identity, gameId: game.id, token: this.handoffToken(socket) });
 
         this.broadcastGameList();
         this.broadcastUserList();

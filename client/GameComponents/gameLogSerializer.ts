@@ -2,24 +2,21 @@ import { gzipSync, gunzipSync, strToU8, strFromU8 } from "fflate";
 import { getRecording, getHiddenInfo } from "../gameStateRecorder";
 import type { HiddenInfo, HiddenInfoChange } from "../gameStateRecorder";
 import type { GameState, MessageFragment } from "../types/game";
+import { iconsClan, iconsConflict, iconsElement, isCountedIcon } from "./messageIcons";
 
 // 2: replay states; 3: hidden info, one entry per received state; 4: hidden info as changes, paired by stateSeq
 const HIDDEN_INFO_CHANGES_VERSION = 4;
 
-const iconsConflict = ["military", "political"];
-const iconsElement = ["air", "earth", "fire", "water", "void"];
-const iconsClan = ["crab", "crane", "dragon", "lion", "phoenix", "scorpion", "unicorn"];
-const otherIcons = ["fate", "honor", "card", "cards"];
 
 type LogFragment = MessageFragment | MessageFragment[] | string | number | null | undefined;
 
-function fragmentToText(fragment: LogFragment): string {
+function fragmentToText(fragment: LogFragment, siblings: readonly LogFragment[] = [], index = 0): string {
     if(fragment === null || fragment === undefined) {
         return "";
     }
 
     if(typeof fragment === "string") {
-        if(iconsConflict.includes(fragment) || iconsElement.includes(fragment) || iconsClan.includes(fragment) || otherIcons.includes(fragment)) {
+        if(iconsConflict.includes(fragment) || iconsElement.includes(fragment) || iconsClan.includes(fragment) || isCountedIcon(siblings, index)) {
             return `[${fragment}]`;
         }
         return fragment;
@@ -30,7 +27,7 @@ function fragmentToText(fragment: LogFragment): string {
     }
 
     if(Array.isArray(fragment)) {
-        return fragment.map((f) => fragmentToText(f as LogFragment)).join("");
+        return fragment.map((f, i) => fragmentToText(f as LogFragment, fragment as LogFragment[], i)).join("");
     }
 
     const frag = fragment as MessageFragment & { alert?: { type: string; message: MessageFragment[] | string }; emailHash?: string; id?: string; type?: string; element?: string; facedown?: boolean; label?: string };
