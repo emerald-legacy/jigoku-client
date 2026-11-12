@@ -19,6 +19,7 @@ import db from "./db.js";
 import UserService from "./services/UserService.js";
 import DeckService from "./services/DeckService.js";
 import * as Settings from "./settings.js";
+import { rejectCrossSiteWrites } from "./csrf.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -270,8 +271,9 @@ class Server {
         passport.serializeUser(this.serializeUser.bind(this));
         passport.deserializeUser(this.deserializeUser.bind(this));
 
+        // JSON only: the client never posts forms, and a cross-site HTML form can't send JSON
         app.use(express.json());
-        app.use(express.urlencoded({ extended: false }));
+        app.use("/api/", rejectCrossSiteWrites);
 
         // Apply rate limiting to API routes
         app.use("/api/", apiLimiter);
